@@ -1,0 +1,385 @@
+<?php
+
+namespace App\Services;
+
+/**
+ * Service de calcul du bulletin de paie marocain — Exercice 2026
+ *
+ * Séquence réglementaire :
+ *  0. Ancienneté = salaire_base × taux (Art. 350 Code du Travail)
+ *  1. SBI = salaire_base + primes + heures_sup
+ *  2. CNSS salarié = min(SBI, plafond) × 4,48%      (Dahir 1-72-184)
+ *  3. AMO salarié  = SBI × 2,26%                    (Loi 65-00)
+ *  4. CIMR         = SBI × taux_choisi [3%–10%]     (Art. 28-III CGI)
+ *  5. SNC  = SBI − CNSS − AMO − CIMR
+ *  6. FP   = min(SNC × taux_fp, plafond_fp)          (Art. 59 CGI)
+ *  7. RNI mensuel = SNC − FP
+ *  8. IR   = barème(RNI × 12 − retraite_comp)       (Art. 73 CGI)
+ *          − déduction charges de famille             (Art. 74 CGI)
+ *  9. Indemnités exonérées                           (Arrêté 1314-25)
+ * 10. Net  = SBI − CNSS − AMO − CIMR − IR + Indemnités − Retenues
+ * 11. Coût employeur = SBI + cotisations patronales
+ */
+class PayrollCalculatorService
+{
+    private function r2(float $v): float
+    {
+        return round($v, 2);
+    }
+
+    private function calculerIRAnnuelBrut(float $rniAnnuel): array
+    {
+        if ($rniAnnuel <= 0) {
+            $baremes = config('payroll.ir.baremes');
+            return ['montant' => 0.0, 'tranche' => $baremes[0]];
+        }
+
+        $baremes = config('payroll.ir.baremes');
+        $tranche = $baremes[count($baremes) - 1];
+
+        foreach ($baremes as $t) {
+            if ($t['max'] === null || $rniAnnuel <= $t['max']) {
+                $tranche = $t;
+                break;
+            }
+        }
+
+        $ir = max(0.0, $rniAnnuel * $tranche['taux'] - $tranche['deduction']);
+
+        return ['montant' => $this->r2($ir), 'tranche' => $tranche];
+    }
+
+    private function plafondIndemnite(string $type, float $salaireBase): float
+    {
+        $config = config("payroll.indemnites.{$type}");
+        if (!$config) {
+            return 0.0;
+        }
+        if ($config['base_salaire']) {
+            return $this->r2($salaireBase * $config['pct']);
+        }
+        return (float) $config['montant'];
+    }
+
+    public function calculer(array $input): array
+    {
+        // --- Extraction des entrées ---
+        $salaireBase                  = (float) ($input['salaire_base'] ?? 0);
+        $nbAnneesAnciennete           = (int)   ($input['nb_annees_anciennete'] ?? 0);
+        $primeBilan                   = (float) ($input['prime_bilan'] ?? 0);
+        $primeRendement               = (float) ($input['prime_rendement'] ?? 0);
+        $autresPrimes                 = (float) ($input['autres_primes'] ?? 0);
+        $heuresSup                    = $input['heures_sup'] ?? [];
+        $indemnites                   = $input['indemnites'] ?? [];
+        $cimrActif                    = !empty($input['cimr_actif']);
+        $cimrTaux                     = $this->r2(((float) ($input['cimr_taux'] ?? 0)) / 100);
+        $nbEnfants                    = (int)   ($input['nb_enfants'] ?? 0);
+        $conjointCharge               = !empty($input['conjoint_charge']);
+        $typeFraisPro                 = $input['type_frais_pro'] ?? 'commun';
+        $autresRetenues               = (float) ($input['autres_retenues'] ?? 0);
+        $mutuelleSalarie              = (float) ($input['mutuelle_salarie'] ?? 0);
+        $mutuellePatronale            = (float) ($input['mutuelle_patronale'] ?? 0);
+        $retraiteComplementaireMensuel = (float) ($input['retraite_complementaire_mensuel'] ?? 0);
+
+        $avertissements = [];
+
+        // =====================================================================
+        // ÉTAPE 0 — Prime d'ancienneté (Art. 350 Code du Travail)
+        // =====================================================================
+        $tauxAnciennete  = 0.0;
+        $primeAnciennete = 0.0;
+
+        if ($nbAnneesAnciennete > 0) {
+            foreach (config('payroll.anciennete.tranches') as $tranche) {
+                if ($nbAnneesAnciennete >= $tranche['min_annees'] &&
+                    ($tranche['max_annees'] === null || $nbAnneesAnciennete <= $tranche['max_annees'])) {
+                    $tauxAnciennete = $tranche['taux'];
+                    break;
+                }
+            }
+            $primeAnciennete = $this->r2($salaireBase * $tauxAnciennete);
+        }
+
+        $totalPrimesImposables = $this->r2($primeAnciennete + $primeBilan + $primeRendement + $autresPrimes);
+
+        // =====================================================================
+        // ÉTAPE 1 — Salaire Brut Imposable (SBI)
+        // =====================================================================
+        $heuresLegales = config('payroll.smig.heures_legales');
+        $tauxHoraire   = $salaireBase > 0 ? $this->r2($salaireBase / $heuresLegales) : 0.0;
+
+        $detailHS = [];
+        $totalHS  = 0.0;
+        $majorations = config('payroll.heures_sup.majorations');
+        $hsLabels    = config('payroll.heures_sup.labels');
+
+        foreach ($heuresSup as $hs) {
+            $type    = $hs['type'] ?? 'semaine_diurne';
+            $nbH     = (float) ($hs['nb_heures'] ?? 0);
+            if ($nbH <= 0) {
+                continue;
+            }
+            $majoPct = $majorations[$type] ?? 0.25;
+            $montant = $this->r2($nbH * $tauxHoraire * (1 + $majoPct));
+            $detailHS[] = [
+                'type'         => $type,
+                'label'        => $hsLabels[$type] ?? $type,
+                'nb_heures'    => $nbH,
+                'taux_horaire' => $tauxHoraire,
+                'majoration'   => $majoPct,
+                'montant'      => $montant,
+            ];
+            $totalHS = $this->r2($totalHS + $montant);
+        }
+
+        $sbi = $this->r2($salaireBase + $totalPrimesImposables + $totalHS);
+
+        // =====================================================================
+        // ÉTAPE 2 — CNSS salarié (Dahir n° 1-72-184)
+        // =====================================================================
+        $assietteCNSS   = min($sbi, config('payroll.cnss.plafond'));
+        $cotisationCNSS = $this->r2($assietteCNSS * config('payroll.cnss.taux'));
+
+        // =====================================================================
+        // ÉTAPE 3 — AMO salarié (Loi n° 65-00)
+        // =====================================================================
+        $cotisationAMO = $this->r2($sbi * config('payroll.amo.taux'));
+
+        // =====================================================================
+        // ÉTAPE 4 — CIMR (Art. 28-III CGI)
+        // =====================================================================
+        $cotisationCIMR = 0.0;
+        if ($cimrActif && $cimrTaux > 0) {
+            $cotisationCIMR = $this->r2($sbi * $cimrTaux);
+        }
+
+        $totalSociales = $this->r2($cotisationCNSS + $cotisationAMO + $cotisationCIMR);
+
+        // =====================================================================
+        // ÉTAPE 5 — Salaire Net Comptable (SNC)
+        // =====================================================================
+        $snc = $this->r2($sbi - $totalSociales);
+
+        // =====================================================================
+        // ÉTAPE 6 — Frais Professionnels (Art. 59 I-A CGI)
+        // =====================================================================
+        if ($typeFraisPro === 'journaliste') {
+            $fpConfig  = config('payroll.frais_pro.journaliste');
+            $tauxFP    = $fpConfig['taux'];
+            $plafondFP = $fpConfig['plafond'];
+            $descFP    = 'Journaliste/correspondant — taux majoré ' . ($tauxFP * 100) . '%';
+        } elseif ($typeFraisPro === 'artiste') {
+            $fpConfig  = config('payroll.frais_pro.artiste');
+            $tauxFP    = $fpConfig['taux'];
+            $plafondFP = $fpConfig['plafond'];
+            $descFP    = 'Artiste/créateur — taux majoré ' . ($tauxFP * 100) . '%';
+        } else {
+            if ($sbi <= config('payroll.frais_pro.seuil_mensuel')) {
+                $fpConfig = config('payroll.frais_pro.commun.bas');
+                $descFP   = 'SBI ≤ ' . config('payroll.frais_pro.seuil_mensuel') . ' MAD → taux ' . ($fpConfig['taux'] * 100) . '%';
+            } else {
+                $fpConfig = config('payroll.frais_pro.commun.haut');
+                $descFP   = 'SBI > ' . config('payroll.frais_pro.seuil_mensuel') . ' MAD → taux ' . ($fpConfig['taux'] * 100) . '%';
+            }
+            $tauxFP    = $fpConfig['taux'];
+            $plafondFP = $fpConfig['plafond'];
+        }
+
+        $fpCalc   = $this->r2($snc * $tauxFP);
+        $fraisPro = $this->r2(min($fpCalc, $plafondFP));
+        $fpPlaf   = $fpCalc > $plafondFP;
+
+        // =====================================================================
+        // ÉTAPE 7 — RNI mensuel
+        // =====================================================================
+        $rni = $this->r2($snc - $fraisPro);
+
+        // =====================================================================
+        // ÉTAPE 8 — IR (Art. 73 CGI) avec déduction retraite complémentaire
+        // =====================================================================
+        $nbMois    = config('payroll.ir.nb_mois');
+        $rniAnnuel = $this->r2($rni * $nbMois);
+
+        // Déduction retraite complémentaire (bancassurance) — Art. 28-IV CGI
+        $rcAnnuel  = $this->r2($retraiteComplementaireMensuel * $nbMois);
+        $rcPlafond = $this->r2($sbi * $nbMois * config('payroll.retraite_complementaire.deduction_ir_max_pct'));
+        $rcDeduite = $this->r2(min($rcAnnuel, $rcPlafond));
+        $rniAnnuelNet = $this->r2(max(0.0, $rniAnnuel - $rcDeduite));
+
+        $irResult      = $this->calculerIRAnnuelBrut($rniAnnuelNet);
+        $irAnnuelBrut  = $irResult['montant'];
+        $trancheIR     = $irResult['tranche'];
+        $irMensuelBrut = $this->r2($irAnnuelBrut / $nbMois);
+
+        // Déduction charges de famille (Art. 74 CGI)
+        $nbPersonnes    = $nbEnfants + ($conjointCharge ? 1 : 0);
+        $chargesCalc    = $this->r2($nbPersonnes * config('payroll.charges_famille.par_personne'));
+        $chargesFamille = $this->r2(min($chargesCalc, config('payroll.charges_famille.plafond')));
+        $irNet          = $this->r2(max(0.0, $irMensuelBrut - $chargesFamille));
+
+        // =====================================================================
+        // ÉTAPE 9 — Indemnités exonérées (Arrêté n° 1314-25)
+        // =====================================================================
+        $indemnitesConfig = config('payroll.indemnites');
+        $detailIndemnites = [];
+        $totalIndemnites  = 0.0;
+
+        foreach ($indemnites as $ind) {
+            $type           = $ind['type'] ?? '';
+            $montantDeclare = (float) ($ind['montant'] ?? 0);
+            if ($montantDeclare <= 0 || !isset($indemnitesConfig[$type])) {
+                continue;
+            }
+            $plafond       = $this->plafondIndemnite($type, $salaireBase);
+            $montantRetenu = $this->r2(min($montantDeclare, $plafond));
+            $cfg           = $indemnitesConfig[$type];
+
+            $detailIndemnites[] = [
+                'type'    => $type,
+                'label'   => $cfg['label'],
+                'declare' => $montantDeclare,
+                'plafond' => $plafond,
+                'retenu'  => $montantRetenu,
+                'depasse' => $montantDeclare > $plafond,
+            ];
+            $totalIndemnites = $this->r2($totalIndemnites + $montantRetenu);
+
+            if ($montantDeclare > $plafond) {
+                $label = $cfg['label'];
+                $avertissements[] = "Indemnité « {$label} » : {$montantDeclare} MAD déclarés, plafond légal {$plafond} MAD. Seul le plafond est exonéré (Arrêté n° 1314-25).";
+            }
+        }
+
+        // =====================================================================
+        // ÉTAPE 10 — Net à payer
+        // =====================================================================
+        $totalRetenues    = $this->r2($autresRetenues + $mutuelleSalarie);
+        $salaireNet       = $this->r2($sbi - $cotisationCNSS - $cotisationAMO - $cotisationCIMR - $irNet + $totalIndemnites - $totalRetenues);
+        $salaireBrutTotal = $this->r2($sbi + $totalIndemnites);
+
+        // =====================================================================
+        // COTISATIONS PATRONALES — Coût total employeur
+        // =====================================================================
+        $assietteCNSSPatronal = min($sbi, config('payroll.cnss.plafond'));
+        $coutCNSSPatronal     = $this->r2($assietteCNSSPatronal * config('payroll.cnss.taux_patronal'));
+        $coutAMOPatronal      = $this->r2($sbi * config('payroll.amo.taux_patronal'));
+        $coutAFPatronal       = $this->r2($sbi * config('payroll.allocations_familiales.taux_patronal'));
+        $coutTFPPatronal      = $this->r2($sbi * config('payroll.taxe_formation.taux_patronal'));
+        $totalPatronal        = $this->r2($coutCNSSPatronal + $coutAMOPatronal + $coutAFPatronal + $coutTFPPatronal + $mutuellePatronale);
+        $coutTotalEmployeur   = $this->r2($sbi + $totalPatronal);
+
+        // =====================================================================
+        // Avertissements réglementaires
+        // =====================================================================
+        $smig = config('payroll.smig.mensuel');
+        if ($sbi < $smig && $sbi > 0) {
+            $smigFmt = number_format($smig, 2, ',', ' ');
+            $avertissements[] = "Le SBI ({$sbi} MAD) est inférieur au SMIG 2026 ({$smigFmt} MAD) — Décret n° 2.25.983.";
+        }
+
+        $cimrMin = config('payroll.cimr.taux_min');
+        $cimrMax = config('payroll.cimr.taux_max');
+        if ($cimrActif && ($cimrTaux < $cimrMin || $cimrTaux > $cimrMax)) {
+            $pct = round($cimrTaux * 100, 2);
+            $avertissements[] = "Le taux CIMR ({$pct}%) doit être compris entre " . ($cimrMin * 100) . "% et " . ($cimrMax * 100) . "% (Art. 28-III CGI).";
+        }
+
+        $maxPersonnes = (int) (config('payroll.charges_famille.plafond') / config('payroll.charges_famille.par_personne'));
+        if ($nbPersonnes > $maxPersonnes) {
+            $cap = config('payroll.charges_famille.plafond');
+            $avertissements[] = "Le nombre de personnes à charge ({$nbPersonnes}) dépasse {$maxPersonnes} : déduction plafonnée à {$cap} MAD/mois (Art. 74 CGI).";
+        }
+
+        if ($rcAnnuel > 0 && $rcAnnuel > $rcPlafond) {
+            $rcDeclareFmt = number_format($rcAnnuel, 2, ',', ' ');
+            $rcPlafondFmt = number_format($rcPlafond, 2, ',', ' ');
+            $avertissements[] = "Retraite complémentaire ({$rcDeclareFmt} MAD/an) : dépasse le plafond de déductibilité ({$rcPlafondFmt} MAD = 50% du SBI annuel). Seul le plafond est déduit (Art. 28-IV CGI).";
+        }
+
+        // =====================================================================
+        // Données graphique (Chart.js)
+        // =====================================================================
+        $base = $salaireBrutTotal > 0 ? $salaireBrutTotal : 1;
+        $repartition = [
+            'net'      => ['montant' => $salaireNet,      'pct' => $this->r2($salaireNet / $base * 100),      'color' => '#198754'],
+            'cnss'     => ['montant' => $cotisationCNSS,  'pct' => $this->r2($cotisationCNSS / $base * 100),  'color' => '#0d6efd'],
+            'amo'      => ['montant' => $cotisationAMO,   'pct' => $this->r2($cotisationAMO / $base * 100),   'color' => '#6610f2'],
+            'cimr'     => ['montant' => $cotisationCIMR,  'pct' => $this->r2($cotisationCIMR / $base * 100),  'color' => '#6f42c1'],
+            'ir'       => ['montant' => $irNet,           'pct' => $this->r2($irNet / $base * 100),           'color' => '#dc3545'],
+            'retenues' => ['montant' => $totalRetenues,   'pct' => $this->r2($totalRetenues / $base * 100),   'color' => '#adb5bd'],
+        ];
+
+        // =====================================================================
+        // Retour structuré complet
+        // =====================================================================
+        return [
+            // — Masses salariales —
+            'sbi'                      => $sbi,
+            'salaire_brut_total'       => $salaireBrutTotal,
+            'total_indemnites'         => $totalIndemnites,
+
+            // — Primes détaillées —
+            'prime_anciennete'         => $primeAnciennete,
+            'taux_anciennete'          => $tauxAnciennete,
+            'nb_annees_anciennete'     => $nbAnneesAnciennete,
+            'prime_bilan'              => $primeBilan,
+            'prime_rendement'          => $primeRendement,
+            'autres_primes'            => $autresPrimes,
+            'total_primes'             => $totalPrimesImposables,
+
+            // — Cotisations salariales —
+            'assiette_cnss'            => $assietteCNSS,
+            'cotisation_cnss'          => $cotisationCNSS,
+            'cotisation_amo'           => $cotisationAMO,
+            'cimr_actif'               => $cimrActif,
+            'cimr_taux'                => $cimrTaux,
+            'cotisation_cimr'          => $cotisationCIMR,
+            'total_sociales'           => $totalSociales,
+
+            // — Cotisations patronales —
+            'cout_cnss_patronal'       => $coutCNSSPatronal,
+            'cout_amo_patronal'        => $coutAMOPatronal,
+            'cout_af_patronal'         => $coutAFPatronal,
+            'cout_tfp_patronal'        => $coutTFPPatronal,
+            'mutuelle_patronale'       => $mutuellePatronale,
+            'total_patronal'           => $totalPatronal,
+            'cout_total_employeur'     => $coutTotalEmployeur,
+
+            // — Frais pro & RNI —
+            'snc'                      => $snc,
+            'taux_fp'                  => $tauxFP,
+            'plafond_fp'               => $plafondFP,
+            'desc_fp'                  => $descFP,
+            'frais_pro'                => $fraisPro,
+            'fp_plafonne'              => $fpPlaf,
+            'rni'                      => $rni,
+
+            // — IR —
+            'rni_annuel'               => $rniAnnuel,
+            'rc_annuel'                => $rcAnnuel,
+            'rc_deduite'               => $rcDeduite,
+            'rni_annuel_net'           => $rniAnnuelNet,
+            'ir_annuel_brut'           => $irAnnuelBrut,
+            'ir_mensuel_brut'          => $irMensuelBrut,
+            'tranche_ir'               => $trancheIR,
+            'nb_personnes'             => $nbPersonnes,
+            'charges_famille'          => $chargesFamille,
+            'ir_net'                   => $irNet,
+
+            // — Net —
+            'mutuelle_salarie'         => $mutuelleSalarie,
+            'autres_retenues'          => $autresRetenues,
+            'total_retenues'           => $totalRetenues,
+            'salaire_net'              => $salaireNet,
+
+            // — Détails pédagogiques —
+            'detail_hs'                => $detailHS,
+            'detail_indemnites'        => $detailIndemnites,
+            'repartition'              => $repartition,
+            'avertissements'           => $avertissements,
+
+            // — Entrées (ré-affichage) —
+            'input'                    => $input,
+        ];
+    }
+}
