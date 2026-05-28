@@ -152,7 +152,7 @@ Tout est centralisé dans **`config/payroll.php`**. Les vues et le service de ca
 ## Auteur
 
 Développé par **Zakaria Maftah**  
-Contact : support-bulletindepaie@zakmaf.net
+Contact : email@zakmaf.net
 
 ---
 
