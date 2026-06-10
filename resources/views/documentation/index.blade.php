@@ -1,17 +1,20 @@
 @extends('layouts.app')
 
-@section('title', '3omar — Documentation legale 2026')
+@section('title', '3omar — Documentation des règles 2026')
 
 @section('content')
 <div class="container">
 
     <div class="row mb-4">
         <div class="col">
-            <h2 class="fw-bold mb-1"><i class="bi bi-journal-text me-2" style="color:var(--g-500)"></i>Documentation legale 2026</h2>
+            <h2 class="fw-bold mb-1"><i class="bi bi-journal-text me-2" style="color:var(--g-500)"></i>Documentation des règles 2026</h2>
             <p style="color:var(--ink-2)">
-                Tous les taux, plafonds et baremes utilises par 3omar — Secteur prive marocain.
-                <span class="badge rounded-pill ms-1 px-2 py-1" style="background:var(--g-50);color:var(--g-700);border:1px solid var(--g-200)">Taux a jour : CGI 2026 — Loi de Finances 50-25</span>
+                Paramètres, plafonds et barèmes utilisés par 3omar pour le secteur privé marocain.
+                <span class="badge rounded-pill ms-1 px-2 py-1" style="background:var(--g-50);color:var(--g-700);border:1px solid var(--g-200)">Hypothèses de simulation — exercice 2026</span>
             </p>
+            <div class="alert alert-warning small mb-0">
+                Les références indiquent l'origine déclarée des paramètres. Elles ne remplacent pas une validation réglementaire adaptée à chaque situation.
+            </div>
         </div>
     </div>
 
@@ -113,7 +116,7 @@
                         </tbody>
                     </table>
                     <div class="alert alert-secondary py-2 small mb-0">
-                        <strong>Coût total employeur</strong> = SBI
+                        <strong>Coût total employeur</strong> = salaire brut total versé, indemnités comprises,
                         + CNSS patronal ({{ number_format($payroll['cnss']['taux_patronal'] * 100, 2, ',', '.') }}%)
                         + AMO patronale ({{ number_format($payroll['amo']['taux_patronal'] * 100, 2, ',', '.') }}%)
                         + AF ({{ number_format($payroll['allocations_familiales']['taux_patronal'] * 100, 2, ',', '.') }}%)
@@ -181,8 +184,7 @@
                         </tbody>
                     </table>
                     <div class="alert alert-secondary py-2 small mb-0">
-                        <strong>Exemple :</strong> RNI annuel = 90 000 MAD →
-                        IR = 90 000 × 30% − 18 000 = <strong>9 000 MAD/an</strong> → 750 MAD/mois
+                        La tranche, le taux et la déduction fixe sont lus directement depuis <code>config/payroll.php</code>.
                     </div>
                 </div>
             </div>
@@ -297,9 +299,8 @@
                     </table>
                     <div class="alert alert-info py-2 small mb-0">
                         <i class="bi bi-info-circle me-1"></i>
-                        La cotisation annuelle versée à un contrat de retraite complémentaire (assurance-vie, PERCO bancaire…)
-                        est déductible de l'assiette IR à hauteur de {{ round($payroll['retraite_complementaire']['deduction_ir_max_pct'] * 100) }}%
-                        du salaire brut annuel. L'excédent n'est pas déductible.
+                        Le simulateur applique une déduction fiscale plafonnée à {{ round($payroll['retraite_complementaire']['deduction_ir_max_pct'] * 100) }}%
+                        du salaire brut annuel. Le versement déclaré n'est pas soustrait du net à payer.
                     </div>
                 </div>
             </div>
@@ -310,10 +311,10 @@
             <div class="card section-card mb-4">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
                     <span class="badge rounded-circle p-2" style="background:var(--s-succ)"><i class="bi bi-gift"></i></span>
-                    <span>Indemnités exonérées — Arrêté n° 1314-25 / BO n° 7443 du 29/09/2025</span>
+                    <span>Indemnités traitées comme exonérées par le simulateur</span>
                 </div>
                 <div class="card-body px-4 py-3">
-                    <p class="text-muted mb-3">Ces indemnités sont exonérées à la fois de CNSS et d'IR dans les limites légales. Tout excédent au-delà du plafond est réintégré au salaire brut imposable.</p>
+                    <p class="text-muted mb-3">Le simulateur applique les plafonds ci-dessous et réintègre tout excédent au salaire brut imposable. L'éligibilité CNSS et IR doit être confirmée selon la nature et les justificatifs de chaque indemnité.</p>
                     <table class="table table-sm table-hover">
                         <thead class="table-light">
                             <tr><th>Type d'indemnité</th><th class="text-end">Plafond légal</th></tr>
@@ -419,7 +420,7 @@
                 <div class="card-body px-4 py-3">
                     <h6 class="fw-semibold mb-2"><i class="bi bi-gear me-1" style="color:var(--s-succ)"></i>Transparence totale</h6>
                     <p class="small text-muted mb-2">
-                        Tous les taux affiches ici et utilises dans le simulateur proviennent d'une
+                        Tous les taux affichés ici et utilisés dans le simulateur proviennent d'une
                         source unique. Le code est <a href="https://github.com/Zakmaf/3omar" target="_blank" rel="noopener">open source</a> :
                         chaque valeur est vérifiable et peut être corrigée par la communauté.
                     </p>

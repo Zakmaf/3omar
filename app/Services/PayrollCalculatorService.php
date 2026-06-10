@@ -19,7 +19,7 @@ namespace App\Services;
  *          − déduction charges de famille             (Art. 74 CGI)
  *  9. Indemnités exonérées (dans la limite des plafonds — Arrêté 1314-25)
  * 10. Net  = SBI − CNSS − AMO − CIMR − IR + Indemnités exonérées − Retenues
- * 11. Coût employeur = SBI + cotisations patronales
+ * 11. Coût employeur = brut total versé + cotisations patronales
  */
 class PayrollCalculatorService
 {
@@ -125,10 +125,10 @@ class PayrollCalculatorService
         foreach ($heuresSup as $hs) {
             $type = $hs['type'] ?? 'semaine_diurne';
             $nbH = (float) ($hs['nb_heures'] ?? 0);
-            if ($nbH <= 0) {
+            if ($nbH <= 0 || ! isset($majorations[$type])) {
                 continue;
             }
-            $majoPct = $majorations[$type] ?? 0.25;
+            $majoPct = $majorations[$type];
             $montant = $this->r2($nbH * $tauxHoraire * (1 + $majoPct));
             $detailHS[] = [
                 'type' => $type,
@@ -150,6 +150,7 @@ class PayrollCalculatorService
         $detailIndemnites = [];
         $totalIndemnites = 0.0;
         $excedentIndemnites = 0.0;
+        $indemnitesParType = [];
 
         foreach ($indemnites as $ind) {
             $type = $ind['type'] ?? '';
@@ -157,6 +158,10 @@ class PayrollCalculatorService
             if ($montantDeclare <= 0 || ! isset($indemnitesConfig[$type])) {
                 continue;
             }
+            $indemnitesParType[$type] = $this->r2(($indemnitesParType[$type] ?? 0.0) + $montantDeclare);
+        }
+
+        foreach ($indemnitesParType as $type => $montantDeclare) {
             $plafond = $this->plafondIndemnite($type, $salaireBase, $joursTravailles);
             $montantExo = $this->r2(min($montantDeclare, $plafond));
             $excedent = $this->r2(max(0.0, $montantDeclare - $plafond));
@@ -287,7 +292,7 @@ class PayrollCalculatorService
         $coutAFPatronal = $this->r2($sbi * config('payroll.allocations_familiales.taux_patronal'));
         $coutTFPPatronal = $this->r2($sbi * config('payroll.taxe_formation.taux_patronal'));
         $totalPatronal = $this->r2($coutCNSSPatronal + $coutAMOPatronal + $coutAFPatronal + $coutTFPPatronal + $mutuellePatronale);
-        $coutTotalEmployeur = $this->r2($sbi + $totalPatronal);
+        $coutTotalEmployeur = $this->r2($salaireBrutTotal + $totalPatronal);
 
         // =====================================================================
         // Avertissements réglementaires

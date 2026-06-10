@@ -227,7 +227,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form-text mt-2">50 MAD/mois × nb personnes, plafond 300 MAD/mois (Art. 74 CGI)</div>
+                        <div class="form-text mt-2">{{ number_format(config('payroll.charges_famille.par_personne'), 2, ',', ' ') }} MAD/mois × nombre de personnes, plafond {{ number_format(config('payroll.charges_famille.plafond'), 2, ',', ' ') }} MAD/mois (Art. 74 CGI)</div>
                     </div>
                 </div>
 
@@ -277,7 +277,8 @@
                                 <span class="input-group-text">MAD</span>
                             </div>
                             <div class="form-text">
-                                Déductible de l'IR à hauteur de 50% du SBI annuel — Art. 28-IV CGI
+                                Déduction fiscale simulée dans la limite de 50% du SBI annuel.
+                                Ce montant n'est pas soustrait du net à payer — Art. 28-IV CGI.
                             </div>
                         </div>
 
@@ -293,7 +294,7 @@
                         </button>
                     </div>
                     <div class="card-body px-4 py-3">
-                        <div class="form-text mb-3">Exonérées de CNSS et d'IR dans les limites légales (Arrêté n° 1314-25 / BO n° 7443). L'excédent au-delà du plafond est réintégré au brut imposable.</div>
+                        <div class="form-text mb-3">Le simulateur traite ces indemnités comme exonérées dans les plafonds configurés. Vérifie leur éligibilité selon ta situation ; l'excédent est réintégré au brut imposable.</div>
                         <div class="row g-2 mb-3 align-items-end">
                             <div class="col-7">
                                 <label class="form-label small mb-1 fw-semibold">Jours travaillés dans le mois</label>

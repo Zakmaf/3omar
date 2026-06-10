@@ -116,8 +116,8 @@ return [
     ],
 
     // =========================================================================
-    // Indemnités exonérées — Arrêté n° 1314-25 / BO n° 7443 du 29/09/2025
-    // Exonérées à la fois de CNSS et d'IR dans les limites légales
+    // Indemnités traitées comme exonérées par le simulateur
+    // Hypothèses à valider selon la nature de l'indemnité et la situation réelle.
     // `par_jour => true` : le plafond est journalier (× jours travaillés du mois)
     // =========================================================================
     'jours_travailles_defaut' => 26,
@@ -150,7 +150,7 @@ return [
 
     // =========================================================================
     // Retraite complémentaire (Bancassurance) — Art. 28-IV CGI
-    // Cotisations déductibles de l'IR à hauteur de 50 % du SBI annuel
+    // Déduction fiscale simulée ; le versement n'est pas retenu du net à payer.
     // =========================================================================
     'retraite_complementaire' => [
         'deduction_ir_max_pct' => 0.50,

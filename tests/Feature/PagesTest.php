@@ -20,7 +20,10 @@ class PagesTest extends TestCase
             ->assertSee('Ton')
             ->assertSee('ligne par ligne.');
         $this->get('/calculateur')->assertOk()->assertSee('Simuler mon bulletin');
-        $this->get('/documentation')->assertOk()->assertSee('Documentation légale 2026');
+        $this->get('/documentation')->assertOk()
+            ->assertSee('Documentation des règles 2026')
+            ->assertSee('Hypothèses de simulation')
+            ->assertDontSee('Taux à jour');
     }
 
     public function test_result_uses_accurate_non_storage_message(): void
@@ -39,6 +42,19 @@ class PagesTest extends TestCase
             'salaire_base' => 5000,
             'type_frais_pro' => 'commun',
             'indemnites' => [['type' => 'inconnue', 'montant' => 100]],
+        ])->assertRedirect('/calculateur')
+            ->assertSessionHasErrors('indemnites.0.type');
+    }
+
+    public function test_duplicate_allowance_type_is_rejected(): void
+    {
+        $this->from('/calculateur')->post('/calculateur/calculer', [
+            'salaire_base' => 5000,
+            'type_frais_pro' => 'commun',
+            'indemnites' => [
+                ['type' => 'transport', 'montant' => 300],
+                ['type' => 'transport', 'montant' => 200],
+            ],
         ])->assertRedirect('/calculateur')
             ->assertSessionHasErrors('indemnites.0.type');
     }

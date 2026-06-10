@@ -28,6 +28,17 @@ class PayrollCalculatorServiceTest extends TestCase
         $this->assertSame(350.0, $result['cotisation_cimr']);
     }
 
+    public function test_unknown_overtime_type_is_ignored(): void
+    {
+        $result = $this->calculator->calculer([
+            'salaire_base' => 5000,
+            'heures_sup' => [['type' => 'inconnu', 'nb_heures' => 10]],
+        ]);
+
+        $this->assertSame([], $result['detail_hs']);
+        $this->assertSame(5000.0, $result['sbi']);
+    }
+
     public function test_professional_expenses_use_taxable_gross_income_and_shared_ceiling(): void
     {
         $result = $this->calculator->calculer(['salaire_base' => 5000]);
@@ -58,6 +69,46 @@ class PayrollCalculatorServiceTest extends TestCase
 
         $this->assertSame(716.8, $result['detail_indemnites'][0]['plafond']);
         $this->assertSame(83.2, $result['excedent_indemnites']);
+    }
+
+    public function test_duplicate_allowances_share_one_ceiling(): void
+    {
+        $result = $this->calculator->calculer([
+            'salaire_base' => 5000,
+            'indemnites' => [
+                ['type' => 'transport', 'montant' => 400],
+                ['type' => 'transport', 'montant' => 400],
+            ],
+        ]);
+
+        $this->assertCount(1, $result['detail_indemnites']);
+        $this->assertSame(500.0, $result['total_indemnites']);
+        $this->assertSame(300.0, $result['excedent_indemnites']);
+    }
+
+    public function test_employer_cost_includes_exempt_allowances_paid_to_employee(): void
+    {
+        $withoutAllowance = $this->calculator->calculer(['salaire_base' => 5000]);
+        $withAllowance = $this->calculator->calculer([
+            'salaire_base' => 5000,
+            'indemnites' => [['type' => 'transport', 'montant' => 500]],
+        ]);
+
+        $this->assertSame(
+            $withoutAllowance['cout_total_employeur'] + 500,
+            $withAllowance['cout_total_employeur'],
+        );
+    }
+
+    public function test_bancassurance_amount_changes_tax_base_but_not_payroll_retentions(): void
+    {
+        $result = $this->calculator->calculer([
+            'salaire_base' => 10000,
+            'retraite_complementaire_mensuel' => 500,
+        ]);
+
+        $this->assertSame(6000.0, $result['rc_deduite']);
+        $this->assertSame(0.0, $result['total_retenues']);
     }
 
     public function test_smig_warning_uses_base_salary_not_total_taxable_income(): void

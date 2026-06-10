@@ -92,7 +92,7 @@
             <div class="section-card h-100 text-center py-3 px-2" style="background:var(--s-warn-bg)">
                 <div class="small text-uppercase fw-semibold mb-1" style="color:var(--ink-3)">Coût Total Employeur</div>
                 <div class="fs-4 fw-bold" style="color:var(--r-500)">{{ number_format($r['cout_total_employeur'], 2, ',', ' ') }} <small class="fs-6">MAD</small></div>
-                <div class="text-muted small mt-1">SBI + cotisations patronales</div>
+                <div class="text-muted small mt-1">Brut versé + cotisations patronales</div>
             </div>
         </div>
 
@@ -392,7 +392,7 @@
                                 <tr class="row-employer">
                                     <td class="px-3 py-3" colspan="3">
                                         <i class="bi bi-building-up me-1" style="color:var(--s-warn)"></i>COÛT TOTAL EMPLOYEUR
-                                        <small class="text-muted fw-normal ms-2">(SBI + charges patronales)</small>
+                                        <small class="text-muted fw-normal ms-2">(brut versé + charges patronales)</small>
                                     </td>
                                     <td class="text-end px-3 py-3 fs-5" style="color:var(--r-500)">{{ number_format($r['cout_total_employeur'], 2, ',', ' ') }} MAD</td>
                                 </tr>
@@ -479,7 +479,7 @@
                 <div class="card-body px-4 py-3">
                     <table class="table table-sm mb-0">
                         <tbody>
-                            <tr><td class="text-muted">SBI</td><td class="fw-semibold text-end">{{ number_format($r['sbi'], 2, ',', ' ') }} MAD</td></tr>
+                            <tr><td class="text-muted">Salaire brut total versé</td><td class="fw-semibold text-end">{{ number_format($r['salaire_brut_total'], 2, ',', ' ') }} MAD</td></tr>
                             <tr><td class="text-muted">CNSS patronal ({{ number_format(config('payroll.cnss.taux_patronal') * 100, 2, ',', '.') }}%)</td><td class="fw-semibold text-end" style="color:var(--s-warn)">+ {{ number_format($r['cout_cnss_patronal'], 2, ',', ' ') }}</td></tr>
                             <tr><td class="text-muted">AMO patronale ({{ number_format(config('payroll.amo.taux_patronal') * 100, 2, ',', '.') }}%)</td><td class="fw-semibold text-end" style="color:var(--s-warn)">+ {{ number_format($r['cout_amo_patronal'], 2, ',', ' ') }}</td></tr>
                             <tr><td class="text-muted">All. familiales ({{ number_format(config('payroll.allocations_familiales.taux_patronal') * 100, 2, ',', '.') }}%)</td><td class="fw-semibold text-end" style="color:var(--s-warn)">+ {{ number_format($r['cout_af_patronal'], 2, ',', ' ') }}</td></tr>

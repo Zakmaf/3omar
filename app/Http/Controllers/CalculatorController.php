@@ -39,7 +39,7 @@ class CalculatorController extends Controller
             'jours_travailles' => 'nullable|integer|min:1|max:31',
             'heures_sup.*.type' => 'required_with:heures_sup.*.nb_heures|in:semaine_diurne,semaine_nocturne,repos_diurne,repos_nocturne',
             'heures_sup.*.nb_heures' => 'nullable|numeric|min:0',
-            'indemnites.*.type' => ['required_with:indemnites.*.montant', Rule::in(array_keys(config('payroll.indemnites')))],
+            'indemnites.*.type' => ['required_with:indemnites.*.montant', 'distinct', Rule::in(array_keys(config('payroll.indemnites')))],
             'indemnites.*.montant' => 'nullable|numeric|min:0',
         ], [
             'salaire_base.required' => 'Le salaire de base est obligatoire.',
@@ -47,6 +47,7 @@ class CalculatorController extends Controller
             'type_frais_pro.in' => 'Catégorie professionnelle invalide.',
             'cimr_taux.min' => "Le taux CIMR doit être au minimum {$cimrMin}%.",
             'cimr_taux.max' => "Le taux CIMR ne peut pas dépasser {$cimrMax}%.",
+            'indemnites.*.type.distinct' => 'Chaque type d’indemnité ne peut être déclaré qu’une fois.',
         ]);
 
         $input = $request->only([
