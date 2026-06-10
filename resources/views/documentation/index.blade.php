@@ -1,16 +1,16 @@
 @extends('layouts.app')
 
-@section('title', 'Documentation — Législation de paie marocaine 2026')
+@section('title', '3omar — Documentation legale 2026')
 
 @section('content')
 <div class="container">
 
     <div class="row mb-4">
         <div class="col">
-            <h2 class="fw-bold mb-1"><i class="bi bi-journal-text me-2 text-success"></i>Documentation légale 2026</h2>
+            <h2 class="fw-bold mb-1"><i class="bi bi-journal-text me-2 text-success"></i>Documentation legale 2026</h2>
             <p class="text-muted">
-                Références réglementaires utilisées par le simulateur — Secteur privé marocain.
-                <span class="badge text-bg-success ms-1">Tous les taux sont lus dynamiquement depuis <code>config/payroll.php</code></span>
+                Tous les taux, plafonds et baremes utilises par 3omar — Secteur prive marocain.
+                <span class="badge text-bg-success ms-1">Taux a jour : CGI 2026 — Loi de Finances 50-25</span>
             </p>
         </div>
     </div>
@@ -417,11 +417,11 @@
 
             <div class="card section-card">
                 <div class="card-body px-4 py-3">
-                    <h6 class="fw-semibold mb-2"><i class="bi bi-gear me-1 text-success"></i>Source unique de vérité</h6>
+                    <h6 class="fw-semibold mb-2"><i class="bi bi-gear me-1 text-success"></i>Transparence totale</h6>
                     <p class="small text-muted mb-2">
-                        Tous les taux, plafonds et barèmes affichés sur cette page sont lus directement depuis
-                        <code>config/payroll.php</code>. Toute mise à jour de ce fichier actualise
-                        automatiquement cette documentation.
+                        Tous les taux affiches ici et utilises dans le simulateur proviennent d'une
+                        source unique. Le code est <a href="https://github.com/Zakmaf/3omar" target="_blank" rel="noopener">open source</a> :
+                        chaque valeur est verifiable et corrigeable par la communaute.
                     </p>
                     <div class="bg-dark rounded p-2" style="font-family:monospace; font-size:.75rem; color:#e9ecef">
                         <span class="text-muted">// Exercice {{ $payroll['year'] }}</span><br>
