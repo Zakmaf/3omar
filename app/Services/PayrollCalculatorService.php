@@ -8,16 +8,17 @@ namespace App\Services;
  * Séquence réglementaire :
  *  0. Ancienneté = salaire_base × taux (Art. 350 Code du Travail)
  *  1. SBI = salaire_base + primes + heures_sup
+ *         + excédent des indemnités au-delà des plafonds (part imposable)
  *  2. CNSS salarié = min(SBI, plafond) × 4,48%      (Dahir 1-72-184)
  *  3. AMO salarié  = SBI × 2,26%                    (Loi 65-00)
  *  4. CIMR         = SBI × taux_choisi [3%–10%]     (Art. 28-III CGI)
  *  5. SNC  = SBI − CNSS − AMO − CIMR
- *  6. FP   = min(SNC × taux_fp, plafond_fp)          (Art. 59 CGI)
+ *  6. FP   = min(SBI × taux_fp, plafond_fp)          (Art. 59 I-A CGI — assiette = revenu brut imposable)
  *  7. RNI mensuel = SNC − FP
  *  8. IR   = barème(RNI × 12 − retraite_comp)       (Art. 73 CGI)
  *          − déduction charges de famille             (Art. 74 CGI)
- *  9. Indemnités exonérées                           (Arrêté 1314-25)
- * 10. Net  = SBI − CNSS − AMO − CIMR − IR + Indemnités − Retenues
+ *  9. Indemnités exonérées (dans la limite des plafonds — Arrêté 1314-25)
+ * 10. Net  = SBI − CNSS − AMO − CIMR − IR + Indemnités exonérées − Retenues
  * 11. Coût employeur = SBI + cotisations patronales
  */
 class PayrollCalculatorService
@@ -49,7 +50,7 @@ class PayrollCalculatorService
         return ['montant' => $this->r2($ir), 'tranche' => $tranche];
     }
 
-    private function plafondIndemnite(string $type, float $salaireBase): float
+    private function plafondIndemnite(string $type, float $salaireBase, int $joursTravailles): float
     {
         $config = config("payroll.indemnites.{$type}");
         if (!$config) {
@@ -57,6 +58,9 @@ class PayrollCalculatorService
         }
         if ($config['base_salaire']) {
             return $this->r2($salaireBase * $config['pct']);
+        }
+        if (!empty($config['par_jour'])) {
+            return $this->r2($config['montant'] * $joursTravailles);
         }
         return (float) $config['montant'];
     }
@@ -72,11 +76,14 @@ class PayrollCalculatorService
         $heuresSup                    = $input['heures_sup'] ?? [];
         $indemnites                   = $input['indemnites'] ?? [];
         $cimrActif                    = !empty($input['cimr_actif']);
-        $cimrTaux                     = $this->r2(((float) ($input['cimr_taux'] ?? 0)) / 100);
+        // Ne pas arrondir le ratio : round(0.035, 2) donnerait 0.04 (3,5% → 4%).
+        // Seul le montant de la cotisation est arrondi.
+        $cimrTaux                     = ((float) ($input['cimr_taux'] ?? 0)) / 100;
         $nbEnfants                    = (int)   ($input['nb_enfants'] ?? 0);
         $conjointCharge               = !empty($input['conjoint_charge']);
         $typeFraisPro                 = $input['type_frais_pro'] ?? 'commun';
         $autresRetenues               = (float) ($input['autres_retenues'] ?? 0);
+        $joursTravailles              = (int) ($input['jours_travailles'] ?? config('payroll.jours_travailles_defaut'));
         $mutuelleSalarie              = (float) ($input['mutuelle_salarie'] ?? 0);
         $mutuellePatronale            = (float) ($input['mutuelle_patronale'] ?? 0);
         $retraiteComplementaireMensuel = (float) ($input['retraite_complementaire_mensuel'] ?? 0);
@@ -132,7 +139,46 @@ class PayrollCalculatorService
             $totalHS = $this->r2($totalHS + $montant);
         }
 
-        $sbi = $this->r2($salaireBase + $totalPrimesImposables + $totalHS);
+        // ---------------------------------------------------------------------
+        // Indemnités (Arrêté n° 1314-25) — traitées avant le SBI car l'excédent
+        // au-delà du plafond légal est imposable : il est réintégré dans le SBI
+        // (soumis à CNSS/AMO/IR), seule la part plafonnée reste exonérée.
+        // ---------------------------------------------------------------------
+        $indemnitesConfig    = config('payroll.indemnites');
+        $detailIndemnites    = [];
+        $totalIndemnites     = 0.0;
+        $excedentIndemnites  = 0.0;
+
+        foreach ($indemnites as $ind) {
+            $type           = $ind['type'] ?? '';
+            $montantDeclare = (float) ($ind['montant'] ?? 0);
+            if ($montantDeclare <= 0 || !isset($indemnitesConfig[$type])) {
+                continue;
+            }
+            $plafond       = $this->plafondIndemnite($type, $salaireBase, $joursTravailles);
+            $montantExo    = $this->r2(min($montantDeclare, $plafond));
+            $excedent      = $this->r2(max(0.0, $montantDeclare - $plafond));
+            $cfg           = $indemnitesConfig[$type];
+
+            $detailIndemnites[] = [
+                'type'     => $type,
+                'label'    => $cfg['label'],
+                'declare'  => $montantDeclare,
+                'plafond'  => $plafond,
+                'retenu'   => $montantExo,
+                'excedent' => $excedent,
+                'depasse'  => $excedent > 0,
+            ];
+            $totalIndemnites    = $this->r2($totalIndemnites + $montantExo);
+            $excedentIndemnites = $this->r2($excedentIndemnites + $excedent);
+
+            if ($excedent > 0) {
+                $label = $cfg['label'];
+                $avertissements[] = "Indemnité « {$label} » : {$montantDeclare} MAD déclarés, plafond légal {$plafond} MAD. Seul le plafond est exonéré ; l'excédent ({$excedent} MAD) est réintégré au salaire brut imposable (Arrêté n° 1314-25).";
+            }
+        }
+
+        $sbi = $this->r2($salaireBase + $totalPrimesImposables + $totalHS + $excedentIndemnites);
 
         // =====================================================================
         // ÉTAPE 2 — CNSS salarié (Dahir n° 1-72-184)
@@ -162,6 +208,7 @@ class PayrollCalculatorService
 
         // =====================================================================
         // ÉTAPE 6 — Frais Professionnels (Art. 59 I-A CGI)
+        // Assiette = revenu brut imposable (SBI), pas le SNC.
         // =====================================================================
         if ($typeFraisPro === 'journaliste') {
             $fpConfig  = config('payroll.frais_pro.journaliste');
@@ -185,7 +232,7 @@ class PayrollCalculatorService
             $plafondFP = $fpConfig['plafond'];
         }
 
-        $fpCalc   = $this->r2($snc * $tauxFP);
+        $fpCalc   = $this->r2($sbi * $tauxFP);
         $fraisPro = $this->r2(min($fpCalc, $plafondFP));
         $fpPlaf   = $fpCalc > $plafondFP;
 
@@ -218,37 +265,9 @@ class PayrollCalculatorService
         $irNet          = $this->r2(max(0.0, $irMensuelBrut - $chargesFamille));
 
         // =====================================================================
-        // ÉTAPE 9 — Indemnités exonérées (Arrêté n° 1314-25)
+        // ÉTAPE 9 — Indemnités exonérées : déjà calculées avant le SBI
+        // ($totalIndemnites = parts exonérées, $excedentIndemnites dans le SBI)
         // =====================================================================
-        $indemnitesConfig = config('payroll.indemnites');
-        $detailIndemnites = [];
-        $totalIndemnites  = 0.0;
-
-        foreach ($indemnites as $ind) {
-            $type           = $ind['type'] ?? '';
-            $montantDeclare = (float) ($ind['montant'] ?? 0);
-            if ($montantDeclare <= 0 || !isset($indemnitesConfig[$type])) {
-                continue;
-            }
-            $plafond       = $this->plafondIndemnite($type, $salaireBase);
-            $montantRetenu = $this->r2(min($montantDeclare, $plafond));
-            $cfg           = $indemnitesConfig[$type];
-
-            $detailIndemnites[] = [
-                'type'    => $type,
-                'label'   => $cfg['label'],
-                'declare' => $montantDeclare,
-                'plafond' => $plafond,
-                'retenu'  => $montantRetenu,
-                'depasse' => $montantDeclare > $plafond,
-            ];
-            $totalIndemnites = $this->r2($totalIndemnites + $montantRetenu);
-
-            if ($montantDeclare > $plafond) {
-                $label = $cfg['label'];
-                $avertissements[] = "Indemnité « {$label} » : {$montantDeclare} MAD déclarés, plafond légal {$plafond} MAD. Seul le plafond est exonéré (Arrêté n° 1314-25).";
-            }
-        }
 
         // =====================================================================
         // ÉTAPE 10 — Net à payer
@@ -272,9 +291,9 @@ class PayrollCalculatorService
         // Avertissements réglementaires
         // =====================================================================
         $smig = config('payroll.smig.mensuel');
-        if ($sbi < $smig && $sbi > 0) {
+        if ($salaireBase < $smig && $salaireBase > 0) {
             $smigFmt = number_format($smig, 2, ',', ' ');
-            $avertissements[] = "Le SBI ({$sbi} MAD) est inférieur au SMIG 2026 ({$smigFmt} MAD) — Décret n° 2.25.983.";
+            $avertissements[] = "Le salaire de base ({$salaireBase} MAD) est inférieur au SMIG 2026 ({$smigFmt} MAD) — Décret n° 2.25.983.";
         }
 
         $cimrMin = config('payroll.cimr.taux_min');
@@ -317,6 +336,8 @@ class PayrollCalculatorService
             'sbi'                      => $sbi,
             'salaire_brut_total'       => $salaireBrutTotal,
             'total_indemnites'         => $totalIndemnites,
+            'excedent_indemnites'      => $excedentIndemnites,
+            'jours_travailles'         => $joursTravailles,
 
             // — Primes détaillées —
             'prime_anciennete'         => $primeAnciennete,

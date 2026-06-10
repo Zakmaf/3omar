@@ -196,7 +196,7 @@
                     <span>Frais Professionnels — Article 59 I-A CGI</span>
                 </div>
                 <div class="card-body px-4 py-3">
-                    <p class="text-muted mb-3">Déductibles de l'assiette IR (non remboursés au salarié). Calculés sur le SNC. Seuil mensuel : <strong>{{ number_format($payroll['frais_pro']['seuil_mensuel'], 0, ',', ' ') }} MAD</strong>.</p>
+                    <p class="text-muted mb-3">Déductibles de l'assiette IR (non remboursés au salarié). Calculés sur le salaire brut imposable (SBI), dans la limite du plafond mensuel. Seuil mensuel : <strong>{{ number_format($payroll['frais_pro']['seuil_mensuel'], 0, ',', ' ') }} MAD</strong>.</p>
                     <table class="table table-sm">
                         <thead class="table-light">
                             <tr><th>Catégorie</th><th class="text-center">Taux</th><th class="text-end">Plafond mensuel</th></tr>
@@ -313,7 +313,7 @@
                     <span>Indemnités exonérées — Arrêté n° 1314-25 / BO n° 7443 du 29/09/2025</span>
                 </div>
                 <div class="card-body px-4 py-3">
-                    <p class="text-muted mb-3">Ces indemnités sont exonérées à la fois de CNSS et d'IR dans les limites légales.</p>
+                    <p class="text-muted mb-3">Ces indemnités sont exonérées à la fois de CNSS et d'IR dans les limites légales. Tout excédent au-delà du plafond est réintégré au salaire brut imposable.</p>
                     <table class="table table-sm table-hover">
                         <thead class="table-light">
                             <tr><th>Type d'indemnité</th><th class="text-end">Plafond légal</th></tr>
@@ -325,6 +325,8 @@
                                 <td class="text-end fw-semibold">
                                     @if($cfg['base_salaire'])
                                         {{ round($cfg['pct'] * 100) }}% du salaire de base
+                                    @elseif(!empty($cfg['par_jour']))
+                                        {{ number_format($cfg['montant'], 2, ',', ' ') }} MAD/jour travaillé
                                     @else
                                         {{ number_format($cfg['montant'], 0, ',', ' ') }} MAD/mois
                                     @endif

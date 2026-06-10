@@ -60,10 +60,11 @@ return [
     // Frais Professionnels — Art. 59 I-A CGI
     // Déduits de l'assiette IR (non remboursés au salarié)
     // =========================================================================
+    // Plafond annuel unique : 35 000 MAD/an ≈ 2 916,67 MAD/mois (LF 2023, reconduit en 2026)
     'frais_pro' => [
         'seuil_mensuel' => 6500,
         'commun' => [
-            'bas'  => ['taux' => 0.35, 'plafond' => 2500.00],
+            'bas'  => ['taux' => 0.35, 'plafond' => 2916.67],
             'haut' => ['taux' => 0.25, 'plafond' => 2916.67],
         ],
         'journaliste' => ['taux' => 0.45, 'plafond' => 2916.67],
@@ -117,10 +118,14 @@ return [
     // =========================================================================
     // Indemnités exonérées — Arrêté n° 1314-25 / BO n° 7443 du 29/09/2025
     // Exonérées à la fois de CNSS et d'IR dans les limites légales
+    // `par_jour => true` : le plafond est journalier (× jours travaillés du mois)
     // =========================================================================
+    'jours_travailles_defaut' => 26,
+
     'indemnites' => [
         'transport'        => ['label' => 'Indemnité de transport',       'base_salaire' => false, 'montant' =>  500, 'pct' => null],
-        'panier'           => ['label' => 'Indemnité de panier/repas',    'base_salaire' => false, 'montant' =>   26, 'pct' => null],
+        // Panier : plafond journalier = 2 × SMIG horaire (2 × 17,92 = 35,84 MAD/jour travaillé)
+        'panier'           => ['label' => 'Indemnité de panier/repas',    'base_salaire' => false, 'montant' => 35.84, 'pct' => null, 'par_jour' => true],
         'representation'   => ['label' => 'Indemnité de représentation',  'base_salaire' => true,  'montant' => null, 'pct' => 0.10],
         'salissure'        => ['label' => 'Indemnité de salissure',       'base_salaire' => false, 'montant' =>  200, 'pct' => null],
         'outillage'        => ['label' => "Indemnité d'outillage",        'base_salaire' => false, 'montant' =>  200, 'pct' => null],
