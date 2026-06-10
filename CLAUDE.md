@@ -4,161 +4,95 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Mon Bulletin de Paie Marocain** — A pedagogical Moroccan net salary calculator for private-sector employees. Covers the 2026 fiscal year (CGI 2026, CNSS, AMO, IR, CIMR, heures supplémentaires, indemnités).
+**Mon Bulletin de Paie Marocain** — a pedagogical Moroccan net-salary (bulletin de paie) simulator for private-sector employees, covering the **2026 fiscal year** (CGI 2026 / Loi de Finances 50-25, CNSS, AMO, IR, CIMR, frais professionnels, heures supplémentaires, prime d'ancienneté, indemnités exonérées, coût employeur).
 
-No database. No user data stored. 100% stateless computation.
+Stack: **Laravel 11 (PHP 8.3)** + Blade views, **Bootstrap 5** + Bootstrap Icons (via CDN, no asset build step), **Chart.js 4** (via CDN) for the salary breakdown donut chart. 100% stateless — no database, no user data stored (the `sqlite` DB config in `.env` is an unused Laravel placeholder).
 
 ---
 
 ## Commands
 
-### Backend (Node.js + Express + TypeScript) — port 3001
+All commands run inside the PHP-FPM container (`paie_maroc_app`).
 
 ```bash
-cd backend
-npm install
-npm run dev      # ts-node-dev with hot reload
-npm run build    # compiles to dist/
-npm start        # production (after build)
-npx tsc --noEmit # type check only
+# First-time setup
+cp .env.example .env
+docker-compose up -d --build
+docker exec paie_maroc_app composer install
+docker exec paie_maroc_app php artisan key:generate
+
+# App available at http://localhost:8080
+
+# After editing config/ or routes/ (Laravel caches these)
+docker exec paie_maroc_app php artisan config:clear
+docker exec paie_maroc_app php artisan view:clear
+
+# Code style (Laravel Pint)
+docker exec paie_maroc_app vendor/bin/pint
+
+# Tinker (REPL)
+docker exec paie_maroc_app php artisan tinker
 ```
 
-### Frontend (React + TypeScript + Vite + Tailwind CSS) — port 5173
-
-```bash
-cd frontend
-npm install
-npm run dev      # Vite dev server (proxies /api/* → localhost:3001)
-npm run build    # production build → dist/
-npm run preview  # serve production build
-./node_modules/.bin/tsc --noEmit  # type check only
-```
-
-### Node.js setup (WSL2 — first time)
-
-```bash
-export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-# Add above line to ~/.bashrc to make permanent
-```
+There is no `tests/` directory yet — no test command exists. PHPUnit/Pest are available as dev dependencies if tests are added.
 
 ---
 
 ## Architecture
 
 ```
-bulletindepaiemaroc/
-├── backend/                    # Express API — pure computation
-│   └── src/
-│       ├── data/
-│       │   ├── constants.ts    # All 2026 rates (CNSS 4.48%, AMO 2.26%, IR brackets…)
-│       │   ├── conventions.ts  # 10 conventions collectives marocaines
-│       │   └── references.ts   # Legal references (CGI articles, Dahirs, décrets)
-│       ├── services/
-│       │   └── payrollCalculator.ts  # Core calculation engine
-│       ├── routes/
-│       │   ├── calculate.ts    # POST /api/calculate
-│       │   └── rules.ts        # GET /api/rules, /api/rules/conventions
-│       ├── types/payroll.ts    # All TypeScript interfaces
-│       └── index.ts            # Express server
-│
-└── frontend/                   # React SPA
-    └── src/
-        ├── api/calculator.ts   # API client (transforms frontend ↔ backend formats)
-        ├── context/PayrollContext.tsx  # Wizard state (useReducer)
-        ├── types/payroll.ts    # Frontend types (different from backend — see below)
-        ├── components/
-        │   ├── Calculator/
-        │   │   ├── WizardContainer.tsx   # Step rendering + navigation
-        │   │   ├── StepIndicator.tsx     # Progress bar
-        │   │   ├── ResultTable.tsx       # Breakdown table with tooltips
-        │   │   ├── SalaryChart.tsx       # Recharts donut chart
-        │   │   └── steps/               # Steps 1-6
-        │   ├── Layout/                  # Header, Footer
-        │   └── UI/                      # Tooltip, LegalBadge, InfoBox
-        └── pages/                       # HomePage, CalculatorPage, DocumentationPage
+config/payroll.php                          # SINGLE SOURCE OF TRUTH for every 2026 rate,
+                                              # bracket, ceiling and label. Nothing should be
+                                              # hardcoded elsewhere.
+app/Services/PayrollCalculatorService.php    # The entire calculation engine — one method,
+                                              # calculer(array $input): array, returning a
+                                              # large flat result array consumed by the view.
+app/Http/Controllers/
+  ├── HomeController            → home view
+  ├── CalculatorController       → GET /calculateur (form), POST /calculateur/calculer
+  └── DocumentationController   → /documentation (renders config/payroll.php as a rate table)
+resources/views/
+  ├── home.blade.php
+  ├── calculator/index.blade.php   # form (Bootstrap), client-side preview JS reads
+  │                                 # @json($indemnites_config) / @json($hs_labels)
+  ├── calculator/result.blade.php  # full bulletin breakdown + Chart.js donut
+  └── documentation/index.blade.php
 ```
 
----
-
-## Key Architecture Decision: Frontend ↔ Backend Type Mismatch
-
-The frontend and backend use **different field names and formats**. The transformation happens in `frontend/src/api/calculator.ts` (`buildPayload` function):
-
-| Frontend (`PayrollInput`) | Backend (`PayrollInput`) |
-|---|---|
-| `cimr: { active, taux }` (taux as %) | `cimrActif: boolean, cimrTaux: number` (taux as ratio 0–1) |
-| `indemnites: { transport, panier, … }` (object) | `indemnitesExonerees: [{ type, montantDeclare }]` (array) |
-| `autresRetenues: { avanceSalaire, mutuelle, … }` (object) | `autresRetenues: number` (sum) |
-| `conjointACharge: boolean` | `conjointCharge: boolean` |
-| `conventionCollective: string` | `conventionCollectiveId: string` |
-
-**Always update `calculator.ts` when changing field formats on either side.**
-
----
-
-## Calculation Sequence (implemented in `payrollCalculator.ts`)
+### Calculation sequence (`PayrollCalculatorService::calculer`)
 
 ```
-1. SBI = salaireBase + primesImposables + heuresSup_amounts
-2. CNSS = min(SBI, 6000) × 4.48%               → max 268.80 MAD/mois
-3. AMO  = SBI × 2.26%                          → sans plafond
-4. CIMR = SBI × cimrTaux                       → si actif (3%–10%)
-5. SNC  = SBI − CNSS − AMO − CIMR
-6. FP   = min(SNC × taux_fp, plafond_fp)       → taux 35% si SBI≤6500, 25% sinon
-7. RNI  = SNC − FP
-8. IR_brut_annuel = progressiveTax(RNI × 12)   → barème Article 73 CGI
-9. charges_famille = min(nb_personnes × 50, 300)
-10. IR_net = max(0, IR_brut_mensuel − charges_famille)
-11. salaireNet = SBI − CNSS − AMO − CIMR − IR_net + indemnitesRetenues − autresRetenues
+0.  Prime d'ancienneté = salaire_base × taux_tranche       (Art. 350 Code du Travail)
+1.  SBI  = salaire_base + primes_imposables + heures_sup
+2.  CNSS = min(SBI, plafond_cnss) × taux_cnss              (Dahir 1-72-184)
+3.  AMO  = SBI × taux_amo                                  (Loi 65-00)
+4.  CIMR = SBI × taux_cimr (si actif, 3%–10%)              (Art. 28-III CGI)
+5.  SNC  = SBI − CNSS − AMO − CIMR
+6.  FP   = min(SNC × taux_fp, plafond_fp)                  (Art. 59 I-A CGI — taux dépend
+                                                            de SBI vs seuil, ou statut
+                                                            journaliste/artiste)
+7.  RNI mensuel = SNC − FP
+8.  RNI annuel net = (RNI × 12) − retraite_complémentaire déductible (≤ 50% SBI annuel, Art. 28-IV)
+    IR annuel brut = barème progressif(RNI annuel net)     (Art. 73 CGI, 6 tranches)
+    IR mensuel = IR annuel brut / 12 − charges_famille     (Art. 74 CGI, 50 MAD/pers., plafond 300)
+9.  Indemnités exonérées : chaque type plafonné par config('payroll.indemnites')
+                                                            (Arrêté 1314-25 / BO 7443)
+10. Salaire net = SBI − CNSS − AMO − CIMR − IR_net + indemnités − (autres_retenues + mutuelle_salarié)
+11. Coût employeur = SBI + CNSS_patronal + AMO_patronal + AF_patronal + TFP_patronal + mutuelle_patronale
 ```
 
----
-
-## 2026 Key Rates (hardcoded in `backend/src/data/constants.ts`)
-
-| Prélèvement | Taux salarié | Plafond |
-|---|---|---|
-| CNSS | 4.48% | 6 000 MAD/mois |
-| AMO | 2.26% | aucun |
-| CIMR | 3%–10% (choix) | aucun |
-| Frais pro (≤6 500/mois) | 35% | 2 500 MAD/mois |
-| Frais pro (>6 500/mois) | 25% | 2 916,67 MAD/mois |
-
-**IR Barème annuel** (Article 73 CGI) :
-- 0–40 000 : 0% | 40 001–60 000 : 10% (−4 000) | 60 001–80 000 : 20% (−10 000)
-- 80 001–100 000 : 30% (−18 000) | 100 001–180 000 : 34% (−22 000) | >180 000 : 37% (−27 400)
-
-**SMIG 2026** : 17,92 MAD/h — 3 422 MAD/mois (Décret n° 2.25.983)
+The result array also includes `avertissements` (regulatory warnings, e.g. SBI below SMIG, CIMR rate out of range, indemnité exceeding its legal cap) and `repartition` (percentages/colors for the Chart.js donut).
 
 ---
 
-## Legal References
+## Adding or changing a rate, bracket, or ceiling
 
-All rates and rules include legal references in API responses (`referenceId` field → `backend/src/data/references.ts`):
-- **CNSS** : Dahir portant loi n° 1-72-184 du 27 juillet 1972
-- **AMO** : Loi n° 65-00 (couverture médicale de base)
-- **IR barème** : Article 73 CGI 2026
-- **Frais pro** : Article 59 I-A CGI
-- **Charges famille** : Article 74 CGI
-- **CIMR déductibilité** : Article 28-III CGI
-- **Heures sup** : Article 201 Code du Travail (Loi 65-99)
-- **Indemnités exonérées** : Arrêté n° 1314-25 / BO n° 7443 du 29/09/2025
-- **SMIG** : Décret n° 2.25.983
+Edit **`config/payroll.php`** only — both the calculator service and the documentation page read from it. Do not duplicate values in views or the service.
 
----
+## Adding a new indemnité exonérée type
 
-## Adding a New Convention Collective
+Add an entry to `config('payroll.indemnites')` with `label`, `base_salaire` (bool), and either `montant` (fixed MAD) or `pct` (fraction of `salaire_base`, used when `base_salaire` is true). The calculator (`plafondIndemnite`), the form (dropdown + JS preview via `@json($indemnites_config)`), and the documentation page all pick it up automatically — no other code changes needed.
 
-Edit `backend/src/data/conventions.ts`. Each convention has:
-```typescript
-{ id, nom, secteur, description, avantages: string[], sources: string[] }
-```
-The frontend dropdown reads from `GET /api/rules/conventions`.
+## Legal references
 
-## Adding a New Indemnité Type
-
-1. Add the type to `TypeIndemnite` union in `backend/src/types/payroll.ts`
-2. Add the cap in `INDEMNITES_PLAFONDS` in `backend/src/data/constants.ts`
-3. Add validation in `backend/src/routes/calculate.ts`
-4. Add transform in `frontend/src/api/calculator.ts` (`transformIndemnites`)
-5. Add UI field in `frontend/src/components/Calculator/steps/Step4Variables.tsx`
+Every rate/rule in `config/payroll.php` is grouped under a comment naming its legal source (Dahir, CGI article, Arrêté, Décret). When adding a new rule, include its legal reference in the same way — these are surfaced directly in the documentation page and in `avertissements` messages.

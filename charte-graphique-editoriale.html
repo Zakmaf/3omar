@@ -1,0 +1,2581 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Charte de marque · 3omar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Readex+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   3omar — Brand Guidelines
+   ========================================================= */
+:root {
+  /* Primaires */
+  --g-50:  #F0F7F3;
+  --g-100: #DCEBE3;
+  --g-200: #B6D5C4;
+  --g-300: #87B89F;
+  --g-400: #4D9376;
+  --g-500: #21704F;  /* Vert 3omar */
+  --g-600: #1A5B40;
+  --g-700: #144632;
+  --g-800: #0E3324;
+  --g-900: #082017;
+
+  --r-50:  #FBEDED;
+  --r-100: #F4CFD0;
+  --r-300: #E07478;
+  --r-500: #C1272D;  /* Rouge 3omar */
+  --r-700: #8A1B20;
+
+  /* Sémantiques (rationalisées) */
+  --s-info:   #1B5FD9;   /* Brut · info */
+  --s-cot:    #6F42C1;   /* Cotisations */
+  --s-tax:    #C1272D;   /* Impôt — utilise le rouge brand */
+  --s-succ:   #1B7A4A;   /* Net · succès — accordé au vert brand */
+  --s-warn:   #D97706;   /* Patronal · avertissement */
+  --s-neutral:#6C757D;
+
+  --s-succ-bg: #F0F7F3;
+  --s-warn-bg: #FFF7ED;
+  --s-info-bg: #EEF4FE;
+  --s-tax-bg:  #FBEDED;
+  --s-cot-bg:  #F4EFFB;
+
+  /* Surfaces */
+  --ink:     #1A2E26;   /* Texte — encre verte profonde */
+  --ink-2:   #4A5C54;   /* Texte secondaire */
+  --ink-3:   #7A8881;   /* Texte tertiaire */
+  --cream:   #FAF8F3;   /* Fond doc — crème chaleureuse */
+  --paper:   #FFFFFF;
+  --hairline: rgba(26,46,38,0.10);
+  --hairline-strong: rgba(26,46,38,0.18);
+
+  /* Bootstrap-aligned tokens */
+  --radius:    0.75rem;   /* 12px — ancré */
+  --radius-sm: 0.5rem;
+  --radius-lg: 1rem;
+  --shadow-1: 0 1px 2px rgba(8,32,23,0.06), 0 1px 1px rgba(8,32,23,0.04);
+  --shadow-2: 0 4px 16px rgba(8,32,23,0.08), 0 2px 4px rgba(8,32,23,0.04);
+  --shadow-3: 0 24px 60px -16px rgba(8,32,23,0.20), 0 8px 16px rgba(8,32,23,0.06);
+
+  /* Type */
+  --f-display: "Outfit", system-ui, sans-serif;
+  --f-body:    "Plus Jakarta Sans", system-ui, sans-serif;
+  --f-accent:  "Readex Pro", system-ui, sans-serif; /* FR + arabe */
+  --f-mono:    "JetBrains Mono", ui-monospace, monospace;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--f-body);
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--ink);
+  background: var(--cream);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ---------- Layout primitives ---------- */
+.page { max-width: 1180px; margin: 0 auto; padding: 0 56px; }
+section.brand-section { padding: 96px 0 32px; position: relative; }
+section.brand-section + section.brand-section { border-top: 1px solid var(--hairline); }
+
+.sec-head { display: grid; grid-template-columns: 96px 1fr auto; gap: 24px; align-items: baseline; margin-bottom: 48px; }
+.sec-num {
+  font-family: var(--f-mono);
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  color: var(--g-500);
+  font-weight: 500;
+}
+.sec-title {
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: clamp(32px, 4vw, 48px);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: var(--ink);
+}
+.sec-kicker {
+  font-family: var(--f-mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.sec-intro {
+  grid-column: 2 / 3;
+  max-width: 680px;
+  margin-top: 16px;
+  color: var(--ink-2);
+  font-size: 17px;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+h3.block-title {
+  font-family: var(--f-display);
+  font-weight: 600;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+  margin: 56px 0 20px;
+  color: var(--ink);
+  display: flex; align-items: baseline; gap: 14px;
+}
+h3.block-title::before {
+  content: "";
+  display: inline-block;
+  width: 28px; height: 2px; background: var(--g-500);
+  transform: translateY(-6px);
+}
+
+h4.sub-title {
+  font-family: var(--f-display);
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 0.02em;
+  margin: 0 0 12px;
+  color: var(--ink);
+}
+
+.caption {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+p { text-wrap: pretty; color: var(--ink-2); }
+
+/* ---------- Top header ---------- */
+.brand-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 24px 56px;
+  border-bottom: 1px solid var(--hairline);
+  background: var(--cream);
+  position: sticky; top: 0; z-index: 30;
+  backdrop-filter: blur(8px);
+  background: rgba(250, 248, 243, 0.82);
+}
+.brand-header .left { display: flex; align-items: center; gap: 14px; }
+.brand-header .mark { width: 32px; height: 32px; }
+.brand-header .wordmark {
+  font-family: var(--f-display);
+  font-weight: 700; font-size: 16px;
+  letter-spacing: -0.01em;
+}
+.brand-header .right {
+  display: flex; gap: 28px;
+  font-family: var(--f-mono); font-size: 11px;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--ink-3);
+}
+.brand-header .right span strong { color: var(--ink); font-weight: 500; }
+
+/* ---------- Cover ---------- */
+.cover {
+  min-height: 88vh;
+  padding: 120px 0 80px;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 80px;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+.cover::before {
+  /* zellige fond */
+  content: "";
+  position: absolute; inset: 0;
+  background-image: var(--zellige-bg);
+  background-size: 360px 360px;
+  opacity: 0.06;
+  pointer-events: none;
+  z-index: 0;
+}
+.cover > * { position: relative; z-index: 1; }
+
+.cover .eyebrow {
+  font-family: var(--f-mono);
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--g-500);
+  margin-bottom: 32px;
+  display: inline-flex; align-items: center; gap: 12px;
+}
+.cover .eyebrow::after {
+  content: ""; width: 48px; height: 1px; background: var(--g-500);
+}
+.cover h1 {
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: clamp(56px, 7vw, 92px);
+  line-height: 0.96;
+  letter-spacing: -0.035em;
+  margin: 0 0 28px;
+  color: var(--ink);
+}
+.cover h1 em {
+  font-style: normal;
+  color: var(--g-500);
+  font-family: var(--f-accent);
+  font-weight: 600;
+}
+.cover .lede {
+  font-size: 19px; line-height: 1.55;
+  color: var(--ink-2);
+  max-width: 540px;
+  margin-bottom: 48px;
+}
+.cover .lede .dh {
+  font-family: var(--f-accent);
+  color: var(--r-500);
+  font-weight: 600;
+}
+
+.cover-meta {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  gap: 40px;
+  border-top: 1px solid var(--hairline);
+  padding-top: 28px;
+  max-width: 540px;
+}
+.cover-meta .item { display: flex; flex-direction: column; gap: 6px; }
+.cover-meta .item .k {
+  font-family: var(--f-mono); font-size: 10px;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--ink-3);
+}
+.cover-meta .item .v {
+  font-family: var(--f-display); font-weight: 600;
+  font-size: 15px; color: var(--ink);
+}
+
+.cover-mark {
+  position: relative;
+  aspect-ratio: 1 / 1.05;
+  display: grid; place-items: center;
+}
+.cover-mark .frame {
+  position: absolute; inset: 0;
+  border: 1px solid var(--hairline);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(33,112,79,0.05), transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(193,39,45,0.04), transparent 50%),
+    var(--paper);
+  overflow: hidden;
+}
+.cover-mark .frame::before {
+  content: ""; position: absolute; inset: 0;
+  background-image: var(--zellige-bg);
+  background-size: 240px 240px;
+  opacity: 0.05;
+}
+.cover-mark .logo-xl { position: relative; z-index: 2; width: 76%; }
+.cover-mark .tag {
+  position: absolute; bottom: 24px; left: 24px; right: 24px;
+  display: flex; justify-content: space-between;
+  font-family: var(--f-mono); font-size: 10px;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--ink-3); z-index: 2;
+}
+
+/* ---------- TOC ---------- */
+.toc {
+  margin: 80px 0 0;
+  padding: 36px 0;
+  border-top: 1px solid var(--hairline);
+  border-bottom: 1px solid var(--hairline);
+}
+.toc-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px 56px;
+}
+.toc-row {
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  gap: 14px; align-items: baseline;
+  padding: 12px 0;
+  border-bottom: 1px dashed var(--hairline);
+  font-family: var(--f-body);
+}
+.toc-row .num { font-family: var(--f-mono); font-size: 11px; color: var(--g-500); letter-spacing: 0.08em; }
+.toc-row .name { font-size: 14px; color: var(--ink); font-weight: 500; }
+.toc-row .pg { font-family: var(--f-mono); font-size: 11px; color: var(--ink-3); }
+
+/* ---------- Brand essence (sec 01) ---------- */
+.essence-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 64px;
+  align-items: start;
+}
+.essence-prose p { font-size: 17px; line-height: 1.65; color: var(--ink); }
+.essence-prose p + p { margin-top: 18px; }
+.essence-prose .pull {
+  font-family: var(--f-display);
+  font-weight: 600;
+  font-size: 26px;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+  border-left: 3px solid var(--r-500);
+  padding-left: 20px;
+  margin: 32px 0;
+}
+.essence-prose .pull .arabic {
+  font-family: var(--f-accent);
+  color: var(--g-500);
+}
+.values {
+  display: grid; gap: 14px;
+}
+.value-row {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 20px; align-items: start;
+  padding: 22px;
+  background: var(--paper);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+}
+.value-row .glyph {
+  width: 56px; height: 56px; border-radius: 14px;
+  display: grid; place-items: center;
+  background: var(--g-50); color: var(--g-500);
+}
+.value-row .glyph.red { background: var(--r-50); color: var(--r-500); }
+.value-row h4 { margin: 0 0 4px; font-family: var(--f-display); font-weight: 600; font-size: 16px; color: var(--ink); }
+.value-row p { margin: 0; font-size: 14px; line-height: 1.5; color: var(--ink-2); }
+
+/* ---------- Logo section ---------- */
+.logo-versions {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  gap: 20px;
+}
+.logo-card {
+  background: var(--paper);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+  overflow: hidden;
+  display: flex; flex-direction: column;
+}
+.logo-card .stage {
+  aspect-ratio: 16 / 10;
+  display: grid; place-items: center;
+  padding: 28px;
+  background: var(--paper);
+}
+.logo-card .stage.dark { background: var(--g-800); }
+.logo-card .stage.cream { background: var(--cream); }
+.logo-card .stage.mono { background: var(--g-50); }
+.logo-card .stage svg { max-width: 100%; max-height: 100%; }
+.logo-card .meta {
+  border-top: 1px solid var(--hairline);
+  padding: 16px 20px;
+  display: flex; justify-content: space-between; align-items: baseline;
+}
+.logo-card .meta .name { font-family: var(--f-display); font-weight: 600; font-size: 13px; }
+.logo-card .meta .ref { font-family: var(--f-mono); font-size: 10px; letter-spacing: 0.12em; color: var(--ink-3); }
+
+/* clear space */
+.clearspace {
+  display: grid; grid-template-columns: 1.4fr 1fr; gap: 32px; align-items: stretch;
+}
+.clearspace .stage {
+  background: var(--paper);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+  padding: 60px;
+  position: relative;
+  display: grid; place-items: center;
+}
+.clearspace .stage .guides {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(to right, transparent calc(50% - 0.5px), rgba(33,112,79,0.15) calc(50% - 0.5px), rgba(33,112,79,0.15) calc(50% + 0.5px), transparent calc(50% + 0.5px));
+  pointer-events: none;
+}
+.clearspace .stage .logo-wrap {
+  position: relative;
+  display: grid; place-items: center;
+  padding: 56px;
+}
+.clearspace .stage .logo-wrap::before {
+  content: ""; position: absolute; inset: 0;
+  border: 1px dashed var(--g-500); opacity: 0.5;
+  border-radius: 4px;
+}
+.clearspace .stage .logo-wrap::after {
+  content: ""; position: absolute; inset: -56px;
+  border: 1px dashed var(--g-300);
+  border-radius: 4px;
+}
+.clearspace .stage svg { position: relative; z-index: 2; height: 64px; }
+.clearspace .stage .x-mark {
+  position: absolute; top: 18px; left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--f-display); font-size: 13px; font-weight: 600;
+  color: var(--g-500);
+  background: var(--paper); padding: 0 8px;
+}
+.clearspace .stage .x-mark.bot {
+  top: auto; bottom: 18px;
+}
+.clearspace .stage .x-mark.l { top: 50%; left: 18px; transform: translateY(-50%); }
+.clearspace .stage .x-mark.r { top: 50%; left: auto; right: 18px; transform: translateY(-50%); }
+
+.clearspace .info {
+  background: var(--g-800); color: var(--cream);
+  border-radius: var(--radius);
+  padding: 36px;
+  display: flex; flex-direction: column; justify-content: space-between;
+}
+.clearspace .info h4 {
+  font-family: var(--f-display); font-weight: 700;
+  font-size: 24px; line-height: 1.15; margin: 0 0 14px;
+  color: #fff;
+}
+.clearspace .info p {
+  color: rgba(255,255,255,0.78); font-size: 14px; margin: 0 0 24px;
+}
+.clearspace .info .x-def {
+  font-family: var(--f-mono); font-size: 12px;
+  color: var(--g-200); letter-spacing: 0.06em;
+}
+.clearspace .info .x-def b { color: #fff; font-family: var(--f-display); font-size: 20px; font-weight: 700; }
+
+/* min sizes */
+.minsize {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+  margin-top: 16px;
+}
+.minsize .card {
+  background: var(--paper); border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+  padding: 24px;
+  display: flex; flex-direction: column; gap: 18px;
+}
+.minsize .card .stage {
+  background: var(--g-50); border-radius: 8px;
+  padding: 18px 14px;
+  display: grid; place-items: center;
+  min-height: 120px;
+}
+.minsize .card .stage svg { max-width: 100%; }
+.minsize .card .info { display: flex; justify-content: space-between; align-items: baseline; }
+.minsize .card .info .label { font-family: var(--f-display); font-weight: 600; font-size: 13px; }
+.minsize .card .info .val { font-family: var(--f-mono); font-size: 11px; color: var(--ink-3); }
+
+/* do/dont */
+.dodont { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.dd-card {
+  background: var(--paper);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+  overflow: hidden;
+  display: flex; flex-direction: column;
+}
+.dd-card .stage {
+  aspect-ratio: 5 / 3;
+  display: grid; place-items: center;
+  padding: 24px;
+  background: var(--g-50);
+  position: relative;
+}
+.dd-card .stage svg { max-width: 80%; max-height: 80%; }
+.dd-card .stage::after {
+  content: "";
+  position: absolute; top: 14px; right: 14px;
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: var(--r-500) no-repeat center/14px url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3'><path d='M5 5L19 19M19 5L5 19'/></svg>");
+}
+.dd-card.ok .stage::after {
+  background: var(--g-500) no-repeat center/14px url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='4 12 10 18 20 6'/></svg>");
+}
+.dd-card .label {
+  padding: 14px 18px;
+  font-size: 13px; color: var(--ink-2);
+  border-top: 1px solid var(--hairline);
+}
+.dd-card .label b { color: var(--ink); font-family: var(--f-display); }
+
+/* ---------- Color ---------- */
+.color-primaries {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.color-hero {
+  border-radius: var(--radius);
+  padding: 36px 32px 28px;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+  min-height: 280px;
+  display: flex; flex-direction: column; justify-content: space-between;
+}
+.color-hero.green { background: var(--g-500); }
+.color-hero.red { background: var(--r-500); }
+.color-hero .label {
+  font-family: var(--f-mono); font-size: 11px;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  opacity: 0.82;
+}
+.color-hero h4 {
+  font-family: var(--f-display); font-weight: 700;
+  font-size: 32px; line-height: 1.1; margin: 4px 0 0;
+  color: #fff;
+}
+.color-hero .codes {
+  font-family: var(--f-mono); font-size: 12px;
+  display: grid; gap: 6px;
+  line-height: 1.5;
+}
+.color-hero .codes .row { display: grid; grid-template-columns: 60px 1fr; gap: 12px; }
+.color-hero .codes .row .k { opacity: 0.7; }
+.color-hero .codes .row .v { color: #fff; }
+
+.swatch-row {
+  margin-top: 20px;
+  display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px;
+}
+.swatch {
+  border-radius: 6px;
+  aspect-ratio: 1.4 / 1;
+  display: flex; flex-direction: column; justify-content: space-between;
+  padding: 8px 10px;
+  font-family: var(--f-mono); font-size: 9.5px;
+  letter-spacing: 0.04em;
+}
+.swatch .step { opacity: 0.7; }
+.swatch .hex {  }
+
+.color-secondaries {
+  margin-top: 12px;
+  display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px;
+}
+.sec-swatch {
+  background: var(--paper); border: 1px solid var(--hairline);
+  border-radius: var(--radius); padding: 14px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.sec-swatch .chip {
+  height: 80px; border-radius: 8px;
+  display: flex; align-items: flex-end; padding: 10px;
+  color: #fff;
+  font-family: var(--f-display); font-weight: 600;
+  font-size: 14px;
+}
+.sec-swatch .meta { display: flex; flex-direction: column; gap: 4px; }
+.sec-swatch .meta .role { font-family: var(--f-display); font-weight: 600; font-size: 13px; }
+.sec-swatch .meta .use { font-size: 11.5px; color: var(--ink-3); line-height: 1.35; }
+.sec-swatch .meta .hex { font-family: var(--f-mono); font-size: 11px; color: var(--ink-2); }
+
+/* contrast table */
+.contrast-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--paper);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+  overflow: hidden;
+  font-size: 13px;
+}
+.contrast-table th, .contrast-table td {
+  padding: 14px 18px;
+  text-align: left;
+  border-bottom: 1px solid var(--hairline);
+}
+.contrast-table th {
+  background: var(--g-50);
+  font-family: var(--f-mono); font-size: 10.5px;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--ink-2); font-weight: 500;
+}
+.contrast-table tr:last-child td { border-bottom: none; }
+.contrast-table td.sample {
+  font-family: var(--f-display); font-weight: 600;
+  text-align: center; width: 180px;
+}
+.contrast-table td.ratio { font-family: var(--f-mono); width: 80px; }
+.contrast-table .pill {
+  display: inline-block;
+  font-family: var(--f-mono); font-size: 10.5px;
+  letter-spacing: 0.08em;
+  padding: 4px 10px; border-radius: 999px;
+  background: var(--g-100); color: var(--g-700);
+}
+.contrast-table .pill.warn { background: #FDEED0; color: #7a4806; }
+.contrast-table .pill.fail { background: var(--r-50); color: var(--r-700); }
+
+/* ---------- Typography ---------- */
+.type-stack {
+  display: grid; gap: 28px;
+}
+.type-row {
+  display: grid;
+  grid-template-columns: 200px 1fr 160px;
+  gap: 40px;
+  align-items: baseline;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--hairline);
+}
+.type-row .label {
+  font-family: var(--f-mono); font-size: 11px;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--ink-3);
+}
+.type-row .label b { display: block; color: var(--ink); font-family: var(--f-display); font-size: 13px; letter-spacing: 0; text-transform: none; margin-bottom: 4px; }
+.type-row .sample { line-height: 1.05; color: var(--ink); }
+.type-row .spec {
+  font-family: var(--f-mono); font-size: 11px;
+  color: var(--ink-3); line-height: 1.6;
+  text-align: right;
+}
+.type-row .spec b { color: var(--ink); font-family: var(--f-mono); font-weight: 500; }
+
+.font-families {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+  margin-bottom: 32px;
+}
+.ff-card {
+  background: var(--paper); border: 1px solid var(--hairline);
+  border-radius: var(--radius); padding: 24px;
+  display: flex; flex-direction: column; gap: 18px;
+}
+.ff-card .big {
+  font-size: 56px; line-height: 1; color: var(--ink);
+  letter-spacing: -0.02em;
+}
+.ff-card .meta { display: flex; justify-content: space-between; align-items: baseline; }
+.ff-card .meta .name { font-family: var(--f-display); font-weight: 600; font-size: 14px; }
+.ff-card .meta .use { font-family: var(--f-mono); font-size: 10.5px; color: var(--ink-3); letter-spacing: 0.06em; text-transform: uppercase; }
+.ff-card .weights {
+  display: flex; gap: 12px; flex-wrap: wrap;
+  font-size: 13px; color: var(--ink-2);
+}
+.ff-card .weights span {
+  font-family: var(--f-mono); font-size: 10.5px; color: var(--ink-3);
+  padding: 3px 8px; border: 1px solid var(--hairline); border-radius: 999px;
+}
+
+/* ---------- Icon & Illustration ---------- */
+.icon-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 10px;
+}
+.icon-card {
+  aspect-ratio: 1 / 1;
+  background: var(--paper);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+  display: grid; place-items: center;
+  position: relative;
+  color: var(--g-500);
+}
+.icon-card .lbl {
+  position: absolute; bottom: 8px; left: 0; right: 0;
+  text-align: center;
+  font-family: var(--f-mono); font-size: 9px;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.zellige-demo {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+  margin-top: 16px;
+}
+.z-stage {
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius);
+  border: 1px solid var(--hairline);
+  position: relative;
+  overflow: hidden;
+  display: grid; place-items: center;
+  padding: 32px;
+}
+.z-stage.cream { background: var(--cream); }
+.z-stage.dark { background: var(--g-800); }
+.z-stage::before {
+  content: ""; position: absolute; inset: 0;
+  background-image: var(--zellige-bg);
+  background-size: 220px 220px;
+}
+.z-stage.cream::before { opacity: 0.10; }
+.z-stage.dark::before {
+  background-image: var(--zellige-bg-light);
+  opacity: 0.12;
+}
+.z-stage .label {
+  position: absolute; bottom: 14px; left: 16px;
+  font-family: var(--f-mono); font-size: 10px;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--ink-3);
+}
+.z-stage.dark .label { color: var(--g-200); }
+.z-stage .demo-card {
+  position: relative;
+  background: var(--paper);
+  border-radius: var(--radius);
+  padding: 22px 26px;
+  box-shadow: var(--shadow-2);
+  font-family: var(--f-display);
+  font-weight: 600; font-size: 20px;
+  color: var(--ink);
+}
+.z-stage.dark .demo-card { background: var(--paper); }
+
+.illust-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+  margin-top: 16px;
+}
+.illust-card {
+  background: var(--paper);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.illust-card .stage {
+  aspect-ratio: 16 / 10;
+  display: grid; place-items: center;
+  padding: 32px;
+  background: linear-gradient(180deg, #FAFCF8 0%, var(--paper) 100%);
+}
+.illust-card .meta {
+  padding: 16px 20px;
+  border-top: 1px solid var(--hairline);
+  display: flex; justify-content: space-between; align-items: baseline;
+}
+.illust-card .meta .name { font-family: var(--f-display); font-weight: 600; font-size: 13px; }
+.illust-card .meta .ref { font-family: var(--f-mono); font-size: 10px; color: var(--ink-3); letter-spacing: 0.10em; }
+
+/* ---------- Components ---------- */
+.cmp-block {
+  background: var(--paper);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+  padding: 32px;
+  margin-bottom: 20px;
+}
+.cmp-block .cmp-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--hairline);
+}
+.cmp-block .cmp-head h4 {
+  margin: 0;
+  font-family: var(--f-display); font-weight: 600; font-size: 16px;
+}
+.cmp-block .cmp-head .meta {
+  font-family: var(--f-mono); font-size: 10.5px; color: var(--ink-3);
+  letter-spacing: 0.10em; text-transform: uppercase;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 8px;
+  font-family: var(--f-body);
+  font-weight: 600; font-size: 14.5px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color .15s ease, transform .05s ease, box-shadow .15s ease;
+  line-height: 1;
+  text-decoration: none;
+}
+.btn-primary { background: var(--g-500); color: #fff; }
+.btn-primary:hover { background: var(--g-600); }
+.btn-primary:active { background: var(--g-700); }
+.btn-secondary { background: var(--ink); color: #fff; }
+.btn-secondary:hover { background: var(--g-900); }
+.btn-outline { background: transparent; color: var(--g-500); border-color: var(--g-500); }
+.btn-outline:hover { background: var(--g-50); }
+.btn-ghost { background: transparent; color: var(--g-500); }
+.btn-ghost:hover { background: var(--g-50); }
+.btn-danger { background: var(--r-500); color: #fff; }
+.btn-disabled { background: var(--g-100); color: var(--ink-3); cursor: not-allowed; }
+.btn-loading { background: var(--g-500); color: rgba(255,255,255,0.6); cursor: progress; position: relative; }
+.btn-loading::before {
+  content: ""; width: 14px; height: 14px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: #fff;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.btn-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px 24px;
+  align-items: start;
+}
+.btn-grid .col { display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
+.btn-grid .col .caption { margin-bottom: 4px; }
+
+/* Badges */
+.badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-family: var(--f-body);
+  font-size: 12px; font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.badge-leg {
+  background: var(--g-50); color: var(--g-700);
+  border: 1px solid var(--g-200);
+}
+.badge-leg::before {
+  content: "§";
+  font-family: var(--f-display);
+  font-weight: 700; font-size: 13px;
+  color: var(--g-500);
+}
+.badge-info { background: var(--s-info-bg); color: var(--s-info); }
+.badge-warn { background: var(--s-warn-bg); color: var(--s-warn); }
+.badge-tax { background: var(--s-tax-bg); color: var(--s-tax); }
+.badge-cot { background: var(--s-cot-bg); color: var(--s-cot); }
+.badge-succ { background: var(--s-succ-bg); color: var(--s-succ); }
+.badge-neutral { background: #ECEEEF; color: var(--s-neutral); }
+
+.badge-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+
+/* Card */
+.card-demo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.card-demo {
+  background: var(--paper);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+  padding: 22px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.card-demo .top { display: flex; justify-content: space-between; align-items: center; }
+.card-demo .top .title { font-family: var(--f-display); font-weight: 600; font-size: 14px; color: var(--ink-2); }
+.card-demo .amount { font-family: var(--f-display); font-weight: 700; font-size: 32px; letter-spacing: -0.02em; color: var(--ink); line-height: 1; font-variant-numeric: tabular-nums; }
+.card-demo .amount .currency { font-size: 14px; font-weight: 500; color: var(--ink-3); margin-left: 4px; }
+.card-demo .footnote { font-size: 12px; color: var(--ink-3); }
+.card-demo.elevated { box-shadow: var(--shadow-2); border: none; }
+.card-demo.bordered-success {
+  border-left: 4px solid var(--s-succ);
+  background: var(--s-succ-bg);
+}
+
+/* Form fields */
+.form-demo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px 32px;
+  max-width: 720px;
+}
+.form-field { display: flex; flex-direction: column; gap: 6px; }
+.form-field label {
+  font-size: 13px; font-weight: 600; color: var(--ink);
+}
+.form-field .hint { font-size: 12px; color: var(--ink-3); }
+.form-field .input {
+  background: var(--paper);
+  border: 1px solid var(--hairline-strong);
+  border-radius: 8px;
+  padding: 11px 14px;
+  font-family: var(--f-body); font-size: 14.5px;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.form-field.focus .input { border-color: var(--g-500); box-shadow: 0 0 0 3px rgba(33,112,79,0.15); }
+.form-field.error .input { border-color: var(--r-500); box-shadow: 0 0 0 3px rgba(193,39,45,0.12); }
+.form-field.error .hint { color: var(--r-500); font-weight: 500; }
+.form-field .input .suffix { color: var(--ink-3); }
+.form-field .input.with-suffix { display: flex; justify-content: space-between; }
+
+/* Alerts */
+.alert {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  gap: 14px;
+  padding: 14px 18px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  line-height: 1.45;
+}
+.alert .icon { width: 24px; height: 24px; display: grid; place-items: center; }
+.alert h5 { margin: 0 0 4px; font-family: var(--f-display); font-weight: 600; font-size: 14px; }
+.alert p { margin: 0; font-size: 13.5px; }
+.alert.info { background: var(--s-info-bg); color: var(--s-info); }
+.alert.info p { color: #133E8E; }
+.alert.info h5 { color: var(--s-info); }
+.alert.succ { background: var(--s-succ-bg); color: var(--s-succ); }
+.alert.succ p { color: #0D4F2D; }
+.alert.succ h5 { color: var(--s-succ); }
+.alert.warn { background: var(--s-warn-bg); color: var(--s-warn); }
+.alert.warn p { color: #7C4204; }
+.alert.warn h5 { color: var(--s-warn); }
+.alert.danger { background: var(--s-tax-bg); color: var(--s-tax); }
+.alert.danger p { color: var(--r-700); }
+.alert.danger h5 { color: var(--s-tax); }
+
+.alerts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+/* Bulletin de paie */
+.bulletin {
+  background: var(--paper);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.bulletin-head {
+  padding: 20px 24px;
+  background: var(--g-500); color: #fff;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.bulletin-head h5 {
+  margin: 0; font-family: var(--f-display); font-weight: 700; font-size: 18px;
+  letter-spacing: -0.01em;
+}
+.bulletin-head .period { font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.10em; opacity: 0.85; }
+.bulletin-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.bulletin-table th, .bulletin-table td { padding: 13px 24px; text-align: left; border-bottom: 1px solid var(--hairline); }
+.bulletin-table th {
+  background: var(--g-50);
+  font-family: var(--f-mono); font-size: 10.5px;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--ink-2); font-weight: 500;
+}
+.bulletin-table td.amount {
+  font-variant-numeric: tabular-nums;
+  font-family: var(--f-display); font-weight: 600;
+  text-align: right; width: 160px;
+}
+.bulletin-table .label-cell { color: var(--ink); }
+.bulletin-table .label-cell .ref {
+  display: block; margin-top: 4px;
+  font-family: var(--f-mono); font-size: 11px; color: var(--ink-3);
+  letter-spacing: 0.04em;
+}
+.bulletin-table tr.section td {
+  background: #FAFAF7;
+  font-family: var(--f-mono); font-size: 10.5px;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--ink-3); font-weight: 500;
+  padding: 10px 24px;
+}
+.bulletin-table tr.brut td.amount { color: var(--s-info); }
+.bulletin-table tr.cot td.amount { color: var(--s-cot); }
+.bulletin-table tr.tax td.amount { color: var(--s-tax); }
+.bulletin-table tr.net td {
+  background: var(--s-succ-bg);
+  color: var(--s-succ);
+  font-family: var(--f-display); font-weight: 700;
+  font-size: 17px;
+  padding: 18px 24px;
+}
+.bulletin-table tr.net td.amount { font-size: 22px; letter-spacing: -0.01em; }
+
+/* ---------- Layout & Spacing ---------- */
+.spacing-row {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 12px;
+}
+.sp-card {
+  background: var(--paper);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+  padding: 18px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.sp-card .bar {
+  background: var(--g-100);
+  border-radius: 4px;
+}
+.sp-card .meta {
+  display: flex; flex-direction: column; gap: 2px;
+  font-family: var(--f-mono); font-size: 11px;
+}
+.sp-card .meta .token { font-family: var(--f-display); font-weight: 600; font-size: 13px; color: var(--ink); }
+.sp-card .meta .px { color: var(--ink-3); }
+
+.radius-row, .shadow-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+.rd-card {
+  background: var(--paper); border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+  padding: 20px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.rd-card .demo {
+  height: 80px;
+  background: var(--g-500);
+}
+.rd-card .meta { font-family: var(--f-mono); font-size: 11px; display: flex; justify-content: space-between; }
+.rd-card .meta .token { font-family: var(--f-display); font-weight: 600; color: var(--ink); font-size: 13px; }
+.rd-card .meta .val { color: var(--ink-3); }
+
+.sh-card {
+  background: var(--paper); border-radius: var(--radius);
+  padding: 24px;
+  display: flex; flex-direction: column; gap: 18px;
+}
+.sh-card .demo {
+  height: 70px; border-radius: 8px; background: var(--paper);
+  border: 1px solid var(--hairline);
+}
+
+/* ---------- Editorial ---------- */
+.voice-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+}
+.voice-card {
+  background: var(--paper); border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+  padding: 24px;
+}
+.voice-card.do { border-color: var(--g-200); background: var(--g-50); }
+.voice-card.dont { border-color: var(--r-100); background: var(--r-50); }
+.voice-card .tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--f-mono); font-size: 10.5px;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  font-weight: 500; margin-bottom: 12px;
+}
+.voice-card.do .tag { color: var(--g-700); }
+.voice-card.dont .tag { color: var(--r-700); }
+.voice-card blockquote {
+  margin: 0; padding: 0;
+  font-family: var(--f-display); font-weight: 500;
+  font-size: 18px; line-height: 1.4;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+.voice-card.dont blockquote { text-decoration: line-through; text-decoration-color: rgba(193,39,45,0.4); text-decoration-thickness: 2px; }
+
+.microcopy {
+  display: grid; gap: 0;
+  background: var(--paper); border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.mc-row {
+  display: grid;
+  grid-template-columns: 200px 1fr 1fr;
+  gap: 32px;
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--hairline);
+  align-items: baseline;
+}
+.mc-row:last-child { border-bottom: none; }
+.mc-row .ctx {
+  font-family: var(--f-mono); font-size: 10.5px;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--ink-3);
+}
+.mc-row .text { font-size: 15px; color: var(--ink); line-height: 1.45; }
+.mc-row .text .darija {
+  font-family: var(--f-accent);
+  color: var(--g-500); font-weight: 600;
+}
+.mc-row .note { font-size: 12.5px; color: var(--ink-3); line-height: 1.5; }
+
+/* ---------- Accessibility ---------- */
+.a11y-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+}
+.a11y-card {
+  background: var(--paper); border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+  padding: 24px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.a11y-card .icon {
+  width: 44px; height: 44px; border-radius: 12px;
+  background: var(--g-50); color: var(--g-500);
+  display: grid; place-items: center;
+}
+.a11y-card h4 { margin: 0; font-family: var(--f-display); font-weight: 600; font-size: 16px; }
+.a11y-card p { margin: 0; font-size: 14px; line-height: 1.5; color: var(--ink-2); }
+.a11y-card ul { margin: 8px 0 0; padding-left: 18px; font-size: 13.5px; color: var(--ink-2); line-height: 1.65; }
+.a11y-card ul li::marker { color: var(--g-500); }
+
+.colorblind-row {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+  margin-top: 16px;
+}
+.cb-card {
+  background: var(--paper); border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+.cb-card .name {
+  font-family: var(--f-display); font-weight: 600; font-size: 13px;
+  margin-bottom: 12px;
+}
+.cb-card .swatches {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px;
+}
+.cb-card .sw {
+  height: 36px; border-radius: 6px;
+}
+
+/* ---------- Footer ---------- */
+.brand-footer {
+  margin-top: 80px;
+  padding: 48px 56px 60px;
+  border-top: 1px solid var(--hairline);
+  background: var(--g-800); color: var(--cream);
+}
+.brand-footer .inner {
+  max-width: 1180px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr auto; gap: 40px;
+  align-items: end;
+}
+.brand-footer h5 {
+  font-family: var(--f-display); font-weight: 700;
+  font-size: 36px; margin: 0 0 8px; letter-spacing: -0.02em;
+  color: #fff;
+}
+.brand-footer h5 .arabic { font-family: var(--f-accent); color: var(--g-200); }
+.brand-footer p { color: rgba(255,255,255,0.72); margin: 0; max-width: 560px; }
+.brand-footer .meta {
+  text-align: right;
+  font-family: var(--f-mono); font-size: 11px;
+  letter-spacing: 0.10em; text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+  line-height: 1.8;
+}
+.brand-footer .meta b { color: #fff; font-weight: 500; }
+
+/* ---------- Zellige pattern (CSS-only, subtle) ---------- */
+:root {
+  --zellige-bg: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cdefs%3E%3Cg id='star'%3E%3Cpath d='M60 10 L66 38 L94 32 L74 52 L94 72 L66 66 L60 94 L54 66 L26 72 L46 52 L26 32 L54 38 Z' fill='none' stroke='%2321704F' stroke-width='1'/%3E%3C/g%3E%3C/defs%3E%3Cuse href='%23star'/%3E%3Cuse href='%23star' x='-60' y='-60'/%3E%3Cuse href='%23star' x='60' y='-60'/%3E%3Cuse href='%23star' x='-60' y='60'/%3E%3Cuse href='%23star' x='60' y='60'/%3E%3C/svg%3E");
+  --zellige-bg-light: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cdefs%3E%3Cg id='star2'%3E%3Cpath d='M60 10 L66 38 L94 32 L74 52 L94 72 L66 66 L60 94 L54 66 L26 72 L46 52 L26 32 L54 38 Z' fill='none' stroke='%23DCEBE3' stroke-width='1'/%3E%3C/g%3E%3C/defs%3E%3Cuse href='%23star2'/%3E%3Cuse href='%23star2' x='-60' y='-60'/%3E%3Cuse href='%23star2' x='60' y='-60'/%3E%3Cuse href='%23star2' x='-60' y='60'/%3E%3Cuse href='%23star2' x='60' y='60'/%3E%3C/svg%3E");
+}
+
+/* ---------- Print ---------- */
+@media print {
+  .brand-header { position: static; background: var(--cream); }
+  section.brand-section { page-break-inside: avoid; padding: 48px 0 16px; }
+  .cover { min-height: auto; page-break-after: always; }
+  .brand-footer { page-break-before: always; }
+  body { background: white; font-size: 12pt; }
+}
+
+@media (max-width: 1000px) {
+  .page { padding: 0 24px; }
+  .cover { grid-template-columns: 1fr; gap: 40px; }
+  .essence-grid, .clearspace, .color-primaries, .zellige-demo, .illust-grid, .alerts-grid, .voice-grid { grid-template-columns: 1fr; }
+  .logo-versions, .dodont, .icon-grid, .color-secondaries, .card-demo-grid, .spacing-row, .radius-row, .shadow-row, .a11y-grid, .colorblind-row, .btn-grid, .font-families { grid-template-columns: repeat(2, 1fr); }
+  .swatch-row { grid-template-columns: repeat(5, 1fr); }
+  .toc-grid { grid-template-columns: 1fr; }
+  .sec-head { grid-template-columns: 1fr; }
+  .sec-intro { grid-column: 1; }
+  .form-demo, .mc-row { grid-template-columns: 1fr; }
+  .type-row { grid-template-columns: 1fr; gap: 12px; }
+  .type-row .spec { text-align: left; }
+}
+</style>
+</head>
+<body>
+
+<!-- =========================================================
+     SVG SYMBOLS — Logo + icônes
+     ========================================================= -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+
+    <!-- LOGO PRINCIPAL : Ɛomar avec croissant rouge + pièce DH -->
+    <symbol id="logo-full" viewBox="0 0 520 180">
+      <!-- ع stylisé en vert -->
+      <g fill="#21704F">
+        <!-- Le "Ɛ" / ayn : forme en S inversé -->
+        <path d="M 60 50
+                 C 60 32, 78 22, 100 22
+                 C 122 22, 138 36, 138 52
+                 C 138 66, 128 76, 116 78
+                 C 128 80, 138 90, 138 104
+                 L 138 106
+                 C 138 124, 118 138, 96 138
+                 C 78 138, 64 130, 58 118
+                 L 78 108
+                 C 82 116, 88 120, 96 120
+                 C 108 120, 116 113, 116 104
+                 C 116 95, 108 90, 96 90
+                 L 88 90 L 88 72 L 96 72
+                 C 106 72, 114 67, 114 58
+                 C 114 49, 106 42, 96 42
+                 C 86 42, 80 47, 78 56
+                 Z"/>
+      </g>
+      <!-- Croissant rouge sous le Ɛ -->
+      <path d="M 38 100
+               C 38 130, 60 152, 90 152
+               C 110 152, 128 140, 138 122
+               C 130 134, 116 142, 100 142
+               C 76 142, 56 122, 56 98
+               C 56 90, 58 82, 62 76
+               C 48 82, 38 90, 38 100 Z"
+            fill="#C1272D"/>
+
+      <!-- "o" — un cercle en vert -->
+      <circle cx="200" cy="98" r="38" fill="none" stroke="#21704F" stroke-width="20"/>
+      <!-- Pièce DH au centre du o -->
+      <circle cx="200" cy="120" r="22" fill="#C1272D"/>
+      <circle cx="200" cy="120" r="18" fill="none" stroke="#fff" stroke-width="2"/>
+      <text x="200" y="126" text-anchor="middle" font-family="Outfit, sans-serif" font-weight="700" font-size="16" fill="#fff" letter-spacing="0.5">DH</text>
+
+      <!-- "mar" -->
+      <g fill="#21704F" font-family="Outfit, sans-serif" font-weight="700">
+        <!-- m -->
+        <path d="M 252 60
+                 L 272 60
+                 L 272 72
+                 C 278 64, 286 58, 296 58
+                 C 308 58, 316 64, 320 74
+                 C 326 64, 334 58, 346 58
+                 C 362 58, 374 70, 374 90
+                 L 374 136
+                 L 354 136
+                 L 354 96
+                 C 354 86, 348 78, 340 78
+                 C 332 78, 326 86, 326 96
+                 L 326 136
+                 L 306 136
+                 L 306 96
+                 C 306 86, 300 78, 292 78
+                 C 284 78, 278 86, 278 96
+                 L 278 136
+                 L 252 136 Z"/>
+        <!-- a -->
+        <path d="M 422 58
+                 C 442 58, 456 72, 456 92
+                 L 456 136
+                 L 436 136
+                 L 436 128
+                 C 432 134, 424 138, 414 138
+                 C 396 138, 384 126, 384 110
+                 C 384 94, 396 84, 414 82
+                 L 436 82
+                 C 434 76, 428 72, 422 72
+                 C 414 72, 410 76, 408 80
+                 L 390 72
+                 C 396 64, 408 58, 422 58 Z
+                 M 420 122
+                 C 430 122, 436 116, 436 108
+                 L 436 96
+                 L 420 98
+                 C 412 100, 408 104, 408 110
+                 C 408 117, 412 122, 420 122 Z"/>
+        <!-- r -->
+        <path d="M 478 60
+                 L 498 60
+                 L 498 76
+                 C 502 66, 510 58, 522 58
+                 L 522 80
+                 C 510 80, 498 84, 498 100
+                 L 498 136
+                 L 478 136 Z"/>
+      </g>
+    </symbol>
+
+    <!-- LOGO SANS PIÈCE DH (alt) -->
+    <symbol id="logo-clean" viewBox="0 0 520 180">
+      <g fill="#21704F">
+        <path d="M 60 50 C 60 32, 78 22, 100 22 C 122 22, 138 36, 138 52 C 138 66, 128 76, 116 78 C 128 80, 138 90, 138 104 L 138 106 C 138 124, 118 138, 96 138 C 78 138, 64 130, 58 118 L 78 108 C 82 116, 88 120, 96 120 C 108 120, 116 113, 116 104 C 116 95, 108 90, 96 90 L 88 90 L 88 72 L 96 72 C 106 72, 114 67, 114 58 C 114 49, 106 42, 96 42 C 86 42, 80 47, 78 56 Z"/>
+      </g>
+      <path d="M 38 100 C 38 130, 60 152, 90 152 C 110 152, 128 140, 138 122 C 130 134, 116 142, 100 142 C 76 142, 56 122, 56 98 C 56 90, 58 82, 62 76 C 48 82, 38 90, 38 100 Z" fill="#C1272D"/>
+      <circle cx="200" cy="98" r="38" fill="none" stroke="#21704F" stroke-width="20"/>
+      <g fill="#21704F">
+        <path d="M 252 60 L 272 60 L 272 72 C 278 64, 286 58, 296 58 C 308 58, 316 64, 320 74 C 326 64, 334 58, 346 58 C 362 58, 374 70, 374 90 L 374 136 L 354 136 L 354 96 C 354 86, 348 78, 340 78 C 332 78, 326 86, 326 96 L 326 136 L 306 136 L 306 96 C 306 86, 300 78, 292 78 C 284 78, 278 86, 278 96 L 278 136 L 252 136 Z"/>
+        <path d="M 422 58 C 442 58, 456 72, 456 92 L 456 136 L 436 136 L 436 128 C 432 134, 424 138, 414 138 C 396 138, 384 126, 384 110 C 384 94, 396 84, 414 82 L 436 82 C 434 76, 428 72, 422 72 C 414 72, 410 76, 408 80 L 390 72 C 396 64, 408 58, 422 58 Z M 420 122 C 430 122, 436 116, 436 108 L 436 96 L 420 98 C 412 100, 408 104, 408 110 C 408 117, 412 122, 420 122 Z"/>
+        <path d="M 478 60 L 498 60 L 498 76 C 502 66, 510 58, 522 58 L 522 80 C 510 80, 498 84, 498 100 L 498 136 L 478 136 Z"/>
+      </g>
+    </symbol>
+
+    <!-- LOGO MONOCHROME (encre) -->
+    <symbol id="logo-mono" viewBox="0 0 520 180">
+      <g fill="#1A2E26">
+        <path d="M 60 50 C 60 32, 78 22, 100 22 C 122 22, 138 36, 138 52 C 138 66, 128 76, 116 78 C 128 80, 138 90, 138 104 L 138 106 C 138 124, 118 138, 96 138 C 78 138, 64 130, 58 118 L 78 108 C 82 116, 88 120, 96 120 C 108 120, 116 113, 116 104 C 116 95, 108 90, 96 90 L 88 90 L 88 72 L 96 72 C 106 72, 114 67, 114 58 C 114 49, 106 42, 96 42 C 86 42, 80 47, 78 56 Z"/>
+        <path d="M 38 100 C 38 130, 60 152, 90 152 C 110 152, 128 140, 138 122 C 130 134, 116 142, 100 142 C 76 142, 56 122, 56 98 C 56 90, 58 82, 62 76 C 48 82, 38 90, 38 100 Z"/>
+        <circle cx="200" cy="98" r="38" fill="none" stroke="#1A2E26" stroke-width="20"/>
+        <path d="M 252 60 L 272 60 L 272 72 C 278 64, 286 58, 296 58 C 308 58, 316 64, 320 74 C 326 64, 334 58, 346 58 C 362 58, 374 70, 374 90 L 374 136 L 354 136 L 354 96 C 354 86, 348 78, 340 78 C 332 78, 326 86, 326 96 L 326 136 L 306 136 L 306 96 C 306 86, 300 78, 292 78 C 284 78, 278 86, 278 96 L 278 136 L 252 136 Z"/>
+        <path d="M 422 58 C 442 58, 456 72, 456 92 L 456 136 L 436 136 L 436 128 C 432 134, 424 138, 414 138 C 396 138, 384 126, 384 110 C 384 94, 396 84, 414 82 L 436 82 C 434 76, 428 72, 422 72 C 414 72, 410 76, 408 80 L 390 72 C 396 64, 408 58, 422 58 Z M 420 122 C 430 122, 436 116, 436 108 L 436 96 L 420 98 C 412 100, 408 104, 408 110 C 408 117, 412 122, 420 122 Z"/>
+        <path d="M 478 60 L 498 60 L 498 76 C 502 66, 510 58, 522 58 L 522 80 C 510 80, 498 84, 498 100 L 498 136 L 478 136 Z"/>
+      </g>
+    </symbol>
+
+    <!-- LOGO INVERSÉ (fond foncé) -->
+    <symbol id="logo-reverse" viewBox="0 0 520 180">
+      <g fill="#FFFFFF">
+        <path d="M 60 50 C 60 32, 78 22, 100 22 C 122 22, 138 36, 138 52 C 138 66, 128 76, 116 78 C 128 80, 138 90, 138 104 L 138 106 C 138 124, 118 138, 96 138 C 78 138, 64 130, 58 118 L 78 108 C 82 116, 88 120, 96 120 C 108 120, 116 113, 116 104 C 116 95, 108 90, 96 90 L 88 90 L 88 72 L 96 72 C 106 72, 114 67, 114 58 C 114 49, 106 42, 96 42 C 86 42, 80 47, 78 56 Z"/>
+      </g>
+      <path d="M 38 100 C 38 130, 60 152, 90 152 C 110 152, 128 140, 138 122 C 130 134, 116 142, 100 142 C 76 142, 56 122, 56 98 C 56 90, 58 82, 62 76 C 48 82, 38 90, 38 100 Z" fill="#E07478"/>
+      <circle cx="200" cy="98" r="38" fill="none" stroke="#FFFFFF" stroke-width="20"/>
+      <g fill="#FFFFFF">
+        <path d="M 252 60 L 272 60 L 272 72 C 278 64, 286 58, 296 58 C 308 58, 316 64, 320 74 C 326 64, 334 58, 346 58 C 362 58, 374 70, 374 90 L 374 136 L 354 136 L 354 96 C 354 86, 348 78, 340 78 C 332 78, 326 86, 326 96 L 326 136 L 306 136 L 306 96 C 306 86, 300 78, 292 78 C 284 78, 278 86, 278 96 L 278 136 L 252 136 Z"/>
+        <path d="M 422 58 C 442 58, 456 72, 456 92 L 456 136 L 436 136 L 436 128 C 432 134, 424 138, 414 138 C 396 138, 384 126, 384 110 C 384 94, 396 84, 414 82 L 436 82 C 434 76, 428 72, 422 72 C 414 72, 410 76, 408 80 L 390 72 C 396 64, 408 58, 422 58 Z M 420 122 C 430 122, 436 116, 436 108 L 436 96 L 420 98 C 412 100, 408 104, 408 110 C 408 117, 412 122, 420 122 Z"/>
+        <path d="M 478 60 L 498 60 L 498 76 C 502 66, 510 58, 522 58 L 522 80 C 510 80, 498 84, 498 100 L 498 136 L 478 136 Z"/>
+      </g>
+    </symbol>
+
+    <!-- ICÔNE seule : "Ɛ" + croissant dans un carré arrondi -->
+    <symbol id="mark" viewBox="0 0 200 200">
+      <rect x="4" y="4" width="192" height="192" rx="36" fill="#21704F"/>
+      <circle cx="100" cy="100" r="74" fill="#FAF8F3"/>
+      <g transform="translate(60 36) scale(0.7)">
+        <path d="M 60 50 C 60 32, 78 22, 100 22 C 122 22, 138 36, 138 52 C 138 66, 128 76, 116 78 C 128 80, 138 90, 138 104 L 138 106 C 138 124, 118 138, 96 138 C 78 138, 64 130, 58 118 L 78 108 C 82 116, 88 120, 96 120 C 108 120, 116 113, 116 104 C 116 95, 108 90, 96 90 L 88 90 L 88 72 L 96 72 C 106 72, 114 67, 114 58 C 114 49, 106 42, 96 42 C 86 42, 80 47, 78 56 Z" fill="#21704F"/>
+        <path d="M 38 100 C 38 130, 60 152, 90 152 C 110 152, 128 140, 138 122 C 130 134, 116 142, 100 142 C 76 142, 56 122, 56 98 C 56 90, 58 82, 62 76 C 48 82, 38 90, 38 100 Z" fill="#C1272D"/>
+      </g>
+    </symbol>
+
+    <!-- icônes UI -->
+    <symbol id="i-doc" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" d="M6 3h8l4 4v14H6z"/><path fill="none" stroke="currentColor" stroke-width="1.6" d="M14 3v4h4M9 12h6M9 16h6"/></symbol>
+    <symbol id="i-coins" viewBox="0 0 24 24"><ellipse cx="9" cy="8" rx="6" ry="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path fill="none" stroke="currentColor" stroke-width="1.6" d="M3 8v3c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5V8"/><ellipse cx="15" cy="14" rx="6" ry="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path fill="none" stroke="currentColor" stroke-width="1.6" d="M9 14v3c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-3"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><polyline fill="none" stroke="currentColor" stroke-width="1.6" points="9 12 11.5 14.5 16 10"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.6" d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" d="M4 4h7v16H4zM13 4h7v16h-7z"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" d="M12 20s-7-4.5-7-10a4 4 0 017-2.5A4 4 0 0119 10c0 5.5-7 10-7 10z"/></symbol>
+    <symbol id="i-calc" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="8" y="6" width="8" height="3" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="9" cy="13" r=".8" fill="currentColor"/><circle cx="12" cy="13" r=".8" fill="currentColor"/><circle cx="15" cy="13" r=".8" fill="currentColor"/><circle cx="9" cy="16" r=".8" fill="currentColor"/><circle cx="12" cy="16" r=".8" fill="currentColor"/><circle cx="15" cy="16" r=".8" fill="currentColor"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><polyline fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" points="8 12 11 15 16 9"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><line x1="12" y1="11" x2="12" y2="16.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="8" r="1" fill="currentColor"/></symbol>
+    <symbol id="i-warn" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" d="M12 3l10 18H2z"/><line x1="12" y1="10" x2="12" y2="15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="18" r=".9" fill="currentColor"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path stroke="currentColor" stroke-width="1.6" stroke-linecap="round" d="M9 9l6 6M15 9l-6 6"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="13" y="4" width="7" height="7" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="4" y="13" width="7" height="7" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="13" y="13" width="7" height="7" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><polyline fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" points="4 18 9 13 13 16 20 8"/><polyline fill="none" stroke="currentColor" stroke-width="1.6" points="15 8 20 8 20 13"/></symbol>
+    <symbol id="i-percent" viewBox="0 0 24 24"><line x1="5" y1="19" x2="19" y2="5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="8" r="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="16" cy="16" r="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><polyline fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" points="12 7 12 12 16 14"/></symbol>
+    <symbol id="i-code" viewBox="0 0 24 24"><polyline fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" points="9 8 4 12 9 16"/><polyline fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" points="15 8 20 12 15 16"/></symbol>
+    <symbol id="i-people" viewBox="0 0 24 24"><circle cx="9" cy="9" r="3" fill="none" stroke="currentColor" stroke-width="1.6"/><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" d="M3 19c0-3 3-5 6-5s6 2 6 5"/><circle cx="17" cy="10" r="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" d="M15 19c0-2 2-4 4-4s2.5 1 2.5 2"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><line x1="12" y1="4" x2="12" y2="15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><polyline fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" points="7 11 12 16 17 11"/><line x1="4" y1="20" x2="20" y2="20" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+
+  </defs>
+</svg>
+
+
+<!-- =========================================================
+     HEADER STICKY
+     ========================================================= -->
+<header class="brand-header">
+  <div class="left">
+    <svg class="mark" viewBox="0 0 200 200"><use href="#mark"/></svg>
+    <span class="wordmark">3omar · Charte de marque</span>
+  </div>
+  <div class="right">
+    <span><strong>v1.0</strong></span>
+    <span>Juin 2026</span>
+    <span>Open Source</span>
+  </div>
+</header>
+
+
+<div class="page">
+
+<!-- =========================================================
+     COVER
+     ========================================================= -->
+<section class="cover">
+  <div>
+    <div class="eyebrow">Brand Book · Édition Fondatrice</div>
+    <h1>Charte<br/>de marque<br/><em>3omar</em></h1>
+    <p class="lede">
+      Le simulateur de bulletin de paie marocain — gratuit, open source, et pédagogique. Cette charte définit le système visuel qui rend chaque <span class="dh">dirham</span> compréhensible, ligne par ligne.
+    </p>
+    <div class="cover-meta">
+      <div class="item"><span class="k">Version</span><span class="v">1.0 — Fondations</span></div>
+      <div class="item"><span class="k">Publié</span><span class="v">Juin 2026</span></div>
+      <div class="item"><span class="k">Licence</span><span class="v">CC BY-SA 4.0</span></div>
+    </div>
+  </div>
+  <div class="cover-mark">
+    <div class="frame">
+      <svg class="logo-xl" viewBox="0 0 520 180" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 76%;"><use href="#logo-full"/></svg>
+      <div class="tag">
+        <span>Logotype principal</span>
+        <span>Ref · LOGO-01</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     TABLE DES MATIÈRES
+     ========================================================= -->
+<div class="toc">
+  <div class="caption" style="margin-bottom: 20px;">Sommaire — 12 sections</div>
+  <div class="toc-grid">
+    <div class="toc-row"><span class="num">01</span><span class="name">Essence de marque</span><span class="pg">·04</span></div>
+    <div class="toc-row"><span class="num">02</span><span class="name">Logotype — versions</span><span class="pg">·06</span></div>
+    <div class="toc-row"><span class="num">03</span><span class="name">Logotype — règles</span><span class="pg">·08</span></div>
+    <div class="toc-row"><span class="num">04</span><span class="name">Couleurs primaires</span><span class="pg">·10</span></div>
+    <div class="toc-row"><span class="num">05</span><span class="name">Couleurs sémantiques · WCAG</span><span class="pg">·12</span></div>
+    <div class="toc-row"><span class="num">06</span><span class="name">Typographie</span><span class="pg">·14</span></div>
+    <div class="toc-row"><span class="num">07</span><span class="name">Iconographie &amp; illustration</span><span class="pg">·16</span></div>
+    <div class="toc-row"><span class="num">08</span><span class="name">Composants UI</span><span class="pg">·18</span></div>
+    <div class="toc-row"><span class="num">09</span><span class="name">Layout &amp; espacement</span><span class="pg">·22</span></div>
+    <div class="toc-row"><span class="num">10</span><span class="name">Ton éditorial &amp; microcopy</span><span class="pg">·24</span></div>
+    <div class="toc-row"><span class="num">11</span><span class="name">Accessibilité</span><span class="pg">·26</span></div>
+    <div class="toc-row"><span class="num">12</span><span class="name">Do's &amp; Don'ts</span><span class="pg">·27</span></div>
+  </div>
+</div>
+
+
+<!-- =========================================================
+     01 — ESSENCE
+     ========================================================= -->
+<section class="brand-section" id="essence">
+  <div class="sec-head">
+    <div class="sec-num">01 / 12</div>
+    <div>
+      <div class="sec-kicker">Fondation</div>
+      <h2 class="sec-title">Essence de marque</h2>
+      <p class="sec-intro">3omar est un outil <b>citoyen</b>, pas un produit corporate. Notre métier : rendre lisible la complexité d'un bulletin de paie marocain — sans paternalisme, sans jargon, avec de la chaleur.</p>
+    </div>
+    <div></div>
+  </div>
+
+  <div class="essence-grid">
+    <div class="essence-prose">
+      <p><b>3omar</b> est un jeu de mots. En arabizi, <span style="font-family: var(--f-accent); color: var(--g-500); font-weight: 600;">عمر</span> (Omar, prénom) s'écrit « 3omar » — le chiffre <em>3</em> dessine le ع (ayn). Et en darija, « 3omar » désigne familièrement <b>l'argent, le flouss</b>.</p>
+      <p>De cette dualité naît la promesse de marque : un compagnon nommé comme un ami, qui rend l'argent compréhensible. Sérieux comme un comptable, parlant comme un cousin.</p>
+      <div class="pull">
+        « Ton <span class="arabic">3omar</span>, ligne par ligne. »
+      </div>
+      <p>La charte traduit cette posture en système : un vert profond et confiant, un rouge marocain assumé mais retenu, une typographie chaleureuse-mais-sérieuse, et un motif zellige que l'on entend plus qu'on ne le voit.</p>
+    </div>
+
+    <div class="values">
+      <div class="value-row">
+        <div class="glyph"><svg width="28" height="28"><use href="#i-eye"/></svg></div>
+        <div><h4>Transparence</h4><p>Chaque chiffre est expliqué, sourcé, vérifiable. Aucune boîte noire entre le brut et le net.</p></div>
+      </div>
+      <div class="value-row">
+        <div class="glyph"><svg width="28" height="28"><use href="#i-book"/></svg></div>
+        <div><h4>Pédagogie</h4><p>On enseigne en simulant. La référence légale est toujours à portée de clic.</p></div>
+      </div>
+      <div class="value-row">
+        <div class="glyph red"><svg width="28" height="28"><use href="#i-heart"/></svg></div>
+        <div><h4>Gratuité</h4><p>L'outil est offert, et le restera. Open source, sans tracking, sans paywall.</p></div>
+      </div>
+      <div class="value-row">
+        <div class="glyph"><svg width="28" height="28"><use href="#i-shield"/></svg></div>
+        <div><h4>Confiance</h4><p>Calculs à jour avec la loi marocaine. Données qui ne quittent jamais l'appareil.</p></div>
+      </div>
+      <div class="value-row">
+        <div class="glyph red"><svg width="28" height="28"><use href="#i-people"/></svg></div>
+        <div><h4>Ancrage marocain</h4><p>Conçu au Maroc, pour le Maroc. Une touche de zellige, jamais de carte postale.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- =========================================================
+     02 — LOGOTYPE VERSIONS
+     ========================================================= -->
+<section class="brand-section" id="logo">
+  <div class="sec-head">
+    <div class="sec-num">02 / 12</div>
+    <div>
+      <div class="sec-kicker">Identité</div>
+      <h2 class="sec-title">Logotype — versions</h2>
+      <p class="sec-intro">Le logo dramatise la lettre <em>Ɛ</em> — équivalent latin du ع arabe — flanquée d'un croissant rouge qui évoque autant le drapeau que la lune du Maghreb. Une pièce <em>DH</em> habite le « o ». Trois versions, une seule âme.</p>
+    </div>
+    <div></div>
+  </div>
+
+  <h3 class="block-title">Versions principales</h3>
+  <div class="logo-versions">
+    <div class="logo-card">
+      <div class="stage"><svg viewBox="0 0 520 180" style="width: 100%; max-width: 380px;"><use href="#logo-full"/></svg></div>
+      <div class="meta"><span class="name">Primaire — couleur + pièce DH</span><span class="ref">LOGO-01</span></div>
+    </div>
+    <div class="logo-card">
+      <div class="stage"><svg viewBox="0 0 520 180" style="width: 100%; max-width: 260px;"><use href="#logo-clean"/></svg></div>
+      <div class="meta"><span class="name">Simplifié — sans pièce</span><span class="ref">LOGO-02</span></div>
+    </div>
+    <div class="logo-card">
+      <div class="stage"><svg viewBox="0 0 200 200" style="width: 100%; max-width: 140px;"><use href="#mark"/></svg></div>
+      <div class="meta"><span class="name">Icône seule (favicon, avatar)</span><span class="ref">MARK-01</span></div>
+    </div>
+  </div>
+
+  <h3 class="block-title">Déclinaisons par fond</h3>
+  <div class="logo-versions">
+    <div class="logo-card">
+      <div class="stage cream"><svg viewBox="0 0 520 180" style="width: 100%; max-width: 360px;"><use href="#logo-full"/></svg></div>
+      <div class="meta"><span class="name">Sur fond crème</span><span class="ref">USAGE par défaut</span></div>
+    </div>
+    <div class="logo-card">
+      <div class="stage dark"><svg viewBox="0 0 520 180" style="width: 100%; max-width: 360px;"><use href="#logo-reverse"/></svg></div>
+      <div class="meta"><span class="name">Sur fond foncé (g-800)</span><span class="ref">Footer, dark mode</span></div>
+    </div>
+    <div class="logo-card">
+      <div class="stage mono"><svg viewBox="0 0 520 180" style="width: 100%; max-width: 360px;"><use href="#logo-mono"/></svg></div>
+      <div class="meta"><span class="name">Monochrome encre</span><span class="ref">Impression N&amp;B, fax</span></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- =========================================================
+     03 — LOGO RÈGLES
+     ========================================================= -->
+<section class="brand-section" id="logo-rules">
+  <div class="sec-head">
+    <div class="sec-num">03 / 12</div>
+    <div>
+      <div class="sec-kicker">Identité · règles</div>
+      <h2 class="sec-title">Zone de protection,<br/>tailles, usages</h2>
+      <p class="sec-intro">L'unité « <em>x</em> » correspond à la hauteur du « o » du logotype. Tous les espacements et tailles minimales sont dérivés de cette mesure.</p>
+    </div>
+    <div></div>
+  </div>
+
+  <h3 class="block-title">Zone de protection</h3>
+  <div class="clearspace">
+    <div class="stage">
+      <div class="x-mark">1x</div>
+      <div class="x-mark bot">1x</div>
+      <div class="x-mark l">1x</div>
+      <div class="x-mark r">1x</div>
+      <div class="logo-wrap">
+        <svg viewBox="0 0 520 180" style="width: 280px;"><use href="#logo-full"/></svg>
+      </div>
+    </div>
+    <div class="info">
+      <div>
+        <h4>Garder le logo respirer.</h4>
+        <p>Aucun élément graphique (texte, image, bord) ne doit empiéter dans la zone <em>1x</em> qui entoure le logo de tous les côtés.</p>
+      </div>
+      <div class="x-def">
+        Unité <b>x</b> = hauteur du « o » du logotype.<br/>
+        Marge mini · 1x sur les quatre côtés.<br/>
+        Marge recommandée · 1.5x à 2x.
+      </div>
+    </div>
+  </div>
+
+  <h3 class="block-title">Tailles minimales</h3>
+  <div class="minsize">
+    <div class="card">
+      <div class="stage"><svg viewBox="0 0 520 180" style="width: 100%; max-width: 180px;"><use href="#logo-full"/></svg></div>
+      <div class="info"><span class="label">Web — desktop</span><span class="val">≥ 120 px</span></div>
+    </div>
+    <div class="card">
+      <div class="stage"><svg viewBox="0 0 520 180" style="width: 100%; max-width: 120px;"><use href="#logo-clean"/></svg></div>
+      <div class="info"><span class="label">Web — mobile</span><span class="val">≥ 88 px</span></div>
+    </div>
+    <div class="card">
+      <div class="stage"><svg viewBox="0 0 200 200" style="width: 64px;"><use href="#mark"/></svg></div>
+      <div class="info"><span class="label">Favicon</span><span class="val">≥ 32 px</span></div>
+    </div>
+    <div class="card">
+      <div class="stage"><svg viewBox="0 0 520 180" style="width: 100%; max-width: 200px;"><use href="#logo-full"/></svg></div>
+      <div class="info"><span class="label">Impression</span><span class="val">≥ 24 mm</span></div>
+    </div>
+  </div>
+
+  <h3 class="block-title">Usages corrects &amp; interdits</h3>
+  <div class="dodont">
+    <div class="dd-card ok">
+      <div class="stage" style="background: var(--paper)"><svg viewBox="0 0 520 180" style="width: 80%;"><use href="#logo-full"/></svg></div>
+      <div class="label"><b>OK</b> — Fond clair neutre, proportions respectées.</div>
+    </div>
+    <div class="dd-card ok">
+      <div class="stage" style="background: var(--g-800)"><svg viewBox="0 0 520 180" style="width: 80%;"><use href="#logo-reverse"/></svg></div>
+      <div class="label"><b>OK</b> — Version inversée sur fond g-800.</div>
+    </div>
+    <div class="dd-card ok">
+      <div class="stage" style="background: var(--cream)"><svg viewBox="0 0 200 200" style="width: 50%;"><use href="#mark"/></svg></div>
+      <div class="label"><b>OK</b> — Icône seule en petite taille (avatar, favicon).</div>
+    </div>
+    <div class="dd-card">
+      <div class="stage" style="background: linear-gradient(135deg, #ff0080, #ffea00, #00ffea);"><svg viewBox="0 0 520 180" style="width: 80%;"><use href="#logo-full"/></svg></div>
+      <div class="label"><b>Non.</b> Pas de fond saturé / criard qui tue le contraste.</div>
+    </div>
+    <div class="dd-card">
+      <div class="stage"><svg viewBox="0 0 520 180" style="width: 80%; transform: skewX(-12deg);"><use href="#logo-full"/></svg></div>
+      <div class="label"><b>Non.</b> Pas de déformation, rotation, italique forcée.</div>
+    </div>
+    <div class="dd-card">
+      <div class="stage"><svg viewBox="0 0 520 180" style="width: 80%; filter: drop-shadow(0 6px 8px rgba(0,0,0,0.4));"><use href="#logo-full"/></svg></div>
+      <div class="label"><b>Non.</b> Pas d'ombres portées, contours, néons, biseaux.</div>
+    </div>
+  </div>
+</section>
+
+
+<!-- =========================================================
+     04 — COULEURS PRIMAIRES
+     ========================================================= -->
+<section class="brand-section" id="colors">
+  <div class="sec-head">
+    <div class="sec-num">04 / 12</div>
+    <div>
+      <div class="sec-kicker">Système chromatique</div>
+      <h2 class="sec-title">Couleurs primaires</h2>
+      <p class="sec-intro">Deux couleurs portent toute la marque. Un vert profond pour la confiance et l'action, un rouge marocain pour l'accent et la mémoire du drapeau. Tout le reste est un dérivé tonal.</p>
+    </div>
+    <div></div>
+  </div>
+
+  <div class="color-primaries">
+    <div class="color-hero green">
+      <div>
+        <div class="label">Primaire · 01</div>
+        <h4>Vert 3omar</h4>
+      </div>
+      <div class="codes">
+        <div class="row"><span class="k">HEX</span><span class="v">#21704F</span></div>
+        <div class="row"><span class="k">RGB</span><span class="v">33 · 112 · 79</span></div>
+        <div class="row"><span class="k">CMYK</span><span class="v">71 · 0 · 29 · 56</span></div>
+        <div class="row"><span class="k">Pantone</span><span class="v">7733 C</span></div>
+        <div class="row"><span class="k">OKLCH</span><span class="v">0.51 0.10 158</span></div>
+      </div>
+    </div>
+    <div class="color-hero red">
+      <div>
+        <div class="label">Primaire · 02</div>
+        <h4>Rouge 3omar</h4>
+      </div>
+      <div class="codes">
+        <div class="row"><span class="k">HEX</span><span class="v">#C1272D</span></div>
+        <div class="row"><span class="k">RGB</span><span class="v">193 · 39 · 45</span></div>
+        <div class="row"><span class="k">CMYK</span><span class="v">0 · 80 · 77 · 24</span></div>
+        <div class="row"><span class="k">Pantone</span><span class="v">186 C</span></div>
+        <div class="row"><span class="k">OKLCH</span><span class="v">0.51 0.20 26</span></div>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="block-title">Échelle Vert · 50 → 900</h3>
+  <div class="swatch-row">
+    <div class="swatch" style="background: var(--g-50); color: var(--ink);"><span class="step">50</span><span class="hex">#F0F7F3</span></div>
+    <div class="swatch" style="background: var(--g-100); color: var(--ink);"><span class="step">100</span><span class="hex">#DCEBE3</span></div>
+    <div class="swatch" style="background: var(--g-200); color: var(--ink);"><span class="step">200</span><span class="hex">#B6D5C4</span></div>
+    <div class="swatch" style="background: var(--g-300); color: var(--ink);"><span class="step">300</span><span class="hex">#87B89F</span></div>
+    <div class="swatch" style="background: var(--g-400); color: #fff;"><span class="step">400</span><span class="hex">#4D9376</span></div>
+    <div class="swatch" style="background: var(--g-500); color: #fff;"><span class="step">500 ★</span><span class="hex">#21704F</span></div>
+    <div class="swatch" style="background: var(--g-600); color: #fff;"><span class="step">600</span><span class="hex">#1A5B40</span></div>
+    <div class="swatch" style="background: var(--g-700); color: #fff;"><span class="step">700</span><span class="hex">#144632</span></div>
+    <div class="swatch" style="background: var(--g-800); color: #fff;"><span class="step">800</span><span class="hex">#0E3324</span></div>
+    <div class="swatch" style="background: var(--g-900); color: #fff;"><span class="step">900</span><span class="hex">#082017</span></div>
+  </div>
+
+  <h3 class="block-title">Échelle Rouge · 50 → 700</h3>
+  <div class="swatch-row" style="grid-template-columns: repeat(5, 1fr);">
+    <div class="swatch" style="background: var(--r-50); color: var(--ink);"><span class="step">50</span><span class="hex">#FBEDED</span></div>
+    <div class="swatch" style="background: var(--r-100); color: var(--ink);"><span class="step">100</span><span class="hex">#F4CFD0</span></div>
+    <div class="swatch" style="background: var(--r-300); color: #fff;"><span class="step">300</span><span class="hex">#E07478</span></div>
+    <div class="swatch" style="background: var(--r-500); color: #fff;"><span class="step">500 ★</span><span class="hex">#C1272D</span></div>
+    <div class="swatch" style="background: var(--r-700); color: #fff;"><span class="step">700</span><span class="hex">#8A1B20</span></div>
+  </div>
+
+  <h3 class="block-title">Surfaces neutres</h3>
+  <div class="swatch-row" style="grid-template-columns: repeat(5, 1fr);">
+    <div class="swatch" style="background: var(--cream); color: var(--ink); border: 1px solid var(--hairline);"><span class="step">Crème — fond doc</span><span class="hex">#FAF8F3</span></div>
+    <div class="swatch" style="background: var(--paper); color: var(--ink); border: 1px solid var(--hairline);"><span class="step">Papier — cartes</span><span class="hex">#FFFFFF</span></div>
+    <div class="swatch" style="background: var(--ink-3); color: #fff;"><span class="step">Encre tertiaire</span><span class="hex">#7A8881</span></div>
+    <div class="swatch" style="background: var(--ink-2); color: #fff;"><span class="step">Encre secondaire</span><span class="hex">#4A5C54</span></div>
+    <div class="swatch" style="background: var(--ink); color: #fff;"><span class="step">Encre — texte</span><span class="hex">#1A2E26</span></div>
+  </div>
+
+  <p style="margin-top: 32px; font-size: 13.5px; color: var(--ink-3);">
+    <b style="color: var(--ink);">Note d'harmonisation —</b> Le fond clair existant <code style="font-family: var(--f-mono); font-size: 12.5px;">#F8F9FA</code> est remplacé par <b>Crème #FAF8F3</b>, plus chaleureux et cohérent avec une marque citoyenne. L'ancien rouge alerte <code style="font-family: var(--f-mono); font-size: 12.5px;">#DC3545</code> est remplacé par le <b>Rouge 3omar #C1272D</b> pour rationaliser la palette autour des couleurs de marque.
+  </p>
+</section>
+
+
+<!-- =========================================================
+     05 — COULEURS SÉMANTIQUES + WCAG
+     ========================================================= -->
+<section class="brand-section" id="semantic">
+  <div class="sec-head">
+    <div class="sec-num">05 / 12</div>
+    <div>
+      <div class="sec-kicker">Système chromatique · application</div>
+      <h2 class="sec-title">Sémantique &amp; contrastes</h2>
+      <p class="sec-intro">Chaque ligne du bulletin a une couleur dédiée. Le ton porte le sens : le bleu informe (brut), le violet structure (cotisations), le rouge alerte (impôt), le vert récompense (net).</p>
+    </div>
+    <div></div>
+  </div>
+
+  <h3 class="block-title">Rôles sémantiques</h3>
+  <div class="color-secondaries">
+    <div class="sec-swatch">
+      <div class="chip" style="background: var(--s-info);">Brut</div>
+      <div class="meta">
+        <span class="role">Info · Brut</span>
+        <span class="use">Salaire brut, montants de référence, info neutre.</span>
+        <span class="hex">#1B5FD9</span>
+      </div>
+    </div>
+    <div class="sec-swatch">
+      <div class="chip" style="background: var(--s-cot);">Cotisations</div>
+      <div class="meta">
+        <span class="role">Cotisations</span>
+        <span class="use">CNSS, AMO, CIMR — retenues salariales.</span>
+        <span class="hex">#6F42C1</span>
+      </div>
+    </div>
+    <div class="sec-swatch">
+      <div class="chip" style="background: var(--s-tax);">Impôt</div>
+      <div class="meta">
+        <span class="role">Impôt · Alerte</span>
+        <span class="use">IR, alertes critiques, erreurs bloquantes.</span>
+        <span class="hex">#C1272D</span>
+      </div>
+    </div>
+    <div class="sec-swatch">
+      <div class="chip" style="background: var(--s-succ);">Net</div>
+      <div class="meta">
+        <span class="role">Net · Succès</span>
+        <span class="use">Net à payer, validations, gains.</span>
+        <span class="hex">#1B7A4A</span>
+      </div>
+    </div>
+    <div class="sec-swatch">
+      <div class="chip" style="background: var(--s-warn);">Patronal</div>
+      <div class="meta">
+        <span class="role">Patronal · Avertir</span>
+        <span class="use">Charges employeur, avertissements non-bloquants.</span>
+        <span class="hex">#D97706</span>
+      </div>
+    </div>
+    <div class="sec-swatch">
+      <div class="chip" style="background: var(--s-neutral);">Neutre</div>
+      <div class="meta">
+        <span class="role">Neutre</span>
+        <span class="use">Textes secondaires, états désactivés, métadonnées.</span>
+        <span class="hex">#6C757D</span>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="block-title">Contrastes WCAG AA</h3>
+  <table class="contrast-table">
+    <thead>
+      <tr><th>Échantillon</th><th>Premier plan</th><th>Fond</th><th>Ratio</th><th>WCAG</th><th>Usage</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="sample" style="background: var(--g-500); color: #fff;">Ton 3omar</td>
+        <td style="font-family: var(--f-mono); font-size: 12px;">#FFFFFF</td>
+        <td style="font-family: var(--f-mono); font-size: 12px;">#21704F</td>
+        <td class="ratio">5.94 : 1</td>
+        <td><span class="pill">AA · AAA Large</span></td>
+        <td>Boutons primaires, navbar, CTA.</td>
+      </tr>
+      <tr>
+        <td class="sample" style="background: var(--cream); color: var(--g-500);">Ton 3omar</td>
+        <td style="font-family: var(--f-mono); font-size: 12px;">#21704F</td>
+        <td style="font-family: var(--f-mono); font-size: 12px;">#FAF8F3</td>
+        <td class="ratio">5.83 : 1</td>
+        <td><span class="pill">AA</span></td>
+        <td>Liens, libellés primaires sur crème.</td>
+      </tr>
+      <tr>
+        <td class="sample" style="background: var(--r-500); color: #fff;">Alerte</td>
+        <td style="font-family: var(--f-mono); font-size: 12px;">#FFFFFF</td>
+        <td style="font-family: var(--f-mono); font-size: 12px;">#C1272D</td>
+        <td class="ratio">5.59 : 1</td>
+        <td><span class="pill">AA</span></td>
+        <td>Boutons danger, badges critiques.</td>
+      </tr>
+      <tr>
+        <td class="sample" style="background: var(--paper); color: var(--ink);">Texte courant</td>
+        <td style="font-family: var(--f-mono); font-size: 12px;">#1A2E26</td>
+        <td style="font-family: var(--f-mono); font-size: 12px;">#FFFFFF</td>
+        <td class="ratio">14.8 : 1</td>
+        <td><span class="pill">AAA</span></td>
+        <td>Corps de texte, titres.</td>
+      </tr>
+      <tr>
+        <td class="sample" style="background: var(--paper); color: var(--ink-2);">Texte secondaire</td>
+        <td style="font-family: var(--f-mono); font-size: 12px;">#4A5C54</td>
+        <td style="font-family: var(--f-mono); font-size: 12px;">#FFFFFF</td>
+        <td class="ratio">7.59 : 1</td>
+        <td><span class="pill">AAA</span></td>
+        <td>Descriptions, légendes.</td>
+      </tr>
+      <tr>
+        <td class="sample" style="background: var(--paper); color: var(--ink-3);">Texte tertiaire</td>
+        <td style="font-family: var(--f-mono); font-size: 12px;">#7A8881</td>
+        <td style="font-family: var(--f-mono); font-size: 12px;">#FFFFFF</td>
+        <td class="ratio">3.74 : 1</td>
+        <td><span class="pill warn">AA Large only</span></td>
+        <td>Métadonnées · taille ≥ 18px ou gras ≥ 14px.</td>
+      </tr>
+      <tr>
+        <td class="sample" style="background: var(--s-succ-bg); color: var(--s-succ);">Net validé</td>
+        <td style="font-family: var(--f-mono); font-size: 12px;">#1B7A4A</td>
+        <td style="font-family: var(--f-mono); font-size: 12px;">#F0F7F3</td>
+        <td class="ratio">5.42 : 1</td>
+        <td><span class="pill">AA</span></td>
+        <td>Carte « Net à payer », alertes succès.</td>
+      </tr>
+      <tr>
+        <td class="sample" style="background: var(--s-warn-bg); color: var(--s-warn);">Patronal</td>
+        <td style="font-family: var(--f-mono); font-size: 12px;">#D97706</td>
+        <td style="font-family: var(--f-mono); font-size: 12px;">#FFF7ED</td>
+        <td class="ratio">4.62 : 1</td>
+        <td><span class="pill">AA</span></td>
+        <td>Avertissements, charges patronales.</td>
+      </tr>
+      <tr>
+        <td class="sample" style="background: var(--g-100); color: var(--g-300);">Désactivé</td>
+        <td style="font-family: var(--f-mono); font-size: 12px;">#87B89F</td>
+        <td style="font-family: var(--f-mono); font-size: 12px;">#DCEBE3</td>
+        <td class="ratio">1.62 : 1</td>
+        <td><span class="pill fail">— Disabled</span></td>
+        <td>États désactivés uniquement (pas pour info).</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+
+<!-- =========================================================
+     06 — TYPOGRAPHIE
+     ========================================================= -->
+<section class="brand-section" id="type">
+  <div class="sec-head">
+    <div class="sec-num">06 / 12</div>
+    <div>
+      <div class="sec-kicker">Voix typographique</div>
+      <h2 class="sec-title">Typographie</h2>
+      <p class="sec-intro">Trois familles, gratuites, open source, complémentaires. <b>Outfit</b> pour la voix qui s'élève, <b>Plus Jakarta Sans</b> pour celle qui explique, <b>Readex Pro</b> quand le français rencontre l'arabe.</p>
+    </div>
+    <div></div>
+  </div>
+
+  <div class="font-families">
+    <div class="ff-card">
+      <div class="big" style="font-family: var(--f-display); font-weight: 700;">Aa</div>
+      <div class="weights">
+        <span>400</span><span>500</span><span>600</span><span>700</span><span>800</span>
+      </div>
+      <div class="meta">
+        <span class="name">Outfit</span>
+        <span class="use">Display · titres</span>
+      </div>
+    </div>
+    <div class="ff-card">
+      <div class="big" style="font-family: var(--f-body); font-weight: 500;">Aa</div>
+      <div class="weights">
+        <span>400</span><span>500</span><span>600</span><span>700</span>
+      </div>
+      <div class="meta">
+        <span class="name">Plus Jakarta Sans</span>
+        <span class="use">Texte · UI</span>
+      </div>
+    </div>
+    <div class="ff-card">
+      <div class="big" style="font-family: var(--f-accent); font-weight: 600;">عA</div>
+      <div class="weights">
+        <span>400</span><span>500</span><span>600</span><span>700</span>
+      </div>
+      <div class="meta">
+        <span class="name">Readex Pro</span>
+        <span class="use">Accent · FR + arabe</span>
+      </div>
+    </div>
+    <div class="ff-card">
+      <div class="big" style="font-family: var(--f-mono); font-weight: 500;">123</div>
+      <div class="weights">
+        <span>400</span><span>500</span>
+      </div>
+      <div class="meta">
+        <span class="name">JetBrains Mono</span>
+        <span class="use">Codes · refs légales</span>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="block-title">Échelle typographique</h3>
+  <div class="type-stack">
+    <div class="type-row">
+      <div class="label"><b>Display</b>Outfit · 700</div>
+      <div class="sample" style="font-family: var(--f-display); font-weight: 700; font-size: 64px; letter-spacing: -0.025em;">Ton 3omar, ligne par ligne.</div>
+      <div class="spec"><b>64 / 68</b><br/>line-height 1.05<br/>tracking −2.5%</div>
+    </div>
+    <div class="type-row">
+      <div class="label"><b>H1</b>Outfit · 700</div>
+      <div class="sample" style="font-family: var(--f-display); font-weight: 700; font-size: 44px; letter-spacing: -0.02em;">Bulletin de paie · Juin 2026</div>
+      <div class="spec"><b>44 / 48</b><br/>line-height 1.1<br/>tracking −2%</div>
+    </div>
+    <div class="type-row">
+      <div class="label"><b>H2</b>Outfit · 600</div>
+      <div class="sample" style="font-family: var(--f-display); font-weight: 600; font-size: 32px; letter-spacing: -0.015em;">Cotisations salariales</div>
+      <div class="spec"><b>32 / 38</b><br/>line-height 1.2<br/>tracking −1.5%</div>
+    </div>
+    <div class="type-row">
+      <div class="label"><b>H3</b>Outfit · 600</div>
+      <div class="sample" style="font-family: var(--f-display); font-weight: 600; font-size: 22px;">Comment se calcule l'IR ?</div>
+      <div class="spec"><b>22 / 28</b><br/>line-height 1.3</div>
+    </div>
+    <div class="type-row">
+      <div class="label"><b>Lead</b>Plus Jakarta · 500</div>
+      <div class="sample" style="font-family: var(--f-body); font-weight: 500; font-size: 19px; line-height: 1.5; color: var(--ink-2);">Simulez votre bulletin de paie marocain, gratuitement et en quelques clics — sans qu'aucune donnée ne quitte votre navigateur.</div>
+      <div class="spec"><b>19 / 28</b><br/>line-height 1.5</div>
+    </div>
+    <div class="type-row">
+      <div class="label"><b>Corps</b>Plus Jakarta · 400</div>
+      <div class="sample" style="font-family: var(--f-body); font-weight: 400; font-size: 16px; line-height: 1.6; color: var(--ink);">L'impôt sur le revenu (IR) est calculé selon le barème de la <a style="color: var(--g-500); font-weight: 500;">Loi de Finances 2026</a>. Le taux marginal dépend du salaire net imposable annualisé.</div>
+      <div class="spec"><b>16 / 26</b><br/>line-height 1.6</div>
+    </div>
+    <div class="type-row">
+      <div class="label"><b>UI / petit</b>Plus Jakarta · 500</div>
+      <div class="sample" style="font-family: var(--f-body); font-weight: 500; font-size: 14px;">Salaire brut imposable</div>
+      <div class="spec"><b>14 / 20</b><br/>line-height 1.4</div>
+    </div>
+    <div class="type-row">
+      <div class="label"><b>Légende</b>Plus Jakarta · 400</div>
+      <div class="sample" style="font-family: var(--f-body); font-weight: 400; font-size: 12.5px; color: var(--ink-3);">Mis à jour le 12 juin 2026 · Loi de Finances 2026</div>
+      <div class="spec"><b>12.5 / 18</b><br/>line-height 1.45</div>
+    </div>
+    <div class="type-row">
+      <div class="label"><b>Mono / réf.</b>JetBrains · 500</div>
+      <div class="sample" style="font-family: var(--f-mono); font-weight: 500; font-size: 13px;">CGI · Art. 73 — Barème IR 2026</div>
+      <div class="spec"><b>13 / 18</b><br/>tabular-nums</div>
+    </div>
+    <div class="type-row">
+      <div class="label"><b>Accent</b>Readex Pro · 600</div>
+      <div class="sample" style="font-family: var(--f-accent); font-weight: 600; font-size: 28px; color: var(--g-500);">ton 3omar · <span dir="rtl">عمر</span></div>
+      <div class="spec"><b>28 / 36</b><br/>FR + arabe</div>
+    </div>
+  </div>
+</section>
+
+
+<!-- =========================================================
+     07 — ICONOGRAPHIE & ILLUSTRATION
+     ========================================================= -->
+<section class="brand-section" id="icons">
+  <div class="sec-head">
+    <div class="sec-num">07 / 12</div>
+    <div>
+      <div class="sec-kicker">Système graphique</div>
+      <h2 class="sec-title">Iconographie &amp; illustration</h2>
+      <p class="sec-intro">Icônes en <b>trait fin</b>, géométriques, ouvertes — jamais remplies. Illustrations <b>flat</b>, vocabulaire limité (bulletin, calculatrice, pièce DH, drapeau, plante). Le motif <b>zellige</b> est texture, jamais décor.</p>
+    </div>
+    <div></div>
+  </div>
+
+  <h3 class="block-title">Icônes — système 24×24</h3>
+  <p style="max-width: 720px; margin-top: -8px;">Trait <b>1.6 px</b>, terminaisons arrondies, grille de 24 px, métaphore directe. Couleur héritée par <code style="font-family: var(--f-mono); font-size: 12.5px;">currentColor</code>.</p>
+  <div class="icon-grid" style="margin-top: 20px;">
+    <div class="icon-card"><svg width="32" height="32"><use href="#i-doc"/></svg><span class="lbl">Bulletin</span></div>
+    <div class="icon-card"><svg width="32" height="32"><use href="#i-coins"/></svg><span class="lbl">Salaire</span></div>
+    <div class="icon-card"><svg width="32" height="32"><use href="#i-calc"/></svg><span class="lbl">Calculer</span></div>
+    <div class="icon-card"><svg width="32" height="32"><use href="#i-percent"/></svg><span class="lbl">Taux</span></div>
+    <div class="icon-card"><svg width="32" height="32"><use href="#i-shield"/></svg><span class="lbl">Confidentiel</span></div>
+    <div class="icon-card"><svg width="32" height="32"><use href="#i-eye"/></svg><span class="lbl">Transparence</span></div>
+    <div class="icon-card"><svg width="32" height="32"><use href="#i-book"/></svg><span class="lbl">Loi · Réf.</span></div>
+    <div class="icon-card"><svg width="32" height="32"><use href="#i-chart"/></svg><span class="lbl">Évolution</span></div>
+    <div class="icon-card"><svg width="32" height="32"><use href="#i-check"/></svg><span class="lbl">Validé</span></div>
+    <div class="icon-card"><svg width="32" height="32"><use href="#i-info"/></svg><span class="lbl">Info</span></div>
+    <div class="icon-card"><svg width="32" height="32"><use href="#i-warn"/></svg><span class="lbl">Avertir</span></div>
+    <div class="icon-card"><svg width="32" height="32"><use href="#i-x"/></svg><span class="lbl">Erreur</span></div>
+    <div class="icon-card"><svg width="32" height="32"><use href="#i-grid"/></svg><span class="lbl">Tableau</span></div>
+    <div class="icon-card"><svg width="32" height="32"><use href="#i-people"/></svg><span class="lbl">Salariés</span></div>
+    <div class="icon-card"><svg width="32" height="32"><use href="#i-clock"/></svg><span class="lbl">À jour</span></div>
+    <div class="icon-card"><svg width="32" height="32"><use href="#i-download"/></svg><span class="lbl">Télécharger</span></div>
+  </div>
+
+  <h3 class="block-title">Motif zellige · texture de fond</h3>
+  <p style="max-width: 720px; margin-top: -8px;">Étoile à 12 branches stylisée, en trait, à <b>5 à 10 % d'opacité</b> maximum. Jamais utilisé comme bloc plein. Réservé aux fonds larges (hero, footer, sections de respiration). Le motif ne doit jamais être lu en premier.</p>
+  <div class="zellige-demo">
+    <div class="z-stage cream">
+      <div class="demo-card">Bulletin de paie · Juin 2026</div>
+      <div class="label">Zellige · 10% sur crème</div>
+    </div>
+    <div class="z-stage dark">
+      <div class="demo-card">Bulletin de paie · Juin 2026</div>
+      <div class="label">Zellige · 12% sur g-800</div>
+    </div>
+  </div>
+
+  <h3 class="block-title">Illustrations · style</h3>
+  <p style="max-width: 720px; margin-top: -8px;">Niveau de détail moyen, palette restreinte (vert brand, rouge brand, crème, ombres en g-100/g-200). Pas de gradients chargés, pas de personnages caricaturaux. Une seule métaphore par illustration.</p>
+  <div class="illust-grid">
+    <div class="illust-card">
+      <div class="stage">
+        <!-- mini illustration vectorielle : un bulletin avec une pièce DH et un drapeau marocain -->
+        <svg viewBox="0 0 400 240" style="width: 100%; max-width: 360px;">
+          <!-- bulletin -->
+          <rect x="80" y="30" width="220" height="180" rx="10" fill="#fff" stroke="#21704F" stroke-width="1.5"/>
+          <rect x="100" y="50" width="180" height="14" rx="3" fill="#21704F"/>
+          <text x="190" y="61" text-anchor="middle" font-family="Outfit" font-weight="700" font-size="10" fill="#fff">BULLETIN DE PAIE</text>
+          <circle cx="115" cy="92" r="10" fill="none" stroke="#21704F" stroke-width="1.4"/>
+          <rect x="135" y="86" width="90" height="4" rx="2" fill="#DCEBE3"/>
+          <rect x="135" y="94" width="60" height="4" rx="2" fill="#DCEBE3"/>
+          <rect x="100" y="120" width="180" height="1" fill="#DCEBE3"/>
+          <rect x="100" y="135" width="100" height="4" rx="2" fill="#1A2E26"/>
+          <rect x="230" y="135" width="50" height="4" rx="2" fill="#1B5FD9"/>
+          <rect x="100" y="150" width="100" height="4" rx="2" fill="#1A2E26"/>
+          <rect x="230" y="150" width="50" height="4" rx="2" fill="#6F42C1"/>
+          <rect x="100" y="165" width="100" height="4" rx="2" fill="#1A2E26"/>
+          <rect x="230" y="165" width="50" height="4" rx="2" fill="#C1272D"/>
+          <rect x="100" y="183" width="180" height="20" rx="4" fill="#F0F7F3"/>
+          <rect x="108" y="190" width="50" height="6" rx="2" fill="#1B7A4A"/>
+          <rect x="230" y="190" width="50" height="6" rx="2" fill="#1B7A4A"/>
+          <!-- pièce DH -->
+          <circle cx="330" cy="180" r="28" fill="#C1272D"/>
+          <circle cx="330" cy="180" r="22" fill="none" stroke="#fff" stroke-width="1.5"/>
+          <text x="330" y="187" text-anchor="middle" font-family="Outfit" font-weight="700" font-size="16" fill="#fff">DH</text>
+          <!-- drapeau -->
+          <rect x="40" y="100" width="2" height="100" fill="#1A2E26"/>
+          <rect x="42" y="100" width="40" height="28" fill="#C1272D"/>
+          <path d="M 62 108 L 64 116 L 72 116 L 66 121 L 68 129 L 62 124 L 56 129 L 58 121 L 52 116 L 60 116 Z" fill="#21704F"/>
+        </svg>
+      </div>
+      <div class="meta"><span class="name">Bulletin de paie · héros</span><span class="ref">ILLUS-01</span></div>
+    </div>
+    <div class="illust-card">
+      <div class="stage">
+        <svg viewBox="0 0 400 240" style="width: 100%; max-width: 320px;">
+          <!-- calculatrice -->
+          <rect x="60" y="40" width="160" height="180" rx="12" fill="#21704F"/>
+          <rect x="72" y="56" width="136" height="36" rx="4" fill="#FAF8F3"/>
+          <text x="200" y="83" text-anchor="end" font-family="JetBrains Mono" font-weight="500" font-size="22" fill="#1A2E26">9 540.00</text>
+          <g fill="#FAF8F3">
+            <rect x="72" y="104" width="28" height="22" rx="3"/>
+            <rect x="108" y="104" width="28" height="22" rx="3"/>
+            <rect x="144" y="104" width="28" height="22" rx="3"/>
+            <rect x="180" y="104" width="28" height="22" rx="3"/>
+            <rect x="72" y="132" width="28" height="22" rx="3"/>
+            <rect x="108" y="132" width="28" height="22" rx="3"/>
+            <rect x="144" y="132" width="28" height="22" rx="3"/>
+            <rect x="180" y="132" width="28" height="22" rx="3"/>
+            <rect x="72" y="160" width="28" height="22" rx="3"/>
+            <rect x="108" y="160" width="28" height="22" rx="3"/>
+            <rect x="144" y="160" width="28" height="22" rx="3"/>
+          </g>
+          <rect x="180" y="160" width="28" height="50" rx="3" fill="#C1272D"/>
+          <rect x="72" y="188" width="100" height="22" rx="3" fill="#FAF8F3"/>
+          <!-- plantes -->
+          <g transform="translate(260 100)">
+            <path d="M 30 80 C 20 50, 5 40, 0 30 C 12 32, 24 38, 30 50 Z" fill="#87B89F"/>
+            <path d="M 30 80 C 40 50, 55 40, 60 30 C 48 32, 36 38, 30 50 Z" fill="#4D9376"/>
+            <path d="M 30 80 C 28 60, 30 40, 30 25" stroke="#21704F" stroke-width="2" fill="none"/>
+            <rect x="14" y="80" width="32" height="20" rx="4" fill="#1A2E26"/>
+          </g>
+          <!-- pièces empilées -->
+          <g transform="translate(290 170)">
+            <ellipse cx="20" cy="30" rx="22" ry="6" fill="#C1272D"/>
+            <rect x="-2" y="22" width="44" height="8" fill="#C1272D"/>
+            <ellipse cx="20" cy="22" rx="22" ry="6" fill="#8A1B20"/>
+            <ellipse cx="20" cy="16" rx="22" ry="6" fill="#C1272D"/>
+            <rect x="-2" y="10" width="44" height="6" fill="#C1272D"/>
+            <ellipse cx="20" cy="10" rx="22" ry="6" fill="#8A1B20"/>
+            <text x="20" y="14" text-anchor="middle" font-family="Outfit" font-weight="700" font-size="9" fill="#fff">DH</text>
+          </g>
+        </svg>
+      </div>
+      <div class="meta"><span class="name">Calculatrice + dirhams</span><span class="ref">ILLUS-02</span></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- =========================================================
+     08 — COMPOSANTS UI
+     ========================================================= -->
+<section class="brand-section" id="components">
+  <div class="sec-head">
+    <div class="sec-num">08 / 12</div>
+    <div>
+      <div class="sec-kicker">Bibliothèque · Bootstrap 5 ready</div>
+      <h2 class="sec-title">Composants UI</h2>
+      <p class="sec-intro">Tous les composants reprennent les classes structurelles Bootstrap 5 et les surchargent via des variables CSS. <code style="font-family: var(--f-mono); font-size: 13px;">border-radius: 0.75rem</code> reste la base, héritée du code existant.</p>
+    </div>
+    <div></div>
+  </div>
+
+  <!-- BUTTONS -->
+  <div class="cmp-block">
+    <div class="cmp-head">
+      <h4>Boutons</h4>
+      <span class="meta">.btn · radius 8px · weight 600</span>
+    </div>
+    <div class="btn-grid">
+      <div class="col">
+        <span class="caption">Primaire</span>
+        <button class="btn btn-primary">Simuler mon bulletin</button>
+        <button class="btn btn-primary"><svg width="14" height="14"><use href="#i-download"/></svg>Télécharger PDF</button>
+        <button class="btn btn-primary btn-loading">Calcul en cours</button>
+        <button class="btn btn-disabled">Indisponible</button>
+      </div>
+      <div class="col">
+        <span class="caption">Secondaire</span>
+        <button class="btn btn-secondary">Voir le détail</button>
+        <button class="btn btn-secondary"><svg width="14" height="14"><use href="#i-book"/></svg>Référence légale</button>
+        <button class="btn btn-outline">Réinitialiser</button>
+        <button class="btn btn-ghost">Annuler</button>
+      </div>
+      <div class="col">
+        <span class="caption">Action critique</span>
+        <button class="btn btn-danger">Supprimer la simulation</button>
+        <button class="btn btn-outline" style="color: var(--r-500); border-color: var(--r-500);">Effacer mes données</button>
+      </div>
+      <div class="col">
+        <span class="caption">Tailles</span>
+        <button class="btn btn-primary" style="padding: 14px 28px; font-size: 16px;">Large · CTA hero</button>
+        <button class="btn btn-primary">Standard · 14.5</button>
+        <button class="btn btn-primary" style="padding: 7px 14px; font-size: 13px;">Compact · 13</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BADGES -->
+  <div class="cmp-block">
+    <div class="cmp-head">
+      <h4>Badges &amp; références légales</h4>
+      <span class="meta">.badge · radius 999px</span>
+    </div>
+    <div class="badge-grid">
+      <span class="badge badge-leg">CGI Art. 73</span>
+      <span class="badge badge-leg">Loi de Finances 2026</span>
+      <span class="badge badge-leg">Code du Travail · Art. 357</span>
+      <span class="badge badge-info">Brut imposable</span>
+      <span class="badge badge-cot">Cotisation salariale</span>
+      <span class="badge badge-tax">Impôt sur le revenu</span>
+      <span class="badge badge-succ">Net à payer</span>
+      <span class="badge badge-warn">Charge patronale</span>
+      <span class="badge badge-neutral">Indemnité non-imposable</span>
+    </div>
+    <p style="margin-top: 18px; font-size: 13px; color: var(--ink-3);">
+      Les badges « <b style="color: var(--g-700);">§ référence légale</b> » sont distinctifs : article du CGI, du Code du Travail, ou alinéa d'une Loi de Finances. Toujours cliquables, toujours sourcés.
+    </p>
+  </div>
+
+  <!-- CARDS -->
+  <div class="cmp-block">
+    <div class="cmp-head">
+      <h4>Cartes — synthèse de paie</h4>
+      <span class="meta">.card · radius 12px · shadow-1</span>
+    </div>
+    <div class="card-demo-grid">
+      <div class="card-demo">
+        <div class="top">
+          <span class="title">Salaire brut</span>
+          <span class="badge badge-info">Brut</span>
+        </div>
+        <div class="amount">12 500<span class="currency">DH</span></div>
+        <div class="footnote">Avant cotisations et impôt.</div>
+      </div>
+      <div class="card-demo">
+        <div class="top">
+          <span class="title">Cotisations + IR</span>
+          <span class="badge badge-tax">Retenues</span>
+        </div>
+        <div class="amount" style="color: var(--s-tax);">−2 960<span class="currency">DH</span></div>
+        <div class="footnote">CNSS, AMO, IR cumulés.</div>
+      </div>
+      <div class="card-demo bordered-success elevated">
+        <div class="top">
+          <span class="title" style="color: var(--s-succ);">Net à payer</span>
+          <span class="badge badge-succ">Net</span>
+        </div>
+        <div class="amount" style="color: var(--s-succ);">9 540<span class="currency">DH</span></div>
+        <div class="footnote" style="color: #0D4F2D;">Versé sur compte le 25/06/2026.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BULLETIN -->
+  <div class="cmp-block">
+    <div class="cmp-head">
+      <h4>Tableau · Bulletin de paie</h4>
+      <span class="meta">Header vert · ligne « net » en surbrillance</span>
+    </div>
+    <div class="bulletin">
+      <div class="bulletin-head">
+        <h5>Bulletin de paie — Khalid B.</h5>
+        <span class="period">JUIN 2026</span>
+      </div>
+      <table class="bulletin-table">
+        <thead>
+          <tr><th>Élément</th><th>Base</th><th>Taux</th><th style="text-align: right;">Montant (DH)</th></tr>
+        </thead>
+        <tbody>
+          <tr class="section"><td colspan="4">Rémunération brute</td></tr>
+          <tr class="brut"><td class="label-cell">Salaire de base<span class="ref">Code du Travail · Art. 345</span></td><td>—</td><td>—</td><td class="amount">12 000.00</td></tr>
+          <tr class="brut"><td class="label-cell">Prime d'ancienneté<span class="ref">10 ans · 10 %</span></td><td>12 000</td><td>10 %</td><td class="amount">500.00</td></tr>
+          <tr class="section"><td colspan="4">Cotisations salariales</td></tr>
+          <tr class="cot"><td class="label-cell">CNSS — Prestations sociales<span class="ref">Plafond 6 000 DH</span></td><td>6 000</td><td>4.48 %</td><td class="amount">−268.80</td></tr>
+          <tr class="cot"><td class="label-cell">AMO<span class="ref">Loi 65-00</span></td><td>12 500</td><td>2.26 %</td><td class="amount">−282.50</td></tr>
+          <tr class="tax"><td class="label-cell">Impôt sur le revenu<span class="ref">CGI Art. 73 · Tranche 30 %</span></td><td>—</td><td>—</td><td class="amount">−2 408.70</td></tr>
+          <tr class="net"><td>Net à payer</td><td></td><td></td><td class="amount">9 540.00</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- FORM -->
+  <div class="cmp-block">
+    <div class="cmp-head">
+      <h4>Champs de formulaire</h4>
+      <span class="meta">.form-control · radius 8px</span>
+    </div>
+    <div class="form-demo">
+      <div class="form-field">
+        <label>Salaire brut mensuel</label>
+        <div class="input with-suffix">
+          <span>12 500.00</span>
+          <span class="suffix">DH</span>
+        </div>
+        <span class="hint">Avant cotisations et impôt.</span>
+      </div>
+      <div class="form-field focus">
+        <label>Statut familial</label>
+        <div class="input with-suffix">
+          <span>Marié, 2 enfants</span>
+          <span class="suffix">▾</span>
+        </div>
+        <span class="hint" style="color: var(--g-500);">Détermine vos déductions IR.</span>
+      </div>
+      <div class="form-field">
+        <label>Ancienneté (années)</label>
+        <div class="input"><span>10</span></div>
+        <span class="hint">Prime calculée automatiquement.</span>
+      </div>
+      <div class="form-field error">
+        <label>CIN</label>
+        <div class="input"><span>AB12</span></div>
+        <span class="hint">Format incomplet. Ex. : AB123456.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALERTS -->
+  <div class="cmp-block">
+    <div class="cmp-head">
+      <h4>Alertes &amp; avertissements</h4>
+      <span class="meta">.alert · 4 variants</span>
+    </div>
+    <div class="alerts-grid">
+      <div class="alert info">
+        <span class="icon"><svg width="20" height="20"><use href="#i-info"/></svg></span>
+        <div><h5>Brut imposable calculé</h5><p>Le brut imposable retire les indemnités non-imposables avant l'IR.</p></div>
+      </div>
+      <div class="alert succ">
+        <span class="icon"><svg width="20" height="20"><use href="#i-check"/></svg></span>
+        <div><h5>Simulation enregistrée</h5><p>Vos données restent sur cet appareil. Aucune information n'a été envoyée.</p></div>
+      </div>
+      <div class="alert warn">
+        <span class="icon"><svg width="20" height="20"><use href="#i-warn"/></svg></span>
+        <div><h5>Plafond CNSS atteint</h5><p>Au-delà de 6 000 DH, la part CNSS n'est plus prélevée sur la fraction supérieure.</p></div>
+      </div>
+      <div class="alert danger">
+        <span class="icon"><svg width="20" height="20"><use href="#i-x"/></svg></span>
+        <div><h5>Salaire en dessous du SMIG</h5><p>Le montant saisi (2 800 DH) est inférieur au SMIG mensuel 2026.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- =========================================================
+     09 — LAYOUT & ESPACEMENT
+     ========================================================= -->
+<section class="brand-section" id="layout">
+  <div class="sec-head">
+    <div class="sec-num">09 / 12</div>
+    <div>
+      <div class="sec-kicker">Système</div>
+      <h2 class="sec-title">Layout, espacement,<br/>arrondis &amp; ombres</h2>
+      <p class="sec-intro">Une échelle 4 px, des arrondis chaleureux <b>0.75rem</b>, des ombres rares et basses. La densité est calme : on lit un bulletin, pas un tableau de bord.</p>
+    </div>
+    <div></div>
+  </div>
+
+  <h3 class="block-title">Échelle d'espacement · base 4 px</h3>
+  <div class="spacing-row">
+    <div class="sp-card"><div class="bar" style="height: 4px;"></div><div class="meta"><span class="token">sp-1</span><span class="px">4 px · 0.25rem</span></div></div>
+    <div class="sp-card"><div class="bar" style="height: 8px;"></div><div class="meta"><span class="token">sp-2</span><span class="px">8 px · 0.5rem</span></div></div>
+    <div class="sp-card"><div class="bar" style="height: 12px;"></div><div class="meta"><span class="token">sp-3</span><span class="px">12 px · 0.75rem</span></div></div>
+    <div class="sp-card"><div class="bar" style="height: 16px;"></div><div class="meta"><span class="token">sp-4</span><span class="px">16 px · 1rem</span></div></div>
+    <div class="sp-card"><div class="bar" style="height: 24px;"></div><div class="meta"><span class="token">sp-6</span><span class="px">24 px · 1.5rem</span></div></div>
+    <div class="sp-card"><div class="bar" style="height: 32px;"></div><div class="meta"><span class="token">sp-8</span><span class="px">32 px · 2rem</span></div></div>
+    <div class="sp-card"><div class="bar" style="height: 48px;"></div><div class="meta"><span class="token">sp-12</span><span class="px">48 px · 3rem</span></div></div>
+    <div class="sp-card"><div class="bar" style="height: 64px;"></div><div class="meta"><span class="token">sp-16</span><span class="px">64 px · 4rem</span></div></div>
+  </div>
+
+  <h3 class="block-title">Rayons d'arrondi</h3>
+  <div class="radius-row">
+    <div class="rd-card"><div class="demo" style="border-radius: 4px;"></div><div class="meta"><span class="token">rd-xs</span><span class="val">4 px</span></div></div>
+    <div class="rd-card"><div class="demo" style="border-radius: 8px;"></div><div class="meta"><span class="token">rd-sm · btn</span><span class="val">8 px</span></div></div>
+    <div class="rd-card"><div class="demo" style="border-radius: 12px;"></div><div class="meta"><span class="token">rd · card ★</span><span class="val">12 px</span></div></div>
+    <div class="rd-card"><div class="demo" style="border-radius: 16px;"></div><div class="meta"><span class="token">rd-lg</span><span class="val">16 px</span></div></div>
+    <div class="rd-card"><div class="demo" style="border-radius: 999px;"></div><div class="meta"><span class="token">rd-pill</span><span class="val">∞ — badges</span></div></div>
+  </div>
+
+  <h3 class="block-title">Ombres portées</h3>
+  <div class="shadow-row">
+    <div class="sh-card" style="box-shadow: none; border: 1px solid var(--hairline);"><div class="demo"></div><div class="meta"><span class="token">shadow-0</span><span class="val">— bordure</span></div></div>
+    <div class="sh-card" style="box-shadow: var(--shadow-1);"><div class="demo"></div><div class="meta"><span class="token">shadow-1</span><span class="val">flottement subtil</span></div></div>
+    <div class="sh-card" style="box-shadow: var(--shadow-2);"><div class="demo"></div><div class="meta"><span class="token">shadow-2</span><span class="val">cartes élevées</span></div></div>
+    <div class="sh-card" style="box-shadow: var(--shadow-3);"><div class="demo"></div><div class="meta"><span class="token">shadow-3</span><span class="val">modale, dropdown</span></div></div>
+    <div class="sh-card" style="background: var(--g-50);"><div class="demo" style="background: var(--g-50); border: none; box-shadow: inset 0 1px 2px rgba(8,32,23,0.08);"></div><div class="meta"><span class="token">shadow-inset</span><span class="val">champs en focus</span></div></div>
+  </div>
+
+  <h3 class="block-title">Grille &amp; rythme vertical</h3>
+  <p style="max-width: 720px;">Grille 12 colonnes Bootstrap, gouttière <b>24 px</b>. Largeur max contenu <b>1 180 px</b>. Marges externes <b>56 px</b> sur desktop, <b>24 px</b> sur mobile. Le rythme vertical entre sections majeures est de <b>96 px</b>, entre blocs internes <b>48 px</b>.</p>
+</section>
+
+
+<!-- =========================================================
+     10 — TON ÉDITORIAL
+     ========================================================= -->
+<section class="brand-section" id="voice">
+  <div class="sec-head">
+    <div class="sec-num">10 / 12</div>
+    <div>
+      <div class="sec-kicker">Voix de marque</div>
+      <h2 class="sec-title">Ton éditorial</h2>
+      <p class="sec-intro">On parle comme un cousin compétent : précis sur les chiffres, simple sur les mots. La darija s'invite en accent — <b style="color: var(--g-500); font-family: var(--f-accent);">ton 3omar</b>, <b style="color: var(--g-500); font-family: var(--f-accent);">flouss</b>, <b style="color: var(--g-500); font-family: var(--f-accent);">khdma</b> — jamais en bloc, toujours volontaire.</p>
+    </div>
+    <div></div>
+  </div>
+
+  <h3 class="block-title">Voix de marque · do / don't</h3>
+  <div class="voice-grid">
+    <div class="voice-card do">
+      <div class="tag"><svg width="14" height="14"><use href="#i-check"/></svg> ON DIT</div>
+      <blockquote>« Voici ton 3omar du mois, ligne par ligne. »</blockquote>
+    </div>
+    <div class="voice-card dont">
+      <div class="tag"><svg width="14" height="14"><use href="#i-x"/></svg> ON NE DIT PAS</div>
+      <blockquote>« Veuillez consulter le récapitulatif de votre rémunération mensuelle. »</blockquote>
+    </div>
+    <div class="voice-card do">
+      <div class="tag"><svg width="14" height="14"><use href="#i-check"/></svg> ON DIT</div>
+      <blockquote>« Cette retenue, c'est ta cotisation CNSS — on t'explique pourquoi. »</blockquote>
+    </div>
+    <div class="voice-card dont">
+      <div class="tag"><svg width="14" height="14"><use href="#i-x"/></svg> ON NE DIT PAS</div>
+      <blockquote>« Prélèvement au titre de la prévoyance sociale, conformément à la législation en vigueur. »</blockquote>
+    </div>
+  </div>
+
+  <h3 class="block-title">Microcopy · échantillons d'écran</h3>
+  <div class="microcopy">
+    <div class="mc-row">
+      <span class="ctx">Hero — accroche</span>
+      <div class="text">« <b>Ton <span class="darija">3omar</span>, ligne par ligne.</b> Simulez votre bulletin de paie marocain, gratuitement. »</div>
+      <span class="note">Darija autorisée en accent visuel. Verbe d'action direct.</span>
+    </div>
+    <div class="mc-row">
+      <span class="ctx">CTA primaire</span>
+      <div class="text">« Simuler mon bulletin »</div>
+      <span class="note">Toujours à la première personne, verbe à l'infinitif.</span>
+    </div>
+    <div class="mc-row">
+      <span class="ctx">Confirmation — succès</span>
+      <div class="text">« Ton bulletin est prêt. <span class="darija">Bravo</span> — tout est resté sur ton appareil. »</div>
+      <span class="note">Une bonne nouvelle + une preuve de confiance.</span>
+    </div>
+    <div class="mc-row">
+      <span class="ctx">Avertissement — plafond</span>
+      <div class="text">« Au-delà de 6 000 DH, la CNSS n'est plus prélevée. C'est la loi, pas un bug. »</div>
+      <span class="note">Ton clair, ton qui rassure. On dédramatise.</span>
+    </div>
+    <div class="mc-row">
+      <span class="ctx">Erreur — champ invalide</span>
+      <div class="text">« CIN incomplet — vérifie qu'il fasse bien 2 lettres + 6 chiffres (ex. AB123456). »</div>
+      <span class="note">On dit le problème + on donne la solution dans la même phrase.</span>
+    </div>
+    <div class="mc-row">
+      <span class="ctx">Vide — pas encore de simulation</span>
+      <div class="text">« Pas encore de simulation. Renseigne ton salaire et on s'occupe du <span class="darija">flouss</span>. »</div>
+      <span class="note">Empty state qui invite, sans condescendance.</span>
+    </div>
+    <div class="mc-row">
+      <span class="ctx">Footer · open source</span>
+      <div class="text">« Fait avec ❤ au Maroc — code ouvert, calculs vérifiables, données qui restent chez toi. »</div>
+      <span class="note">Trois promesses, une ligne.</span>
+    </div>
+  </div>
+</section>
+
+
+<!-- =========================================================
+     11 — ACCESSIBILITÉ
+     ========================================================= -->
+<section class="brand-section" id="a11y">
+  <div class="sec-head">
+    <div class="sec-num">11 / 12</div>
+    <div>
+      <div class="sec-kicker">Inclusion par défaut</div>
+      <h2 class="sec-title">Accessibilité</h2>
+      <p class="sec-intro">Un outil citoyen <b>doit</b> être lisible par tous : malvoyants, daltoniens, lecteurs d'écran, utilisateurs de clavier. WCAG 2.2 niveau AA est la barre minimale, pas l'idéal.</p>
+    </div>
+    <div></div>
+  </div>
+
+  <div class="a11y-grid">
+    <div class="a11y-card">
+      <div class="icon"><svg width="22" height="22"><use href="#i-eye"/></svg></div>
+      <h4>Contraste</h4>
+      <p>Tous les couples couleur ont été validés contre <b>WCAG 2.2 AA</b>. Texte courant ≥ 4.5:1, gros texte ≥ 3:1.</p>
+      <ul><li>Texte sur fond clair : encre #1A2E26 → 14.8:1</li><li>Vert sur crème : 5.83:1</li><li>Rouge sur blanc : 5.59:1</li></ul>
+    </div>
+    <div class="a11y-card">
+      <div class="icon"><svg width="22" height="22"><use href="#i-grid"/></svg></div>
+      <h4>Tailles minimales</h4>
+      <p>Texte courant <b>16 px</b> minimum. Légendes <b>12.5 px</b> avec contraste renforcé. Touch targets <b>44 × 44 px</b>.</p>
+      <ul><li>Boutons : padding 10 px vertical mini</li><li>Champs : 44 px de hauteur</li><li>Tap zones jamais &lt; 32×32</li></ul>
+    </div>
+    <div class="a11y-card">
+      <div class="icon"><svg width="22" height="22"><use href="#i-people"/></svg></div>
+      <h4>Daltonisme</h4>
+      <p>La couleur ne porte <b>jamais</b> seule l'information. Toujours un libellé, un picto, ou une position pour la redondance.</p>
+      <ul><li>Brut / Cotisation / Net : libellé + couleur</li><li>Alertes : icône + couleur + texte</li><li>Tests deutéranopie + protanopie OK</li></ul>
+    </div>
+  </div>
+
+  <h3 class="block-title">Simulation daltonisme — la palette tient</h3>
+  <p style="max-width: 720px; margin-top: -8px;">Les rôles sémantiques restent distinguables quel que soit le type de daltonisme, grâce à l'écart de luminance entre vert (sombre), rouge (sombre), violet (moyen), bleu (moyen-vif), orange (vif). Mais la couleur n'est jamais le seul porteur de sens.</p>
+
+  <div class="colorblind-row">
+    <div class="cb-card">
+      <div class="name">Vision standard</div>
+      <div class="swatches">
+        <div class="sw" style="background: #1B5FD9;"></div>
+        <div class="sw" style="background: #6F42C1;"></div>
+        <div class="sw" style="background: #C1272D;"></div>
+        <div class="sw" style="background: #1B7A4A;"></div>
+        <div class="sw" style="background: #D97706;"></div>
+      </div>
+    </div>
+    <div class="cb-card">
+      <div class="name">Deutéranopie (vert)</div>
+      <div class="swatches">
+        <div class="sw" style="background: #5670CC;"></div>
+        <div class="sw" style="background: #5E59B6;"></div>
+        <div class="sw" style="background: #786641;"></div>
+        <div class="sw" style="background: #6F7349;"></div>
+        <div class="sw" style="background: #B79E2E;"></div>
+      </div>
+    </div>
+    <div class="cb-card">
+      <div class="name">Protanopie (rouge)</div>
+      <div class="swatches">
+        <div class="sw" style="background: #5C6CC4;"></div>
+        <div class="sw" style="background: #6053B0;"></div>
+        <div class="sw" style="background: #695D32;"></div>
+        <div class="sw" style="background: #6F7448;"></div>
+        <div class="sw" style="background: #B19929;"></div>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="block-title">Autres règles</h3>
+  <ul style="font-size: 14.5px; line-height: 1.7; color: var(--ink-2); max-width: 720px;">
+    <li><b style="color: var(--ink);">Focus visible</b> — un anneau de 3 px en <code style="font-family: var(--f-mono);">var(--g-500)</code> à 30 % autour de chaque élément focusable. Jamais <code style="font-family: var(--f-mono);">outline: none</code> sans remplacement.</li>
+    <li><b style="color: var(--ink);">Navigation clavier</b> — ordre de tabulation logique. Saut « Aller au contenu » en haut de page.</li>
+    <li><b style="color: var(--ink);">Lecteurs d'écran</b> — chaque chiffre du bulletin annoncé avec son unité (« 9 540 dirhams »). Pas de <code style="font-family: var(--f-mono);">aria-hidden</code> sur du contenu utile.</li>
+    <li><b style="color: var(--ink);">Mouvement réduit</b> — respecter <code style="font-family: var(--f-mono);">prefers-reduced-motion</code> : pas d'animation sur les totaux.</li>
+    <li><b style="color: var(--ink);">Langue</b> — interface en français par défaut, expressions en darija marquées en <code style="font-family: var(--f-mono);">lang="ar-MA"</code>.</li>
+  </ul>
+</section>
+
+
+<!-- =========================================================
+     12 — DO'S & DON'TS
+     ========================================================= -->
+<section class="brand-section" id="dodont">
+  <div class="sec-head">
+    <div class="sec-num">12 / 12</div>
+    <div>
+      <div class="sec-kicker">Garde-fous</div>
+      <h2 class="sec-title">Do's &amp; Don'ts</h2>
+      <p class="sec-intro">Quelques règles cardinales, qui résument l'ensemble de la charte en une planche.</p>
+    </div>
+    <div></div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+    <!-- DO -->
+    <div style="background: var(--paper); border: 1px solid var(--g-200); border-radius: var(--radius); overflow: hidden;">
+      <div style="background: var(--g-500); color: #fff; padding: 18px 24px; font-family: var(--f-display); font-weight: 700; font-size: 16px; letter-spacing: 0.04em; text-transform: uppercase; display: flex; align-items: center; gap: 10px;">
+        <svg width="20" height="20"><use href="#i-check"/></svg> À FAIRE
+      </div>
+      <ul style="margin: 0; padding: 24px 24px 24px 44px; line-height: 1.85; color: var(--ink); font-size: 14.5px;">
+        <li>Utiliser le <b>Vert 3omar</b> comme couleur d'action principale.</li>
+        <li>Donner au logo une zone de protection de <b>1x</b> minimum.</li>
+        <li>Garder le motif zellige à <b>5–12 % d'opacité</b>, comme une texture.</li>
+        <li>Toujours doubler la couleur par un <b>libellé ou un picto</b>.</li>
+        <li>Citer la <b>référence légale</b> sous chaque chiffre du bulletin.</li>
+        <li>Préférer <b>une métaphore claire</b> à plusieurs illustrations chargées.</li>
+        <li>Mélanger français et darija avec <b>parcimonie</b> et <b>intention</b>.</li>
+        <li>Aligner les montants en <b>tabular-nums</b> à droite.</li>
+        <li>Respecter <b>border-radius 0.75rem</b> sur les cartes.</li>
+      </ul>
+    </div>
+
+    <!-- DON'T -->
+    <div style="background: var(--paper); border: 1px solid var(--r-100); border-radius: var(--radius); overflow: hidden;">
+      <div style="background: var(--r-500); color: #fff; padding: 18px 24px; font-family: var(--f-display); font-weight: 700; font-size: 16px; letter-spacing: 0.04em; text-transform: uppercase; display: flex; align-items: center; gap: 10px;">
+        <svg width="20" height="20"><use href="#i-x"/></svg> À NE PAS FAIRE
+      </div>
+      <ul style="margin: 0; padding: 24px 24px 24px 44px; line-height: 1.85; color: var(--ink); font-size: 14.5px;">
+        <li>Ne jamais déformer, incliner ou recolorer le logo.</li>
+        <li>Ne pas utiliser le rouge comme couleur d'action principale.</li>
+        <li>Ne pas <b>charger</b> avec des gradients arc-en-ciel ou néons.</li>
+        <li>Ne pas utiliser le zellige <b>en bloc plein</b> ou en couverture.</li>
+        <li>Ne pas afficher un chiffre <b>sans son explication</b>.</li>
+        <li>Ne pas tomber dans le folklore (tajines, théières, mosaïques saturées).</li>
+        <li>Ne pas verser dans la <b>darija performée</b> ou stéréotypée.</li>
+        <li>Ne pas écrire un chiffre en lettres <b>petites ou en gris pâle</b>.</li>
+        <li>Ne pas mélanger plus de <b>2 familles de polices</b> dans une vue.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+</div>
+
+
+<!-- =========================================================
+     FOOTER
+     ========================================================= -->
+<footer class="brand-footer">
+  <div class="inner">
+    <div>
+      <h5>3omar · <span class="arabic">عمر</span></h5>
+      <p>Charte de marque v1.0 — Édition fondatrice de juin 2026. Document vivant, contributions bienvenues sur le dépôt public. Licence Creative Commons BY-SA 4.0.</p>
+    </div>
+    <div class="meta">
+      <div>Charte · v1.0</div>
+      <div><b>3omar.ma</b></div>
+      <div>Fait avec ❤ au Maroc</div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -58,7 +58,9 @@ RUN cp .env.example .env
 
 # ---- Créer les répertoires Laravel (non inclus dans Composer) ----
 RUN mkdir -p bootstrap/cache \
-        storage/framework/{sessions,views,cache/data} \
+        storage/framework/sessions \
+        storage/framework/views \
+        storage/framework/cache/data \
         storage/logs \
         storage/app/public
 
