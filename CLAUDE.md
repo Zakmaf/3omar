@@ -64,24 +64,26 @@ resources/views/
 ```
 0.  Prime d'ancienneté = salaire_base × taux_tranche       (Art. 350 Code du Travail)
 1.  SBI  = salaire_base + primes_imposables + heures_sup
+         + excédent des indemnités au-delà des plafonds    (part imposable, Arrêté 1314-25)
 2.  CNSS = min(SBI, plafond_cnss) × taux_cnss              (Dahir 1-72-184)
 3.  AMO  = SBI × taux_amo                                  (Loi 65-00)
 4.  CIMR = SBI × taux_cimr (si actif, 3%–10%)              (Art. 28-III CGI)
 5.  SNC  = SBI − CNSS − AMO − CIMR
-6.  FP   = min(SNC × taux_fp, plafond_fp)                  (Art. 59 I-A CGI — taux dépend
-                                                            de SBI vs seuil, ou statut
-                                                            journaliste/artiste)
+6.  FP   = min(SBI × taux_fp, plafond_fp)                  (Art. 59 I-A CGI — assiette = revenu
+                                                            brut imposable ; taux dépend de SBI
+                                                            vs seuil, ou statut journaliste/artiste)
 7.  RNI mensuel = SNC − FP
 8.  RNI annuel net = (RNI × 12) − retraite_complémentaire déductible (≤ 50% SBI annuel, Art. 28-IV)
     IR annuel brut = barème progressif(RNI annuel net)     (Art. 73 CGI, 6 tranches)
     IR mensuel = IR annuel brut / 12 − charges_famille     (Art. 74 CGI, 50 MAD/pers., plafond 300)
-9.  Indemnités exonérées : chaque type plafonné par config('payroll.indemnites')
-                                                            (Arrêté 1314-25 / BO 7443)
-10. Salaire net = SBI − CNSS − AMO − CIMR − IR_net + indemnités − (autres_retenues + mutuelle_salarié)
+9.  Indemnités exonérées : part exonérée = min(déclaré, plafond) par config('payroll.indemnites')
+                                                            (Arrêté 1314-25 / BO 7443 — plafond
+                                                            journalier × jours_travailles si par_jour)
+10. Salaire net = SBI − CNSS − AMO − CIMR − IR_net + indemnités exonérées − (autres_retenues + mutuelle_salarié)
 11. Coût employeur = SBI + CNSS_patronal + AMO_patronal + AF_patronal + TFP_patronal + mutuelle_patronale
 ```
 
-The result array also includes `avertissements` (regulatory warnings, e.g. SBI below SMIG, CIMR rate out of range, indemnité exceeding its legal cap) and `repartition` (percentages/colors for the Chart.js donut).
+The result array also includes `avertissements` (regulatory warnings, e.g. salaire de base below SMIG, CIMR rate out of range, indemnité exceeding its legal cap) and `repartition` (percentages/colors for the Chart.js donut).
 
 ---
 
@@ -91,7 +93,7 @@ Edit **`config/payroll.php`** only — both the calculator service and the docum
 
 ## Adding a new indemnité exonérée type
 
-Add an entry to `config('payroll.indemnites')` with `label`, `base_salaire` (bool), and either `montant` (fixed MAD) or `pct` (fraction of `salaire_base`, used when `base_salaire` is true). The calculator (`plafondIndemnite`), the form (dropdown + JS preview via `@json($indemnites_config)`), and the documentation page all pick it up automatically — no other code changes needed.
+Add an entry to `config('payroll.indemnites')` with `label`, `base_salaire` (bool), and either `montant` (fixed MAD) or `pct` (fraction of `salaire_base`, used when `base_salaire` is true). Set `par_jour => true` when the legal ceiling is per worked day (`montant` then is the daily cap, multiplied by the `jours_travailles` input, default `config('payroll.jours_travailles_defaut')`). The calculator (`plafondIndemnite`), the form (dropdown + JS preview via `@json($indemnites_config)`), and the documentation page all pick it up automatically — no other code changes needed.
 
 ## Legal references
 

@@ -49,7 +49,7 @@
                                        min="0" step="0.01" placeholder="Ex: 8 500">
                                 <span class="input-group-text">MAD</span>
                             </div>
-                            <div class="form-text">SMIG 2026 : 3 422 MAD/mois (Décret n° 2.25.983)</div>
+                            <div class="form-text">SMIG 2026 : {{ number_format(config('payroll.smig.mensuel'), 2, ',', ' ') }} MAD/mois (Décret n° 2.25.983)</div>
                         </div>
 
                         <div class="mb-2">
@@ -59,7 +59,7 @@
                                 <option value="journaliste" {{ old('type_frais_pro','commun') === 'journaliste' ? 'selected' : '' }}>Journaliste / Correspondant de presse (45%)</option>
                                 <option value="artiste"     {{ old('type_frais_pro','commun') === 'artiste'     ? 'selected' : '' }}>Artiste / Créateur (40%)</option>
                             </select>
-                            <div class="form-text">Art. 59 I-A CGI — plafond 2 500 ou 2 916,67 MAD/mois</div>
+                            <div class="form-text">Art. 59 I-A CGI — plafond {{ number_format(config('payroll.frais_pro.commun.haut.plafond'), 2, ',', ' ') }} MAD/mois</div>
                         </div>
 
                     </div>
@@ -191,7 +191,7 @@
                         <div id="cimrSection" style="{{ old('cimr_actif') ? '' : 'display:none' }}">
                             <label class="form-label fw-semibold">Taux CIMR salarié : <span id="cimrTauxVal">{{ old('cimr_taux', 5) }}%</span></label>
                             <input type="range" name="cimr_taux" id="cimrTaux" class="form-range"
-                                   min="3" max="10" step="1" value="{{ old('cimr_taux', 5) }}">
+                                   min="3" max="10" step="0.5" value="{{ old('cimr_taux', 5) }}">
                             <div class="d-flex justify-content-between small text-muted">
                                 <span>3% (min)</span><span>10% (max)</span>
                             </div>
@@ -293,7 +293,19 @@
                         </button>
                     </div>
                     <div class="card-body px-4 py-3">
-                        <div class="form-text mb-3">Exonérées de CNSS et d'IR dans les limites légales (Arrêté n° 1314-25 / BO n° 7443)</div>
+                        <div class="form-text mb-3">Exonérées de CNSS et d'IR dans les limites légales (Arrêté n° 1314-25 / BO n° 7443). L'excédent au-delà du plafond est réintégré au brut imposable.</div>
+                        <div class="row g-2 mb-3 align-items-end">
+                            <div class="col-7">
+                                <label class="form-label small mb-1 fw-semibold">Jours travaillés dans le mois</label>
+                                <input type="number" name="jours_travailles" id="joursTravailles"
+                                       class="form-control form-control-sm @error('jours_travailles') is-invalid @enderror"
+                                       value="{{ old('jours_travailles', config('payroll.jours_travailles_defaut')) }}"
+                                       min="1" max="31" step="1">
+                            </div>
+                            <div class="col-5">
+                                <div class="form-text mb-1">Sert au plafond journalier (ex. panier)</div>
+                            </div>
+                        </div>
                         <div id="indemniteContainer">
                             @if(old('indemnites'))
                                 @foreach(old('indemnites') as $i => $ind)
@@ -303,7 +315,7 @@
                                         <select name="indemnites[{{ $i }}][type]" class="form-select form-select-sm ind-type-select">
                                             @foreach($indemnites_config as $key => $cfg)
                                             <option value="{{ $key }}" {{ ($ind['type'] ?? '') === $key ? 'selected' : '' }}
-                                                    data-plafond="{{ $cfg['base_salaire'] ? ($cfg['pct'] * 100).'% du SB' : number_format($cfg['montant'], 0, ',', ' ').' MAD/mois' }}">
+                                                    data-plafond="{{ $cfg['base_salaire'] ? ($cfg['pct'] * 100).'% du SB' : number_format($cfg['montant'], !empty($cfg['par_jour']) ? 2 : 0, ',', ' ').' MAD/'.(!empty($cfg['par_jour']) ? 'jour travaillé' : 'mois') }}">
                                                 {{ $cfg['label'] }}
                                             </option>
                                             @endforeach
@@ -452,7 +464,9 @@ function buildIndOptions(selectedType) {
     return Object.entries(INDEMNITES_CONFIG).map(([k, cfg]) => {
         const plafondTxt = cfg.base_salaire
             ? `${(cfg.pct * 100).toFixed(0)}% du salaire de base`
-            : `${cfg.montant.toLocaleString('fr-FR')} MAD/mois`;
+            : cfg.par_jour
+                ? `${cfg.montant.toLocaleString('fr-FR')} MAD/jour travaillé`
+                : `${cfg.montant.toLocaleString('fr-FR')} MAD/mois`;
         return `<option value="${k}" ${k === selectedType ? 'selected' : ''} data-plafond="${plafondTxt}">${cfg.label}</option>`;
     }).join('');
 }

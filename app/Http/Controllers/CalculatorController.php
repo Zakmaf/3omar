@@ -35,6 +35,7 @@ class CalculatorController extends Controller
             'mutuelle_salarie'                => 'nullable|numeric|min:0',
             'mutuelle_patronale'              => 'nullable|numeric|min:0',
             'autres_retenues'                 => 'nullable|numeric|min:0',
+            'jours_travailles'                => 'nullable|integer|min:1|max:31',
             'heures_sup.*.type'               => 'required_with:heures_sup.*.nb_heures|in:semaine_diurne,semaine_nocturne,repos_diurne,repos_nocturne',
             'heures_sup.*.nb_heures'          => 'nullable|numeric|min:0',
             'indemnites.*.type'               => 'required_with:indemnites.*.montant|string',
@@ -55,6 +56,7 @@ class CalculatorController extends Controller
             'retraite_complementaire_mensuel',
             'mutuelle_salarie', 'mutuelle_patronale',
             'autres_retenues', 'heures_sup', 'indemnites',
+            'jours_travailles',
         ]);
 
         $result = $this->calculator->calculer($input);
