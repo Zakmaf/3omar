@@ -25,7 +25,7 @@
 | **AMO** | 2,26 % salarié · sans plafond |
 | **IR** | Barème progressif 6 tranches — Art. 73 CGI 2026 |
 | **CIMR** | Retraite complémentaire 3 %–10 %, 100 % déductible IR |
-| **Frais professionnels** | 35 % (≤ 6 500 MAD) ou 25 % (> 6 500 MAD) — Art. 59 CGI |
+| **Frais professionnels** | 35 % (≤ 6 500 MAD) ou 25 % (> 6 500 MAD), plafond 2 916,67 MAD/mois — Art. 59 CGI |
 | **Charges de famille** | 50 MAD/personne, plafond 300 MAD — Art. 74 CGI |
 | **Heures supplémentaires** | 4 régimes (+25 %, +50 %, +50 %, +100 %) — Art. 201 CT |
 | **Prime d'ancienneté** | 5 tranches automatiques (2–25+ ans) — Art. 350 CT |
@@ -117,7 +117,7 @@ CNSS  = min(SBI, 6 000) × 4,48 %
 AMO   = SBI × 2,26 %
 CIMR  = SBI × taux_cimr  (si actif)
 SNC   = SBI − CNSS − AMO − CIMR
-FP    = min(SNC × taux_fp, plafond_fp)
+FP    = min(SBI × taux_fp, plafond_fp)
 RNI   = SNC − FP
 IR    = barème_progressif(RNI × 12) / 12 − charges_famille
 Net   = SBI − CNSS − AMO − CIMR − IR + indemnités − mutuelle − autres retenues
