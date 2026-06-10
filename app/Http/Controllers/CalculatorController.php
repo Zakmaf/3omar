@@ -42,12 +42,12 @@ class CalculatorController extends Controller
             'indemnites.*.type' => ['required_with:indemnites.*.montant', 'distinct', Rule::in(array_keys(config('payroll.indemnites')))],
             'indemnites.*.montant' => 'nullable|numeric|min:0',
         ], [
-            'salaire_base.required' => 'Le salaire de base est obligatoire.',
-            'salaire_base.min' => 'Le salaire de base doit être positif.',
-            'type_frais_pro.in' => 'Catégorie professionnelle invalide.',
-            'cimr_taux.min' => "Le taux CIMR doit être au minimum {$cimrMin}%.",
-            'cimr_taux.max' => "Le taux CIMR ne peut pas dépasser {$cimrMax}%.",
-            'indemnites.*.type.distinct' => 'Chaque type d’indemnité ne peut être déclaré qu’une fois.',
+            'salaire_base.required' => __('ui.validation.base_required'),
+            'salaire_base.min' => __('ui.validation.base_positive'),
+            'type_frais_pro.in' => __('ui.validation.category_invalid'),
+            'cimr_taux.min' => __('ui.validation.cimr_min', ['min' => $cimrMin]),
+            'cimr_taux.max' => __('ui.validation.cimr_max', ['max' => $cimrMax]),
+            'indemnites.*.type.distinct' => __('ui.validation.allowance_distinct'),
         ]);
 
         $input = $request->only([

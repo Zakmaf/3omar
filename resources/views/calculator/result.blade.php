@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', '3omar — Ton bulletin détaillé')
+@section('title', '3omar — '.__('ui.result.title'))
 
 @push('head')
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
@@ -10,20 +10,20 @@
 <div class="container">
     <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
         <div>
-            <div class="eyebrow mb-1">Résultat de simulation</div>
-            <h1 class="h2 fw-bold mb-1">Ton bulletin, en clair</h1>
-            <p class="mb-0" style="color:var(--ink-2)">Commence par les montants clés, puis ouvre le détail pour vérifier chaque ligne.</p>
+            <div class="eyebrow mb-1">{{ __('ui.result.eyebrow') }}</div>
+            <h1 class="h2 fw-bold mb-1">{{ __('ui.result.title') }}</h1>
+            <p class="mb-0" style="color:var(--ink-2)">{{ __('ui.result.intro') }}</p>
         </div>
         <div class="d-flex flex-column flex-sm-row gap-2">
             <a href="{{ route('calculator.index') }}" class="btn text-white fw-semibold" style="background:var(--g-500)">
-                <i class="bi bi-arrow-left me-1"></i>Modifier la simulation
+                <i class="bi bi-arrow-left me-1"></i>{{ __('ui.result.edit') }}
             </a>
             <button onclick="window.print()" class="btn fw-semibold" style="border:1px solid var(--ink-3);color:var(--ink-2)">
-                <i class="bi bi-printer me-1"></i>Imprimer
+                <i class="bi bi-printer me-1"></i>{{ __('ui.result.print') }}
             </button>
         </div>
     </div>
-    <p class="small mb-4" style="color:var(--ink-3)"><i class="bi bi-shield-check me-1"></i>Aucune donnée personnelle n'a été stockée.</p>
+    <p class="small mb-4" style="color:var(--ink-3)"><i class="bi bi-shield-check me-1"></i>{{ __('ui.footer.privacy') }}</p>
 
     {{-- Avertissements --}}
     @if(!empty($r['avertissements']))
@@ -119,7 +119,7 @@
         <div class="col-lg-7">
             <details class="section-card overflow-hidden" id="calculationDetails">
                 <summary class="px-4 py-3 fw-semibold" style="font-family:var(--f-display)">
-                    <i class="bi bi-table me-2" style="color:var(--s-succ)"></i>Voir le détail complet du calcul
+                    <i class="bi bi-table me-2" style="color:var(--s-succ)"></i>{{ __('ui.result.details') }}
                 </summary>
             <div class="card section-card">
                 <div class="card-body p-0">
@@ -519,6 +519,7 @@
 @push('scripts')
 <script>
 const repartition = @json($r['repartition']);
+const intlLocale = @json(config('app.supported_locales.'.app()->getLocale().'.intl'));
 
 const labels = {
     net:      'Net à payer',
@@ -550,7 +551,7 @@ new Chart(ctx, {
                     label: ctx => {
                         const k = activeKeys[ctx.dataIndex];
                         const pct = repartition[k].pct;
-                        const amt = repartition[k].montant.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                        const amt = repartition[k].montant.toLocaleString(intlLocale, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                         return ` ${amt} MAD (${pct}%)`;
                     }
                 }
@@ -562,7 +563,7 @@ new Chart(ctx, {
 const legend = document.getElementById('chartLegend');
 legend.innerHTML = activeKeys.map((k, i) => {
     const pct = repartition[k].pct;
-    const amt = repartition[k].montant.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const amt = repartition[k].montant.toLocaleString(intlLocale, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     return `<div class="d-flex align-items-center justify-content-between mb-1 small">
         <span><span style="display:inline-block;width:12px;height:12px;background:${colors[i]};border-radius:2px;margin-right:6px"></span>${chartLabels[i]}</span>
         <span class="text-muted">${amt} MAD <strong>(${pct}%)</strong></span>

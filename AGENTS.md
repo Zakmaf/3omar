@@ -34,6 +34,8 @@ There is no frontend build step; Bootstrap, Bootstrap Icons, and Chart.js are lo
 
 Follow Laravel conventions and PSR-12, enforced by Laravel Pint. Use four-space indentation in PHP. Name classes in `PascalCase`, methods and variables in `camelCase`, and Blade files/routes in descriptive lowercase names. Keep controllers focused on validation and orchestration; place payroll calculations in the service. Preserve French domain terminology and include the relevant legal reference when adding regulatory rules.
 
+User-facing interface text must use stable keys from `lang/{fr,en,ar,es}/ui.php`. Add each new key to all four catalogs and verify Arabic RTL rendering. Never duplicate rates or ceilings in translations.
+
 ## Testing Guidelines
 
 PHPUnit 11 tests live under `tests/Unit/` and `tests/Feature/`. Name files `*Test.php`, and cover boundaries such as tax brackets, ceilings, and rounding. Run tests with:

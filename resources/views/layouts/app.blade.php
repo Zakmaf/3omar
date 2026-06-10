@@ -1,16 +1,16 @@
 <!doctype html>
-<html lang="fr">
+<html lang="{{ app()->getLocale() }}" dir="{{ config('app.supported_locales.'.app()->getLocale().'.dir', 'ltr') }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="3omar aide à comprendre les principaux calculs d'un bulletin de paie marocain, avec les taux et références utilisés par le simulateur.">
-    <meta property="og:title" content="@yield('title', '3omar — Ton bulletin, ligne par ligne')">
-    <meta property="og:description" content="Calculs expliqués, références affichées, aucune donnée personnelle stockée.">
+    <meta name="description" content="{{ __('ui.meta_description') }}">
+    <meta property="og:title" content="@yield('title', __('ui.meta_title'))">
+    <meta property="og:description" content="{{ __('ui.meta_social') }}">
     <meta property="og:image" content="{{ asset('img/3omar-social-preview.png') }}">
     <meta property="og:type" content="website">
-    <meta property="og:locale" content="fr_MA">
+    <meta property="og:locale" content="{{ config('app.supported_locales.'.app()->getLocale().'.og') }}">
     <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}">
-    <title>@yield('title', '3omar — Ton bulletin, ligne par ligne')</title>
+    <title>@yield('title', __('ui.meta_title'))</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -111,6 +111,24 @@
         }
         .advanced-section[hidden] {
             display: none !important;
+        }
+        [dir="rtl"] body {
+            font-family: var(--f-accent);
+        }
+        [dir="rtl"] .ms-auto { margin-right: auto !important; margin-left: 0 !important; }
+        [dir="rtl"] .me-1, [dir="rtl"] .me-2 { margin-left: .5rem !important; margin-right: 0 !important; }
+        [dir="rtl"] .ms-1, [dir="rtl"] .ms-2 { margin-right: .5rem !important; margin-left: 0 !important; }
+        [dir="rtl"] .text-end { text-align: left !important; }
+        [dir="rtl"] .row-brut td:first-child,
+        [dir="rtl"] .row-cotis td:first-child,
+        [dir="rtl"] .row-impot td:first-child,
+        [dir="rtl"] .row-indem td:first-child,
+        [dir="rtl"] .row-retenue td:first-child,
+        [dir="rtl"] .row-patron td:first-child,
+        [dir="rtl"] .row-net td:first-child,
+        [dir="rtl"] .row-employer td:first-child {
+            border-left: 0;
+            border-right: 3px solid var(--g-500);
         }
 
         h1, h2, h3, h4, h5, h6 {
@@ -266,7 +284,7 @@
     @stack('head')
 </head>
 <body>
-<a class="skip-link" href="#main-content">Aller au contenu principal</a>
+<a class="skip-link" href="#main-content">{{ __('ui.skip') }}</a>
 
 {{-- SVG symbol definitions --}}
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -322,22 +340,37 @@
                     <a class="nav-link {{ request()->routeIs('home') ? 'active fw-semibold' : '' }}"
                        @if(request()->routeIs('home')) aria-current="page" @endif
                        href="{{ route('home') }}">
-                        <i class="bi bi-house me-1"></i>Accueil
+                        <i class="bi bi-house me-1"></i>{{ __('ui.nav.home') }}
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('calculator.*') ? 'active fw-semibold' : '' }}"
                        @if(request()->routeIs('calculator.*')) aria-current="page" @endif
                        href="{{ route('calculator.index') }}">
-                        <i class="bi bi-calculator me-1"></i>Calculateur
+                        <i class="bi bi-calculator me-1"></i>{{ __('ui.nav.calculator') }}
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('documentation') ? 'active fw-semibold' : '' }}"
                        @if(request()->routeIs('documentation')) aria-current="page" @endif
                        href="{{ route('documentation') }}">
-                        <i class="bi bi-journal-text me-1"></i>Documentation
+                        <i class="bi bi-journal-text me-1"></i>{{ __('ui.nav.documentation') }}
                     </a>
+                </li>
+                <li class="nav-item dropdown">
+                    <button class="btn nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-translate me-1"></i>{{ config('app.supported_locales.'.app()->getLocale().'.short') }}
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        @foreach(config('app.supported_locales') as $locale => $details)
+                        <li>
+                            <a class="dropdown-item {{ app()->isLocale($locale) ? 'active' : '' }}"
+                               @if(app()->isLocale($locale)) aria-current="true" @endif
+                               lang="{{ $locale }}" dir="{{ $details['dir'] }}"
+                               href="{{ route('locale.update', $locale) }}">{{ $details['label'] }}</a>
+                        </li>
+                        @endforeach
+                    </ul>
                 </li>
             </ul>
         </div>
@@ -358,7 +391,7 @@
                     <svg viewBox="0 0 520 180" style="width:120px;height:auto"><use href="#logo-reverse"/></svg>
                 </div>
                 <p class="footer-body-text small mb-2" style="font-family:var(--f-body)">
-                    Simulateur gratuit de paie marocaine
+                    {{ __('ui.footer.tagline') }}
                 </p>
                 <p class="small mb-1" style="color:var(--cream)">
                     <i class="bi bi-person-circle me-1"></i>
@@ -373,27 +406,27 @@
             {{-- Colonne 2 : Navigation --}}
             <div class="col-md-4">
                 <h6 class="fw-semibold mb-3" style="font-family:var(--f-display)">
-                    <i class="bi bi-signpost-split me-1"></i>Navigation
+                    <i class="bi bi-signpost-split me-1"></i>{{ __('ui.footer.navigation') }}
                 </h6>
                 <ul class="list-unstyled small mb-0">
                     <li class="mb-2">
                         <a href="{{ route('calculator.index') }}">
-                            <i class="bi bi-calculator me-1"></i>Simuler mon bulletin
+                            <i class="bi bi-calculator me-1"></i>{{ __('ui.footer.simulate') }}
                         </a>
                     </li>
                     <li class="mb-2">
                         <a href="{{ route('documentation') }}">
-                            <i class="bi bi-journal-text me-1"></i>Règles de simulation 2026
+                            <i class="bi bi-journal-text me-1"></i>{{ __('ui.footer.rules') }}
                         </a>
                     </li>
                     <li class="mb-2">
                         <a href="https://github.com/Zakmaf/3omar" target="_blank" rel="noopener">
-                            <i class="bi bi-github me-1"></i>Code source GitHub
+                            <i class="bi bi-github me-1"></i>{{ __('ui.footer.source') }}
                         </a>
                     </li>
                     <li class="mb-2">
                         <a href="https://github.com/Zakmaf/3omar/issues" target="_blank" rel="noopener">
-                            <i class="bi bi-bug me-1"></i>Signaler une erreur
+                            <i class="bi bi-bug me-1"></i>{{ __('ui.footer.report') }}
                         </a>
                     </li>
                 </ul>
@@ -402,18 +435,16 @@
             {{-- Colonne 3 : Disclaimer --}}
             <div class="col-md-4">
                 <h6 class="fw-semibold mb-3" style="font-family:var(--f-display);color:var(--s-warn)">
-                    <i class="bi bi-exclamation-triangle me-1"></i>Avertissement
+                    <i class="bi bi-exclamation-triangle me-1"></i>{{ __('ui.footer.warning') }}
                 </h6>
                 <p class="footer-body-text small mb-2">
-                    3omar est un outil <strong>pédagogique et informatif</strong>.
-                    Les résultats utilisent les paramètres documentés pour l'exercice 2026,
-                    mais peuvent contenir des inexactitudes.
-                    Pour votre bulletin officiel, consultez votre employeur ou un expert-comptable.
+                    {{ __('ui.footer.warning_text') }}
+                    {{ __('ui.footer.consult') }}
                 </p>
                 <p class="footer-body-text small mb-0">
                     <i class="bi bi-shield-check me-1" style="color:var(--g-300)"></i>
-                    <strong>Aucune donnée personnelle n'est stockée.</strong>
-                    Chaque simulation est calculée à la demande.
+                    <strong>{{ __('ui.footer.privacy') }}</strong>
+                    {{ __('ui.footer.privacy_detail') }}
                 </p>
             </div>
 
@@ -426,7 +457,7 @@
                     Exercice fiscal 2026 &middot; CGI Art. 73, 74, 59, 28 &middot; Dahir n&deg; 1-72-184 &middot; Loi n&deg; 65-00 &middot; Arrêté n&deg; 1314-25 &middot; Décret n&deg; 2.25.983
                 </div>
                 <div class="col-md-4 text-md-end small footer-body-text mt-2 mt-md-0">
-                    &copy; 2026 3omar &mdash; Projet open source sous licence MIT
+                    &copy; 2026 3omar &mdash; {{ __('ui.footer.license') }}
                 </div>
             </div>
         </div>

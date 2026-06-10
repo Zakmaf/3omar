@@ -53,6 +53,7 @@ Il n'existe pas d'étape de build frontend : Bootstrap, Bootstrap Icons et Chart
 
 Lors d'une modification réglementaire, mettez à jour `config/payroll.php`, ajoutez la référence correspondante et couvrez les limites par des tests.
 Consultez aussi [`docs/REGLES_GESTION.md`](docs/REGLES_GESTION.md) pour les formules implémentées et les hypothèses restant à valider.
+La stratégie multilingue et les conventions de traduction sont décrites dans [`docs/I18N.md`](docs/I18N.md).
 
 ## Contribution
 

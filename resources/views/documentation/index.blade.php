@@ -1,20 +1,20 @@
 @extends('layouts.app')
 
-@section('title', '3omar — Documentation des règles 2026')
+@section('title', '3omar — '.__('ui.documentation.title'))
 
 @section('content')
 <div class="container">
 
     <div class="row mb-4">
         <div class="col">
-            <div class="eyebrow mb-2">Comprendre les paramètres</div>
-            <h1 class="h2 fw-bold mb-1"><i class="bi bi-journal-text me-2" style="color:var(--g-500)"></i>Documentation des règles 2026</h1>
+            <div class="eyebrow mb-2">{{ __('ui.documentation.eyebrow') }}</div>
+            <h1 class="h2 fw-bold mb-1"><i class="bi bi-journal-text me-2" style="color:var(--g-500)"></i>{{ __('ui.documentation.title') }}</h1>
             <p style="color:var(--ink-2)">
-                Paramètres, plafonds et barèmes utilisés par 3omar pour le secteur privé marocain.
-                <span class="badge rounded-pill ms-1 px-2 py-1" style="background:var(--g-50);color:var(--g-700);border:1px solid var(--g-200)">Hypothèses de simulation — exercice 2026</span>
+                {{ __('ui.documentation.intro') }}
+                <span class="badge rounded-pill ms-1 px-2 py-1" style="background:var(--g-50);color:var(--g-700);border:1px solid var(--g-200)">{{ __('ui.documentation.badge') }}</span>
             </p>
             <div class="alert alert-warning small mb-0">
-                Les références indiquent l'origine déclarée des paramètres. Elles ne remplacent pas une validation réglementaire adaptée à chaque situation.
+                {{ __('ui.documentation.warning') }}
             </div>
             <nav class="d-flex flex-wrap gap-2 mt-3" aria-label="Accès rapide aux règles">
                 <a class="btn btn-sm" href="#cotisations" style="border:1px solid var(--hairline-strong)">Cotisations</a>

@@ -1,21 +1,21 @@
 @extends('layouts.app')
 
-@section('title', '3omar — Simuler mon bulletin de paie 2026')
+@section('title', '3omar — '.__('ui.calculator.title'))
 
 @section('content')
 <div class="container">
 
     <div class="row mb-4">
         <div class="col">
-            <div class="eyebrow mb-2">Simulation pédagogique · environ 2 minutes</div>
-            <h1 class="h2 fw-bold mb-2"><i class="bi bi-calculator me-2" style="color:var(--g-500)"></i>Simuler mon bulletin 2026</h1>
-            <p class="page-intro mb-0" style="color:var(--ink-2)">Commence par ton salaire de base. Les options avancées servent uniquement si elles figurent sur ton bulletin ou dans ton contrat.</p>
+            <div class="eyebrow mb-2">{{ __('ui.calculator.eyebrow') }}</div>
+            <h1 class="h2 fw-bold mb-2"><i class="bi bi-calculator me-2" style="color:var(--g-500)"></i>{{ __('ui.calculator.title') }}</h1>
+            <p class="page-intro mb-0" style="color:var(--ink-2)">{{ __('ui.calculator.intro') }}</p>
         </div>
     </div>
 
     @if ($errors->any())
     <div class="alert alert-danger border-0 shadow-sm mb-4" role="alert" tabindex="-1" id="formErrors">
-        <i class="bi bi-exclamation-triangle-fill me-2"></i><strong>Erreurs de saisie :</strong>
+        <i class="bi bi-exclamation-triangle-fill me-2"></i><strong>{{ __('ui.calculator.errors') }}</strong>
         <ul class="mb-0 mt-1">
             @foreach ($errors->all() as $error)
             <li>{{ $error }}</li>
@@ -29,13 +29,13 @@
 
         <div class="section-card p-3 p-md-4 mb-4 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
             <div>
-                <div class="fw-semibold">Besoin d’un calcul simple ?</div>
-                <div class="small" style="color:var(--ink-2)">Le salaire de base suffit. Affiche les compléments uniquement si nécessaire.</div>
+                <div class="fw-semibold">{{ __('ui.calculator.simple_title') }}</div>
+                <div class="small" style="color:var(--ink-2)">{{ __('ui.calculator.simple_text') }}</div>
             </div>
             <button type="button" class="btn px-4 fw-semibold" id="toggleAdvanced"
                     aria-expanded="{{ $errors->any() || old('nb_annees_anciennete') || old('prime_bilan') || old('prime_rendement') || old('autres_primes') || old('heures_sup') || old('cimr_actif') || old('mutuelle_salarie') || old('mutuelle_patronale') || old('retraite_complementaire_mensuel') || old('indemnites') || old('autres_retenues') ? 'true' : 'false' }}"
                     style="border:1px solid var(--g-500);color:var(--g-600)">
-                <i class="bi bi-sliders me-1"></i><span>Afficher les options avancées</span>
+                <i class="bi bi-sliders me-1"></i><span>{{ __('ui.calculator.advanced_show') }}</span>
             </button>
         </div>
 
@@ -385,10 +385,10 @@
             <div class="col d-flex flex-column flex-sm-row justify-content-center gap-2 action-bar p-3">
                 <button type="submit" class="btn btn-lg px-5 text-white fw-bold"
                         style="background:var(--g-500); min-width:240px; font-family:var(--f-body)">
-                    <i class="bi bi-calculator-fill me-2"></i>Simuler mon bulletin
+                    <i class="bi bi-calculator-fill me-2"></i>{{ __('ui.calculator.submit') }}
                 </button>
                 <a href="{{ route('calculator.index') }}" class="btn btn-lg px-4" style="border:1px solid var(--ink-3);color:var(--ink-2);font-family:var(--f-body)">
-                    <i class="bi bi-arrow-counterclockwise me-1"></i>Réinitialiser
+                    <i class="bi bi-arrow-counterclockwise me-1"></i>{{ __('ui.calculator.reset') }}
                 </a>
             </div>
         </div>
@@ -401,6 +401,9 @@
 <script>
 const INDEMNITES_CONFIG = @json($indemnites_config);
 const HS_LABELS = @json($hs_labels);
+const INTL_LOCALE = @json(config('app.supported_locales.'.app()->getLocale().'.intl'));
+const ADVANCED_SHOW = @json(__('ui.calculator.advanced_show'));
+const ADVANCED_HIDE = @json(__('ui.calculator.advanced_hide'));
 
 // Tranches d'ancienneté (pour aperçu côté client)
 const ANCIENNETE_TRANCHES = @json(config('payroll.anciennete.tranches'));
@@ -421,7 +424,7 @@ function updateAnciennete() {
     const labelEl = document.getElementById('anciennete_taux_label');
     const montantEl = document.getElementById('anciennete_montant_label');
     labelEl.textContent = taux > 0 ? taux + '%' : '0% (< 2 ans)';
-    montantEl.textContent = taux > 0 ? '→ ' + montant.toLocaleString('fr-FR', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' MAD' : '';
+    montantEl.textContent = taux > 0 ? '→ ' + montant.toLocaleString(INTL_LOCALE, {minimumFractionDigits:2, maximumFractionDigits:2}) + ' MAD' : '';
 }
 
 document.getElementById('nb_annees_anciennete').addEventListener('input', updateAnciennete);
@@ -436,8 +439,8 @@ function setAdvancedVisibility(visible) {
     advancedSections.forEach(section => { section.hidden = !visible; });
     advancedToggle.setAttribute('aria-expanded', visible ? 'true' : 'false');
     advancedToggle.querySelector('span').textContent = visible
-        ? 'Masquer les options avancées'
-        : 'Afficher les options avancées';
+        ? ADVANCED_HIDE
+        : ADVANCED_SHOW;
 }
 
 advancedToggle.addEventListener('click', () => {
@@ -494,8 +497,8 @@ function buildIndOptions(selectedType) {
         const plafondTxt = cfg.base_salaire
             ? `${(cfg.pct * 100).toFixed(0)}% du salaire de base`
             : cfg.par_jour
-                ? `${cfg.montant.toLocaleString('fr-FR')} MAD/jour travaillé`
-                : `${cfg.montant.toLocaleString('fr-FR')} MAD/mois`;
+                ? `${cfg.montant.toLocaleString(INTL_LOCALE)} MAD/jour travaillé`
+                : `${cfg.montant.toLocaleString(INTL_LOCALE)} MAD/mois`;
         return `<option value="${k}" ${k === selectedType ? 'selected' : ''} data-plafond="${plafondTxt}">${cfg.label}</option>`;
     }).join('');
 }
