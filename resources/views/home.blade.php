@@ -20,14 +20,14 @@
             <p class="lead mb-4" style="color:var(--ink-2)">
                 Simule ton bulletin de paie marocain et comprends les principaux calculs :
                 salaire brut, cotisations, impôt, indemnités et coût employeur.
-                Les taux et références utilisés sont affichés avec le résultat.
+                Le résultat distingue les montants clés, le détail des calculs et les hypothèses utilisées.
             </p>
             <div class="d-flex flex-wrap gap-3">
                 <a href="{{ route('calculator.index') }}" class="btn btn-lg px-5 text-white fw-semibold" style="background:var(--g-500)">
                     <i class="bi bi-calculator me-2"></i>Simuler mon bulletin
                 </a>
                 <a href="{{ route('documentation') }}" class="btn btn-lg px-4 fw-semibold" style="color:var(--g-500);border:1px solid var(--g-500)">
-                    <i class="bi bi-journal-text me-2"></i>Voir les taux 2026
+                    <i class="bi bi-journal-text me-2"></i>Consulter les règles 2026
                 </a>
             </div>
             <p class="small mt-3 mb-0" style="color:var(--ink-3)">
@@ -47,7 +47,7 @@
         </div>
         @foreach ([
             ['icon' => 'bi-list-check', 'color' => 'var(--s-info)', 'title' => 'Calculs expliqués', 'text' => 'Chaque étape présente son assiette, son taux et son montant.'],
-            ['icon' => 'bi-journal-text', 'color' => 'var(--s-tax)', 'title' => 'Références affichées', 'text' => 'Les textes réglementaires utilisés restent visibles avec les résultats.'],
+            ['icon' => 'bi-journal-text', 'color' => 'var(--s-tax)', 'title' => 'Hypothèses explicites', 'text' => 'Les paramètres et références déclarées restent visibles et vérifiables.'],
             ['icon' => 'bi-github', 'color' => 'var(--s-succ)', 'title' => 'Code vérifiable', 'text' => 'Le moteur de calcul et ses paramètres sont publics et ouverts aux contributions.'],
         ] as $item)
         <div class="col-md-4">
@@ -69,7 +69,7 @@
                     'CNSS et AMO, parts salarié et employeur',
                     'IR progressif et charges de famille',
                     'CIMR et retraite complémentaire',
-                    'Frais professionnels et indemnités exonérées',
+                    'Frais professionnels et indemnités traitées comme exonérées',
                     "Prime d'ancienneté et heures supplémentaires",
                     'Salaire net et coût total employeur',
                 ] as $item)

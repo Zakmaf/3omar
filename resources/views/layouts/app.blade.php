@@ -61,6 +61,7 @@
             font-family: var(--f-body);
             color: var(--ink);
             background: var(--cream);
+            line-height: 1.6;
         }
         .skip-link {
             position: absolute;
@@ -77,6 +78,39 @@
         :focus-visible {
             outline: 3px solid var(--s-info);
             outline-offset: 3px;
+        }
+        button, .btn, .nav-link, summary {
+            min-height: 44px;
+        }
+        summary {
+            cursor: pointer;
+        }
+        .form-control, .form-select, .input-group-text {
+            min-height: 44px;
+        }
+        .form-text {
+            color: var(--ink-2);
+        }
+        .eyebrow {
+            color: var(--g-600);
+            font-family: var(--f-mono);
+            font-size: .72rem;
+            font-weight: 600;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+        .page-intro {
+            max-width: 48rem;
+        }
+        .action-bar {
+            background: rgba(250,248,243,.94);
+            border: 1px solid var(--hairline);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-2);
+            backdrop-filter: blur(12px);
+        }
+        .advanced-section[hidden] {
+            display: none !important;
         }
 
         h1, h2, h3, h4, h5, h6 {
@@ -209,7 +243,24 @@
             border-top: 1px solid rgba(255,255,255,0.12);
         }
 
-        @media (max-width: 576px) { .net-amount { font-size: 2rem; } }
+        @media (max-width: 576px) {
+            .net-amount { font-size: 2rem; }
+            .mobile-sticky {
+                position: sticky;
+                bottom: .75rem;
+                z-index: 1020;
+            }
+            .mobile-sticky .btn {
+                width: 100%;
+            }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                scroll-behavior: auto !important;
+                transition-duration: .01ms !important;
+                animation-duration: .01ms !important;
+            }
+        }
     </style>
 
     @stack('head')
@@ -269,18 +320,21 @@
             <ul class="navbar-nav ms-auto gap-1" aria-label="Navigation principale">
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('home') ? 'active fw-semibold' : '' }}"
+                       @if(request()->routeIs('home')) aria-current="page" @endif
                        href="{{ route('home') }}">
                         <i class="bi bi-house me-1"></i>Accueil
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('calculator.*') ? 'active fw-semibold' : '' }}"
+                       @if(request()->routeIs('calculator.*')) aria-current="page" @endif
                        href="{{ route('calculator.index') }}">
                         <i class="bi bi-calculator me-1"></i>Calculateur
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('documentation') ? 'active fw-semibold' : '' }}"
+                       @if(request()->routeIs('documentation')) aria-current="page" @endif
                        href="{{ route('documentation') }}">
                         <i class="bi bi-journal-text me-1"></i>Documentation
                     </a>
@@ -329,7 +383,7 @@
                     </li>
                     <li class="mb-2">
                         <a href="{{ route('documentation') }}">
-                            <i class="bi bi-journal-text me-1"></i>Documentation légale 2026
+                            <i class="bi bi-journal-text me-1"></i>Règles de simulation 2026
                         </a>
                     </li>
                     <li class="mb-2">

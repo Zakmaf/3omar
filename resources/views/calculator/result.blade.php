@@ -8,10 +8,22 @@
 
 @section('content')
 <div class="container">
-    <div class="alert mb-4" role="status" style="background:var(--s-succ-bg);border:1px solid var(--g-200);color:var(--g-700)">
-        <i class="bi bi-check-circle-fill me-2"></i>
-        <strong>Ton bulletin simulé est prêt.</strong> Aucune donnée personnelle n'a été stockée.
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
+        <div>
+            <div class="eyebrow mb-1">Résultat de simulation</div>
+            <h1 class="h2 fw-bold mb-1">Ton bulletin, en clair</h1>
+            <p class="mb-0" style="color:var(--ink-2)">Commence par les montants clés, puis ouvre le détail pour vérifier chaque ligne.</p>
+        </div>
+        <div class="d-flex flex-column flex-sm-row gap-2">
+            <a href="{{ route('calculator.index') }}" class="btn text-white fw-semibold" style="background:var(--g-500)">
+                <i class="bi bi-arrow-left me-1"></i>Modifier la simulation
+            </a>
+            <button onclick="window.print()" class="btn fw-semibold" style="border:1px solid var(--ink-3);color:var(--ink-2)">
+                <i class="bi bi-printer me-1"></i>Imprimer
+            </button>
+        </div>
     </div>
+    <p class="small mb-4" style="color:var(--ink-3)"><i class="bi bi-shield-check me-1"></i>Aucune donnée personnelle n'a été stockée.</p>
 
     {{-- Avertissements --}}
     @if(!empty($r['avertissements']))
@@ -105,10 +117,11 @@
 
         {{-- Tableau détaillé --}}
         <div class="col-lg-7">
+            <details class="section-card overflow-hidden" id="calculationDetails">
+                <summary class="px-4 py-3 fw-semibold" style="font-family:var(--f-display)">
+                    <i class="bi bi-table me-2" style="color:var(--s-succ)"></i>Voir le détail complet du calcul
+                </summary>
             <div class="card section-card">
-                <div class="card-header px-4 py-3">
-                    <i class="bi bi-table me-2" style="color:var(--s-succ)"></i>Détail complet du calcul
-                </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
                         <table class="table table-sm mb-0 detail-table">
@@ -402,6 +415,7 @@
                     </div>
                 </div>
             </div>
+            </details>
         </div>
 
         {{-- Graphique + Récap --}}
@@ -496,15 +510,6 @@
                 </div>
             </div>
 
-            {{-- CTA --}}
-            <div class="d-flex gap-2">
-                <a href="{{ route('calculator.index') }}" class="btn flex-fill text-white" style="background:var(--g-500);font-family:var(--f-body)">
-                    <i class="bi bi-arrow-left me-1"></i>Simuler un autre bulletin
-                </a>
-                <button onclick="window.print()" class="btn flex-fill" style="border:1px solid var(--ink-3);color:var(--ink-2);font-family:var(--f-body)">
-                    <i class="bi bi-printer me-1"></i>Imprimer
-                </button>
-            </div>
         </div>
 
     </div>

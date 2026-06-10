@@ -7,7 +7,8 @@
 
     <div class="row mb-4">
         <div class="col">
-            <h2 class="fw-bold mb-1"><i class="bi bi-journal-text me-2" style="color:var(--g-500)"></i>Documentation des règles 2026</h2>
+            <div class="eyebrow mb-2">Comprendre les paramètres</div>
+            <h1 class="h2 fw-bold mb-1"><i class="bi bi-journal-text me-2" style="color:var(--g-500)"></i>Documentation des règles 2026</h1>
             <p style="color:var(--ink-2)">
                 Paramètres, plafonds et barèmes utilisés par 3omar pour le secteur privé marocain.
                 <span class="badge rounded-pill ms-1 px-2 py-1" style="background:var(--g-50);color:var(--g-700);border:1px solid var(--g-200)">Hypothèses de simulation — exercice 2026</span>
@@ -15,6 +16,12 @@
             <div class="alert alert-warning small mb-0">
                 Les références indiquent l'origine déclarée des paramètres. Elles ne remplacent pas une validation réglementaire adaptée à chaque situation.
             </div>
+            <nav class="d-flex flex-wrap gap-2 mt-3" aria-label="Accès rapide aux règles">
+                <a class="btn btn-sm" href="#cotisations" style="border:1px solid var(--hairline-strong)">Cotisations</a>
+                <a class="btn btn-sm" href="#impot" style="border:1px solid var(--hairline-strong)">Impôt</a>
+                <a class="btn btn-sm" href="#remuneration" style="border:1px solid var(--hairline-strong)">Rémunération</a>
+                <a class="btn btn-sm" href="#indemnites" style="border:1px solid var(--hairline-strong)">Indemnités</a>
+            </nav>
         </div>
     </div>
 
@@ -24,7 +31,7 @@
             {{-- ============================================================ --}}
             {{-- CNSS                                                          --}}
             {{-- ============================================================ --}}
-            <div class="card section-card mb-4">
+            <div class="card section-card mb-4" id="cotisations">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
                     <span class="badge rounded-circle p-2" style="background:var(--s-info)"><i class="bi bi-building"></i></span>
                     <span>CNSS — Caisse Nationale de Sécurité Sociale</span>
@@ -148,7 +155,7 @@
             {{-- ============================================================ --}}
             {{-- IR BAREME                                                     --}}
             {{-- ============================================================ --}}
-            <div class="card section-card mb-4">
+            <div class="card section-card mb-4" id="impot">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
                     <span class="badge rounded-circle p-2" style="background:var(--s-tax)"><i class="bi bi-percent"></i></span>
                     <span>Barème IR annuel 2026 — Article 73 CGI</span>
@@ -232,7 +239,7 @@
             {{-- ============================================================ --}}
             {{-- ANCIENNETÉ                                                    --}}
             {{-- ============================================================ --}}
-            <div class="card section-card mb-4">
+            <div class="card section-card mb-4" id="remuneration">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
                     <span class="badge rounded-circle p-2" style="background:var(--s-info)"><i class="bi bi-hourglass-split"></i></span>
                     <span>Prime d'ancienneté — Article 350 Code du Travail</span>
@@ -308,7 +315,7 @@
             {{-- ============================================================ --}}
             {{-- INDEMNITÉS                                                    --}}
             {{-- ============================================================ --}}
-            <div class="card section-card mb-4">
+            <div class="card section-card mb-4" id="indemnites">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
                     <span class="badge rounded-circle p-2" style="background:var(--s-succ)"><i class="bi bi-gift"></i></span>
                     <span>Indemnités traitées comme exonérées par le simulateur</span>
@@ -383,7 +390,7 @@
 
             <div class="card section-card mb-4 sticky-top" style="top:80px">
                 <div class="card-header px-4 py-3">
-                    <i class="bi bi-link-45deg me-2" style="color:var(--g-500)"></i>Sources officielles
+                    <i class="bi bi-link-45deg me-2" style="color:var(--g-500)"></i>Références citées
                 </div>
                 <div class="card-body px-4 py-3">
                     <ul class="list-unstyled mb-0">
@@ -418,7 +425,7 @@
 
             <div class="card section-card">
                 <div class="card-body px-4 py-3">
-                    <h6 class="fw-semibold mb-2"><i class="bi bi-gear me-1" style="color:var(--s-succ)"></i>Transparence totale</h6>
+                    <h6 class="fw-semibold mb-2"><i class="bi bi-gear me-1" style="color:var(--s-succ)"></i>Paramètres vérifiables</h6>
                     <p class="small text-muted mb-2">
                         Tous les taux affichés ici et utilisés dans le simulateur proviennent d'une
                         source unique. Le code est <a href="https://github.com/Zakmaf/3omar" target="_blank" rel="noopener">open source</a> :

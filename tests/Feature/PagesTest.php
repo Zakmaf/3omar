@@ -32,7 +32,8 @@ class PagesTest extends TestCase
             'salaire_base' => 5000,
             'type_frais_pro' => 'commun',
         ])->assertOk()
-            ->assertSee('Ton bulletin simulé est prêt.')
+            ->assertSee('Ton bulletin, en clair')
+            ->assertSee('Voir le détail complet du calcul')
             ->assertSee("Aucune donnée personnelle n'a été stockée.", false);
     }
 
@@ -57,5 +58,13 @@ class PagesTest extends TestCase
             ],
         ])->assertRedirect('/calculateur')
             ->assertSessionHasErrors('indemnites.0.type');
+    }
+
+    public function test_calculator_prioritizes_simple_path_and_exposes_advanced_options(): void
+    {
+        $this->get('/calculateur')->assertOk()
+            ->assertSee('Le salaire de base suffit.')
+            ->assertSee('Afficher les options avancées')
+            ->assertSee('Simulation pédagogique · environ 2 minutes');
     }
 }
