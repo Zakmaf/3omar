@@ -7,8 +7,8 @@
 
     <div class="row mb-3">
         <div class="col">
-            <h2 class="fw-bold mb-1"><i class="bi bi-calculator me-2 text-success"></i>Simuler mon bulletin 2026</h2>
-            <p class="text-muted mb-0">Remplis les champs de ta situation. Le champ marque <span class="text-danger">*</span> est obligatoire, le reste est optionnel.</p>
+            <h2 class="fw-bold mb-1"><i class="bi bi-calculator me-2" style="color:var(--g-500)"></i>Simuler mon bulletin 2026</h2>
+            <p class="mb-0" style="color:var(--ink-2)">Remplis les champs de ta situation. Le champ marque <span style="color:var(--s-tax)">*</span> est obligatoire, le reste est optionnel.</p>
         </div>
     </div>
 
@@ -36,12 +36,12 @@
                 {{-- 1. Rémunération de base --}}
                 <div class="card section-card mb-4">
                     <div class="card-header px-4 py-3">
-                        <i class="bi bi-cash-coin me-2 text-primary"></i>Salaire de base
+                        <i class="bi bi-cash-coin me-2" style="color:var(--s-info)"></i>Salaire de base
                     </div>
                     <div class="card-body px-4 py-3">
 
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">Salaire de base brut <span class="text-danger">*</span></label>
+                            <label class="form-label fw-semibold">Salaire de base brut <span style="color:var(--s-tax)">*</span></label>
                             <div class="input-group">
                                 <input type="number" name="salaire_base" id="salaire_base"
                                        class="form-control @error('salaire_base') is-invalid @enderror"
@@ -68,14 +68,14 @@
                 {{-- 2. Primes et ancienneté --}}
                 <div class="card section-card mb-4">
                     <div class="card-header px-4 py-3">
-                        <i class="bi bi-cash-stack me-2 text-warning"></i>Primes imposables
+                        <i class="bi bi-cash-stack me-2" style="color:var(--s-warn)"></i>Primes imposables
                     </div>
                     <div class="card-body px-4 py-3">
 
                         {{-- Ancienneté --}}
-                        <div class="p-3 rounded-2 mb-3" style="background:#fffbeb; border:1px solid #fde68a;">
+                        <div class="p-3 rounded-2 mb-3" style="background:var(--s-warn-bg); border:1px solid rgba(217,119,6,0.2);">
                             <div class="fw-semibold small mb-2">
-                                <i class="bi bi-hourglass-split text-warning me-1"></i>Prime d'ancienneté (Art. 350 Code du Travail)
+                                <i class="bi bi-hourglass-split me-1" style="color:var(--s-warn)"></i>Prime d'ancienneté (Art. 350 Code du Travail)
                             </div>
                             <div class="row g-2 align-items-end">
                                 <div class="col-7">
@@ -88,7 +88,7 @@
                                 <div class="col-5 text-end">
                                     <div class="small text-muted">Taux applicable :</div>
                                     <div class="fw-bold" id="anciennete_taux_label">—</div>
-                                    <div class="small text-success" id="anciennete_montant_label"></div>
+                                    <div class="small" id="anciennete_montant_label" style="color:var(--s-succ)"></div>
                                 </div>
                             </div>
                             <div class="form-text mt-1">
@@ -137,8 +137,8 @@
                 {{-- 3. Heures supplémentaires --}}
                 <div class="card section-card mb-4">
                     <div class="card-header px-4 py-3 d-flex justify-content-between align-items-center">
-                        <span><i class="bi bi-clock-history me-2 text-info"></i>Heures supplémentaires</span>
-                        <button type="button" class="btn btn-sm btn-outline-info" id="addHS">
+                        <span><i class="bi bi-clock-history me-2" style="color:var(--s-info)"></i>Heures supplémentaires</span>
+                        <button type="button" class="btn btn-sm" id="addHS" style="border:1px solid var(--s-info);color:var(--s-info)">
                             <i class="bi bi-plus-circle me-1"></i>Ajouter
                         </button>
                     </div>
@@ -180,7 +180,7 @@
                 {{-- 4. CIMR --}}
                 <div class="card section-card mb-4">
                     <div class="card-header px-4 py-3">
-                        <i class="bi bi-piggy-bank me-2" style="color:#6f42c1"></i>Retraite complémentaire (CIMR)
+                        <i class="bi bi-piggy-bank me-2" style="color:var(--s-cot)"></i>Retraite complémentaire (CIMR)
                     </div>
                     <div class="card-body px-4 py-3">
                         <div class="form-check form-switch mb-3">
@@ -210,7 +210,7 @@
                 {{-- 5. Charges de famille --}}
                 <div class="card section-card mb-4">
                     <div class="card-header px-4 py-3">
-                        <i class="bi bi-people-fill me-2 text-success"></i>Charges de famille
+                        <i class="bi bi-people-fill me-2" style="color:var(--s-succ)"></i>Charges de famille
                     </div>
                     <div class="card-body px-4 py-3">
                         <div class="row g-3">
@@ -234,7 +234,7 @@
                 {{-- 6. Santé & Retraite complémentaire --}}
                 <div class="card section-card mb-4">
                     <div class="card-header px-4 py-3">
-                        <i class="bi bi-heart-pulse-fill me-2 text-danger"></i>Santé &amp; Retraite complémentaire
+                        <i class="bi bi-heart-pulse-fill me-2" style="color:var(--s-tax)"></i>Santé &amp; Retraite complémentaire
                     </div>
                     <div class="card-body px-4 py-3">
 
@@ -266,7 +266,7 @@
 
                         <div class="mb-1">
                             <label class="form-label fw-semibold small">
-                                <i class="bi bi-bank me-1 text-primary"></i>
+                                <i class="bi bi-bank me-1" style="color:var(--s-info)"></i>
                                 Retraite complémentaire bancassurance <span class="text-muted fw-normal">(mensuel)</span>
                             </label>
                             <div class="input-group">
@@ -287,8 +287,8 @@
                 {{-- 7. Indemnités exonérées --}}
                 <div class="card section-card mb-4">
                     <div class="card-header px-4 py-3 d-flex justify-content-between align-items-center">
-                        <span><i class="bi bi-gift me-2 text-success"></i>Indemnités exonérées</span>
-                        <button type="button" class="btn btn-sm btn-outline-success" id="addIndemnite">
+                        <span><i class="bi bi-gift me-2" style="color:var(--s-succ)"></i>Indemnités exonérées</span>
+                        <button type="button" class="btn btn-sm" id="addIndemnite" style="border:1px solid var(--s-succ);color:var(--s-succ)">
                             <i class="bi bi-plus-circle me-1"></i>Ajouter
                         </button>
                     </div>
@@ -337,7 +337,7 @@
                 {{-- 8. Autres retenues --}}
                 <div class="card section-card mb-4">
                     <div class="card-header px-4 py-3">
-                        <i class="bi bi-dash-circle me-2 text-secondary"></i>Autres retenues
+                        <i class="bi bi-dash-circle me-2" style="color:var(--s-neutral)"></i>Autres retenues
                     </div>
                     <div class="card-body px-4 py-3">
                         <label class="form-label fw-semibold">Autres retenues (montant total)</label>
@@ -357,10 +357,10 @@
         <div class="row mb-5">
             <div class="col text-center">
                 <button type="submit" class="btn btn-lg px-5 text-white fw-bold"
-                        style="background:var(--brand-green); min-width:240px">
+                        style="background:var(--g-500); min-width:240px; font-family:var(--f-body)">
                     <i class="bi bi-calculator-fill me-2"></i>Calculer mon bulletin
                 </button>
-                <a href="{{ route('calculator.index') }}" class="btn btn-lg btn-outline-secondary ms-3 px-4">
+                <a href="{{ route('calculator.index') }}" class="btn btn-lg ms-3 px-4" style="border:1px solid var(--ink-3);color:var(--ink-2);font-family:var(--f-body)">
                     <i class="bi bi-arrow-counterclockwise me-1"></i>Réinitialiser
                 </a>
             </div>
