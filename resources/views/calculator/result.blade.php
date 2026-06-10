@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Résultats — Bulletin de Paie 2026')
+@section('title', '3omar — Ton bulletin detaille')
 
 @push('head')
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>

@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Simulateur pédagogique de bulletin de paie pour le secteur privé marocain — CGI 2026, CNSS, AMO, IR, CIMR, coût employeur">
-    <title>@yield('title', 'Mon Bulletin de Paie Marocain 2026')</title>
+    <meta name="description" content="3omar — Simulateur gratuit et open source de bulletin de paie marocain. Comprends chaque ligne de ta fiche de paie : CNSS, AMO, IR, CIMR — CGI 2026.">
+    <title>@yield('title', '3omar — Simulateur de Paie Marocain 2026')</title>
 
     <!-- Bootstrap 5.3 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
@@ -68,7 +68,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark" style="background:var(--brand-green);">
     <div class="container">
         <a class="navbar-brand" href="{{ route('home') }}">
-            <i class="bi bi-receipt-cutoff me-2"></i>Bulletin de Paie Maroc
+            <span class="me-1" style="font-size:1.3rem">&#x2794;</span>3omar
         </a>
         <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
             <span class="navbar-toggler-icon"></span>
@@ -109,48 +109,47 @@
             {{-- Colonne 1 : Identité --}}
             <div class="col-md-4">
                 <div class="d-flex align-items-center mb-2">
-                    <i class="bi bi-receipt-cutoff fs-4 me-2" style="color:var(--brand-green)"></i>
-                    <span class="fw-bold">Bulletin de Paie Maroc</span>
+                    <span class="fs-4 me-2" style="color:var(--brand-green)">&#x2794;</span>
+                    <span class="fw-bold fs-5">3omar</span>
                 </div>
                 <p class="small text-muted mb-2">
-                    Simulateur pédagogique de paie pour le secteur privé marocain.
-                    Conformité <strong>CGI 2026</strong> — Loi de Finances 50-25.
+                    Simulateur gratuit et open source de paie marocaine.
+                    Parce que chaque salarié a le droit de comprendre sa fiche de paie.
                 </p>
                 <p class="small mb-0">
                     <i class="bi bi-person-circle me-1"></i>
-                    Développé par <strong>Zakaria Maftah</strong>
+                    Projet initié par <strong>Zakaria Maftah</strong>
                 </p>
                 <p class="small mt-1 mb-0">
                     <i class="bi bi-envelope me-1"></i>
-                    <a href="mailto:support-bulletindepaie@zakmaf.net">support-bulletindepaie@zakmaf.net</a>
+                    <a href="mailto:contact@zakmaf.net">contact@zakmaf.net</a>
                 </p>
             </div>
 
-            {{-- Colonne 2 : Stack technique --}}
+            {{-- Colonne 2 : Navigation --}}
             <div class="col-md-4">
-                <h6 class="fw-semibold mb-2"><i class="bi bi-code-slash me-1"></i>Stack technique</h6>
-                <ul class="list-unstyled small text-muted mb-0">
-                    <li class="mb-1"><i class="bi bi-box me-1 text-danger"></i><strong>Laravel 11</strong> — Framework PHP (backend MVC)</li>
-                    <li class="mb-1"><i class="bi bi-filetype-php me-1 text-primary"></i><strong>PHP 8.3</strong> — Moteur de calcul</li>
-                    <li class="mb-1"><i class="bi bi-layout-text-window me-1 text-success"></i><strong>Bootstrap 5</strong> + Blade — Interface</li>
-                    <li class="mb-1"><i class="bi bi-pie-chart-fill me-1 text-warning"></i><strong>Chart.js 4</strong> — Visualisation</li>
-                    <li class="mb-1"><i class="bi bi-docker me-1 text-info"></i><strong>Docker</strong> — Nginx + PHP-FPM</li>
-                    <li class="mb-1"><i class="bi bi-unlock me-1 text-success"></i><strong>Open Source</strong> — Gratuit & collaboratif</li>
+                <h6 class="fw-semibold mb-2"><i class="bi bi-signpost-split me-1"></i>Navigation</h6>
+                <ul class="list-unstyled small mb-0">
+                    <li class="mb-2"><a href="{{ route('calculator.index') }}"><i class="bi bi-calculator me-1 text-success"></i>Simuler mon bulletin</a></li>
+                    <li class="mb-2"><a href="{{ route('documentation') }}"><i class="bi bi-journal-text me-1 text-primary"></i>Documentation legale 2026</a></li>
+                    <li class="mb-2"><a href="https://github.com/Zakmaf/3omar" target="_blank" rel="noopener"><i class="bi bi-github me-1"></i>Code source sur GitHub</a></li>
+                    <li class="mb-2"><a href="https://github.com/Zakmaf/3omar/issues" target="_blank" rel="noopener"><i class="bi bi-bug me-1 text-warning"></i>Signaler une erreur</a></li>
                 </ul>
             </div>
 
             {{-- Colonne 3 : Disclaimer --}}
             <div class="col-md-4">
-                <h6 class="fw-semibold mb-2 text-warning"><i class="bi bi-exclamation-triangle me-1"></i>Avertissement légal</h6>
+                <h6 class="fw-semibold mb-2 text-warning"><i class="bi bi-exclamation-triangle me-1"></i>Avertissement</h6>
                 <p class="small text-muted mb-2">
-                    Cet outil est fourni <strong>à titre purement informatif et pédagogique</strong>.
-                    Bien que nous nous efforcions de refléter la réglementation en vigueur (CGI 2026,
-                    Dahir 1-72-184, Loi 65-00…), les résultats peuvent contenir des inexactitudes.
+                    3omar est un outil <strong>pédagogique et informatif</strong>.
+                    Les résultats s'appuient sur la réglementation en vigueur (CGI 2026,
+                    Dahir 1-72-184, Loi 65-00…), mais peuvent contenir des inexactitudes.
+                    Pour votre bulletin officiel, consultez votre employeur ou un expert-comptable.
                 </p>
                 <p class="small text-muted mb-0">
-                    <strong>Aucune donnée personnelle n'est collectée ou stockée.</strong>
-                    Les calculs sont effectués en temps réel et ne sont pas conservés.
-                    Pour votre bulletin officiel, consultez votre employeur ou un expert-comptable.
+                    <i class="bi bi-shield-check text-success me-1"></i>
+                    <strong>Aucune donnée personnelle n'est collectée ni stockée.</strong>
+                    Calcul instantané, rien n'est conservé.
                 </p>
             </div>
 
@@ -164,7 +163,7 @@
                 Exercice fiscal 2026 · CGI Art. 73, 74, 59, 28 · Dahir n° 1-72-184 · Loi n° 65-00 · Arrêté n° 1314-25 · Décret n° 2.25.983
             </div>
             <div class="col-md-4 text-md-end small text-muted mt-2 mt-md-0">
-                &copy; {{ date('Y') }} Zakaria Maftah — Licence MIT
+                &copy; {{ date('Y') }} 3omar — Projet open source sous licence MIT
             </div>
         </div>
     </div>

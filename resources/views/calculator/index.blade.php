@@ -1,14 +1,14 @@
 @extends('layouts.app')
 
-@section('title', 'Calculateur de Bulletin de Paie — 2026')
+@section('title', '3omar — Simuler mon bulletin de paie 2026')
 
 @section('content')
 <div class="container">
 
     <div class="row mb-3">
         <div class="col">
-            <h2 class="fw-bold mb-1"><i class="bi bi-calculator me-2 text-success"></i>Calculateur de paie 2026</h2>
-            <p class="text-muted mb-0">Remplissez les champs correspondant à votre situation. Les champs marqués <span class="text-danger">*</span> sont obligatoires.</p>
+            <h2 class="fw-bold mb-1"><i class="bi bi-calculator me-2 text-success"></i>Simuler mon bulletin 2026</h2>
+            <p class="text-muted mb-0">Remplis les champs de ta situation. Le champ marque <span class="text-danger">*</span> est obligatoire, le reste est optionnel.</p>
         </div>
     </div>
 
