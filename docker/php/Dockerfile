@@ -23,7 +23,7 @@ COPY . .
 RUN composer dump-autoload --optimize --no-scripts
 
 # =========================================================================
-# Stage 2 — Image PHP-FPM 8.3 de production
+# Stage 2 — Image PHP-FPM 8.4 de production
 # =========================================================================
 FROM php:8.4-fpm
 
@@ -53,7 +53,7 @@ WORKDIR /var/www/html
 COPY --from=composer-stage /app /var/www/html
 
 # ---- .env ----
-# Copie .env.example → .env si absent (APP_KEY sera généré dans l'entrypoint)
+# Fournit une configuration locale par défaut ; générer APP_KEY au déploiement.
 RUN cp .env.example .env
 
 # ---- Créer les répertoires Laravel (non inclus dans Composer) ----

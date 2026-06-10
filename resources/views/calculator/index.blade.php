@@ -370,7 +370,7 @@
             <div class="col text-center">
                 <button type="submit" class="btn btn-lg px-5 text-white fw-bold"
                         style="background:var(--g-500); min-width:240px; font-family:var(--f-body)">
-                    <i class="bi bi-calculator-fill me-2"></i>Calculer mon bulletin
+                    <i class="bi bi-calculator-fill me-2"></i>Simuler mon bulletin
                 </button>
                 <a href="{{ route('calculator.index') }}" class="btn btn-lg ms-3 px-4" style="border:1px solid var(--ink-3);color:var(--ink-2);font-family:var(--f-body)">
                     <i class="bi bi-arrow-counterclockwise me-1"></i>Réinitialiser

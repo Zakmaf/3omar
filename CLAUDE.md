@@ -4,9 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Mon Bulletin de Paie Marocain** — a pedagogical Moroccan net-salary (bulletin de paie) simulator for private-sector employees, covering the **2026 fiscal year** (CGI 2026 / Loi de Finances 50-25, CNSS, AMO, IR, CIMR, frais professionnels, heures supplémentaires, prime d'ancienneté, indemnités exonérées, coût employeur).
+**3omar** — a pedagogical Moroccan net-salary simulator for private-sector employees, covering the **2026 fiscal year**.
 
-Stack: **Laravel 11 (PHP 8.3)** + Blade views, **Bootstrap 5** + Bootstrap Icons (via CDN, no asset build step), **Chart.js 4** (via CDN) for the salary breakdown donut chart. 100% stateless — no database, no user data stored (the `sqlite` DB config in `.env` is an unused Laravel placeholder).
+Stack: **Laravel 11 (PHP 8.4)** + Blade views, **Bootstrap 5** + Bootstrap Icons (via CDN, no asset build step), **Chart.js 4** (via CDN). No database or user data storage.
 
 ---
 
@@ -18,10 +18,10 @@ All commands run inside the PHP-FPM container (`paie_maroc_app`).
 # First-time setup
 cp .env.example .env
 docker-compose up -d --build
-docker exec paie_maroc_app composer install
+docker run --rm -v "$PWD":/app -v paie_maroc_vendor:/app/vendor -w /app composer:2.7 composer install
 docker exec paie_maroc_app php artisan key:generate
 
-# App available at http://localhost:8080
+# App available at http://localhost:49173
 
 # After editing config/ or routes/ (Laravel caches these)
 docker exec paie_maroc_app php artisan config:clear
@@ -34,7 +34,7 @@ docker exec paie_maroc_app vendor/bin/pint
 docker exec paie_maroc_app php artisan tinker
 ```
 
-There is no `tests/` directory yet — no test command exists. PHPUnit/Pest are available as dev dependencies if tests are added.
+Run tests with `docker compose exec -T app vendor/bin/phpunit`.
 
 ---
 

@@ -1,5 +1,9 @@
 <?php
 
+use App\Providers\AppServiceProvider;
+use Illuminate\Support\Facades\Facade;
+use Illuminate\Support\ServiceProvider;
+
 return [
 
     'name' => env('APP_NAME', 'Mon Bulletin de Paie Marocain'),
@@ -24,11 +28,11 @@ return [
 
     'maintenance' => ['driver' => 'file'],
 
-    'providers' => Illuminate\Support\ServiceProvider::defaultProviders()->merge([
-        App\Providers\AppServiceProvider::class,
+    'providers' => ServiceProvider::defaultProviders()->merge([
+        AppServiceProvider::class,
     ])->toArray(),
 
-    'aliases' => Illuminate\Support\Facades\Facade::defaultAliases()->merge([
+    'aliases' => Facade::defaultAliases()->merge([
     ])->toArray(),
 
 ];

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', '3omar — Ton bulletin detaille')
+@section('title', '3omar — Ton bulletin détaillé')
 
 @push('head')
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
@@ -8,6 +8,10 @@
 
 @section('content')
 <div class="container">
+    <div class="alert mb-4" role="status" style="background:var(--s-succ-bg);border:1px solid var(--g-200);color:var(--g-700)">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <strong>Ton bulletin simulé est prêt.</strong> Aucune donnée personnelle n'a été stockée.
+    </div>
 
     {{-- Avertissements --}}
     @if(!empty($r['avertissements']))
@@ -182,7 +186,7 @@
                                     </td>
                                     <td class="text-end px-3 py-2 text-muted">—</td>
                                     <td class="text-end px-3 py-2 text-muted">—</td>
-                                    <td class="text-end px-3 py-2 fw-semibold text-primary">{{ number_format($r['excedent_indemnites'], 2, ',', ' ') }}</td>
+                                    <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-info)">{{ number_format($r['excedent_indemnites'], 2, ',', ' ') }}</td>
                                 </tr>
                                 @endif
 
@@ -495,7 +499,7 @@
             {{-- CTA --}}
             <div class="d-flex gap-2">
                 <a href="{{ route('calculator.index') }}" class="btn flex-fill text-white" style="background:var(--g-500);font-family:var(--f-body)">
-                    <i class="bi bi-arrow-left me-1"></i>Nouveau calcul
+                    <i class="bi bi-arrow-left me-1"></i>Simuler un autre bulletin
                 </a>
                 <button onclick="window.print()" class="btn flex-fill" style="border:1px solid var(--ink-3);color:var(--ink-2);font-family:var(--f-body)">
                     <i class="bi bi-printer me-1"></i>Imprimer

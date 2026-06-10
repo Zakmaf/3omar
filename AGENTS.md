@@ -20,8 +20,8 @@ Run project commands inside the `paie_maroc_app` container:
 
 ```bash
 cp .env.example .env
-docker-compose up -d --build                 # Build and start the app at localhost:8080
-docker exec paie_maroc_app composer install  # Install PHP dependencies
+docker compose up -d --build                 # Build and start the app at localhost:49173
+docker run --rm -v "$PWD":/app -v paie_maroc_vendor:/app/vendor -w /app composer:2.7 composer install
 docker exec paie_maroc_app php artisan key:generate
 docker exec paie_maroc_app vendor/bin/pint   # Format PHP code
 docker exec paie_maroc_app php artisan config:clear
@@ -36,7 +36,7 @@ Follow Laravel conventions and PSR-12, enforced by Laravel Pint. Use four-space 
 
 ## Testing Guidelines
 
-PHPUnit 11 is installed, but no `tests/` directory exists yet. Add focused tests under `tests/Unit/` for calculation rules and `tests/Feature/` for validation and routes. Name files `*Test.php`, and cover boundaries such as tax brackets, ceilings, and rounding. Run tests with:
+PHPUnit 11 tests live under `tests/Unit/` and `tests/Feature/`. Name files `*Test.php`, and cover boundaries such as tax brackets, ceilings, and rounding. Run tests with:
 
 ```bash
 docker exec paie_maroc_app vendor/bin/phpunit

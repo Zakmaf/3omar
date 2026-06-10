@@ -2,15 +2,15 @@
 
 return [
 
-    'year'       => 2026,
+    'year' => 2026,
     'regulation' => 'Loi de Finances 50-25',
 
     // =========================================================================
     // SMIG 2026 — Décret n° 2.25.983
     // =========================================================================
     'smig' => [
-        'horaire'        => 17.92,
-        'mensuel'        => 3422.72,
+        'horaire' => 17.92,
+        'mensuel' => 3422.72,
         'heures_legales' => 191,
     ],
 
@@ -19,9 +19,9 @@ return [
     // Plafond mensuel de l'assiette : 6 000 MAD
     // =========================================================================
     'cnss' => [
-        'taux'          => 0.0448,   // Salarié (CT 0,52% + LT 3,96%)
+        'taux' => 0.0448,   // Salarié (CT 0,52% + LT 3,96%)
         'taux_patronal' => 0.0898,   // Employeur (CT 1,05% + LT 7,93%)
-        'plafond'       => 6000,
+        'plafond' => 6000,
     ],
 
     // =========================================================================
@@ -29,7 +29,7 @@ return [
     // Sans plafond d'assiette
     // =========================================================================
     'amo' => [
-        'taux'          => 0.0226,   // Salarié
+        'taux' => 0.0226,   // Salarié
         'taux_patronal' => 0.0411,   // Employeur
     ],
 
@@ -64,11 +64,11 @@ return [
     'frais_pro' => [
         'seuil_mensuel' => 6500,
         'commun' => [
-            'bas'  => ['taux' => 0.35, 'plafond' => 2916.67],
+            'bas' => ['taux' => 0.35, 'plafond' => 2916.67],
             'haut' => ['taux' => 0.25, 'plafond' => 2916.67],
         ],
         'journaliste' => ['taux' => 0.45, 'plafond' => 2916.67],
-        'artiste'     => ['taux' => 0.40, 'plafond' => 2916.67],
+        'artiste' => ['taux' => 0.40, 'plafond' => 2916.67],
     ],
 
     // =========================================================================
@@ -79,12 +79,12 @@ return [
     'ir' => [
         'nb_mois' => 12,
         'baremes' => [
-            ['min' =>      0, 'max' =>  40000, 'taux' => 0.00, 'deduction' =>     0],
-            ['min' =>  40001, 'max' =>  60000, 'taux' => 0.10, 'deduction' =>  4000],
-            ['min' =>  60001, 'max' =>  80000, 'taux' => 0.20, 'deduction' => 10000],
-            ['min' =>  80001, 'max' => 100000, 'taux' => 0.30, 'deduction' => 18000],
+            ['min' => 0, 'max' => 40000, 'taux' => 0.00, 'deduction' => 0],
+            ['min' => 40001, 'max' => 60000, 'taux' => 0.10, 'deduction' => 4000],
+            ['min' => 60001, 'max' => 80000, 'taux' => 0.20, 'deduction' => 10000],
+            ['min' => 80001, 'max' => 100000, 'taux' => 0.30, 'deduction' => 18000],
             ['min' => 100001, 'max' => 180000, 'taux' => 0.34, 'deduction' => 22000],
-            ['min' => 180001, 'max' =>   null, 'taux' => 0.37, 'deduction' => 27400],
+            ['min' => 180001, 'max' => null, 'taux' => 0.37, 'deduction' => 27400],
         ],
     ],
 
@@ -93,7 +93,7 @@ return [
     // =========================================================================
     'charges_famille' => [
         'par_personne' => 50.00,
-        'plafond'      => 300.00,
+        'plafond' => 300.00,
     ],
 
     // =========================================================================
@@ -102,16 +102,16 @@ return [
     // =========================================================================
     'heures_sup' => [
         'majorations' => [
-            'semaine_diurne'   => 0.25,
+            'semaine_diurne' => 0.25,
             'semaine_nocturne' => 0.50,
-            'repos_diurne'     => 0.50,
-            'repos_nocturne'   => 1.00,
+            'repos_diurne' => 0.50,
+            'repos_nocturne' => 1.00,
         ],
         'labels' => [
-            'semaine_diurne'   => 'Jour ouvrable — diurne (6h–21h) +25%',
+            'semaine_diurne' => 'Jour ouvrable — diurne (6h–21h) +25%',
             'semaine_nocturne' => 'Jour ouvrable — nocturne (21h–6h) +50%',
-            'repos_diurne'     => 'Repos/Férié — diurne +50%',
-            'repos_nocturne'   => 'Repos/Férié — nocturne +100%',
+            'repos_diurne' => 'Repos/Férié — diurne +50%',
+            'repos_nocturne' => 'Repos/Férié — nocturne +100%',
         ],
     ],
 
@@ -123,14 +123,14 @@ return [
     'jours_travailles_defaut' => 26,
 
     'indemnites' => [
-        'transport'        => ['label' => 'Indemnité de transport',       'base_salaire' => false, 'montant' =>  500, 'pct' => null],
+        'transport' => ['label' => 'Indemnité de transport',       'base_salaire' => false, 'montant' => 500, 'pct' => null],
         // Panier : plafond journalier = 2 × SMIG horaire (2 × 17,92 = 35,84 MAD/jour travaillé)
-        'panier'           => ['label' => 'Indemnité de panier/repas',    'base_salaire' => false, 'montant' => 35.84, 'pct' => null, 'par_jour' => true],
-        'representation'   => ['label' => 'Indemnité de représentation',  'base_salaire' => true,  'montant' => null, 'pct' => 0.10],
-        'salissure'        => ['label' => 'Indemnité de salissure',       'base_salaire' => false, 'montant' =>  200, 'pct' => null],
-        'outillage'        => ['label' => "Indemnité d'outillage",        'base_salaire' => false, 'montant' =>  200, 'pct' => null],
-        'vestimentaire'    => ['label' => 'Indemnité vestimentaire',      'base_salaire' => false, 'montant' =>  200, 'pct' => null],
-        'logement'         => ['label' => 'Indemnité de logement',        'base_salaire' => true,  'montant' => null, 'pct' => 0.10],
+        'panier' => ['label' => 'Indemnité de panier/repas',    'base_salaire' => false, 'montant' => 35.84, 'pct' => null, 'par_jour' => true],
+        'representation' => ['label' => 'Indemnité de représentation',  'base_salaire' => true,  'montant' => null, 'pct' => 0.10],
+        'salissure' => ['label' => 'Indemnité de salissure',       'base_salaire' => false, 'montant' => 200, 'pct' => null],
+        'outillage' => ['label' => "Indemnité d'outillage",        'base_salaire' => false, 'montant' => 200, 'pct' => null],
+        'vestimentaire' => ['label' => 'Indemnité vestimentaire',      'base_salaire' => false, 'montant' => 200, 'pct' => null],
+        'logement' => ['label' => 'Indemnité de logement',        'base_salaire' => true,  'montant' => null, 'pct' => 0.10],
         'voiture_fonction' => ['label' => 'Avantage voiture de fonction', 'base_salaire' => true,  'montant' => null, 'pct' => 0.10],
     ],
 
@@ -140,8 +140,8 @@ return [
     // =========================================================================
     'anciennete' => [
         'tranches' => [
-            ['min_annees' =>  2, 'max_annees' =>  4, 'taux' => 0.05],
-            ['min_annees' =>  5, 'max_annees' => 11, 'taux' => 0.10],
+            ['min_annees' => 2, 'max_annees' => 4, 'taux' => 0.05],
+            ['min_annees' => 5, 'max_annees' => 11, 'taux' => 0.10],
             ['min_annees' => 12, 'max_annees' => 19, 'taux' => 0.15],
             ['min_annees' => 20, 'max_annees' => 24, 'taux' => 0.20],
             ['min_annees' => 25, 'max_annees' => null, 'taux' => 0.25],
@@ -154,7 +154,7 @@ return [
     // =========================================================================
     'retraite_complementaire' => [
         'deduction_ir_max_pct' => 0.50,
-        'article'              => 'Art. 28-IV CGI',
+        'article' => 'Art. 28-IV CGI',
     ],
 
 ];

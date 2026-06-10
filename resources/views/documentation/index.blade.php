@@ -421,7 +421,7 @@
                     <p class="small text-muted mb-2">
                         Tous les taux affiches ici et utilises dans le simulateur proviennent d'une
                         source unique. Le code est <a href="https://github.com/Zakmaf/3omar" target="_blank" rel="noopener">open source</a> :
-                        chaque valeur est verifiable et corrigeable par la communaute.
+                        chaque valeur est vérifiable et peut être corrigée par la communauté.
                     </p>
                     <div class="rounded p-2" style="background:var(--g-800); font-family:var(--f-mono); font-size:.75rem; color:var(--cream)">
                         <span style="color:var(--ink-3)">// Exercice {{ $payroll['year'] }}</span><br>

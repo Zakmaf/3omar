@@ -3,8 +3,14 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="3omar — Simulateur gratuit et open source de bulletin de paie marocain. Comprends chaque ligne de ta fiche de paie : CNSS, AMO, IR, CIMR — CGI 2026.">
-    <title>@yield('title', '3omar — Simulateur de Paie Marocain 2026')</title>
+    <meta name="description" content="3omar aide à comprendre les principaux calculs d'un bulletin de paie marocain, avec les taux et références utilisés par le simulateur.">
+    <meta property="og:title" content="@yield('title', '3omar — Ton bulletin, ligne par ligne')">
+    <meta property="og:description" content="Calculs expliqués, références affichées, aucune donnée personnelle stockée.">
+    <meta property="og:image" content="{{ asset('img/3omar-social-preview.png') }}">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="fr_MA">
+    <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}">
+    <title>@yield('title', '3omar — Ton bulletin, ligne par ligne')</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -55,6 +61,22 @@
             font-family: var(--f-body);
             color: var(--ink);
             background: var(--cream);
+        }
+        .skip-link {
+            position: absolute;
+            left: 1rem;
+            top: -5rem;
+            z-index: 2000;
+            padding: .75rem 1rem;
+            border-radius: var(--radius-sm);
+            background: var(--paper);
+            color: var(--g-700);
+            box-shadow: var(--shadow-2);
+        }
+        .skip-link:focus { top: 1rem; }
+        :focus-visible {
+            outline: 3px solid var(--s-info);
+            outline-offset: 3px;
         }
 
         h1, h2, h3, h4, h5, h6 {
@@ -193,6 +215,7 @@
     @stack('head')
 </head>
 <body>
+<a class="skip-link" href="#main-content">Aller au contenu principal</a>
 
 {{-- SVG symbol definitions --}}
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -238,11 +261,12 @@
             <svg viewBox="0 0 200 200" style="width:32px;height:32px"><use href="#mark"/></svg>
             <span style="font-family:var(--f-display);font-weight:700">3omar</span>
         </a>
-        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#nav"
+                aria-controls="nav" aria-expanded="false" aria-label="Afficher la navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="nav">
-            <ul class="navbar-nav ms-auto gap-1">
+            <ul class="navbar-nav ms-auto gap-1" aria-label="Navigation principale">
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('home') ? 'active fw-semibold' : '' }}"
                        href="{{ route('home') }}">
@@ -266,7 +290,7 @@
     </div>
 </nav>
 
-<main class="py-4">
+<main class="py-4" id="main-content">
     @yield('content')
 </main>
 
@@ -274,7 +298,7 @@
     <div class="container">
         <div class="row g-4 mb-4">
 
-            {{-- Colonne 1 : Identite --}}
+            {{-- Colonne 1 : Identité --}}
             <div class="col-md-4">
                 <div class="d-flex align-items-center gap-2 mb-3">
                     <svg viewBox="0 0 520 180" style="width:120px;height:auto"><use href="#logo-reverse"/></svg>
@@ -305,7 +329,7 @@
                     </li>
                     <li class="mb-2">
                         <a href="{{ route('documentation') }}">
-                            <i class="bi bi-journal-text me-1"></i>Documentation legale 2026
+                            <i class="bi bi-journal-text me-1"></i>Documentation légale 2026
                         </a>
                     </li>
                     <li class="mb-2">
@@ -327,15 +351,15 @@
                     <i class="bi bi-exclamation-triangle me-1"></i>Avertissement
                 </h6>
                 <p class="footer-body-text small mb-2">
-                    3omar est un outil <strong>pedagogique et informatif</strong>.
-                    Les resultats s'appuient sur la reglementation en vigueur (CGI 2026,
-                    Dahir 1-72-184, Loi 65-00...), mais peuvent contenir des inexactitudes.
+                    3omar est un outil <strong>pédagogique et informatif</strong>.
+                    Les résultats utilisent les paramètres documentés pour l'exercice 2026,
+                    mais peuvent contenir des inexactitudes.
                     Pour votre bulletin officiel, consultez votre employeur ou un expert-comptable.
                 </p>
                 <p class="footer-body-text small mb-0">
                     <i class="bi bi-shield-check me-1" style="color:var(--g-300)"></i>
-                    <strong>Aucune donnee personnelle collectee</strong> ni stockee.
-                    Calcul instantane, rien n'est conserve.
+                    <strong>Aucune donnée personnelle n'est stockée.</strong>
+                    Chaque simulation est calculée à la demande.
                 </p>
             </div>
 
@@ -345,7 +369,7 @@
             <div class="row align-items-center">
                 <div class="col-md-8 small footer-body-text">
                     <i class="bi bi-shield-check me-1" style="color:var(--g-300)"></i>
-                    Exercice fiscal 2026 &middot; CGI Art. 73, 74, 59, 28 &middot; Dahir n&deg; 1-72-184 &middot; Loi n&deg; 65-00 &middot; Arrete n&deg; 1314-25 &middot; Decret n&deg; 2.25.983
+                    Exercice fiscal 2026 &middot; CGI Art. 73, 74, 59, 28 &middot; Dahir n&deg; 1-72-184 &middot; Loi n&deg; 65-00 &middot; Arrêté n&deg; 1314-25 &middot; Décret n&deg; 2.25.983
                 </div>
                 <div class="col-md-4 text-md-end small footer-body-text mt-2 mt-md-0">
                     &copy; 2026 3omar &mdash; Projet open source sous licence MIT
