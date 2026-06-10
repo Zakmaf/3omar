@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', '3omar — Ton bulletin detaille')
+@section('title', '3omar — Ton bulletin détaillé')
 
 @push('head')
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
@@ -8,6 +8,12 @@
 
 @section('content')
 <div class="container">
+
+    {{-- Confirmation — conforme à la microcopy de la charte --}}
+    <div class="d-flex align-items-center gap-2 mb-4 px-3 py-2 rounded-3" style="background:var(--s-succ-bg);color:var(--ink-2);font-family:var(--f-body)">
+        <i class="bi bi-check-circle-fill" style="color:var(--s-succ)"></i>
+        <span class="small">Ton bulletin simulé est prêt. Aucune donnée n'a été stockée.</span>
+    </div>
 
     {{-- Avertissements --}}
     @if(!empty($r['avertissements']))
@@ -482,7 +488,7 @@
             {{-- CTA --}}
             <div class="d-flex gap-2">
                 <a href="{{ route('calculator.index') }}" class="btn flex-fill text-white" style="background:var(--g-500);font-family:var(--f-body)">
-                    <i class="bi bi-arrow-left me-1"></i>Nouveau calcul
+                    <i class="bi bi-arrow-left me-1"></i>Nouvelle simulation
                 </a>
                 <button onclick="window.print()" class="btn flex-fill" style="border:1px solid var(--ink-3);color:var(--ink-2);font-family:var(--f-body)">
                     <i class="bi bi-printer me-1"></i>Imprimer

@@ -1,15 +1,15 @@
 @extends('layouts.app')
 
-@section('title', '3omar — Documentation legale 2026')
+@section('title', '3omar — Documentation légale 2026')
 
 @section('content')
 <div class="container">
 
     <div class="row mb-4">
         <div class="col">
-            <h2 class="fw-bold mb-1"><i class="bi bi-journal-text me-2" style="color:var(--g-500)"></i>Documentation legale 2026</h2>
+            <h2 class="fw-bold mb-1"><i class="bi bi-journal-text me-2" style="color:var(--g-500)"></i>Documentation légale 2026</h2>
             <p style="color:var(--ink-2)">
-                Tous les taux, plafonds et baremes utilises par 3omar — Secteur prive marocain.
+                Tous les taux, plafonds et barèmes utilisés par 3omar — Secteur privé marocain.
                 <span class="badge rounded-pill ms-1 px-2 py-1" style="background:var(--g-50);color:var(--g-700);border:1px solid var(--g-200)">Taux a jour : CGI 2026 — Loi de Finances 50-25</span>
             </p>
         </div>
@@ -417,9 +417,9 @@
                 <div class="card-body px-4 py-3">
                     <h6 class="fw-semibold mb-2"><i class="bi bi-gear me-1" style="color:var(--s-succ)"></i>Transparence totale</h6>
                     <p class="small text-muted mb-2">
-                        Tous les taux affiches ici et utilises dans le simulateur proviennent d'une
+                        Tous les taux affichés ici et utilisés dans le simulateur proviennent d'une
                         source unique. Le code est <a href="https://github.com/Zakmaf/3omar" target="_blank" rel="noopener">open source</a> :
-                        chaque valeur est verifiable et corrigeable par la communaute.
+                        chaque valeur est vérifiable et corrigeable par la communauté.
                     </p>
                     <div class="rounded p-2" style="background:var(--g-800); font-family:var(--f-mono); font-size:.75rem; color:var(--cream)">
                         <span style="color:var(--ink-3)">// Exercice {{ $payroll['year'] }}</span><br>

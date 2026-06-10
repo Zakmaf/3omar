@@ -305,7 +305,7 @@
                     </li>
                     <li class="mb-2">
                         <a href="{{ route('documentation') }}">
-                            <i class="bi bi-journal-text me-1"></i>Documentation legale 2026
+                            <i class="bi bi-journal-text me-1"></i>Documentation légale 2026
                         </a>
                     </li>
                     <li class="mb-2">
@@ -327,15 +327,15 @@
                     <i class="bi bi-exclamation-triangle me-1"></i>Avertissement
                 </h6>
                 <p class="footer-body-text small mb-2">
-                    3omar est un outil <strong>pedagogique et informatif</strong>.
-                    Les resultats s'appuient sur la reglementation en vigueur (CGI 2026,
+                    3omar est un outil <strong>pédagogique et informatif</strong>.
+                    Les résultats s'appuient sur la réglementation en vigueur (CGI 2026,
                     Dahir 1-72-184, Loi 65-00...), mais peuvent contenir des inexactitudes.
                     Pour votre bulletin officiel, consultez votre employeur ou un expert-comptable.
                 </p>
                 <p class="footer-body-text small mb-0">
                     <i class="bi bi-shield-check me-1" style="color:var(--g-300)"></i>
-                    <strong>Aucune donnee personnelle collectee</strong> ni stockee.
-                    Calcul instantane, rien n'est conserve.
+                    <strong>Aucune donnée personnelle n'est stockée.</strong>
+                    Chaque simulation est calculée à la demande puis oubliée.
                 </p>
             </div>
 
@@ -345,7 +345,7 @@
             <div class="row align-items-center">
                 <div class="col-md-8 small footer-body-text">
                     <i class="bi bi-shield-check me-1" style="color:var(--g-300)"></i>
-                    Exercice fiscal 2026 &middot; CGI Art. 73, 74, 59, 28 &middot; Dahir n&deg; 1-72-184 &middot; Loi n&deg; 65-00 &middot; Arrete n&deg; 1314-25 &middot; Decret n&deg; 2.25.983
+                    Exercice fiscal 2026 &middot; CGI Art. 73, 74, 59, 28 &middot; Dahir n&deg; 1-72-184 &middot; Loi n&deg; 65-00 &middot; Arrêté n&deg; 1314-25 &middot; Décret n&deg; 2.25.983
                 </div>
                 <div class="col-md-4 text-md-end small footer-body-text mt-2 mt-md-0">
                     &copy; 2026 3omar &mdash; Projet open source sous licence MIT

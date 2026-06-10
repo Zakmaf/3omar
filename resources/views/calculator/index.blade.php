@@ -8,7 +8,7 @@
     <div class="row mb-3">
         <div class="col">
             <h2 class="fw-bold mb-1"><i class="bi bi-calculator me-2" style="color:var(--g-500)"></i>Simuler mon bulletin 2026</h2>
-            <p class="mb-0" style="color:var(--ink-2)">Remplis les champs de ta situation. Le champ marque <span style="color:var(--s-tax)">*</span> est obligatoire, le reste est optionnel.</p>
+            <p class="mb-0" style="color:var(--ink-2)">Remplis les champs de ta situation. Le champ marqué <span style="color:var(--s-tax)">*</span> est obligatoire, le reste est optionnel.</p>
         </div>
     </div>
 
@@ -358,7 +358,7 @@
             <div class="col text-center">
                 <button type="submit" class="btn btn-lg px-5 text-white fw-bold"
                         style="background:var(--g-500); min-width:240px; font-family:var(--f-body)">
-                    <i class="bi bi-calculator-fill me-2"></i>Calculer mon bulletin
+                    <i class="bi bi-calculator-fill me-2"></i>Simuler mon bulletin
                 </button>
                 <a href="{{ route('calculator.index') }}" class="btn btn-lg ms-3 px-4" style="border:1px solid var(--ink-3);color:var(--ink-2);font-family:var(--f-body)">
                     <i class="bi bi-arrow-counterclockwise me-1"></i>Réinitialiser
