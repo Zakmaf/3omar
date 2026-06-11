@@ -17,8 +17,7 @@ class PagesTest extends TestCase
     public function test_public_pages_are_available(): void
     {
         $this->get('/')->assertOk()
-            ->assertSee('Ton')
-            ->assertSee('ligne par ligne.');
+            ->assertSee('Le bulletin de paie marocain, ligne par ligne.');
         $this->get('/calculateur')->assertOk()->assertSee('Simuler mon bulletin');
         $this->get('/documentation')->assertOk()
             ->assertSee('Documentation des règles 2026')
@@ -32,7 +31,7 @@ class PagesTest extends TestCase
             'salaire_base' => 5000,
             'type_frais_pro' => 'commun',
         ])->assertOk()
-            ->assertSee('Ton bulletin, en clair')
+            ->assertSee('Votre bulletin, en clair')
             ->assertSee('Voir le détail complet du calcul')
             ->assertSeeText("Aucune donnée personnelle n'est stockée.");
     }
@@ -74,7 +73,7 @@ class PagesTest extends TestCase
 
         $this->get('/')->assertOk()
             ->assertSee('<html lang="ar" dir="rtl">', false)
-            ->assertSee('كشف أجرك، سطراً بسطر');
+            ->assertSee('كشف الأجر المغربي، سطراً بسطر.');
 
         $this->get('/calculateur')->assertOk()->assertSee('محاكاة كشف أجري 2026');
     }

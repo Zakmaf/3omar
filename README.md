@@ -1,8 +1,10 @@
-# 3omar — Ton bulletin, ligne par ligne
+# 3omar — Le bulletin de paie, ligne par ligne
 
-![3omar — calculs expliqués, références affichées, aucune donnée stockée](public/img/3omar-social-preview.png)
+![Logotype 3omar](public/img/logo_banner_1200x630.png)
 
 3omar est un simulateur pédagogique et open source qui aide à comprendre les principaux calculs d'un bulletin de paie marocain. Chaque simulation affiche les taux, assiettes et références réglementaires utilisés.
+
+> **Pourquoi « 3omar » ?** En arabizi, عمر (Omar) s'écrit « 3omar » — le chiffre 3 dessine le ع. Le reste est une histoire entre Marocains.
 
 > Aucune donnée personnelle n'est stockée. Chaque simulation est calculée à la demande.
 

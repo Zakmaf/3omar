@@ -4,9 +4,9 @@
 
 @section('content')
 <div class="container">
-    <section class="row align-items-center g-4 my-4 my-lg-5" aria-labelledby="hero-title">
-        <div class="col-lg-6">
-            <div class="d-flex gap-2 flex-wrap mb-3">
+    <section class="row justify-content-center text-center my-4 my-lg-5" aria-labelledby="hero-title">
+        <div class="col-lg-8">
+            <div class="d-flex gap-2 flex-wrap justify-content-center mb-3">
                 <span class="badge rounded-pill px-3 py-2" style="background:var(--g-50);color:var(--g-700);border:1px solid var(--g-200)">
                     <i class="bi bi-calendar-check me-1"></i>{{ __('ui.home.year') }}
                 </span>
@@ -15,12 +15,12 @@
                 </span>
             </div>
             <h1 id="hero-title" class="display-4 fw-bold mb-3" style="letter-spacing:-0.035em">
-                {{ __('ui.home.title_before') }} <span style="color:var(--g-500);font-family:var(--f-accent)">3omar</span>, {{ __('ui.home.title_after') }}
+                {{ __('ui.home.title') }}
             </h1>
-            <p class="lead mb-4" style="color:var(--ink-2)">
+            <p class="lead mb-4 mx-auto" style="color:var(--ink-2);max-width:38rem">
                 {{ __('ui.home.intro') }}
             </p>
-            <div class="d-flex flex-wrap gap-3">
+            <div class="d-flex flex-wrap gap-3 justify-content-center">
                 <a href="{{ route('calculator.index') }}" class="btn btn-lg px-5 text-white fw-semibold" style="background:var(--g-500)">
                     <i class="bi bi-calculator me-2"></i>{{ __('ui.home.simulate') }}
                 </a>
@@ -31,11 +31,6 @@
             <p class="small mt-3 mb-0" style="color:var(--ink-3)">
                 <i class="bi bi-shield-check me-1"></i>{{ __('ui.footer.privacy') }} {{ __('ui.footer.privacy_detail') }}
             </p>
-        </div>
-        <div class="col-lg-6">
-            <img src="{{ asset('img/3omar-social-preview.png') }}"
-                 class="img-fluid rounded-4 shadow-sm"
-                 alt="{{ __('ui.home.image_alt') }}">
         </div>
     </section>
 

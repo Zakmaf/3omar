@@ -6,10 +6,12 @@
     <meta name="description" content="{{ __('ui.meta_description') }}">
     <meta property="og:title" content="@yield('title', __('ui.meta_title'))">
     <meta property="og:description" content="{{ __('ui.meta_social') }}">
-    <meta property="og:image" content="{{ asset('img/3omar-social-preview.png') }}">
+    <meta property="og:image" content="{{ asset('img/logo_banner_1200x630.png') }}">
     <meta property="og:type" content="website">
     <meta property="og:locale" content="{{ config('app.supported_locales.'.app()->getLocale().'.og') }}">
-    <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('img/app_icon_32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('img/app_icon_16.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('img/app_icon_180.png') }}">
     <title>@yield('title', __('ui.meta_title'))</title>
 
     <!-- Google Fonts -->
@@ -136,19 +138,23 @@
             color: var(--ink);
         }
 
-        /* Navbar */
+        /* Navbar — fond clair, usage par défaut du logotype (charte §02) */
         .navbar {
-            box-shadow: var(--shadow-2);
-        }
-        .navbar-brand {
-            font-family: var(--f-display);
-            font-weight: 700;
-            font-size: 1.15rem;
-            letter-spacing: -.3px;
+            background: var(--paper);
+            border-bottom: 1px solid var(--hairline);
+            box-shadow: var(--shadow-1);
         }
         .navbar .nav-link {
             font-family: var(--f-body);
             font-weight: 500;
+            color: var(--ink-2);
+        }
+        .navbar .nav-link:hover,
+        .navbar .nav-link:focus-visible {
+            color: var(--g-600);
+        }
+        .navbar .nav-link.active {
+            color: var(--g-600);
         }
 
         /* Cards */
@@ -279,6 +285,12 @@
                 animation-duration: .01ms !important;
             }
         }
+        @media print {
+            .navbar, footer, .no-print { display: none !important; }
+            main { padding: 0 !important; }
+            body { background: #fff; }
+            .section-card, .card { box-shadow: none !important; border: 1px solid var(--hairline-strong) !important; }
+        }
     </style>
 
     @stack('head')
@@ -286,49 +298,11 @@
 <body>
 <a class="skip-link" href="#main-content">{{ __('ui.skip') }}</a>
 
-{{-- SVG symbol definitions --}}
-<svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <defs>
-    <symbol id="logo-full" viewBox="0 0 520 180">
-      <g fill="#21704F">
-        <path d="M 60 50 C 60 32, 78 22, 100 22 C 122 22, 138 36, 138 52 C 138 66, 128 76, 116 78 C 128 80, 138 90, 138 104 L 138 106 C 138 124, 118 138, 96 138 C 78 138, 64 130, 58 118 L 78 108 C 82 116, 88 120, 96 120 C 108 120, 116 113, 116 104 C 116 95, 108 90, 96 90 L 88 90 L 88 72 L 96 72 C 106 72, 114 67, 114 58 C 114 49, 106 42, 96 42 C 86 42, 80 47, 78 56 Z"/>
-      </g>
-      <path d="M 38 100 C 38 130, 60 152, 90 152 C 110 152, 128 140, 138 122 C 130 134, 116 142, 100 142 C 76 142, 56 122, 56 98 C 56 90, 58 82, 62 76 C 48 82, 38 90, 38 100 Z" fill="#C1272D"/>
-      <circle cx="200" cy="98" r="38" fill="none" stroke="#21704F" stroke-width="20"/>
-      <g fill="#21704F" font-family="Outfit, sans-serif" font-weight="700">
-        <path d="M 252 60 L 272 60 L 272 72 C 278 64, 286 58, 296 58 C 308 58, 316 64, 320 74 C 326 64, 334 58, 346 58 C 362 58, 374 70, 374 90 L 374 136 L 354 136 L 354 96 C 354 86, 348 78, 340 78 C 332 78, 326 86, 326 96 L 326 136 L 306 136 L 306 96 C 306 86, 300 78, 292 78 C 284 78, 278 86, 278 96 L 278 136 L 252 136 Z"/>
-        <path d="M 422 58 C 442 58, 456 72, 456 92 L 456 136 L 436 136 L 436 128 C 432 134, 424 138, 414 138 C 396 138, 384 126, 384 110 C 384 94, 396 84, 414 82 L 436 82 C 434 76, 428 72, 422 72 C 414 72, 410 76, 408 80 L 390 72 C 396 64, 408 58, 422 58 Z M 420 122 C 430 122, 436 116, 436 108 L 436 96 L 420 98 C 412 100, 408 104, 408 110 C 408 117, 412 122, 420 122 Z"/>
-        <path d="M 478 60 L 498 60 L 498 76 C 502 66, 510 58, 522 58 L 522 80 C 510 80, 498 84, 498 100 L 498 136 L 478 136 Z"/>
-      </g>
-    </symbol>
-    <symbol id="logo-reverse" viewBox="0 0 520 180">
-      <g fill="#FFFFFF">
-        <path d="M 60 50 C 60 32, 78 22, 100 22 C 122 22, 138 36, 138 52 C 138 66, 128 76, 116 78 C 128 80, 138 90, 138 104 L 138 106 C 138 124, 118 138, 96 138 C 78 138, 64 130, 58 118 L 78 108 C 82 116, 88 120, 96 120 C 108 120, 116 113, 116 104 C 116 95, 108 90, 96 90 L 88 90 L 88 72 L 96 72 C 106 72, 114 67, 114 58 C 114 49, 106 42, 96 42 C 86 42, 80 47, 78 56 Z"/>
-      </g>
-      <path d="M 38 100 C 38 130, 60 152, 90 152 C 110 152, 128 140, 138 122 C 130 134, 116 142, 100 142 C 76 142, 56 122, 56 98 C 56 90, 58 82, 62 76 C 48 82, 38 90, 38 100 Z" fill="#E07478"/>
-      <circle cx="200" cy="98" r="38" fill="none" stroke="#FFFFFF" stroke-width="20"/>
-      <g fill="#FFFFFF">
-        <path d="M 252 60 L 272 60 L 272 72 C 278 64, 286 58, 296 58 C 308 58, 316 64, 320 74 C 326 64, 334 58, 346 58 C 362 58, 374 70, 374 90 L 374 136 L 354 136 L 354 96 C 354 86, 348 78, 340 78 C 332 78, 326 86, 326 96 L 326 136 L 306 136 L 306 96 C 306 86, 300 78, 292 78 C 284 78, 278 86, 278 96 L 278 136 L 252 136 Z"/>
-        <path d="M 422 58 C 442 58, 456 72, 456 92 L 456 136 L 436 136 L 436 128 C 432 134, 424 138, 414 138 C 396 138, 384 126, 384 110 C 384 94, 396 84, 414 82 L 436 82 C 434 76, 428 72, 422 72 C 414 72, 410 76, 408 80 L 390 72 C 396 64, 408 58, 422 58 Z M 420 122 C 430 122, 436 116, 436 108 L 436 96 L 420 98 C 412 100, 408 104, 408 110 C 408 117, 412 122, 420 122 Z"/>
-        <path d="M 478 60 L 498 60 L 498 76 C 502 66, 510 58, 522 58 L 522 80 C 510 80, 498 84, 498 100 L 498 136 L 478 136 Z"/>
-      </g>
-    </symbol>
-    <symbol id="mark" viewBox="0 0 200 200">
-      <rect x="4" y="4" width="192" height="192" rx="36" fill="#21704F"/>
-      <circle cx="100" cy="100" r="74" fill="#FAF8F3"/>
-      <g transform="translate(60 36) scale(0.7)">
-        <path d="M 60 50 C 60 32, 78 22, 100 22 C 122 22, 138 36, 138 52 C 138 66, 128 76, 116 78 C 128 80, 138 90, 138 104 L 138 106 C 138 124, 118 138, 96 138 C 78 138, 64 130, 58 118 L 78 108 C 82 116, 88 120, 96 120 C 108 120, 116 113, 116 104 C 116 95, 108 90, 96 90 L 88 90 L 88 72 L 96 72 C 106 72, 114 67, 114 58 C 114 49, 106 42, 96 42 C 86 42, 80 47, 78 56 Z" fill="#21704F"/>
-        <path d="M 38 100 C 38 130, 60 152, 90 152 C 110 152, 128 140, 138 122 C 130 134, 116 142, 100 142 C 76 142, 56 122, 56 98 C 56 90, 58 82, 62 76 C 48 82, 38 90, 38 100 Z" fill="#C1272D"/>
-      </g>
-    </symbol>
-  </defs>
-</svg>
 
-<nav class="navbar navbar-expand-lg navbar-dark" style="background:var(--g-500);">
+<nav class="navbar navbar-expand-lg navbar-light">
     <div class="container">
-        <a class="navbar-brand d-flex align-items-center gap-2" href="{{ route('home') }}">
-            <svg viewBox="0 0 200 200" style="width:32px;height:32px"><use href="#mark"/></svg>
-            <span style="font-family:var(--f-display);font-weight:700">3omar</span>
+        <a class="navbar-brand d-flex align-items-center" href="{{ route('home') }}">
+            <img src="{{ asset('img/logo_header_400x100.png') }}" alt="3omar" height="40" width="160">
         </a>
         <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#nav"
                 aria-controls="nav" aria-expanded="false" aria-label="Afficher la navigation">
@@ -388,7 +362,8 @@
             {{-- Colonne 1 : Identité --}}
             <div class="col-md-4">
                 <div class="d-flex align-items-center gap-2 mb-3">
-                    <svg viewBox="0 0 520 180" style="width:120px;height:auto"><use href="#logo-reverse"/></svg>
+                    <img src="{{ asset('img/app_icon_192.png') }}" alt="" width="36" height="36" style="border-radius:.5rem">
+                    <span style="font-family:var(--f-display);font-weight:700;font-size:1.3rem;color:var(--cream)">3omar</span>
                 </div>
                 <p class="footer-body-text small mb-2" style="font-family:var(--f-body)">
                     {{ __('ui.footer.tagline') }}

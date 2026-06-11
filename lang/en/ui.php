@@ -14,7 +14,7 @@ return [
         'privacy_detail' => 'Each simulation is calculated on demand.', 'license' => 'Open-source project under the MIT license',
     ],
     'home' => [
-        'year' => '2026 fiscal year', 'open_source' => 'Free and open source', 'title_before' => 'Your', 'title_after' => 'line by line.',
+        'year' => '2026 fiscal year', 'open_source' => 'Free and open source', 'title' => 'The Moroccan payslip, line by line.',
         'intro' => 'Simulate your Moroccan payslip and understand the main calculations. The result separates key amounts, details and assumptions.',
         'simulate' => 'Simulate my payslip', 'rules' => 'View 2026 rules', 'benefits_title' => 'Understand, not just calculate',
         'benefits' => [
@@ -22,7 +22,7 @@ return [
             ['title' => 'Explicit assumptions', 'text' => 'Declared parameters and references remain visible and verifiable.'],
             ['title' => 'Verifiable code', 'text' => 'The calculation engine and its parameters are public.'],
         ],
-        'coverage_title' => 'What 3omar covers', 'coverage' => ['Employee and employer CNSS and AMO', 'Progressive income tax and family deductions', 'CIMR and supplementary retirement', 'Professional expenses and allowances treated as exempt', 'Seniority bonus and overtime', 'Net salary and total employer cost'], 'image_alt' => 'Illustration showing the path from gross to net salary', 'ready' => 'Ready to understand your payslip?', 'free' => 'Educational, free and without registration.',
+        'coverage_title' => 'What 3omar covers', 'coverage' => ['Employee and employer CNSS and AMO', 'Progressive income tax and family deductions', 'CIMR and supplementary retirement', 'Professional expenses and allowances treated as exempt', 'Seniority bonus and overtime', 'Net salary and total employer cost'], 'ready' => 'Ready to understand your payslip?', 'free' => 'Educational, free and without registration.',
     ],
     'calculator' => [
         'title' => 'Simulate my 2026 payslip', 'eyebrow' => 'Educational simulation · about 2 minutes',

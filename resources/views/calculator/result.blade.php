@@ -14,7 +14,7 @@
             <h1 class="h2 fw-bold mb-1">{{ __('ui.result.title') }}</h1>
             <p class="mb-0" style="color:var(--ink-2)">{{ __('ui.result.intro') }}</p>
         </div>
-        <div class="d-flex flex-column flex-sm-row gap-2">
+        <div class="d-flex flex-column flex-sm-row gap-2 no-print">
             <a href="{{ route('calculator.index') }}" class="btn text-white fw-semibold" style="background:var(--g-500)">
                 <i class="bi bi-arrow-left me-1"></i>{{ __('ui.result.edit') }}
             </a>

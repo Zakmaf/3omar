@@ -2,7 +2,7 @@
 
 return [
     'meta_description' => '3omar ayuda a entender los principales cálculos de una nómina marroquí y los parámetros utilizados.',
-    'meta_title' => '3omar — Tu nómina, línea por línea',
+    'meta_title' => '3omar — La nómina, línea por línea',
     'meta_social' => 'Cálculos explicados, hipótesis explícitas, sin almacenar datos personales.',
     'skip' => 'Ir al contenido principal',
     'nav' => ['home' => 'Inicio', 'calculator' => 'Calculadora', 'documentation' => 'Documentación', 'language' => 'Idioma'],
@@ -14,7 +14,7 @@ return [
         'privacy_detail' => 'Cada simulación se calcula bajo demanda.', 'license' => 'Proyecto de código abierto con licencia MIT',
     ],
     'home' => [
-        'year' => 'Ejercicio 2026', 'open_source' => 'Gratis y de código abierto', 'title_before' => 'Tu', 'title_after' => 'línea por línea.',
+        'year' => 'Ejercicio 2026', 'open_source' => 'Gratis y de código abierto', 'title' => 'La nómina marroquí, línea por línea.',
         'intro' => 'Simula tu nómina marroquí y entiende los cálculos principales. El resultado separa importes clave, detalles e hipótesis.',
         'simulate' => 'Simular mi nómina', 'rules' => 'Consultar reglas 2026', 'benefits_title' => 'Entender, no solo calcular',
         'benefits' => [
@@ -22,7 +22,7 @@ return [
             ['title' => 'Hipótesis explícitas', 'text' => 'Los parámetros y referencias declarados siguen visibles y verificables.'],
             ['title' => 'Código verificable', 'text' => 'El motor de cálculo y sus parámetros son públicos.'],
         ],
-        'coverage_title' => 'Qué cubre 3omar', 'coverage' => ['CNSS y AMO del empleado y empleador', 'Impuesto progresivo y cargas familiares', 'CIMR y jubilación complementaria', 'Gastos profesionales e indemnizaciones tratadas como exentas', 'Prima de antigüedad y horas extra', 'Salario neto y coste total del empleador'], 'image_alt' => 'Ilustración del paso del salario bruto al neto', 'ready' => '¿Listo para entender tu nómina?', 'free' => 'Simulación educativa, gratuita y sin registro.',
+        'coverage_title' => 'Qué cubre 3omar', 'coverage' => ['CNSS y AMO del empleado y empleador', 'Impuesto progresivo y cargas familiares', 'CIMR y jubilación complementaria', 'Gastos profesionales e indemnizaciones tratadas como exentas', 'Prima de antigüedad y horas extra', 'Salario neto y coste total del empleador'], 'ready' => '¿Listo para entender tu nómina?', 'free' => 'Simulación educativa, gratuita y sin registro.',
     ],
     'calculator' => [
         'title' => 'Simular mi nómina 2026', 'eyebrow' => 'Simulación educativa · unos 2 minutos',
