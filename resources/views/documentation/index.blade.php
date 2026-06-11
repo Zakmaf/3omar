@@ -412,23 +412,6 @@
                 </div>
             </div>
 
-            <div class="card section-card">
-                <div class="card-body px-4 py-3">
-                    <h6 class="fw-semibold mb-2"><i class="bi bi-gear me-1" style="color:var(--s-succ)"></i>Paramètres vérifiables</h6>
-                    <p class="small text-muted mb-2">
-                        Tous les taux affichés ici et utilisés dans le simulateur proviennent d'une
-                        source unique. Le code est <a href="https://github.com/Zakmaf/3omar" target="_blank" rel="noopener">open source</a> :
-                        chaque valeur est vérifiable et peut être corrigée par la communauté.
-                    </p>
-                    <div class="rounded p-2" style="background:var(--g-800); font-family:var(--f-mono); font-size:.75rem; color:var(--cream)">
-                        <span style="color:var(--ink-3)">// Exercice {{ $payroll['year'] }}</span><br>
-                        <span style="color:var(--g-300)">'cnss.taux' => {{ $payroll['cnss']['taux'] }}</span><br>
-                        <span style="color:var(--g-300)">'amo.taux' => {{ $payroll['amo']['taux'] }}</span><br>
-                        <span style="color:var(--g-300)">'smig.mensuel' => {{ $payroll['smig']['mensuel'] }}</span>
-                    </div>
-                </div>
-            </div>
-
         </div>
     </div>
 </div>
