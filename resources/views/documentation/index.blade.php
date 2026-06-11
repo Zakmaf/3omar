@@ -1,17 +1,27 @@
 @extends('layouts.app')
 
-@section('title', 'Documentation — Législation de paie marocaine 2026')
+@section('title', '3omar — '.__('ui.documentation.title'))
 
 @section('content')
 <div class="container">
 
     <div class="row mb-4">
         <div class="col">
-            <h2 class="fw-bold mb-1"><i class="bi bi-journal-text me-2 text-success"></i>Documentation légale 2026</h2>
-            <p class="text-muted">
-                Références réglementaires utilisées par le simulateur — Secteur privé marocain.
-                <span class="badge text-bg-success ms-1">Tous les taux sont lus dynamiquement depuis <code>config/payroll.php</code></span>
+            <div class="eyebrow mb-2">{{ __('ui.documentation.eyebrow') }}</div>
+            <h1 class="h2 fw-bold mb-1"><i class="bi bi-journal-text me-2" style="color:var(--g-500)"></i>{{ __('ui.documentation.title') }}</h1>
+            <p style="color:var(--ink-2)">
+                {{ __('ui.documentation.intro') }}
+                <span class="badge rounded-pill ms-1 px-2 py-1" style="background:var(--g-50);color:var(--g-700);border:1px solid var(--g-200)">{{ __('ui.documentation.badge') }}</span>
             </p>
+            <div class="alert alert-warning small mb-0">
+                {{ __('ui.documentation.warning') }}
+            </div>
+            <nav class="d-flex flex-wrap gap-2 mt-3" aria-label="Accès rapide aux règles">
+                <a class="btn btn-sm" href="#cotisations" style="border:1px solid var(--hairline-strong)">Cotisations</a>
+                <a class="btn btn-sm" href="#impot" style="border:1px solid var(--hairline-strong)">Impôt</a>
+                <a class="btn btn-sm" href="#remuneration" style="border:1px solid var(--hairline-strong)">Rémunération</a>
+                <a class="btn btn-sm" href="#indemnites" style="border:1px solid var(--hairline-strong)">Indemnités</a>
+            </nav>
         </div>
     </div>
 
@@ -21,9 +31,9 @@
             {{-- ============================================================ --}}
             {{-- CNSS                                                          --}}
             {{-- ============================================================ --}}
-            <div class="card section-card mb-4">
+            <div class="card section-card mb-4" id="cotisations">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
-                    <span class="badge rounded-circle p-2 text-bg-primary"><i class="bi bi-building"></i></span>
+                    <span class="badge rounded-circle p-2" style="background:var(--s-info)"><i class="bi bi-building"></i></span>
                     <span>CNSS — Caisse Nationale de Sécurité Sociale</span>
                 </div>
                 <div class="card-body px-4 py-3">
@@ -63,7 +73,7 @@
             {{-- ============================================================ --}}
             <div class="card section-card mb-4">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
-                    <span class="badge rounded-circle p-2" style="background:#6f42c1"><i class="bi bi-heart-pulse"></i></span>
+                    <span class="badge rounded-circle p-2" style="background:var(--s-cot)"><i class="bi bi-heart-pulse"></i></span>
                     <span>AMO — Assurance Maladie Obligatoire</span>
                 </div>
                 <div class="card-body px-4 py-3">
@@ -92,7 +102,7 @@
             {{-- ============================================================ --}}
             <div class="card section-card mb-4">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
-                    <span class="badge rounded-circle p-2 text-bg-warning"><i class="bi bi-building-up"></i></span>
+                    <span class="badge rounded-circle p-2" style="background:var(--s-warn)"><i class="bi bi-building-up"></i></span>
                     <span>Charges patronales complémentaires</span>
                 </div>
                 <div class="card-body px-4 py-3">
@@ -113,7 +123,7 @@
                         </tbody>
                     </table>
                     <div class="alert alert-secondary py-2 small mb-0">
-                        <strong>Coût total employeur</strong> = SBI
+                        <strong>Coût total employeur</strong> = salaire brut total versé, indemnités comprises,
                         + CNSS patronal ({{ number_format($payroll['cnss']['taux_patronal'] * 100, 2, ',', '.') }}%)
                         + AMO patronale ({{ number_format($payroll['amo']['taux_patronal'] * 100, 2, ',', '.') }}%)
                         + AF ({{ number_format($payroll['allocations_familiales']['taux_patronal'] * 100, 2, ',', '.') }}%)
@@ -127,7 +137,7 @@
             {{-- ============================================================ --}}
             <div class="card section-card mb-4">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
-                    <span class="badge rounded-circle p-2 text-bg-success"><i class="bi bi-piggy-bank"></i></span>
+                    <span class="badge rounded-circle p-2" style="background:var(--s-succ)"><i class="bi bi-piggy-bank"></i></span>
                     <span>CIMR — Caisse Interprofessionnelle Marocaine de Retraite</span>
                 </div>
                 <div class="card-body px-4 py-3">
@@ -136,7 +146,7 @@
                         <tbody>
                             <tr><td>Fourchette de taux salarié</td><td class="fw-bold">{{ round($payroll['cimr']['taux_min'] * 100) }}% à {{ round($payroll['cimr']['taux_max'] * 100) }}%</td><td class="text-muted">Librement choisi</td></tr>
                             <tr><td>Plafond d'assiette</td><td class="fw-bold">Aucun</td><td class="text-muted">SBI total</td></tr>
-                            <tr><td>Déductibilité IR</td><td class="fw-bold text-success">100%</td><td class="text-muted">Déduit intégralement de l'assiette</td></tr>
+                            <tr><td>Déductibilité IR</td><td class="fw-bold" style="color:var(--s-succ)">100%</td><td class="text-muted">Déduit intégralement de l'assiette</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -145,9 +155,9 @@
             {{-- ============================================================ --}}
             {{-- IR BAREME                                                     --}}
             {{-- ============================================================ --}}
-            <div class="card section-card mb-4">
+            <div class="card section-card mb-4" id="impot">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
-                    <span class="badge rounded-circle p-2 text-bg-danger"><i class="bi bi-percent"></i></span>
+                    <span class="badge rounded-circle p-2" style="background:var(--s-tax)"><i class="bi bi-percent"></i></span>
                     <span>Barème IR annuel 2026 — Article 73 CGI</span>
                 </div>
                 <div class="card-body px-4 py-3">
@@ -165,7 +175,7 @@
                         </thead>
                         <tbody>
                             @foreach($baremes as $t)
-                            <tr class="{{ $t['taux'] == 0 ? 'table-success' : ($t['taux'] >= 0.34 ? 'table-danger' : '') }}">
+                            <tr style="{{ $t['taux'] == 0 ? 'background:var(--s-succ-bg)' : ($t['taux'] >= 0.34 ? 'background:var(--s-tax-bg)' : '') }}">
                                 <td>
                                     {{ number_format($t['min'], 0, ',', ' ') }}
                                     @if($t['max'] !== null)
@@ -181,8 +191,7 @@
                         </tbody>
                     </table>
                     <div class="alert alert-secondary py-2 small mb-0">
-                        <strong>Exemple :</strong> RNI annuel = 90 000 MAD →
-                        IR = 90 000 × 30% − 18 000 = <strong>9 000 MAD/an</strong> → 750 MAD/mois
+                        La tranche, le taux et la déduction fixe sont lus directement depuis <code>config/payroll.php</code>.
                     </div>
                 </div>
             </div>
@@ -192,7 +201,7 @@
             {{-- ============================================================ --}}
             <div class="card section-card mb-4">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
-                    <span class="badge rounded-circle p-2 text-bg-warning"><i class="bi bi-briefcase"></i></span>
+                    <span class="badge rounded-circle p-2" style="background:var(--s-warn)"><i class="bi bi-briefcase"></i></span>
                     <span>Frais Professionnels — Article 59 I-A CGI</span>
                 </div>
                 <div class="card-body px-4 py-3">
@@ -230,9 +239,9 @@
             {{-- ============================================================ --}}
             {{-- ANCIENNETÉ                                                    --}}
             {{-- ============================================================ --}}
-            <div class="card section-card mb-4">
+            <div class="card section-card mb-4" id="remuneration">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
-                    <span class="badge rounded-circle p-2 text-bg-info text-dark"><i class="bi bi-hourglass-split"></i></span>
+                    <span class="badge rounded-circle p-2" style="background:var(--s-info)"><i class="bi bi-hourglass-split"></i></span>
                     <span>Prime d'ancienneté — Article 350 Code du Travail</span>
                 </div>
                 <div class="card-body px-4 py-3">
@@ -257,7 +266,7 @@
                                         ans et plus
                                     @endif
                                 </td>
-                                <td class="text-center fw-bold text-info">{{ round($t['taux'] * 100) }}%</td>
+                                <td class="text-center fw-bold" style="color:var(--s-info)">{{ round($t['taux'] * 100) }}%</td>
                                 <td class="text-muted">{{ number_format(5000 * $t['taux'], 2, ',', ' ') }} MAD</td>
                             </tr>
                             @endforeach
@@ -271,7 +280,7 @@
             {{-- ============================================================ --}}
             <div class="card section-card mb-4">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
-                    <span class="badge rounded-circle p-2 text-bg-primary"><i class="bi bi-bank"></i></span>
+                    <span class="badge rounded-circle p-2" style="background:var(--s-info)"><i class="bi bi-bank"></i></span>
                     <span>Retraite complémentaire (Bancassurance) — {{ $payroll['retraite_complementaire']['article'] }}</span>
                 </div>
                 <div class="card-body px-4 py-3">
@@ -280,7 +289,7 @@
                         <tbody>
                             <tr>
                                 <td>Déductibilité IR (plafond)</td>
-                                <td class="fw-bold text-success">{{ round($payroll['retraite_complementaire']['deduction_ir_max_pct'] * 100) }}% du SBI annuel</td>
+                                <td class="fw-bold" style="color:var(--s-succ)">{{ round($payroll['retraite_complementaire']['deduction_ir_max_pct'] * 100) }}% du SBI annuel</td>
                             </tr>
                             <tr>
                                 <td>Base de calcul du plafond</td>
@@ -297,9 +306,8 @@
                     </table>
                     <div class="alert alert-info py-2 small mb-0">
                         <i class="bi bi-info-circle me-1"></i>
-                        La cotisation annuelle versée à un contrat de retraite complémentaire (assurance-vie, PERCO bancaire…)
-                        est déductible de l'assiette IR à hauteur de {{ round($payroll['retraite_complementaire']['deduction_ir_max_pct'] * 100) }}%
-                        du salaire brut annuel. L'excédent n'est pas déductible.
+                        Le simulateur applique une déduction fiscale plafonnée à {{ round($payroll['retraite_complementaire']['deduction_ir_max_pct'] * 100) }}%
+                        du salaire brut annuel. Le versement déclaré n'est pas soustrait du net à payer.
                     </div>
                 </div>
             </div>
@@ -307,13 +315,13 @@
             {{-- ============================================================ --}}
             {{-- INDEMNITÉS                                                    --}}
             {{-- ============================================================ --}}
-            <div class="card section-card mb-4">
+            <div class="card section-card mb-4" id="indemnites">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
-                    <span class="badge rounded-circle p-2 text-bg-success"><i class="bi bi-gift"></i></span>
-                    <span>Indemnités exonérées — Arrêté n° 1314-25 / BO n° 7443 du 29/09/2025</span>
+                    <span class="badge rounded-circle p-2" style="background:var(--s-succ)"><i class="bi bi-gift"></i></span>
+                    <span>Indemnités traitées comme exonérées par le simulateur</span>
                 </div>
                 <div class="card-body px-4 py-3">
-                    <p class="text-muted mb-3">Ces indemnités sont exonérées à la fois de CNSS et d'IR dans les limites légales. Tout excédent au-delà du plafond est réintégré au salaire brut imposable.</p>
+                    <p class="text-muted mb-3">Le simulateur applique les plafonds ci-dessous et réintègre tout excédent au salaire brut imposable. L'éligibilité CNSS et IR doit être confirmée selon la nature et les justificatifs de chaque indemnité.</p>
                     <table class="table table-sm table-hover">
                         <thead class="table-light">
                             <tr><th>Type d'indemnité</th><th class="text-end">Plafond légal</th></tr>
@@ -343,7 +351,7 @@
             {{-- ============================================================ --}}
             <div class="card section-card mb-4">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
-                    <span class="badge rounded-circle p-2 text-bg-info text-dark"><i class="bi bi-clock-history"></i></span>
+                    <span class="badge rounded-circle p-2" style="background:var(--s-info)"><i class="bi bi-clock-history"></i></span>
                     <span>SMIG 2026 &amp; Heures supplémentaires</span>
                 </div>
                 <div class="card-body px-4 py-3">
@@ -362,7 +370,7 @@
                             @foreach($payroll['heures_sup']['majorations'] as $type => $taux)
                             <tr>
                                 <td>{{ $payroll['heures_sup']['labels'][$type] ?? $type }}</td>
-                                <td class="text-center fw-bold {{ $taux >= 1.0 ? 'text-danger' : ($taux >= 0.5 ? 'text-warning' : 'text-primary') }}">
+                                <td class="text-center fw-bold" style="color:{{ $taux >= 1.0 ? 'var(--s-tax)' : ($taux >= 0.5 ? 'var(--s-warn)' : 'var(--s-info)') }}">
                                     +{{ round($taux * 100) }}%
                                 </td>
                             </tr>
@@ -382,7 +390,7 @@
 
             <div class="card section-card mb-4 sticky-top" style="top:80px">
                 <div class="card-header px-4 py-3">
-                    <i class="bi bi-link-45deg me-2"></i>Sources officielles
+                    <i class="bi bi-link-45deg me-2" style="color:var(--g-500)"></i>Références citées
                 </div>
                 <div class="card-body px-4 py-3">
                     <ul class="list-unstyled mb-0">
@@ -404,9 +412,9 @@
                 </div>
             </div>
 
-            <div class="card section-card border-warning mb-4">
+            <div class="card section-card mb-4" style="border-color:var(--s-warn)">
                 <div class="card-body px-4 py-3">
-                    <h6 class="fw-bold text-warning"><i class="bi bi-exclamation-triangle me-1"></i>Avertissement</h6>
+                    <h6 class="fw-bold" style="color:var(--s-warn)"><i class="bi bi-exclamation-triangle me-1"></i>Avertissement</h6>
                     <p class="small text-muted mb-0">
                         Ce simulateur est fourni à titre pédagogique uniquement.
                         Les résultats peuvent différer du calcul réel effectué par votre employeur
@@ -417,17 +425,17 @@
 
             <div class="card section-card">
                 <div class="card-body px-4 py-3">
-                    <h6 class="fw-semibold mb-2"><i class="bi bi-gear me-1 text-success"></i>Source unique de vérité</h6>
+                    <h6 class="fw-semibold mb-2"><i class="bi bi-gear me-1" style="color:var(--s-succ)"></i>Paramètres vérifiables</h6>
                     <p class="small text-muted mb-2">
-                        Tous les taux, plafonds et barèmes affichés sur cette page sont lus directement depuis
-                        <code>config/payroll.php</code>. Toute mise à jour de ce fichier actualise
-                        automatiquement cette documentation.
+                        Tous les taux affichés ici et utilisés dans le simulateur proviennent d'une
+                        source unique. Le code est <a href="https://github.com/Zakmaf/3omar" target="_blank" rel="noopener">open source</a> :
+                        chaque valeur est vérifiable et peut être corrigée par la communauté.
                     </p>
-                    <div class="bg-dark rounded p-2" style="font-family:monospace; font-size:.75rem; color:#e9ecef">
-                        <span class="text-muted">// Exercice {{ $payroll['year'] }}</span><br>
-                        <span class="text-success">'cnss.taux' => {{ $payroll['cnss']['taux'] }}</span><br>
-                        <span class="text-success">'amo.taux' => {{ $payroll['amo']['taux'] }}</span><br>
-                        <span class="text-success">'smig.mensuel' => {{ $payroll['smig']['mensuel'] }}</span>
+                    <div class="rounded p-2" style="background:var(--g-800); font-family:var(--f-mono); font-size:.75rem; color:var(--cream)">
+                        <span style="color:var(--ink-3)">// Exercice {{ $payroll['year'] }}</span><br>
+                        <span style="color:var(--g-300)">'cnss.taux' => {{ $payroll['cnss']['taux'] }}</span><br>
+                        <span style="color:var(--g-300)">'amo.taux' => {{ $payroll['amo']['taux'] }}</span><br>
+                        <span style="color:var(--g-300)">'smig.mensuel' => {{ $payroll['smig']['mensuel'] }}</span>
                     </div>
                 </div>
             </div>

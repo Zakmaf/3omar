@@ -1,10 +1,23 @@
 <!doctype html>
-<html lang="fr">
+<html lang="{{ app()->getLocale() }}" dir="{{ config('app.supported_locales.'.app()->getLocale().'.dir', 'ltr') }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Simulateur pédagogique de bulletin de paie pour le secteur privé marocain — CGI 2026, CNSS, AMO, IR, CIMR, coût employeur">
-    <title>@yield('title', 'Mon Bulletin de Paie Marocain 2026')</title>
+    <meta name="description" content="{{ __('ui.meta_description') }}">
+    <meta property="og:title" content="@yield('title', __('ui.meta_title'))">
+    <meta property="og:description" content="{{ __('ui.meta_social') }}">
+    <meta property="og:image" content="{{ asset('img/logo_banner_1200x630.png') }}">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="{{ config('app.supported_locales.'.app()->getLocale().'.og') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('img/app_icon_32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('img/app_icon_16.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('img/app_icon_180.png') }}">
+    <title>@yield('title', __('ui.meta_title'))</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Readex+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Bootstrap 5.3 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
@@ -14,91 +27,331 @@
 
     <style>
         :root {
-            --bs-body-bg: #f8f9fa;
-            --brand-green: #21704f;
-            --brand-red:   #c1272d;
+            /* Primaires */
+            --g-50: #F0F7F3; --g-100: #DCEBE3; --g-200: #B6D5C4; --g-300: #87B89F;
+            --g-400: #4D9376; --g-500: #21704F; --g-600: #1A5B40; --g-700: #144632;
+            --g-800: #0E3324; --g-900: #082017;
+            --r-50: #FBEDED; --r-100: #F4CFD0; --r-300: #E07478; --r-500: #C1272D; --r-700: #8A1B20;
+
+            /* Semantiques */
+            --s-info: #1B5FD9; --s-cot: #6F42C1; --s-tax: #C1272D; --s-succ: #1B7A4A;
+            --s-warn: #D97706; --s-neutral: #6C757D;
+            --s-succ-bg: #F0F7F3; --s-warn-bg: #FFF7ED; --s-info-bg: #EEF4FE;
+            --s-tax-bg: #FBEDED; --s-cot-bg: #F4EFFB;
+
+            /* Surfaces */
+            --ink: #1A2E26; --ink-2: #4A5C54; --ink-3: #7A8881;
+            --cream: #FAF8F3; --paper: #FFFFFF;
+            --hairline: rgba(26,46,38,0.10); --hairline-strong: rgba(26,46,38,0.18);
+
+            /* Layout tokens */
+            --radius: 0.75rem; --radius-sm: 0.5rem; --radius-lg: 1rem;
+            --shadow-1: 0 1px 2px rgba(8,32,23,0.06), 0 1px 1px rgba(8,32,23,0.04);
+            --shadow-2: 0 4px 16px rgba(8,32,23,0.08), 0 2px 4px rgba(8,32,23,0.04);
+
+            /* Type */
+            --f-display: "Outfit", system-ui, sans-serif;
+            --f-body: "Plus Jakarta Sans", system-ui, sans-serif;
+            --f-accent: "Readex Pro", system-ui, sans-serif;
+            --f-mono: "JetBrains Mono", ui-monospace, monospace;
+
+            /* Zellige pattern */
+            --zellige-bg: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cdefs%3E%3Cg id='star'%3E%3Cpath d='M60 10 L66 38 L94 32 L74 52 L94 72 L66 66 L60 94 L54 66 L26 72 L46 52 L26 32 L54 38 Z' fill='none' stroke='%2321704F' stroke-width='1'/%3E%3C/g%3E%3C/defs%3E%3Cuse href='%23star'/%3E%3Cuse href='%23star' x='-60' y='-60'/%3E%3Cuse href='%23star' x='60' y='-60'/%3E%3Cuse href='%23star' x='-60' y='60'/%3E%3Cuse href='%23star' x='60' y='60'/%3E%3C/svg%3E");
         }
-        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
 
-        .navbar-brand { font-weight: 700; font-size: 1.15rem; letter-spacing: -.3px; }
-        .navbar { box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+        body {
+            font-family: var(--f-body);
+            color: var(--ink);
+            background: var(--cream);
+            line-height: 1.6;
+        }
+        .skip-link {
+            position: absolute;
+            left: 1rem;
+            top: -5rem;
+            z-index: 2000;
+            padding: .75rem 1rem;
+            border-radius: var(--radius-sm);
+            background: var(--paper);
+            color: var(--g-700);
+            box-shadow: var(--shadow-2);
+        }
+        .skip-link:focus { top: 1rem; }
+        :focus-visible {
+            outline: 3px solid var(--s-info);
+            outline-offset: 3px;
+        }
+        button, .btn, .nav-link, summary {
+            min-height: 44px;
+        }
+        summary {
+            cursor: pointer;
+        }
+        .form-control, .form-select, .input-group-text {
+            min-height: 44px;
+        }
+        .form-text {
+            color: var(--ink-2);
+        }
+        .eyebrow {
+            color: var(--g-600);
+            font-family: var(--f-mono);
+            font-size: .72rem;
+            font-weight: 600;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+        .page-intro {
+            max-width: 48rem;
+        }
+        .action-bar {
+            background: rgba(250,248,243,.94);
+            border: 1px solid var(--hairline);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-2);
+            backdrop-filter: blur(12px);
+        }
+        .advanced-section[hidden] {
+            display: none !important;
+        }
+        [dir="rtl"] body {
+            font-family: var(--f-accent);
+        }
+        [dir="rtl"] .ms-auto { margin-right: auto !important; margin-left: 0 !important; }
+        [dir="rtl"] .me-1, [dir="rtl"] .me-2 { margin-left: .5rem !important; margin-right: 0 !important; }
+        [dir="rtl"] .ms-1, [dir="rtl"] .ms-2 { margin-right: .5rem !important; margin-left: 0 !important; }
+        [dir="rtl"] .text-end { text-align: left !important; }
+        [dir="rtl"] .row-brut td:first-child,
+        [dir="rtl"] .row-cotis td:first-child,
+        [dir="rtl"] .row-impot td:first-child,
+        [dir="rtl"] .row-indem td:first-child,
+        [dir="rtl"] .row-retenue td:first-child,
+        [dir="rtl"] .row-patron td:first-child,
+        [dir="rtl"] .row-net td:first-child,
+        [dir="rtl"] .row-employer td:first-child {
+            border-left: 0;
+            border-right: 3px solid var(--g-500);
+        }
 
-        .section-card { border: none; border-radius: .75rem; box-shadow: 0 2px 12px rgba(0,0,0,.07); }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--f-display);
+            color: var(--ink);
+        }
+
+        /* Navbar — fond clair, usage par défaut du logotype (charte §02) */
+        .navbar {
+            background: var(--paper);
+            border-bottom: 1px solid var(--hairline);
+            box-shadow: var(--shadow-1);
+        }
+        .navbar .nav-link {
+            font-family: var(--f-body);
+            font-weight: 500;
+            color: var(--ink-2);
+        }
+        .navbar .nav-link:hover,
+        .navbar .nav-link:focus-visible {
+            color: var(--g-600);
+        }
+        .navbar .nav-link.active {
+            color: var(--g-600);
+        }
+
+        /* Cards */
+        .section-card {
+            border: 1px solid var(--hairline);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-2);
+            background: var(--paper);
+        }
         .section-card .card-header {
-            border-radius: .75rem .75rem 0 0 !important;
-            background: #fff;
-            border-bottom: 2px solid #e9ecef;
+            border-radius: var(--radius) var(--radius) 0 0 !important;
+            background: var(--paper);
+            border-bottom: 2px solid var(--hairline);
+            font-family: var(--f-display);
             font-weight: 600;
         }
 
-        .net-amount { font-size: 2.8rem; font-weight: 800; color: var(--brand-green); line-height: 1; }
-
-        .detail-table th { font-size: .78rem; text-transform: uppercase; letter-spacing: .5px; color: #6c757d; }
-        .detail-table td { vertical-align: middle; }
-        .row-brut     td:first-child { border-left: 3px solid #0d6efd; }
-        .row-cotis    td:first-child { border-left: 3px solid #6f42c1; }
-        .row-impot    td:first-child { border-left: 3px solid #dc3545; }
-        .row-indem    td:first-child { border-left: 3px solid #198754; }
-        .row-retenue  td:first-child { border-left: 3px solid #6c757d; }
-        .row-patron   td:first-child { border-left: 3px solid #fd7e14; }
-        .row-net      { background: #f0fdf4; font-weight: 700; }
-        .row-net      td:first-child { border-left: 3px solid #198754; }
-        .row-employer { background: #fff8f0; font-weight: 700; }
-        .row-employer td:first-child { border-left: 3px solid #fd7e14; }
-
-        .badge-legal { font-size: .7rem; font-weight: 400; opacity: .85; }
-
-        /* Footer enrichi */
-        footer {
-            font-size: .85rem;
-            color: #6c757d;
-            border-top: 1px solid #dee2e6;
-            background: #f1f3f5;
+        /* Net amount */
+        .net-amount {
+            font-family: var(--f-display);
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--s-succ);
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
         }
-        footer a { color: #6c757d; text-decoration: none; }
-        footer a:hover { color: var(--brand-green); }
 
-        @media (max-width: 576px) { .net-amount { font-size: 2rem; } }
+        /* Detail table */
+        .detail-table th {
+            font-family: var(--f-mono);
+            font-size: 0.7rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--ink-2);
+        }
+        .detail-table td { vertical-align: middle; }
+
+        /* Row colors */
+        .row-brut   td:first-child { border-left: 3px solid var(--s-info); }
+        .row-cotis  td:first-child { border-left: 3px solid var(--s-cot); }
+        .row-impot  td:first-child { border-left: 3px solid var(--s-tax); }
+        .row-indem  td:first-child { border-left: 3px solid var(--s-succ); }
+        .row-retenue td:first-child { border-left: 3px solid var(--s-neutral); }
+        .row-patron td:first-child { border-left: 3px solid var(--s-warn); }
+
+        .row-net {
+            background: var(--s-succ-bg);
+            font-family: var(--f-display);
+            font-weight: 700;
+        }
+        .row-net td:first-child { border-left: 3px solid var(--s-succ); }
+
+        .row-employer {
+            background: var(--s-warn-bg);
+            font-family: var(--f-display);
+            font-weight: 700;
+        }
+        .row-employer td:first-child { border-left: 3px solid var(--s-warn); }
+
+        /* Legal badge */
+        .badge-legal {
+            background: var(--g-50);
+            color: var(--g-700);
+            border: 1px solid var(--g-200);
+            font-family: var(--f-mono);
+            font-size: 0.65rem;
+            border-radius: 999px;
+            padding: 2px 8px;
+            font-weight: 400;
+        }
+
+        /* Buttons */
+        .btn-success,
+        .btn-success:active {
+            background: var(--g-500);
+            border-color: var(--g-500);
+        }
+        .btn-success:hover,
+        .btn-success:focus-visible {
+            background: var(--g-600);
+            border-color: var(--g-600);
+        }
+
+        /* Alert semantic backgrounds */
+        .alert-warning { background: var(--s-warn-bg); }
+        .alert-danger  { background: var(--s-tax-bg); }
+        .alert-info    { background: var(--s-info-bg); }
+
+        /* Footer */
+        footer {
+            background: var(--g-800);
+            color: var(--cream);
+            font-size: .85rem;
+        }
+        footer .footer-body-text {
+            color: rgba(255,255,255,0.78);
+        }
+        footer a {
+            color: rgba(255,255,255,0.78);
+            text-decoration: none;
+            transition: color .15s;
+        }
+        footer a:hover {
+            color: #fff;
+        }
+        footer h6 {
+            color: var(--cream);
+        }
+        footer .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.12);
+        }
+
+        @media (max-width: 576px) {
+            .net-amount { font-size: 2rem; }
+            .mobile-sticky {
+                position: sticky;
+                bottom: .75rem;
+                z-index: 1020;
+            }
+            .mobile-sticky .btn {
+                width: 100%;
+            }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                scroll-behavior: auto !important;
+                transition-duration: .01ms !important;
+                animation-duration: .01ms !important;
+            }
+        }
+        @media print {
+            .navbar, footer, .no-print { display: none !important; }
+            main { padding: 0 !important; }
+            body { background: #fff; }
+            .section-card, .card { box-shadow: none !important; border: 1px solid var(--hairline-strong) !important; }
+        }
     </style>
 
     @stack('head')
 </head>
 <body>
+<a class="skip-link" href="#main-content">{{ __('ui.skip') }}</a>
 
-<nav class="navbar navbar-expand-lg navbar-dark" style="background:var(--brand-green);">
+
+<nav class="navbar navbar-expand-lg navbar-light">
     <div class="container">
-        <a class="navbar-brand" href="{{ route('home') }}">
-            <i class="bi bi-receipt-cutoff me-2"></i>Bulletin de Paie Maroc
+        <a class="navbar-brand d-flex align-items-center" href="{{ route('home') }}">
+            <img src="{{ asset('img/logo_header_400x100.png') }}" alt="3omar" height="40" width="160">
         </a>
-        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#nav"
+                aria-controls="nav" aria-expanded="false" aria-label="Afficher la navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="nav">
-            <ul class="navbar-nav ms-auto gap-1">
+            <ul class="navbar-nav ms-auto gap-1" aria-label="Navigation principale">
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('home') ? 'active fw-semibold' : '' }}"
+                       @if(request()->routeIs('home')) aria-current="page" @endif
                        href="{{ route('home') }}">
-                        <i class="bi bi-house me-1"></i>Accueil
+                        <i class="bi bi-house me-1"></i>{{ __('ui.nav.home') }}
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('calculator.*') ? 'active fw-semibold' : '' }}"
+                       @if(request()->routeIs('calculator.*')) aria-current="page" @endif
                        href="{{ route('calculator.index') }}">
-                        <i class="bi bi-calculator me-1"></i>Calculateur
+                        <i class="bi bi-calculator me-1"></i>{{ __('ui.nav.calculator') }}
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('documentation') ? 'active fw-semibold' : '' }}"
+                       @if(request()->routeIs('documentation')) aria-current="page" @endif
                        href="{{ route('documentation') }}">
-                        <i class="bi bi-journal-text me-1"></i>Documentation
+                        <i class="bi bi-journal-text me-1"></i>{{ __('ui.nav.documentation') }}
                     </a>
+                </li>
+                <li class="nav-item dropdown">
+                    <button class="btn nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-translate me-1"></i>{{ config('app.supported_locales.'.app()->getLocale().'.short') }}
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        @foreach(config('app.supported_locales') as $locale => $details)
+                        <li>
+                            <a class="dropdown-item {{ app()->isLocale($locale) ? 'active' : '' }}"
+                               @if(app()->isLocale($locale)) aria-current="true" @endif
+                               lang="{{ $locale }}" dir="{{ $details['dir'] }}"
+                               href="{{ route('locale.update', $locale) }}">{{ $details['label'] }}</a>
+                        </li>
+                        @endforeach
+                    </ul>
                 </li>
             </ul>
         </div>
     </div>
 </nav>
 
-<main class="py-4">
+<main class="py-4" id="main-content">
     @yield('content')
 </main>
 
@@ -108,63 +361,79 @@
 
             {{-- Colonne 1 : Identité --}}
             <div class="col-md-4">
-                <div class="d-flex align-items-center mb-2">
-                    <i class="bi bi-receipt-cutoff fs-4 me-2" style="color:var(--brand-green)"></i>
-                    <span class="fw-bold">Bulletin de Paie Maroc</span>
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <img src="{{ asset('img/app_icon_192.png') }}" alt="" width="36" height="36" style="border-radius:.5rem">
+                    <span style="font-family:var(--f-display);font-weight:700;font-size:1.3rem;color:var(--cream)">3omar</span>
                 </div>
-                <p class="small text-muted mb-2">
-                    Simulateur pédagogique de paie pour le secteur privé marocain.
-                    Conformité <strong>CGI 2026</strong> — Loi de Finances 50-25.
+                <p class="footer-body-text small mb-2" style="font-family:var(--f-body)">
+                    {{ __('ui.footer.tagline') }}
+                </p>
+                <p class="small mb-1" style="color:var(--cream)">
+                    <i class="bi bi-person-circle me-1"></i>
+                    <strong>Zakaria Maftah</strong>
                 </p>
                 <p class="small mb-0">
-                    <i class="bi bi-person-circle me-1"></i>
-                    Développé par <strong>Zakaria Maftah</strong>
-                </p>
-                <p class="small mt-1 mb-0">
                     <i class="bi bi-envelope me-1"></i>
-                    <a href="mailto:support-bulletindepaie@zakmaf.net">support-bulletindepaie@zakmaf.net</a>
+                    <a href="mailto:contact@zakmaf.net">contact@zakmaf.net</a>
                 </p>
             </div>
 
-            {{-- Colonne 2 : Stack technique --}}
+            {{-- Colonne 2 : Navigation --}}
             <div class="col-md-4">
-                <h6 class="fw-semibold mb-2"><i class="bi bi-code-slash me-1"></i>Stack technique</h6>
-                <ul class="list-unstyled small text-muted mb-0">
-                    <li class="mb-1"><i class="bi bi-box me-1 text-danger"></i><strong>Laravel 11</strong> — Framework PHP (backend MVC)</li>
-                    <li class="mb-1"><i class="bi bi-filetype-php me-1 text-primary"></i><strong>PHP 8.3</strong> — Moteur de calcul</li>
-                    <li class="mb-1"><i class="bi bi-layout-text-window me-1 text-success"></i><strong>Bootstrap 5</strong> + Blade — Interface</li>
-                    <li class="mb-1"><i class="bi bi-pie-chart-fill me-1 text-warning"></i><strong>Chart.js 4</strong> — Visualisation</li>
-                    <li class="mb-1"><i class="bi bi-docker me-1 text-info"></i><strong>Docker</strong> — Nginx + PHP-FPM</li>
-                    <li class="mb-1"><i class="bi bi-unlock me-1 text-success"></i><strong>Open Source</strong> — Gratuit & collaboratif</li>
+                <h6 class="fw-semibold mb-3" style="font-family:var(--f-display)">
+                    <i class="bi bi-signpost-split me-1"></i>{{ __('ui.footer.navigation') }}
+                </h6>
+                <ul class="list-unstyled small mb-0">
+                    <li class="mb-2">
+                        <a href="{{ route('calculator.index') }}">
+                            <i class="bi bi-calculator me-1"></i>{{ __('ui.footer.simulate') }}
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="{{ route('documentation') }}">
+                            <i class="bi bi-journal-text me-1"></i>{{ __('ui.footer.rules') }}
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="https://github.com/Zakmaf/3omar" target="_blank" rel="noopener">
+                            <i class="bi bi-github me-1"></i>{{ __('ui.footer.source') }}
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="https://github.com/Zakmaf/3omar/issues" target="_blank" rel="noopener">
+                            <i class="bi bi-bug me-1"></i>{{ __('ui.footer.report') }}
+                        </a>
+                    </li>
                 </ul>
             </div>
 
             {{-- Colonne 3 : Disclaimer --}}
             <div class="col-md-4">
-                <h6 class="fw-semibold mb-2 text-warning"><i class="bi bi-exclamation-triangle me-1"></i>Avertissement légal</h6>
-                <p class="small text-muted mb-2">
-                    Cet outil est fourni <strong>à titre purement informatif et pédagogique</strong>.
-                    Bien que nous nous efforcions de refléter la réglementation en vigueur (CGI 2026,
-                    Dahir 1-72-184, Loi 65-00…), les résultats peuvent contenir des inexactitudes.
+                <h6 class="fw-semibold mb-3" style="font-family:var(--f-display);color:var(--s-warn)">
+                    <i class="bi bi-exclamation-triangle me-1"></i>{{ __('ui.footer.warning') }}
+                </h6>
+                <p class="footer-body-text small mb-2">
+                    {{ __('ui.footer.warning_text') }}
+                    {{ __('ui.footer.consult') }}
                 </p>
-                <p class="small text-muted mb-0">
-                    <strong>Aucune donnée personnelle n'est collectée ou stockée.</strong>
-                    Les calculs sont effectués en temps réel et ne sont pas conservés.
-                    Pour votre bulletin officiel, consultez votre employeur ou un expert-comptable.
+                <p class="footer-body-text small mb-0">
+                    <i class="bi bi-shield-check me-1" style="color:var(--g-300)"></i>
+                    <strong>{{ __('ui.footer.privacy') }}</strong>
+                    {{ __('ui.footer.privacy_detail') }}
                 </p>
             </div>
 
         </div>
 
-        <hr class="my-3">
-
-        <div class="row align-items-center">
-            <div class="col-md-8 small text-muted">
-                <i class="bi bi-shield-check text-success me-1"></i>
-                Exercice fiscal 2026 · CGI Art. 73, 74, 59, 28 · Dahir n° 1-72-184 · Loi n° 65-00 · Arrêté n° 1314-25 · Décret n° 2.25.983
-            </div>
-            <div class="col-md-4 text-md-end small text-muted mt-2 mt-md-0">
-                &copy; {{ date('Y') }} Zakaria Maftah — Licence MIT
+        <div class="footer-bottom pt-3 mt-3">
+            <div class="row align-items-center">
+                <div class="col-md-8 small footer-body-text">
+                    <i class="bi bi-shield-check me-1" style="color:var(--g-300)"></i>
+                    Exercice fiscal 2026 &middot; CGI Art. 73, 74, 59, 28 &middot; Dahir n&deg; 1-72-184 &middot; Loi n&deg; 65-00 &middot; Arrêté n&deg; 1314-25 &middot; Décret n&deg; 2.25.983
+                </div>
+                <div class="col-md-4 text-md-end small footer-body-text mt-2 mt-md-0">
+                    &copy; 2026 3omar &mdash; {{ __('ui.footer.license') }}
+                </div>
             </div>
         </div>
     </div>

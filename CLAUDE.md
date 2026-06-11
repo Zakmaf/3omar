@@ -4,9 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Mon Bulletin de Paie Marocain** — a pedagogical Moroccan net-salary (bulletin de paie) simulator for private-sector employees, covering the **2026 fiscal year** (CGI 2026 / Loi de Finances 50-25, CNSS, AMO, IR, CIMR, frais professionnels, heures supplémentaires, prime d'ancienneté, indemnités exonérées, coût employeur).
+**3omar** — a pedagogical Moroccan net-salary simulator for private-sector employees, covering the **2026 fiscal year**.
 
-Stack: **Laravel 11 (PHP 8.3)** + Blade views, **Bootstrap 5** + Bootstrap Icons (via CDN, no asset build step), **Chart.js 4** (via CDN) for the salary breakdown donut chart. 100% stateless — no database, no user data stored (the `sqlite` DB config in `.env` is an unused Laravel placeholder).
+Stack: **Laravel 11 (PHP 8.4)** + Blade views, **Bootstrap 5** + Bootstrap Icons (via CDN, no asset build step), **Chart.js 4** (via CDN). No database or user data storage.
 
 ---
 
@@ -18,10 +18,10 @@ All commands run inside the PHP-FPM container (`paie_maroc_app`).
 # First-time setup
 cp .env.example .env
 docker-compose up -d --build
-docker exec paie_maroc_app composer install
+docker run --rm -v "$PWD":/app -v paie_maroc_vendor:/app/vendor -w /app composer:2.7 composer install
 docker exec paie_maroc_app php artisan key:generate
 
-# App available at http://localhost:8080
+# App available at http://localhost:49173
 
 # After editing config/ or routes/ (Laravel caches these)
 docker exec paie_maroc_app php artisan config:clear
@@ -34,7 +34,7 @@ docker exec paie_maroc_app vendor/bin/pint
 docker exec paie_maroc_app php artisan tinker
 ```
 
-There is no `tests/` directory yet — no test command exists. PHPUnit/Pest are available as dev dependencies if tests are added.
+Run tests with `docker compose exec -T app vendor/bin/phpunit`.
 
 ---
 
@@ -75,12 +75,12 @@ resources/views/
 7.  RNI mensuel = SNC − FP
 8.  RNI annuel net = (RNI × 12) − retraite_complémentaire déductible (≤ 50% SBI annuel, Art. 28-IV)
     IR annuel brut = barème progressif(RNI annuel net)     (Art. 73 CGI, 6 tranches)
-    IR mensuel = IR annuel brut / 12 − charges_famille     (Art. 74 CGI, 50 MAD/pers., plafond 300)
+    IR mensuel = IR annuel brut / 12 − charges_famille     (Art. 74 CGI, paramètres dans config/payroll.php)
 9.  Indemnités exonérées : part exonérée = min(déclaré, plafond) par config('payroll.indemnites')
                                                             (Arrêté 1314-25 / BO 7443 — plafond
                                                             journalier × jours_travailles si par_jour)
 10. Salaire net = SBI − CNSS − AMO − CIMR − IR_net + indemnités exonérées − (autres_retenues + mutuelle_salarié)
-11. Coût employeur = SBI + CNSS_patronal + AMO_patronal + AF_patronal + TFP_patronal + mutuelle_patronale
+11. Coût employeur = salaire_brut_total + CNSS_patronal + AMO_patronal + AF_patronal + TFP_patronal + mutuelle_patronale
 ```
 
 The result array also includes `avertissements` (regulatory warnings, e.g. salaire de base below SMIG, CIMR rate out of range, indemnité exceeding its legal cap) and `repartition` (percentages/colors for the Chart.js donut).
@@ -97,4 +97,4 @@ Add an entry to `config('payroll.indemnites')` with `label`, `base_salaire` (boo
 
 ## Legal references
 
-Every rate/rule in `config/payroll.php` is grouped under a comment naming its legal source (Dahir, CGI article, Arrêté, Décret). When adding a new rule, include its legal reference in the same way — these are surfaced directly in the documentation page and in `avertissements` messages.
+Every rate/rule in `config/payroll.php` is grouped under a comment naming its declared legal source or simulation assumption. When adding a rule, document whether the reference has been verified, add a boundary test, and update `docs/REGLES_GESTION.md`.
