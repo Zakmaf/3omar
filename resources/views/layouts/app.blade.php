@@ -427,7 +427,7 @@
 
         <div class="footer-bottom pt-3 mt-3">
             <div class="small footer-body-text text-center">
-                &copy; 2026 3omar &mdash; {{ __('ui.footer.license') }}
+                &copy; 2026 3omar · {{ __('ui.footer.license') }}
             </div>
         </div>
     </div>

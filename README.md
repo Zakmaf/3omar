@@ -1,10 +1,10 @@
-# 3omar — Le bulletin de paie de Marocain open source
+# 3omar · Le bulletin de paie Marocain open source
 
 ![Logotype 3omar](public/img/logo_banner_1200x630.png)
 
-3omar est un simulateur pédagogique et open source qui aide à comprendre les principaux calculs d'un bulletin de paie marocain. Chaque simulation affiche les taux, assiettes et références réglementaires utilisés.
+3omar est un simulateur pédagogique qui aide à comprendre les principaux calculs d'un salaire net au Maroc. Chaque simulation affiche les taux, assiettes et références réglementaires utilisés.
 
-> **Pourquoi « 3omar » ?** En darija marocaine, عمر (Omar) s'écrit « 3omar » — le chiffre 3 dessine le ع. Le reste est une histoire entre Marocains ;-) 
+> **Pourquoi « 3omar » ?** En darija marocaine, عمر (Omar) s'écrit « 3omar », le chiffre 3 dessine le ع. Le reste est une histoire entre Marocains ;-) 
 
 > Aucune donnée personnelle n'est stockée. Chaque simulation est calculée à la demande.
 
@@ -67,4 +67,4 @@ Les corrections de calcul doivent inclure un scénario de test reproductible. Le
 
 Le code est distribué sous licence [MIT](LICENSE).
 
-Le nom « 3omar », les logos (`public/img/`) et la charte graphique ([`charte-graphique-editoriale.html`](charte-graphique-editoriale.html)) restent soumis à des conditions distinctes — voir [`LICENSE-ASSETS.md`](LICENSE-ASSETS.md).
+Le nom « 3omar », les logos (`public/img/`) et la charte graphique ([`charte-graphique-editoriale.html`](charte-graphique-editoriale.html)) restent soumis à des conditions distinctes : voir [`LICENSE-ASSETS.md`](LICENSE-ASSETS.md).

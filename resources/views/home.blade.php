@@ -8,7 +8,7 @@
         <div class="col-lg-8">
             <div class="d-flex gap-2 flex-wrap justify-content-center mb-3">
                 <span class="badge rounded-pill px-3 py-2" style="background:var(--g-50);color:var(--g-700);border:1px solid var(--g-200)">
-                    <i class="bi bi-calendar-check me-1"></i>{{ __('ui.home.year') }}
+                    <i class="bi bi-calendar-check me-1"></i>{{ __('ui.home.badge') }}
                 </span>
                 <span class="badge rounded-pill px-3 py-2" style="background:var(--s-info-bg);color:var(--s-info)">
                     <i class="bi bi-unlock me-1"></i>{{ __('ui.home.open_source') }}

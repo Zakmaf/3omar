@@ -17,10 +17,10 @@ class PagesTest extends TestCase
     public function test_public_pages_are_available(): void
     {
         $this->get('/')->assertOk()
-            ->assertSee('Le bulletin de paie marocain, ligne par ligne.');
+            ->assertSee('Le bulletin de paie Marocain open source');
         $this->get('/calculateur')->assertOk()->assertSee('Simuler mon bulletin');
         $this->get('/documentation')->assertOk()
-            ->assertSee('Documentation des règles 2026')
+            ->assertSee('Documentation des règles')
             ->assertSee('Hypothèses de simulation')
             ->assertDontSee('Taux à jour');
     }
@@ -73,9 +73,9 @@ class PagesTest extends TestCase
 
         $this->get('/')->assertOk()
             ->assertSee('<html lang="ar" dir="rtl">', false)
-            ->assertSee('كشف الأجر المغربي، سطراً بسطر.');
+            ->assertSee('كشف الأجر المغربي، مفتوح المصدر');
 
-        $this->get('/calculateur')->assertOk()->assertSee('محاكاة كشف أجري 2026');
+        $this->get('/calculateur')->assertOk()->assertSee('محاكاة كشف أجري');
     }
 
     public function test_supported_latin_locales_render_translated_navigation(): void

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', '3omar — '.__('ui.documentation.title'))
+@section('title', '3omar · '.__('ui.documentation.title'))
 
 @section('content')
 <div class="container">
