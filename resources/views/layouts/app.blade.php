@@ -426,14 +426,8 @@
         </div>
 
         <div class="footer-bottom pt-3 mt-3">
-            <div class="row align-items-center">
-                <div class="col-md-8 small footer-body-text">
-                    <i class="bi bi-journal-text me-1" style="color:var(--g-300)"></i>
-                    <a href="{{ route('documentation') }}">{{ __('ui.footer.rules') }}</a>
-                </div>
-                <div class="col-md-4 text-md-end small footer-body-text mt-2 mt-md-0">
-                    &copy; 2026 3omar &mdash; {{ __('ui.footer.license') }}
-                </div>
+            <div class="small footer-body-text text-center">
+                &copy; 2026 3omar &mdash; {{ __('ui.footer.license') }}
             </div>
         </div>
     </div>
