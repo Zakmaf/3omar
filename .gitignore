@@ -26,3 +26,7 @@ yarn-error.log
 
 # Config locale Claude Code
 /.claude/
+
+# Instructions agent IA (locales, non liées au projet)
+/CLAUDE.md
+/AGENTS.md

@@ -61,7 +61,7 @@ La stratégie multilingue et les conventions de traduction sont décrites dans [
 
 ## Contribution
 
-Consultez [AGENTS.md](AGENTS.md) pour les conventions du dépôt. Les corrections de calcul doivent inclure un scénario de test reproductible. Les changements visuels doivent respecter la [charte de marque](charte-graphique-editoriale.html).
+Les corrections de calcul doivent inclure un scénario de test reproductible. Les changements visuels doivent respecter la [charte de marque](charte-graphique-editoriale.html).
 
 ## Licence
 
