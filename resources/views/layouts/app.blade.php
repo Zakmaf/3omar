@@ -374,7 +374,7 @@
                 </p>
                 <p class="small mb-0">
                     <i class="bi bi-envelope me-1"></i>
-                    <a href="mailto:contact@zakmaf.net">contact@zakmaf.net</a>
+                    <a href="mailto:support@3omar.ma">support@3omar.ma</a>
                 </p>
             </div>
 
@@ -428,8 +428,8 @@
         <div class="footer-bottom pt-3 mt-3">
             <div class="row align-items-center">
                 <div class="col-md-8 small footer-body-text">
-                    <i class="bi bi-shield-check me-1" style="color:var(--g-300)"></i>
-                    Exercice fiscal 2026 &middot; CGI Art. 73, 74, 59, 28 &middot; Dahir n&deg; 1-72-184 &middot; Loi n&deg; 65-00 &middot; Arrêté n&deg; 1314-25 &middot; Décret n&deg; 2.25.983
+                    <i class="bi bi-journal-text me-1" style="color:var(--g-300)"></i>
+                    <a href="{{ route('documentation') }}">{{ __('ui.footer.rules') }}</a>
                 </div>
                 <div class="col-md-4 text-md-end small footer-body-text mt-2 mt-md-0">
                     &copy; 2026 3omar &mdash; {{ __('ui.footer.license') }}
