@@ -46,6 +46,21 @@ docker compose exec app vendor/bin/phpunit
 
 Il n'existe pas d'étape de build frontend : Bootstrap, Bootstrap Icons et Chart.js sont chargés par CDN.
 
+## Déploiement
+
+Une image de production (PHP-FPM, Nginx et Supervisor dans un seul
+conteneur, build dans `docker/release/Dockerfile`) est publiée sur
+GitHub Container Registry à chaque release :
+
+```bash
+docker run -d -p 8080:80 \
+  -e APP_KEY="$(docker run --rm ghcr.io/zakmaf/3omar:latest php artisan key:generate --show)" \
+  ghcr.io/zakmaf/3omar:latest
+```
+
+Tags disponibles : `latest`, `v1`, `v1.0`, `v1.0.0` (et leurs futures
+versions).
+
 ## Architecture
 
 - `app/Services/PayrollCalculatorService.php` : moteur de calcul.
