@@ -1,26 +1,28 @@
-# 3omar — Le bulletin de paie, ligne par ligne
+# 3omar — Le bulletin de paie de Marocain open source
 
 ![Logotype 3omar](public/img/logo_banner_1200x630.png)
 
 3omar est un simulateur pédagogique et open source qui aide à comprendre les principaux calculs d'un bulletin de paie marocain. Chaque simulation affiche les taux, assiettes et références réglementaires utilisés.
 
-> **Pourquoi « 3omar » ?** En arabizi, عمر (Omar) s'écrit « 3omar » — le chiffre 3 dessine le ع. Le reste est une histoire entre Marocains.
+> **Pourquoi « 3omar » ?** En darija marocaine, عمر (Omar) s'écrit « 3omar » — le chiffre 3 dessine le ع. Le reste est une histoire entre Marocains ;-) 
 
 > Aucune donnée personnelle n'est stockée. Chaque simulation est calculée à la demande.
 
 ## Fonctionnalités
 
-- CNSS, AMO, CIMR et IR progressif pour l'exercice 2026.
+- CNSS, AMO, CIMR et IR progressif.
 - Frais professionnels, charges de famille et retraite complémentaire.
 - Prime d'ancienneté, heures supplémentaires et indemnités exonérées.
 - Salaire net, détail des retenues et coût total employeur.
 - Documentation générée depuis `config/payroll.php`, source unique des paramètres.
 
-3omar reste une simulation pédagogique. Pour un bulletin officiel ou une situation particulière, consultez votre employeur ou un professionnel.
+Tout cela, conforme aux derniers texte légaux et réglementaires qui régissent ces différentes rubriques.
+
+3omar reste une simulation pédagogique. Pour un bulletin de paie officiel ou une situation particulière, consultez votre employeur ou un professionnel.
 
 ## Lancer avec Docker
 
-Prérequis : Docker Engine ou Docker Desktop avec Docker Compose.
+Prérequis : Docker Compose.
 
 ```bash
 cp .env.example .env
