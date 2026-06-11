@@ -5,6 +5,7 @@ return [
     'meta_title' => '3omar · La nómina marroquí, de código abierto',
     'meta_social' => 'Cálculos explicados, hipótesis explícitas, sin almacenar datos personales.',
     'skip' => 'Ir al contenido principal',
+    'ads' => ['label' => 'Publicidad'],
     'nav' => ['home' => 'Inicio', 'calculator' => 'Calculadora', 'documentation' => 'Documentación', 'language' => 'Idioma'],
     'footer' => [
         'tagline' => 'Simulador de nómina, pensado para Marruecos', 'navigation' => 'Navegación', 'simulate' => 'Simular mi nómina',

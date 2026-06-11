@@ -5,6 +5,7 @@ return [
     'meta_title' => '3omar · Le bulletin de paie Marocain open source',
     'meta_social' => 'Calculs expliqués, hypothèses explicites, aucune donnée personnelle stockée.',
     'skip' => 'Aller au contenu principal',
+    'ads' => ['label' => 'Publicité'],
     'nav' => ['home' => 'Accueil', 'calculator' => 'Calculateur', 'documentation' => 'Documentation', 'language' => 'Langue'],
     'footer' => [
         'tagline' => 'Simulateur de paie, pensé pour le Maroc',

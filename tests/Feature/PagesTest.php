@@ -25,6 +25,27 @@ class PagesTest extends TestCase
             ->assertDontSee('Taux à jour');
     }
 
+    public function test_adsense_is_not_rendered_outside_production(): void
+    {
+        config()->set('ads.enabled', true);
+        config()->set('ads.client', 'ca-pub-test');
+        config()->set('ads.placements.header.slot', 'header-test');
+        config()->set('ads.placements.footer.slot', 'footer-test');
+
+        foreach (['/', '/calculateur', '/documentation'] as $path) {
+            $this->get($path)->assertOk()
+                ->assertDontSee('pagead2.googlesyndication.com', false)
+                ->assertDontSee('ca-pub-test', false);
+        }
+    }
+
+    public function test_language_switcher_is_hidden_for_v1(): void
+    {
+        $this->get('/')->assertOk()
+            ->assertDontSee('bi-translate', false)
+            ->assertDontSee(route('locale.update', 'en'), false);
+    }
+
     public function test_result_uses_accurate_non_storage_message(): void
     {
         $this->post('/calculateur/calculer', [
