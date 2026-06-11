@@ -63,4 +63,8 @@ La stratégie multilingue et les conventions de traduction sont décrites dans [
 
 Consultez [AGENTS.md](AGENTS.md) pour les conventions du dépôt. Les corrections de calcul doivent inclure un scénario de test reproductible. Les changements visuels doivent respecter la [charte de marque](charte-graphique-editoriale.html).
 
-Licence MIT.
+## Licence
+
+Le code est distribué sous licence [MIT](LICENSE).
+
+Le nom « 3omar », les logos (`public/img/`) et la charte graphique ([`charte-graphique-editoriale.html`](charte-graphique-editoriale.html)) restent soumis à des conditions distinctes — voir [`LICENSE-ASSETS.md`](LICENSE-ASSETS.md).
