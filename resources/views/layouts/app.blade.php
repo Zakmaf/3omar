@@ -114,6 +114,17 @@
         .advanced-section[hidden] {
             display: none !important;
         }
+        .ad-slot {
+            margin-block: 1.5rem;
+            overflow: hidden;
+            text-align: center;
+        }
+        .ad-slot-horizontal {
+            min-height: 90px;
+        }
+        .ad-slot-rectangle {
+            min-height: 250px;
+        }
         [dir="rtl"] body {
             font-family: var(--f-accent);
         }
@@ -286,7 +297,7 @@
             }
         }
         @media print {
-            .navbar, footer, .no-print { display: none !important; }
+            .navbar, footer, .no-print, .ad-slot { display: none !important; }
             main { padding: 0 !important; }
             body { background: #fff; }
             .section-card, .card { box-shadow: none !important; border: 1px solid var(--hairline-strong) !important; }
@@ -294,6 +305,11 @@
     </style>
 
     @stack('head')
+    @if (app()->environment('production') && config('ads.enabled') && config('ads.client'))
+    <script async
+            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ config('ads.client') }}"
+            crossorigin="anonymous"></script>
+    @endif
 </head>
 <body>
 <a class="skip-link" href="#main-content">{{ __('ui.skip') }}</a>
@@ -331,29 +347,22 @@
                         <i class="bi bi-journal-text me-1"></i>{{ __('ui.nav.documentation') }}
                     </a>
                 </li>
-                <li class="nav-item dropdown">
-                    <button class="btn nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-translate me-1"></i>{{ config('app.supported_locales.'.app()->getLocale().'.short') }}
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        @foreach(config('app.supported_locales') as $locale => $details)
-                        <li>
-                            <a class="dropdown-item {{ app()->isLocale($locale) ? 'active' : '' }}"
-                               @if(app()->isLocale($locale)) aria-current="true" @endif
-                               lang="{{ $locale }}" dir="{{ $details['dir'] }}"
-                               href="{{ route('locale.update', $locale) }}">{{ $details['label'] }}</a>
-                        </li>
-                        @endforeach
-                    </ul>
-                </li>
             </ul>
         </div>
     </div>
 </nav>
 
+<div class="container">
+    <x-ad-slot placement="header" />
+</div>
+
 <main class="py-4" id="main-content">
     @yield('content')
 </main>
+
+<div class="container">
+    <x-ad-slot placement="footer" />
+</div>
 
 <footer class="pt-5 pb-4 mt-5">
     <div class="container">
@@ -438,5 +447,12 @@
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc4s9bIOgUxi8T/jzmE3FGjEe6xcMuB/93AAnXrwEAX" crossorigin="anonymous"></script>
 
 @stack('scripts')
+@if (app()->environment('production') && config('ads.enabled') && config('ads.client'))
+<script>
+    document.querySelectorAll('.adsbygoogle').forEach(() => {
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+    });
+</script>
+@endif
 </body>
 </html>

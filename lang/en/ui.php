@@ -5,6 +5,7 @@ return [
     'meta_title' => '3omar · The Moroccan payslip, open source',
     'meta_social' => 'Explained calculations, explicit assumptions, no personal data stored.',
     'skip' => 'Skip to main content',
+    'ads' => ['label' => 'Advertisement'],
     'nav' => ['home' => 'Home', 'calculator' => 'Calculator', 'documentation' => 'Documentation', 'language' => 'Language'],
     'footer' => [
         'tagline' => 'Payroll simulator, built for Morocco', 'navigation' => 'Navigation', 'simulate' => 'Simulate my payslip',
