@@ -34,7 +34,7 @@
             <div class="card section-card mb-4" id="cotisations">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
                     <span class="badge rounded-circle p-2" style="background:var(--s-info)"><i class="bi bi-building"></i></span>
-                    <span>CNSS — Caisse Nationale de Sécurité Sociale</span>
+                    <span>CNSS · Caisse Nationale de Sécurité Sociale</span>
                 </div>
                 <div class="card-body px-4 py-3">
                     <p class="text-muted mb-3">Référence : <code>Dahir portant loi n° 1-72-184 du 27 juillet 1972</code></p>
@@ -74,7 +74,7 @@
             <div class="card section-card mb-4">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
                     <span class="badge rounded-circle p-2" style="background:var(--s-cot)"><i class="bi bi-heart-pulse"></i></span>
-                    <span>AMO — Assurance Maladie Obligatoire</span>
+                    <span>AMO · Assurance Maladie Obligatoire</span>
                 </div>
                 <div class="card-body px-4 py-3">
                     <p class="text-muted mb-3">Référence : <code>Loi n° 65-00 portant code de la couverture médicale de base</code></p>
@@ -138,10 +138,10 @@
             <div class="card section-card mb-4">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
                     <span class="badge rounded-circle p-2" style="background:var(--s-succ)"><i class="bi bi-piggy-bank"></i></span>
-                    <span>CIMR — Caisse Interprofessionnelle Marocaine de Retraite</span>
+                    <span>CIMR · Caisse Interprofessionnelle Marocaine de Retraite</span>
                 </div>
                 <div class="card-body px-4 py-3">
-                    <p class="text-muted mb-3">Référence : <code>Article 28-III CGI — Loi n° 64-12</code></p>
+                    <p class="text-muted mb-3">Référence : <code>Article 28-III CGI, Loi n° 64-12</code></p>
                     <table class="table table-sm">
                         <tbody>
                             <tr><td>Fourchette de taux salarié</td><td class="fw-bold">{{ round($payroll['cimr']['taux_min'] * 100) }}% à {{ round($payroll['cimr']['taux_max'] * 100) }}%</td><td class="text-muted">Librement choisi</td></tr>
@@ -158,7 +158,7 @@
             <div class="card section-card mb-4" id="impot">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
                     <span class="badge rounded-circle p-2" style="background:var(--s-tax)"><i class="bi bi-percent"></i></span>
-                    <span>Barème IR annuel 2026 — Article 73 CGI</span>
+                    <span>Barème IR annuel 2026 · Article 73 CGI</span>
                 </div>
                 <div class="card-body px-4 py-3">
                     <p class="text-muted mb-3">
@@ -202,7 +202,7 @@
             <div class="card section-card mb-4">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
                     <span class="badge rounded-circle p-2" style="background:var(--s-warn)"><i class="bi bi-briefcase"></i></span>
-                    <span>Frais Professionnels — Article 59 I-A CGI</span>
+                    <span>Frais Professionnels · Article 59 I-A CGI</span>
                 </div>
                 <div class="card-body px-4 py-3">
                     <p class="text-muted mb-3">Déductibles de l'assiette IR (non remboursés au salarié). Calculés sur le salaire brut imposable (SBI), dans la limite du plafond mensuel. Seuil mensuel : <strong>{{ number_format($payroll['frais_pro']['seuil_mensuel'], 0, ',', ' ') }} MAD</strong>.</p>
@@ -242,10 +242,10 @@
             <div class="card section-card mb-4" id="remuneration">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
                     <span class="badge rounded-circle p-2" style="background:var(--s-info)"><i class="bi bi-hourglass-split"></i></span>
-                    <span>Prime d'ancienneté — Article 350 Code du Travail</span>
+                    <span>Prime d'ancienneté · Article 350 Code du Travail</span>
                 </div>
                 <div class="card-body px-4 py-3">
-                    <p class="text-muted mb-3">Référence : <code>Loi n° 65-99 (Code du Travail) — Art. 350</code> — Calculée sur le salaire de base mensuel brut.</p>
+                    <p class="text-muted mb-3">Référence : <code>Loi n° 65-99 (Code du Travail), art. 350</code>. Calculée sur le salaire de base mensuel brut.</p>
                     <table class="table table-sm table-hover">
                         <thead class="table-light">
                             <tr><th>Ancienneté</th><th class="text-center">Taux</th><th>Exemple (SB = 5 000 MAD)</th></tr>
@@ -281,7 +281,7 @@
             <div class="card section-card mb-4">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
                     <span class="badge rounded-circle p-2" style="background:var(--s-info)"><i class="bi bi-bank"></i></span>
-                    <span>Retraite complémentaire (Bancassurance) — {{ $payroll['retraite_complementaire']['article'] }}</span>
+                    <span>Retraite complémentaire (Bancassurance) · {{ $payroll['retraite_complementaire']['article'] }}</span>
                 </div>
                 <div class="card-body px-4 py-3">
                     <p class="text-muted mb-3">Référence : <code>{{ $payroll['retraite_complementaire']['article'] }}</code></p>
@@ -388,7 +388,7 @@
         {{-- ============================================================ --}}
         <div class="col-lg-4">
 
-            <div class="card section-card mb-4 sticky-top" style="top:80px">
+            <div class="card section-card mb-4">
                 <div class="card-header px-4 py-3">
                     <i class="bi bi-link-45deg me-2" style="color:var(--g-500)"></i>Références citées
                 </div>
@@ -396,12 +396,12 @@
                     <ul class="list-unstyled mb-0">
                         @foreach([
                             ['titre' => 'Code Général des Impôts (CGI) 2026', 'desc' => 'Art. 28-III, 28-IV, 59, 73, 74'],
-                            ['titre' => 'Code du Travail — Loi n° 65-99',     'desc' => 'Art. 196, 201, 350'],
-                            ['titre' => 'Dahir n° 1-72-184 du 27/07/1972',    'desc' => 'CNSS — Sécurité sociale'],
-                            ['titre' => 'Loi n° 65-00',                        'desc' => 'AMO — Couverture médicale'],
-                            ['titre' => 'Arrêté n° 1314-25',                   'desc' => 'BO n° 7443 du 29/09/2025 — Indemnités'],
+                            ['titre' => 'Code du Travail (Loi n° 65-99)',     'desc' => 'Art. 196, 201, 350'],
+                            ['titre' => 'Dahir n° 1-72-184 du 27/07/1972',    'desc' => 'CNSS, sécurité sociale'],
+                            ['titre' => 'Loi n° 65-00',                        'desc' => 'AMO, couverture médicale'],
+                            ['titre' => 'Arrêté n° 1314-25',                   'desc' => 'BO n° 7443 du 29/09/2025, indemnités'],
                             ['titre' => 'Décret n° 2.25.983',                  'desc' => 'SMIG 2026'],
-                            ['titre' => 'Loi de Finances 50-25',               'desc' => 'CGI 2026 — Exercice fiscal'],
+                            ['titre' => 'Loi de Finances 50-25',               'desc' => 'CGI 2026, exercice fiscal'],
                         ] as $ref)
                         <li class="mb-3 pb-3 border-bottom">
                             <div class="fw-semibold small">{{ $ref['titre'] }}</div>
@@ -409,17 +409,6 @@
                         </li>
                         @endforeach
                     </ul>
-                </div>
-            </div>
-
-            <div class="card section-card mb-4" style="border-color:var(--s-warn)">
-                <div class="card-body px-4 py-3">
-                    <h6 class="fw-bold" style="color:var(--s-warn)"><i class="bi bi-exclamation-triangle me-1"></i>Avertissement</h6>
-                    <p class="small text-muted mb-0">
-                        Ce simulateur est fourni à titre pédagogique uniquement.
-                        Les résultats peuvent différer du calcul réel effectué par votre employeur
-                        ou votre logiciel de paie. Consultez un expert-comptable pour votre situation exacte.
-                    </p>
                 </div>
             </div>
 
