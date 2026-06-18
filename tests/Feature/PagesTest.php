@@ -45,10 +45,10 @@ class PagesTest extends TestCase
             ->assertSee('bi-translate', false)
             ->assertSee(route('locale.update', 'en'), false)
             ->assertSee(route('locale.update', 'ar'), false)
-            ->assertSee('Français')
-            ->assertSee('English')
-            ->assertSee('العربية')
-            ->assertSee('Español');
+            ->assertSee('title="Français"', false)
+            ->assertSee('title="English"', false)
+            ->assertSee('title="العربية"', false)
+            ->assertSee('title="Español"', false);
     }
 
     public function test_result_uses_accurate_non_storage_message(): void

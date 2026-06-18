@@ -167,31 +167,44 @@
         .navbar .nav-link.active {
             color: var(--g-600);
         }
-        .language-switcher .dropdown-toggle {
-            color: var(--ink-2);
+        .language-switcher {
+            display: inline-flex;
+            align-items: center;
             border: 1px solid var(--hairline);
             border-radius: var(--radius-sm);
-            font-weight: 600;
             background: var(--paper);
+            overflow: hidden;
         }
-        .language-switcher .dropdown-toggle:hover,
-        .language-switcher .dropdown-toggle:focus-visible {
-            color: var(--g-600);
-            border-color: var(--g-300);
+        .language-switcher-label {
+            display: inline-flex;
+            align-items: center;
+            min-height: 38px;
+            padding: 0 .65rem;
+            color: var(--ink-3);
+            border-inline-end: 1px solid var(--hairline);
         }
-        .language-switcher .dropdown-menu {
-            border: 1px solid var(--hairline);
-            border-radius: var(--radius-sm);
-            box-shadow: var(--shadow-2);
-        }
-        .language-switcher .dropdown-item {
+        .language-switcher-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 2.75rem;
+            min-height: 38px;
+            padding: 0 .55rem;
             color: var(--ink-2);
+            text-decoration: none;
+            font-family: var(--f-mono);
+            font-size: .76rem;
             font-weight: 500;
         }
-        .language-switcher .dropdown-item.active,
-        .language-switcher .dropdown-item:active {
+        .language-switcher-link:hover,
+        .language-switcher-link:focus-visible {
+            color: var(--g-600);
+            background: var(--g-50);
+        }
+        .language-switcher-link.active {
             color: var(--paper);
             background: var(--g-500);
+            font-weight: 700;
         }
 
         /* Cards */
@@ -375,26 +388,23 @@
                         <i class="bi bi-journal-text me-1"></i>{{ __('ui.nav.documentation') }}
                     </a>
                 </li>
-                <li class="nav-item dropdown language-switcher">
-                    <button class="btn dropdown-toggle d-flex align-items-center gap-1 px-3" type="button"
-                            id="languageMenu" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-translate"></i>
-                        <span>{{ $supportedLocales[$currentLocale]['short'] ?? strtoupper($currentLocale) }}</span>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageMenu">
+                <li class="nav-item mt-2 mt-lg-0">
+                    <div class="language-switcher" aria-label="{{ __('ui.nav.language') }}">
+                        <span class="language-switcher-label" aria-hidden="true">
+                            <i class="bi bi-translate"></i>
+                        </span>
                         @foreach($supportedLocales as $locale => $localeConfig)
-                        <li>
-                            <a class="dropdown-item d-flex align-items-center justify-content-between gap-3 {{ $locale === $currentLocale ? 'active' : '' }}"
-                               href="{{ route('locale.update', $locale) }}"
-                               lang="{{ $locale }}"
-                               hreflang="{{ $locale }}"
-                               @if($locale === $currentLocale) aria-current="true" @endif>
-                                <span>{{ $localeConfig['label'] }}</span>
-                                <span class="small">{{ $localeConfig['short'] }}</span>
-                            </a>
-                        </li>
+                        <a class="language-switcher-link {{ $locale === $currentLocale ? 'active' : '' }}"
+                           href="{{ route('locale.update', $locale) }}"
+                           lang="{{ $locale }}"
+                           hreflang="{{ $locale }}"
+                           title="{{ $localeConfig['label'] }}"
+                           aria-label="{{ $localeConfig['label'] }}"
+                           @if($locale === $currentLocale) aria-current="true" @endif>
+                            {{ $localeConfig['short'] }}
+                        </a>
                         @endforeach
-                    </ul>
+                    </div>
                 </li>
             </ul>
         </div>
