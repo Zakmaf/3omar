@@ -11,6 +11,8 @@ if [ -z "$APP_KEY" ]; then
     echo "[entrypoint] APP_KEY non défini — génération d'une clé éphémère pour ce conteneur."
     php artisan key:generate --force --ansi
 elif [ "${APP_KEY#base64:}" = "$APP_KEY" ]; then
+    # Clé fournie sans préfixe 'base64:' (ex: openssl rand -base64 32).
+    # Laravel l'attend au format base64:<clé_encodée>.
     echo "[entrypoint] APP_KEY sans préfixe 'base64:' — correction automatique."
     export APP_KEY="base64:${APP_KEY}"
 fi

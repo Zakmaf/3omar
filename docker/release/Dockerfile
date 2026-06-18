@@ -74,6 +74,7 @@ RUN chmod +x /entrypoint.sh
 
 EXPOSE 80
 
+# Health check via l'endpoint /up de Laravel (retourne 200 quand l'app est prête)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
     CMD curl -sf http://localhost/up || exit 1
 
