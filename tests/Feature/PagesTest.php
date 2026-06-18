@@ -39,11 +39,16 @@ class PagesTest extends TestCase
         }
     }
 
-    public function test_language_switcher_is_hidden_for_v1(): void
+    public function test_language_switcher_is_visible_for_v11(): void
     {
         $this->get('/')->assertOk()
-            ->assertDontSee('bi-translate', false)
-            ->assertDontSee(route('locale.update', 'en'), false);
+            ->assertSee('bi-translate', false)
+            ->assertSee(route('locale.update', 'en'), false)
+            ->assertSee(route('locale.update', 'ar'), false)
+            ->assertSee('Français')
+            ->assertSee('English')
+            ->assertSee('العربية')
+            ->assertSee('Español');
     }
 
     public function test_result_uses_accurate_non_storage_message(): void
@@ -112,13 +117,19 @@ class PagesTest extends TestCase
 
     public function test_locale_switch_persists_and_arabic_enables_rtl(): void
     {
-        $this->get('/lang/ar')->assertRedirect();
+        $this->get('/lang/ar')->assertRedirect('/');
+
+        $this->withHeader('referer', url('/documentation'))
+            ->get('/lang/ar')
+            ->assertRedirect('/documentation');
 
         $this->get('/')->assertOk()
             ->assertSee('<html lang="ar" dir="rtl">', false)
             ->assertSee('كشف الأجر المغربي، مفتوح المصدر');
 
-        $this->get('/calculateur')->assertOk()->assertSee('محاكاة كشف أجري');
+        $this->get('/calculateur')->assertOk()
+            ->assertSee('محاكاة كشف أجري')
+            ->assertSee('aria-current="true"', false);
     }
 
     public function test_supported_latin_locales_render_translated_navigation(): void

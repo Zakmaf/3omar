@@ -13,6 +13,15 @@ class LocaleController extends Controller
 
         $request->session()->put('locale', $locale);
 
-        return redirect()->back();
+        $target = url()->previous(route('home'));
+        $targetHost = parse_url($target, PHP_URL_HOST);
+        $currentHost = $request->getHost();
+        $targetPath = parse_url($target, PHP_URL_PATH) ?: '/';
+
+        if ($targetHost !== $currentHost || str_starts_with($targetPath, '/lang/')) {
+            $target = route('home');
+        }
+
+        return redirect()->to($target);
     }
 }

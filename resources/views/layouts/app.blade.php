@@ -167,6 +167,32 @@
         .navbar .nav-link.active {
             color: var(--g-600);
         }
+        .language-switcher .dropdown-toggle {
+            color: var(--ink-2);
+            border: 1px solid var(--hairline);
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            background: var(--paper);
+        }
+        .language-switcher .dropdown-toggle:hover,
+        .language-switcher .dropdown-toggle:focus-visible {
+            color: var(--g-600);
+            border-color: var(--g-300);
+        }
+        .language-switcher .dropdown-menu {
+            border: 1px solid var(--hairline);
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-2);
+        }
+        .language-switcher .dropdown-item {
+            color: var(--ink-2);
+            font-weight: 500;
+        }
+        .language-switcher .dropdown-item.active,
+        .language-switcher .dropdown-item:active {
+            color: var(--paper);
+            background: var(--g-500);
+        }
 
         /* Cards */
         .section-card {
@@ -325,7 +351,9 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="nav">
-            <ul class="navbar-nav ms-auto gap-1" aria-label="Navigation principale">
+            @php($currentLocale = app()->getLocale())
+            @php($supportedLocales = config('app.supported_locales'))
+            <ul class="navbar-nav ms-auto gap-1 align-items-lg-center" aria-label="Navigation principale">
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('home') ? 'active fw-semibold' : '' }}"
                        @if(request()->routeIs('home')) aria-current="page" @endif
@@ -346,6 +374,27 @@
                        href="{{ route('documentation') }}">
                         <i class="bi bi-journal-text me-1"></i>{{ __('ui.nav.documentation') }}
                     </a>
+                </li>
+                <li class="nav-item dropdown language-switcher">
+                    <button class="btn dropdown-toggle d-flex align-items-center gap-1 px-3" type="button"
+                            id="languageMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-translate"></i>
+                        <span>{{ $supportedLocales[$currentLocale]['short'] ?? strtoupper($currentLocale) }}</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageMenu">
+                        @foreach($supportedLocales as $locale => $localeConfig)
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center justify-content-between gap-3 {{ $locale === $currentLocale ? 'active' : '' }}"
+                               href="{{ route('locale.update', $locale) }}"
+                               lang="{{ $locale }}"
+                               hreflang="{{ $locale }}"
+                               @if($locale === $currentLocale) aria-current="true" @endif>
+                                <span>{{ $localeConfig['label'] }}</span>
+                                <span class="small">{{ $localeConfig['short'] }}</span>
+                            </a>
+                        </li>
+                        @endforeach
+                    </ul>
                 </li>
             </ul>
         </div>
