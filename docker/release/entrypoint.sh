@@ -10,10 +10,10 @@ cd /var/www/html
 if [ -z "$APP_KEY" ]; then
     echo "[entrypoint] APP_KEY non défini — génération d'une clé éphémère pour ce conteneur."
     php artisan key:generate --force --ansi
+elif [ "${APP_KEY#base64:}" = "$APP_KEY" ]; then
+    echo "[entrypoint] APP_KEY sans préfixe 'base64:' — correction automatique."
+    export APP_KEY="base64:${APP_KEY}"
 fi
-
-# Permissions (idempotent, utile si storage/ est monté en volume)
-chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || true
 
 # Mettre en cache config/routes/vues pour la production, sinon vider les caches
 if [ "${APP_ENV:-production}" = "local" ]; then
@@ -25,6 +25,10 @@ else
     php artisan route:cache --ansi
     php artisan view:cache --ansi
 fi
+
+# Permissions après génération du cache — les fichiers créés par root
+# doivent être lisibles/modifiables par www-data (PHP-FPM)
+chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || true
 
 echo "[entrypoint] 3omar prêt — démarrage de PHP-FPM + Nginx..."
 exec "$@"
