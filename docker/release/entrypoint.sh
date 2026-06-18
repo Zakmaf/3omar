@@ -12,9 +12,6 @@ if [ -z "$APP_KEY" ]; then
     php artisan key:generate --force --ansi
 fi
 
-# Permissions (idempotent, utile si storage/ est monté en volume)
-chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || true
-
 # Mettre en cache config/routes/vues pour la production, sinon vider les caches
 if [ "${APP_ENV:-production}" = "local" ]; then
     php artisan config:clear --ansi
@@ -25,6 +22,10 @@ else
     php artisan route:cache --ansi
     php artisan view:cache --ansi
 fi
+
+# Permissions après génération du cache — les fichiers créés par root
+# doivent être lisibles/modifiables par www-data (PHP-FPM)
+chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || true
 
 echo "[entrypoint] 3omar prêt — démarrage de PHP-FPM + Nginx..."
 exec "$@"
