@@ -12,7 +12,7 @@ return [
         'rules' => 'Reglas de cálculo', 'source' => 'Código fuente en GitHub', 'report' => 'Informar de un error', 'warning' => 'Advertencia',
         'warning_text' => '3omar es una herramienta educativa e informativa. Los resultados usan parámetros documentados, pero pueden contener imprecisiones.',
         'consult' => 'Para una nómina oficial, consulta a tu empleador o a un contable.', 'privacy' => 'No se almacenan datos personales.',
-        'privacy_detail' => 'Cada simulación se calcula bajo demanda.', 'license' => 'Proyecto de código abierto con licencia MIT',
+        'privacy_detail' => 'Cada simulación se calcula bajo demanda.', 'license' => 'Proyecto de código abierto con licencia MIT', 'version' => 'Versión',
     ],
     'home' => [
         'badge' => 'Parámetros actualizados', 'open_source' => 'Gratis y de código abierto', 'title' => 'La nómina marroquí, de código abierto',
@@ -27,11 +27,16 @@ return [
     ],
     'calculator' => [
         'title' => 'Simular mi nómina', 'eyebrow' => 'Simulación educativa · unos 2 minutos',
-        'intro' => 'Empieza por tu salario base. Muestra las opciones avanzadas solo si las necesitas.', 'simple_title' => '¿Necesitas un cálculo sencillo?',
+        'intro' => 'Elige tu punto de partida y avanza sección por sección. Puedes omitir lo que no aplique.', 'simple_title' => '¿Necesitas un cálculo sencillo?',
         'simple_text' => 'El salario base es suficiente. Muestra los complementos solo si son necesarios.', 'advanced_show' => 'Mostrar opciones avanzadas',
+        'journey_title' => 'Simulación guiada paso a paso', 'journey_text' => 'Rellena solo las secciones útiles. Las secciones omitidas se quedan en cero.',
+        'mode_label' => 'Modo de cálculo', 'mode_gross_to_net' => 'Conozco el bruto', 'mode_net_to_gross' => 'Conozco el neto',
+        'net_target_label' => 'Neto a pagar objetivo', 'net_target_help' => 'Importe neto mensual negociado. El simulador reconstruye el salario base bruto correspondiente.',
+        'step_required' => 'Obligatorio', 'step_optional' => 'Opcional', 'step_continue' => 'Continuar', 'step_skip' => 'Omitir esta sección',
+        'result_direct_access_notice' => 'Aún no hay ningún resultado que mostrar. Inicia una simulación desde este formulario para obtener el detalle del cálculo.',
         'advanced_hide' => 'Ocultar opciones avanzadas', 'submit' => 'Simular mi nómina', 'reset' => 'Restablecer', 'errors' => 'Errores de entrada:',
     ],
-    'result' => ['eyebrow' => 'Resultado de la simulación', 'title' => 'Tu nómina, explicada claramente', 'intro' => 'Empieza por los importes clave y abre el detalle para verificar cada línea.', 'edit' => 'Modificar simulación', 'print' => 'Imprimir', 'details' => 'Ver el detalle completo del cálculo'],
+    'result' => ['eyebrow' => 'Resultado de la simulación', 'title' => 'Tu nómina, explicada claramente', 'intro' => 'Empieza por los importes clave y abre el detalle para verificar cada línea.', 'edit' => 'Modificar simulación', 'print' => 'Imprimir', 'details' => 'Ver el detalle completo del cálculo', 'net_to_gross_badge' => 'Reconstrucción desde el neto', 'net_to_gross_title' => 'Del neto negociado al presupuesto del empleador', 'net_to_gross_intro' => 'El salario base bruto se resuelve por iteraciones a partir del neto a pagar objetivo y las hipótesis introducidas.', 'net_target' => 'Neto objetivo', 'net_resolved' => 'Neto obtenido', 'resolved_base_salary' => 'Base reconstruida', 'resolution_gap' => 'Diferencia'],
     'documentation' => ['eyebrow' => 'Entender los parámetros', 'title' => 'Documentación de reglas', 'intro' => 'Parámetros, límites y tramos utilizados por 3omar para el sector privado marroquí.', 'badge' => 'Hipótesis de simulación', 'warning' => 'Las referencias indican el origen declarado de los parámetros. No sustituyen una validación adaptada a cada situación.'],
-    'validation' => ['base_required' => 'El salario base es obligatorio.', 'base_positive' => 'El salario base debe ser positivo.', 'category_invalid' => 'Categoría profesional no válida.', 'cimr_min' => 'La tasa CIMR debe ser al menos :min%.', 'cimr_max' => 'La tasa CIMR no puede superar :max%.', 'allowance_distinct' => 'Cada tipo de indemnización solo puede declararse una vez.'],
+    'validation' => ['base_required' => 'El salario base es obligatorio.', 'base_positive' => 'El salario base debe ser positivo.', 'net_target_required' => 'El neto a pagar objetivo es obligatorio.', 'net_target_positive' => 'El neto a pagar objetivo debe ser positivo.', 'category_invalid' => 'Categoría profesional no válida.', 'cimr_min' => 'La tasa CIMR debe ser al menos :min%.', 'cimr_max' => 'La tasa CIMR no puede superar :max%.', 'allowance_distinct' => 'Cada tipo de indemnización solo puede declararse una vez.'],
 ];

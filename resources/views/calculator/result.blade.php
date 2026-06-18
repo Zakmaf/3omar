@@ -25,6 +25,36 @@
     </div>
     <p class="small mb-4" style="color:var(--ink-3)"><i class="bi bi-shield-check me-1"></i>{{ __('ui.footer.privacy') }}</p>
 
+    @if(($r['mode'] ?? 'gross_to_net') === 'net_to_gross')
+    <div class="section-card p-3 p-md-4 mb-4" style="background:var(--s-info-bg)">
+        <div class="d-flex flex-column flex-lg-row justify-content-between gap-3">
+            <div>
+                <div class="eyebrow mb-1">{{ __('ui.result.net_to_gross_badge') }}</div>
+                <h2 class="h5 fw-bold mb-1">{{ __('ui.result.net_to_gross_title') }}</h2>
+                <p class="mb-0 small" style="color:var(--ink-2)">{{ __('ui.result.net_to_gross_intro') }}</p>
+            </div>
+            <div class="row g-3 flex-grow-1">
+                <div class="col-sm-6 col-xl-3">
+                    <div class="small text-uppercase fw-semibold" style="color:var(--ink-3)">{{ __('ui.result.net_target') }}</div>
+                    <div class="fs-5 fw-bold">{{ number_format($r['resolution_net']['net_cible'], 2, ',', ' ') }} <small class="fs-6">MAD</small></div>
+                </div>
+                <div class="col-sm-6 col-xl-3">
+                    <div class="small text-uppercase fw-semibold" style="color:var(--ink-3)">{{ __('ui.result.net_resolved') }}</div>
+                    <div class="fs-5 fw-bold">{{ number_format($r['resolution_net']['net_obtenu'], 2, ',', ' ') }} <small class="fs-6">MAD</small></div>
+                </div>
+                <div class="col-sm-6 col-xl-3">
+                    <div class="small text-uppercase fw-semibold" style="color:var(--ink-3)">{{ __('ui.result.resolved_base_salary') }}</div>
+                    <div class="fs-5 fw-bold" style="color:var(--s-info)">{{ number_format($r['input']['salaire_base'], 2, ',', ' ') }} <small class="fs-6">MAD</small></div>
+                </div>
+                <div class="col-sm-6 col-xl-3">
+                    <div class="small text-uppercase fw-semibold" style="color:var(--ink-3)">{{ __('ui.result.resolution_gap') }}</div>
+                    <div class="fs-5 fw-bold" style="color:{{ $r['resolution_net']['converge'] ? 'var(--s-succ)' : 'var(--s-tax)' }}">{{ number_format($r['resolution_net']['ecart'], 2, ',', ' ') }} <small class="fs-6">MAD</small></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
     {{-- Avertissements --}}
     @if(!empty($r['avertissements']))
     <div class="alert alert-warning border-0 shadow-sm mb-4">

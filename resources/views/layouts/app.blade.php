@@ -167,6 +167,45 @@
         .navbar .nav-link.active {
             color: var(--g-600);
         }
+        .language-switcher {
+            display: inline-flex;
+            align-items: center;
+            border: 1px solid var(--hairline);
+            border-radius: var(--radius-sm);
+            background: var(--paper);
+            overflow: hidden;
+        }
+        .language-switcher-label {
+            display: inline-flex;
+            align-items: center;
+            min-height: 38px;
+            padding: 0 .65rem;
+            color: var(--ink-3);
+            border-inline-end: 1px solid var(--hairline);
+        }
+        .language-switcher-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 2.75rem;
+            min-height: 38px;
+            padding: 0 .55rem;
+            color: var(--ink-2);
+            text-decoration: none;
+            font-family: var(--f-mono);
+            font-size: .76rem;
+            font-weight: 500;
+        }
+        .language-switcher-link:hover,
+        .language-switcher-link:focus-visible {
+            color: var(--g-600);
+            background: var(--g-50);
+        }
+        .language-switcher-link.active {
+            color: var(--paper);
+            background: var(--g-500);
+            font-weight: 700;
+        }
 
         /* Cards */
         .section-card {
@@ -325,7 +364,9 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="nav">
-            <ul class="navbar-nav ms-auto gap-1" aria-label="Navigation principale">
+            @php($currentLocale = app()->getLocale())
+            @php($supportedLocales = config('app.supported_locales'))
+            <ul class="navbar-nav ms-auto gap-1 align-items-lg-center" aria-label="Navigation principale">
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('home') ? 'active fw-semibold' : '' }}"
                        @if(request()->routeIs('home')) aria-current="page" @endif
@@ -346,6 +387,24 @@
                        href="{{ route('documentation') }}">
                         <i class="bi bi-journal-text me-1"></i>{{ __('ui.nav.documentation') }}
                     </a>
+                </li>
+                <li class="nav-item mt-2 mt-lg-0">
+                    <div class="language-switcher" aria-label="{{ __('ui.nav.language') }}">
+                        <span class="language-switcher-label" aria-hidden="true">
+                            <i class="bi bi-translate"></i>
+                        </span>
+                        @foreach($supportedLocales as $locale => $localeConfig)
+                        <a class="language-switcher-link {{ $locale === $currentLocale ? 'active' : '' }}"
+                           href="{{ route('locale.update', $locale) }}"
+                           lang="{{ $locale }}"
+                           hreflang="{{ $locale }}"
+                           title="{{ $localeConfig['label'] }}"
+                           aria-label="{{ $localeConfig['label'] }}"
+                           @if($locale === $currentLocale) aria-current="true" @endif>
+                            {{ $localeConfig['short'] }}
+                        </a>
+                        @endforeach
+                    </div>
                 </li>
             </ul>
         </div>
@@ -435,8 +494,10 @@
         </div>
 
         <div class="footer-bottom pt-3 mt-3">
-            <div class="small footer-body-text text-center">
-                &copy; 2026 3omar · {{ __('ui.footer.license') }}
+            <div class="d-flex flex-column flex-sm-row justify-content-center align-items-center gap-2 small footer-body-text text-center">
+                <span>&copy; 2026 3omar · {{ __('ui.footer.license') }}</span>
+                <span aria-hidden="true">·</span>
+                <span>{{ __('ui.footer.version') }} {{ config('app.version') }}</span>
             </div>
         </div>
     </div>

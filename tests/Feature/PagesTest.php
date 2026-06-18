@@ -17,7 +17,8 @@ class PagesTest extends TestCase
     public function test_public_pages_are_available(): void
     {
         $this->get('/')->assertOk()
-            ->assertSee('Le bulletin de paie Marocain open source');
+            ->assertSee('Le bulletin de paie Marocain open source')
+            ->assertSee('Version V1.1.0');
         $this->get('/calculateur')->assertOk()->assertSee('Simuler mon bulletin');
         $this->get('/documentation')->assertOk()
             ->assertSee('Documentation des règles')
@@ -39,11 +40,16 @@ class PagesTest extends TestCase
         }
     }
 
-    public function test_language_switcher_is_hidden_for_v1(): void
+    public function test_language_switcher_is_visible_for_v11(): void
     {
         $this->get('/')->assertOk()
-            ->assertDontSee('bi-translate', false)
-            ->assertDontSee(route('locale.update', 'en'), false);
+            ->assertSee('bi-translate', false)
+            ->assertSee(route('locale.update', 'en'), false)
+            ->assertSee(route('locale.update', 'ar'), false)
+            ->assertSee('title="Français"', false)
+            ->assertSee('title="English"', false)
+            ->assertSee('title="العربية"', false)
+            ->assertSee('title="Español"', false);
     }
 
     public function test_result_uses_accurate_non_storage_message(): void
@@ -55,6 +61,16 @@ class PagesTest extends TestCase
             ->assertSee('Votre bulletin, en clair')
             ->assertSee('Voir le détail complet du calcul')
             ->assertSeeText("Aucune donnée personnelle n'est stockée.");
+    }
+
+    public function test_direct_result_url_redirects_to_calculator_with_friendly_notice(): void
+    {
+        $this->get('/calculateur/calculer')
+            ->assertRedirect('/calculateur');
+
+        $this->followRedirects($this->get('/calculateur/calculer'))
+            ->assertOk()
+            ->assertSee('Aucun résultat à afficher pour le moment');
     }
 
     public function test_unknown_allowance_type_is_rejected(): void
@@ -83,20 +99,48 @@ class PagesTest extends TestCase
     public function test_calculator_prioritizes_simple_path_and_exposes_advanced_options(): void
     {
         $this->get('/calculateur')->assertOk()
-            ->assertSee('Le salaire de base suffit.')
-            ->assertSee('Afficher les options avancées')
+            ->assertSee('Simulation guidée étape par étape')
+            ->assertSee('Je connais le net')
+            ->assertSee('Passer cette rubrique')
             ->assertSee('Simulation pédagogique · environ 2 minutes');
+    }
+
+    public function test_net_to_gross_mode_returns_reconstructed_salary_and_employer_cost(): void
+    {
+        $this->post('/calculateur/calculer', [
+            'mode' => 'net_to_gross',
+            'net_cible' => 8000,
+            'type_frais_pro' => 'commun',
+        ])->assertOk()
+            ->assertSee('Reconstitution depuis le net')
+            ->assertSee('Base reconstituée')
+            ->assertSee('Coût Total Employeur');
+    }
+
+    public function test_net_to_gross_mode_requires_target_net(): void
+    {
+        $this->from('/calculateur')->post('/calculateur/calculer', [
+            'mode' => 'net_to_gross',
+            'type_frais_pro' => 'commun',
+        ])->assertRedirect('/calculateur')
+            ->assertSessionHasErrors(['net_cible' => 'Le net à payer cible est obligatoire.']);
     }
 
     public function test_locale_switch_persists_and_arabic_enables_rtl(): void
     {
-        $this->get('/lang/ar')->assertRedirect();
+        $this->get('/lang/ar')->assertRedirect('/');
+
+        $this->withHeader('referer', url('/documentation'))
+            ->get('/lang/ar')
+            ->assertRedirect('/documentation');
 
         $this->get('/')->assertOk()
             ->assertSee('<html lang="ar" dir="rtl">', false)
             ->assertSee('كشف الأجر المغربي، مفتوح المصدر');
 
-        $this->get('/calculateur')->assertOk()->assertSee('محاكاة كشف أجري');
+        $this->get('/calculateur')->assertOk()
+            ->assertSee('محاكاة كشف أجري')
+            ->assertSee('aria-current="true"', false);
     }
 
     public function test_supported_latin_locales_render_translated_navigation(): void
