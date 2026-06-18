@@ -20,6 +20,7 @@ return [
         'privacy' => "Aucune donnée personnelle n'est stockée.",
         'privacy_detail' => 'Chaque simulation est calculée à la demande.',
         'license' => 'Projet open source sous licence MIT',
+        'version' => 'Version',
     ],
     'home' => [
         'badge' => 'Paramètres à jour',

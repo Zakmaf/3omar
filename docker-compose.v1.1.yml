@@ -12,6 +12,7 @@ services:
       APP_ENV: local
       APP_DEBUG: "true"
       APP_URL: http://localhost:49174
+      APP_VERSION: V1.1.0
     volumes:
       - .:/var/www/html
       - vendor_data_v11:/var/www/html/vendor

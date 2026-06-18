@@ -12,7 +12,7 @@ return [
         'rules' => 'Reglas de cálculo', 'source' => 'Código fuente en GitHub', 'report' => 'Informar de un error', 'warning' => 'Advertencia',
         'warning_text' => '3omar es una herramienta educativa e informativa. Los resultados usan parámetros documentados, pero pueden contener imprecisiones.',
         'consult' => 'Para una nómina oficial, consulta a tu empleador o a un contable.', 'privacy' => 'No se almacenan datos personales.',
-        'privacy_detail' => 'Cada simulación se calcula bajo demanda.', 'license' => 'Proyecto de código abierto con licencia MIT',
+        'privacy_detail' => 'Cada simulación se calcula bajo demanda.', 'license' => 'Proyecto de código abierto con licencia MIT', 'version' => 'Versión',
     ],
     'home' => [
         'badge' => 'Parámetros actualizados', 'open_source' => 'Gratis y de código abierto', 'title' => 'La nómina marroquí, de código abierto',

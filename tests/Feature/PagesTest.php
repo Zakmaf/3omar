@@ -17,7 +17,8 @@ class PagesTest extends TestCase
     public function test_public_pages_are_available(): void
     {
         $this->get('/')->assertOk()
-            ->assertSee('Le bulletin de paie Marocain open source');
+            ->assertSee('Le bulletin de paie Marocain open source')
+            ->assertSee('Version V1.1.0');
         $this->get('/calculateur')->assertOk()->assertSee('Simuler mon bulletin');
         $this->get('/documentation')->assertOk()
             ->assertSee('Documentation des règles')

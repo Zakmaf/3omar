@@ -12,7 +12,7 @@ return [
         'rules' => 'Calculation rules', 'source' => 'GitHub source code', 'report' => 'Report an issue', 'warning' => 'Warning',
         'warning_text' => '3omar is an educational and informational tool. Results use documented parameters but may contain inaccuracies.',
         'consult' => 'For an official payslip, consult your employer or an accountant.', 'privacy' => 'No personal data is stored.',
-        'privacy_detail' => 'Each simulation is calculated on demand.', 'license' => 'Open-source project under the MIT license',
+        'privacy_detail' => 'Each simulation is calculated on demand.', 'license' => 'Open-source project under the MIT license', 'version' => 'Version',
     ],
     'home' => [
         'badge' => 'Up-to-date parameters', 'open_source' => 'Free and open source', 'title' => 'The Moroccan payslip, open source',

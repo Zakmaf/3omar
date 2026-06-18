@@ -494,8 +494,10 @@
         </div>
 
         <div class="footer-bottom pt-3 mt-3">
-            <div class="small footer-body-text text-center">
-                &copy; 2026 3omar · {{ __('ui.footer.license') }}
+            <div class="d-flex flex-column flex-sm-row justify-content-center align-items-center gap-2 small footer-body-text text-center">
+                <span>&copy; 2026 3omar · {{ __('ui.footer.license') }}</span>
+                <span aria-hidden="true">·</span>
+                <span>{{ __('ui.footer.version') }} {{ config('app.version') }}</span>
             </div>
         </div>
     </div>
