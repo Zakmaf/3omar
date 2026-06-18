@@ -27,10 +27,12 @@ return [
     ],
     'calculator' => [
         'title' => 'Simular mi nómina', 'eyebrow' => 'Simulación educativa · unos 2 minutos',
-        'intro' => 'Empieza por tu salario base. Muestra las opciones avanzadas solo si las necesitas.', 'simple_title' => '¿Necesitas un cálculo sencillo?',
+        'intro' => 'Elige tu punto de partida y avanza sección por sección. Puedes omitir lo que no aplique.', 'simple_title' => '¿Necesitas un cálculo sencillo?',
         'simple_text' => 'El salario base es suficiente. Muestra los complementos solo si son necesarios.', 'advanced_show' => 'Mostrar opciones avanzadas',
+        'journey_title' => 'Simulación guiada paso a paso', 'journey_text' => 'Rellena solo las secciones útiles. Las secciones omitidas se quedan en cero.',
         'mode_label' => 'Modo de cálculo', 'mode_gross_to_net' => 'Conozco el bruto', 'mode_net_to_gross' => 'Conozco el neto',
         'net_target_label' => 'Neto a pagar objetivo', 'net_target_help' => 'Importe neto mensual negociado. El simulador reconstruye el salario base bruto correspondiente.',
+        'step_required' => 'Obligatorio', 'step_optional' => 'Opcional', 'step_continue' => 'Continuar', 'step_skip' => 'Omitir esta sección',
         'advanced_hide' => 'Ocultar opciones avanzadas', 'submit' => 'Simular mi nómina', 'reset' => 'Restablecer', 'errors' => 'Errores de entrada:',
     ],
     'result' => ['eyebrow' => 'Resultado de la simulación', 'title' => 'Tu nómina, explicada claramente', 'intro' => 'Empieza por los importes clave y abre el detalle para verificar cada línea.', 'edit' => 'Modificar simulación', 'print' => 'Imprimir', 'details' => 'Ver el detalle completo del cálculo', 'net_to_gross_badge' => 'Reconstrucción desde el neto', 'net_to_gross_title' => 'Del neto negociado al presupuesto del empleador', 'net_to_gross_intro' => 'El salario base bruto se resuelve por iteraciones a partir del neto a pagar objetivo y las hipótesis introducidas.', 'net_target' => 'Neto objetivo', 'net_resolved' => 'Neto obtenido', 'resolved_base_salary' => 'Base reconstruida', 'resolution_gap' => 'Diferencia'],

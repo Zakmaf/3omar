@@ -88,9 +88,9 @@ class PagesTest extends TestCase
     public function test_calculator_prioritizes_simple_path_and_exposes_advanced_options(): void
     {
         $this->get('/calculateur')->assertOk()
-            ->assertSee('Le salaire de base suffit.')
+            ->assertSee('Simulation guidée étape par étape')
             ->assertSee('Je connais le net')
-            ->assertSee('Afficher les options avancées')
+            ->assertSee('Passer cette rubrique')
             ->assertSee('Simulation pédagogique · environ 2 minutes');
     }
 

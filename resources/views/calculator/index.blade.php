@@ -2,6 +2,59 @@
 
 @section('title', '3omar · '.__('ui.calculator.title'))
 
+@push('head')
+<style>
+    .simulator-flow {
+        max-width: 960px;
+        margin-inline: auto;
+    }
+    .step-section {
+        overflow: hidden;
+    }
+    .step-section > summary {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1rem 1.25rem;
+        cursor: pointer;
+        list-style: none;
+        border-bottom: 1px solid var(--hairline);
+        font-family: var(--f-display);
+        font-weight: 700;
+    }
+    .step-section > summary::-webkit-details-marker {
+        display: none;
+    }
+    .step-section > summary::after {
+        content: "+";
+        color: var(--g-600);
+        font-family: var(--f-mono);
+        font-size: 1.15rem;
+    }
+    .step-section[open] > summary::after {
+        content: "−";
+    }
+    .step-pill {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        padding: .2rem .55rem;
+        background: var(--g-50);
+        color: var(--g-700);
+        font-family: var(--f-mono);
+        font-size: .68rem;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+    .step-actions {
+        border-top: 1px solid var(--hairline);
+        margin-top: 1rem;
+        padding-top: 1rem;
+    }
+</style>
+@endpush
+
 @section('content')
 <div class="container">
     @php($mode = old('mode', 'gross_to_net'))
@@ -28,10 +81,10 @@
     <form method="POST" action="{{ route('calculator.calculer') }}" id="payrollForm">
         @csrf
 
-        <div class="section-card p-3 p-md-4 mb-4 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+        <div class="section-card p-3 p-md-4 mb-4 d-flex flex-column gap-3">
             <div>
-                <div class="fw-semibold">{{ __('ui.calculator.simple_title') }}</div>
-                <div class="small" style="color:var(--ink-2)">{{ __('ui.calculator.simple_text') }}</div>
+                <div class="fw-semibold">{{ __('ui.calculator.journey_title') }}</div>
+                <div class="small" style="color:var(--ink-2)">{{ __('ui.calculator.journey_text') }}</div>
             </div>
             <div class="btn-group" role="group" aria-label="{{ __('ui.calculator.mode_label') }}">
                 <input type="radio" class="btn-check" name="mode" id="modeGrossToNet" value="gross_to_net" autocomplete="off" {{ $mode === 'gross_to_net' ? 'checked' : '' }}>
@@ -44,25 +97,16 @@
                     <i class="bi bi-arrow-up-circle me-1"></i>{{ __('ui.calculator.mode_net_to_gross') }}
                 </label>
             </div>
-            <button type="button" class="btn px-4 fw-semibold" id="toggleAdvanced"
-                    aria-expanded="{{ $errors->any() || old('nb_annees_anciennete') || old('prime_bilan') || old('prime_rendement') || old('autres_primes') || old('heures_sup') || old('cimr_actif') || old('mutuelle_salarie') || old('mutuelle_patronale') || old('retraite_complementaire_mensuel') || old('indemnites') || old('autres_retenues') ? 'true' : 'false' }}"
-                    style="border:1px solid var(--g-500);color:var(--g-600)">
-                <i class="bi bi-sliders me-1"></i><span>{{ __('ui.calculator.advanced_show') }}</span>
-            </button>
         </div>
 
-        <div class="row g-4">
-
-            {{-- ============================================================ --}}
-            {{-- COLONNE GAUCHE                                                --}}
-            {{-- ============================================================ --}}
-            <div class="col-lg-6">
+        <div class="simulator-flow">
 
                 {{-- 1. Rémunération de base --}}
-                <div class="card section-card mb-4">
-                    <div class="card-header px-4 py-3">
-                        <i class="bi bi-cash-coin me-2" style="color:var(--s-info)"></i>Salaire de base
-                    </div>
+                <details class="step-section section-card mb-3" open data-step-section>
+                    <summary>
+                        <span><i class="bi bi-cash-coin me-2" style="color:var(--s-info)"></i>1. Salaire de départ</span>
+                        <span class="step-pill">{{ __('ui.calculator.step_required') }}</span>
+                    </summary>
                     <div class="card-body px-4 py-3">
 
                         <div class="mb-3" id="netCibleGroup">
@@ -101,14 +145,20 @@
                             <div class="form-text">Art. 59 I-A CGI — plafond {{ number_format(config('payroll.frais_pro.commun.haut.plafond'), 2, ',', ' ') }} MAD/mois</div>
                         </div>
 
+                        <div class="step-actions d-flex justify-content-end">
+                            <button type="button" class="btn text-white fw-semibold" style="background:var(--g-500)" data-step-next>
+                                {{ __('ui.calculator.step_continue') }} <i class="bi bi-arrow-right-short ms-1"></i>
+                            </button>
+                        </div>
                     </div>
-                </div>
+                </details>
 
                 {{-- 2. Primes et ancienneté --}}
-                <div class="card section-card mb-4 advanced-section">
-                    <div class="card-header px-4 py-3">
-                        <i class="bi bi-cash-stack me-2" style="color:var(--s-warn)"></i>Primes imposables
-                    </div>
+                <details class="step-section section-card mb-3" data-step-section {{ old('nb_annees_anciennete') || old('prime_bilan') || old('prime_rendement') || old('autres_primes') ? 'open' : '' }}>
+                    <summary>
+                        <span><i class="bi bi-cash-stack me-2" style="color:var(--s-warn)"></i>2. Primes et ancienneté</span>
+                        <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
+                    </summary>
                     <div class="card-body px-4 py-3">
 
                         {{-- Ancienneté --}}
@@ -170,18 +220,25 @@
                             <div class="form-text">Toutes autres primes soumises à cotisations sociales et IR</div>
                         </div>
 
+                        <div class="step-actions d-flex flex-column flex-sm-row justify-content-end gap-2">
+                            <button type="button" class="btn fw-semibold" style="border:1px solid var(--ink-3);color:var(--ink-2)" data-step-skip>{{ __('ui.calculator.step_skip') }}</button>
+                            <button type="button" class="btn text-white fw-semibold" style="background:var(--g-500)" data-step-next>{{ __('ui.calculator.step_continue') }}</button>
+                        </div>
                     </div>
-                </div>
+                </details>
 
                 {{-- 3. Heures supplémentaires --}}
-                <div class="card section-card mb-4 advanced-section">
-                    <div class="card-header px-4 py-3 d-flex justify-content-between align-items-center">
-                        <span><i class="bi bi-clock-history me-2" style="color:var(--s-info)"></i>Heures supplémentaires</span>
+                <details class="step-section section-card mb-3" data-step-section {{ old('heures_sup') ? 'open' : '' }}>
+                    <summary>
+                        <span><i class="bi bi-clock-history me-2" style="color:var(--s-info)"></i>3. Heures supplémentaires</span>
+                        <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
+                    </summary>
+                    <div class="card-body px-4 py-3">
+                        <div class="d-flex justify-content-end mb-3">
                         <button type="button" class="btn btn-sm" id="addHS" style="border:1px solid var(--s-info);color:var(--s-info)">
                             <i class="bi bi-plus-circle me-1"></i>Ajouter
                         </button>
-                    </div>
-                    <div class="card-body px-4 py-3">
+                        </div>
                         <div class="form-text mb-3">Art. 201 Code du Travail (Loi n° 65-99) — Taux horaire = Salaire base / 191 h</div>
                         <div id="hsContainer">
                             @if(old('heures_sup'))
@@ -213,14 +270,19 @@
                         <p class="text-muted small mb-0" id="hsPlaceholder" {{ old('heures_sup') ? 'style=display:none' : '' }}>
                             <i class="bi bi-info-circle me-1"></i>Cliquez « Ajouter » pour saisir des heures supplémentaires.
                         </p>
+                        <div class="step-actions d-flex flex-column flex-sm-row justify-content-end gap-2">
+                            <button type="button" class="btn fw-semibold" style="border:1px solid var(--ink-3);color:var(--ink-2)" data-step-skip>{{ __('ui.calculator.step_skip') }}</button>
+                            <button type="button" class="btn text-white fw-semibold" style="background:var(--g-500)" data-step-next>{{ __('ui.calculator.step_continue') }}</button>
+                        </div>
                     </div>
-                </div>
+                </details>
 
                 {{-- 4. CIMR --}}
-                <div class="card section-card mb-4 advanced-section">
-                    <div class="card-header px-4 py-3">
-                        <i class="bi bi-piggy-bank me-2" style="color:var(--s-cot)"></i>Retraite complémentaire (CIMR)
-                    </div>
+                <details class="step-section section-card mb-3" data-step-section {{ old('cimr_actif') ? 'open' : '' }}>
+                    <summary>
+                        <span><i class="bi bi-piggy-bank me-2" style="color:var(--s-cot)"></i>4. Retraite complémentaire (CIMR)</span>
+                        <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
+                    </summary>
                     <div class="card-body px-4 py-3">
                         <div class="form-check form-switch mb-3">
                             <input class="form-check-input" type="checkbox" name="cimr_actif" id="cimrActif"
@@ -236,21 +298,19 @@
                             </div>
                             <div class="form-text mt-1">Taux librement choisi 3%–10%, 100% déductible IR (Art. 28-III CGI)</div>
                         </div>
+                        <div class="step-actions d-flex flex-column flex-sm-row justify-content-end gap-2">
+                            <button type="button" class="btn fw-semibold" style="border:1px solid var(--ink-3);color:var(--ink-2)" data-step-skip>{{ __('ui.calculator.step_skip') }}</button>
+                            <button type="button" class="btn text-white fw-semibold" style="background:var(--g-500)" data-step-next>{{ __('ui.calculator.step_continue') }}</button>
+                        </div>
                     </div>
-                </div>
-
-            </div>
-
-            {{-- ============================================================ --}}
-            {{-- COLONNE DROITE                                                --}}
-            {{-- ============================================================ --}}
-            <div class="col-lg-6">
+                </details>
 
                 {{-- 5. Charges de famille --}}
-                <div class="card section-card mb-4 advanced-section">
-                    <div class="card-header px-4 py-3">
-                        <i class="bi bi-people-fill me-2" style="color:var(--s-succ)"></i>Charges de famille
-                    </div>
+                <details class="step-section section-card mb-3" data-step-section {{ old('nb_enfants') || old('conjoint_charge') ? 'open' : '' }}>
+                    <summary>
+                        <span><i class="bi bi-people-fill me-2" style="color:var(--s-succ)"></i>5. Charges de famille</span>
+                        <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
+                    </summary>
                     <div class="card-body px-4 py-3">
                         <div class="row g-3">
                             <div class="col-sm-6">
@@ -267,14 +327,19 @@
                             </div>
                         </div>
                         <div class="form-text mt-2">{{ number_format(config('payroll.charges_famille.par_personne'), 2, ',', ' ') }} MAD/mois × nombre de personnes, plafond {{ number_format(config('payroll.charges_famille.plafond'), 2, ',', ' ') }} MAD/mois (Art. 74 CGI)</div>
+                        <div class="step-actions d-flex flex-column flex-sm-row justify-content-end gap-2">
+                            <button type="button" class="btn fw-semibold" style="border:1px solid var(--ink-3);color:var(--ink-2)" data-step-skip>{{ __('ui.calculator.step_skip') }}</button>
+                            <button type="button" class="btn text-white fw-semibold" style="background:var(--g-500)" data-step-next>{{ __('ui.calculator.step_continue') }}</button>
+                        </div>
                     </div>
-                </div>
+                </details>
 
                 {{-- 6. Santé & Retraite complémentaire --}}
-                <div class="card section-card mb-4 advanced-section">
-                    <div class="card-header px-4 py-3">
-                        <i class="bi bi-heart-pulse-fill me-2" style="color:var(--s-tax)"></i>Santé &amp; Retraite complémentaire
-                    </div>
+                <details class="step-section section-card mb-3" data-step-section {{ old('mutuelle_salarie') || old('mutuelle_patronale') || old('retraite_complementaire_mensuel') ? 'open' : '' }}>
+                    <summary>
+                        <span><i class="bi bi-heart-pulse-fill me-2" style="color:var(--s-tax)"></i>6. Santé &amp; retraite complémentaire</span>
+                        <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
+                    </summary>
                     <div class="card-body px-4 py-3">
 
                         <div class="mb-3">
@@ -321,18 +386,25 @@
                             </div>
                         </div>
 
+                        <div class="step-actions d-flex flex-column flex-sm-row justify-content-end gap-2">
+                            <button type="button" class="btn fw-semibold" style="border:1px solid var(--ink-3);color:var(--ink-2)" data-step-skip>{{ __('ui.calculator.step_skip') }}</button>
+                            <button type="button" class="btn text-white fw-semibold" style="background:var(--g-500)" data-step-next>{{ __('ui.calculator.step_continue') }}</button>
+                        </div>
                     </div>
-                </div>
+                </details>
 
                 {{-- 7. Indemnités traitées comme exonérées --}}
-                <div class="card section-card mb-4 advanced-section">
-                    <div class="card-header px-4 py-3 d-flex justify-content-between align-items-center">
-                        <span><i class="bi bi-gift me-2" style="color:var(--s-succ)"></i>Indemnités traitées comme exonérées</span>
+                <details class="step-section section-card mb-3" data-step-section {{ old('indemnites') ? 'open' : '' }}>
+                    <summary>
+                        <span><i class="bi bi-gift me-2" style="color:var(--s-succ)"></i>7. Indemnités traitées comme exonérées</span>
+                        <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
+                    </summary>
+                    <div class="card-body px-4 py-3">
+                        <div class="d-flex justify-content-end mb-3">
                         <button type="button" class="btn btn-sm" id="addIndemnite" style="border:1px solid var(--s-succ);color:var(--s-succ)">
                             <i class="bi bi-plus-circle me-1"></i>Ajouter
                         </button>
-                    </div>
-                    <div class="card-body px-4 py-3">
+                        </div>
                         <div class="form-text mb-3">Le simulateur traite ces indemnités comme exonérées dans les plafonds configurés. Vérifie leur éligibilité selon ta situation ; l'excédent est réintégré au brut imposable.</div>
                         <div class="row g-2 mb-3 align-items-end">
                             <div class="col-7">
@@ -383,14 +455,19 @@
                         <p class="text-muted small mb-0" id="indemnitePlaceholder" {{ old('indemnites') ? 'style=display:none' : '' }}>
                             <i class="bi bi-info-circle me-1"></i>Clique « Ajouter » pour déclarer une indemnité.
                         </p>
+                        <div class="step-actions d-flex flex-column flex-sm-row justify-content-end gap-2">
+                            <button type="button" class="btn fw-semibold" style="border:1px solid var(--ink-3);color:var(--ink-2)" data-step-skip>{{ __('ui.calculator.step_skip') }}</button>
+                            <button type="button" class="btn text-white fw-semibold" style="background:var(--g-500)" data-step-next>{{ __('ui.calculator.step_continue') }}</button>
+                        </div>
                     </div>
-                </div>
+                </details>
 
                 {{-- 8. Autres retenues --}}
-                <div class="card section-card mb-4 advanced-section">
-                    <div class="card-header px-4 py-3">
-                        <i class="bi bi-dash-circle me-2" style="color:var(--s-neutral)"></i>Autres retenues
-                    </div>
+                <details class="step-section section-card mb-3" data-step-section {{ old('autres_retenues') ? 'open' : '' }}>
+                    <summary>
+                        <span><i class="bi bi-dash-circle me-2" style="color:var(--s-neutral)"></i>8. Autres retenues</span>
+                        <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
+                    </summary>
                     <div class="card-body px-4 py-3">
                         <label class="form-label fw-semibold" for="autres_retenues">Autres retenues (montant total)</label>
                         <div class="input-group">
@@ -399,10 +476,12 @@
                             <span class="input-group-text">MAD</span>
                         </div>
                         <div class="form-text">Avances sur salaire, oppositions, saisies-arrêts… (post-fiscales, hors mutuelle)</div>
+                        <div class="step-actions d-flex flex-column flex-sm-row justify-content-end gap-2">
+                            <button type="button" class="btn fw-semibold" style="border:1px solid var(--ink-3);color:var(--ink-2)" data-step-skip>{{ __('ui.calculator.step_skip') }}</button>
+                            <button type="button" class="btn text-white fw-semibold" style="background:var(--g-500)" data-step-next>{{ __('ui.calculator.step_continue') }}</button>
+                        </div>
                     </div>
-                </div>
-
-            </div>
+                </details>
         </div>
 
         {{-- Submit --}}
@@ -427,8 +506,6 @@
 const INDEMNITES_CONFIG = @json($indemnites_config);
 const HS_LABELS = @json($hs_labels);
 const INTL_LOCALE = @json(config('app.supported_locales.'.app()->getLocale().'.intl'));
-const ADVANCED_SHOW = @json(__('ui.calculator.advanced_show'));
-const ADVANCED_HIDE = @json(__('ui.calculator.advanced_hide'));
 const MODE_GROSS_TO_NET = 'gross_to_net';
 const MODE_NET_TO_GROSS = 'net_to_gross';
 
@@ -477,22 +554,34 @@ document.getElementById('nb_annees_anciennete').addEventListener('input', update
 document.getElementById('salaire_base').addEventListener('input', updateAnciennete);
 updateAnciennete(); // Init
 
-// ---- Affichage progressif des options ----
-const advancedToggle = document.getElementById('toggleAdvanced');
-const advancedSections = document.querySelectorAll('.advanced-section');
+// ---- Parcours étape par étape ----
+const stepSections = Array.from(document.querySelectorAll('[data-step-section]'));
 
-function setAdvancedVisibility(visible) {
-    advancedSections.forEach(section => { section.hidden = !visible; });
-    advancedToggle.setAttribute('aria-expanded', visible ? 'true' : 'false');
-    advancedToggle.querySelector('span').textContent = visible
-        ? ADVANCED_HIDE
-        : ADVANCED_SHOW;
+function openStep(section) {
+    if (!section) return;
+    stepSections.forEach(item => {
+        if (item !== section) item.open = false;
+    });
+    section.open = true;
+    section.scrollIntoView({behavior: 'smooth', block: 'start'});
 }
 
-advancedToggle.addEventListener('click', () => {
-    setAdvancedVisibility(advancedToggle.getAttribute('aria-expanded') !== 'true');
+function openNextStep(button) {
+    const current = button.closest('[data-step-section]');
+    const currentIndex = stepSections.indexOf(current);
+    const next = stepSections[currentIndex + 1];
+
+    if (next) {
+        openStep(next);
+        return;
+    }
+
+    document.querySelector('.mobile-sticky')?.scrollIntoView({behavior: 'smooth', block: 'center'});
+}
+
+document.querySelectorAll('[data-step-next], [data-step-skip]').forEach(button => {
+    button.addEventListener('click', () => openNextStep(button));
 });
-setAdvancedVisibility(advancedToggle.getAttribute('aria-expanded') === 'true');
 
 const formErrors = document.getElementById('formErrors');
 if (formErrors) formErrors.focus();
