@@ -4,6 +4,7 @@
 
 @section('content')
 <div class="container">
+    @php($mode = old('mode', 'gross_to_net'))
 
     <div class="row mb-4">
         <div class="col">
@@ -32,6 +33,17 @@
                 <div class="fw-semibold">{{ __('ui.calculator.simple_title') }}</div>
                 <div class="small" style="color:var(--ink-2)">{{ __('ui.calculator.simple_text') }}</div>
             </div>
+            <div class="btn-group" role="group" aria-label="{{ __('ui.calculator.mode_label') }}">
+                <input type="radio" class="btn-check" name="mode" id="modeGrossToNet" value="gross_to_net" autocomplete="off" {{ $mode === 'gross_to_net' ? 'checked' : '' }}>
+                <label class="btn fw-semibold" for="modeGrossToNet" style="border:1px solid var(--g-500);color:var(--g-600)">
+                    <i class="bi bi-arrow-down-circle me-1"></i>{{ __('ui.calculator.mode_gross_to_net') }}
+                </label>
+
+                <input type="radio" class="btn-check" name="mode" id="modeNetToGross" value="net_to_gross" autocomplete="off" {{ $mode === 'net_to_gross' ? 'checked' : '' }}>
+                <label class="btn fw-semibold" for="modeNetToGross" style="border:1px solid var(--g-500);color:var(--g-600)">
+                    <i class="bi bi-arrow-up-circle me-1"></i>{{ __('ui.calculator.mode_net_to_gross') }}
+                </label>
+            </div>
             <button type="button" class="btn px-4 fw-semibold" id="toggleAdvanced"
                     aria-expanded="{{ $errors->any() || old('nb_annees_anciennete') || old('prime_bilan') || old('prime_rendement') || old('autres_primes') || old('heures_sup') || old('cimr_actif') || old('mutuelle_salarie') || old('mutuelle_patronale') || old('retraite_complementaire_mensuel') || old('indemnites') || old('autres_retenues') ? 'true' : 'false' }}"
                     style="border:1px solid var(--g-500);color:var(--g-600)">
@@ -53,13 +65,26 @@
                     </div>
                     <div class="card-body px-4 py-3">
 
-                        <div class="mb-3">
+                        <div class="mb-3" id="netCibleGroup">
+                            <label class="form-label fw-semibold" for="net_cible">{{ __('ui.calculator.net_target_label') }} <span style="color:var(--s-tax)">*</span></label>
+                            <div class="input-group">
+                                <input type="number" name="net_cible" id="net_cible"
+                                       class="form-control @error('net_cible') is-invalid @enderror"
+                                       value="{{ old('net_cible', 8000) }}"
+                                       min="0.01" step="0.01" placeholder="Ex : 8 000" inputmode="decimal"
+                                       aria-describedby="netCibleHelp">
+                                <span class="input-group-text">MAD</span>
+                            </div>
+                            <div class="form-text" id="netCibleHelp">{{ __('ui.calculator.net_target_help') }}</div>
+                        </div>
+
+                        <div class="mb-3" id="salaireBaseGroup">
                             <label class="form-label fw-semibold" for="salaire_base">Salaire de base brut <span style="color:var(--s-tax)">*</span></label>
                             <div class="input-group">
                                 <input type="number" name="salaire_base" id="salaire_base"
                                        class="form-control @error('salaire_base') is-invalid @enderror"
                                        value="{{ old('salaire_base', 5000) }}"
-                                       min="0" step="0.01" placeholder="Ex : 8 500" required inputmode="decimal"
+                                       min="0" step="0.01" placeholder="Ex : 8 500" inputmode="decimal"
                                        aria-describedby="salaireBaseHelp">
                                 <span class="input-group-text">MAD</span>
                             </div>
@@ -404,6 +429,27 @@ const HS_LABELS = @json($hs_labels);
 const INTL_LOCALE = @json(config('app.supported_locales.'.app()->getLocale().'.intl'));
 const ADVANCED_SHOW = @json(__('ui.calculator.advanced_show'));
 const ADVANCED_HIDE = @json(__('ui.calculator.advanced_hide'));
+const MODE_GROSS_TO_NET = 'gross_to_net';
+const MODE_NET_TO_GROSS = 'net_to_gross';
+
+const salaireBaseGroup = document.getElementById('salaireBaseGroup');
+const salaireBaseInput = document.getElementById('salaire_base');
+const netCibleGroup = document.getElementById('netCibleGroup');
+const netCibleInput = document.getElementById('net_cible');
+const modeInputs = document.querySelectorAll('input[name="mode"]');
+
+function updateCalculationMode() {
+    const selectedMode = document.querySelector('input[name="mode"]:checked')?.value || MODE_GROSS_TO_NET;
+    const isNetToGross = selectedMode === MODE_NET_TO_GROSS;
+
+    salaireBaseGroup.hidden = isNetToGross;
+    salaireBaseInput.required = !isNetToGross;
+    netCibleGroup.hidden = !isNetToGross;
+    netCibleInput.required = isNetToGross;
+}
+
+modeInputs.forEach(input => input.addEventListener('change', updateCalculationMode));
+updateCalculationMode();
 
 // Tranches d'ancienneté (pour aperçu côté client)
 const ANCIENNETE_TRANCHES = @json(config('payroll.anciennete.tranches'));

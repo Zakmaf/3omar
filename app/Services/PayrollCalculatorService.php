@@ -23,6 +23,12 @@ namespace App\Services;
  */
 class PayrollCalculatorService
 {
+    private const NET_RESOLUTION_PRECISION = 0.01;
+
+    private const NET_RESOLUTION_MAX_ITERATIONS = 80;
+
+    private const NET_RESOLUTION_MAX_BASE = 10000000.0;
+
     private function r2(float $v): float
     {
         return round($v, 2);
@@ -65,6 +71,136 @@ class PayrollCalculatorService
         }
 
         return (float) $config['montant'];
+    }
+
+    public function resoudreDepuisNet(array $input): array
+    {
+        $netCible = (float) ($input['net_cible'] ?? 0);
+
+        if ($netCible <= 0) {
+            throw new \InvalidArgumentException('Le net cible doit être strictement positif.');
+        }
+
+        $solverInput = $input;
+        $borneBasse = 0.0;
+        $resultatBas = $this->calculer(array_merge($solverInput, ['salaire_base' => $borneBasse]));
+        $meilleurResultat = $resultatBas;
+        $meilleurEcart = abs($resultatBas['salaire_net'] - $netCible);
+        $iterations = 0;
+
+        if ($resultatBas['salaire_net'] >= $netCible) {
+            return $this->avecResolutionNet(
+                $meilleurResultat,
+                $netCible,
+                $meilleurEcart,
+                $iterations,
+                $borneBasse,
+                $borneBasse,
+                $meilleurEcart <= self::NET_RESOLUTION_PRECISION,
+                'Le net cible est déjà atteint ou dépassé avec un salaire de base nul. Vérifiez les indemnités et retenues fixes saisies.'
+            );
+        }
+
+        $borneHaute = max($netCible * 2, (float) config('payroll.smig.mensuel'), 1000.0);
+        $resultatHaut = $this->calculer(array_merge($solverInput, ['salaire_base' => $borneHaute]));
+
+        while ($resultatHaut['salaire_net'] < $netCible && $borneHaute < self::NET_RESOLUTION_MAX_BASE) {
+            $ecartHaut = abs($resultatHaut['salaire_net'] - $netCible);
+            if ($ecartHaut < $meilleurEcart) {
+                $meilleurEcart = $ecartHaut;
+                $meilleurResultat = $resultatHaut;
+            }
+
+            $borneBasse = $borneHaute;
+            $borneHaute *= 2;
+            $resultatHaut = $this->calculer(array_merge($solverInput, ['salaire_base' => $borneHaute]));
+        }
+
+        $ecartHaut = abs($resultatHaut['salaire_net'] - $netCible);
+        if ($ecartHaut < $meilleurEcart) {
+            $meilleurEcart = $ecartHaut;
+            $meilleurResultat = $resultatHaut;
+        }
+
+        if ($resultatHaut['salaire_net'] < $netCible) {
+            return $this->avecResolutionNet(
+                $meilleurResultat,
+                $netCible,
+                $meilleurEcart,
+                $iterations,
+                $borneBasse,
+                $borneHaute,
+                false,
+                "Impossible d'encadrer le net cible dans le plafond technique du simulateur."
+            );
+        }
+
+        for ($iterations = 1; $iterations <= self::NET_RESOLUTION_MAX_ITERATIONS; $iterations++) {
+            $candidat = ($borneBasse + $borneHaute) / 2;
+            $resultat = $this->calculer(array_merge($solverInput, ['salaire_base' => $candidat]));
+            $ecart = abs($resultat['salaire_net'] - $netCible);
+
+            if ($ecart < $meilleurEcart) {
+                $meilleurEcart = $ecart;
+                $meilleurResultat = $resultat;
+            }
+
+            if ($ecart <= self::NET_RESOLUTION_PRECISION) {
+                break;
+            }
+
+            if ($resultat['salaire_net'] < $netCible) {
+                $borneBasse = $candidat;
+            } else {
+                $borneHaute = $candidat;
+            }
+        }
+
+        return $this->avecResolutionNet(
+            $meilleurResultat,
+            $netCible,
+            $meilleurEcart,
+            $iterations,
+            $borneBasse,
+            $borneHaute,
+            $meilleurEcart <= self::NET_RESOLUTION_PRECISION,
+            null
+        );
+    }
+
+    private function avecResolutionNet(
+        array $resultat,
+        float $netCible,
+        float $ecart,
+        int $iterations,
+        float $borneBasse,
+        float $borneHaute,
+        bool $converge,
+        ?string $avertissement
+    ): array {
+        $ecartArrondi = $this->r2($ecart);
+
+        $resultat['mode'] = 'net_to_gross';
+        $resultat['resolution_net'] = [
+            'net_cible' => $this->r2($netCible),
+            'net_obtenu' => $resultat['salaire_net'],
+            'ecart' => $ecartArrondi,
+            'iterations' => $iterations,
+            'precision' => self::NET_RESOLUTION_PRECISION,
+            'borne_basse' => $this->r2($borneBasse),
+            'borne_haute' => $this->r2($borneHaute),
+            'converge' => $converge,
+        ];
+
+        if (! $converge && $avertissement === null) {
+            $avertissement = "La résolution net vers brut n'a pas atteint la précision cible de ".self::NET_RESOLUTION_PRECISION.' MAD.';
+        }
+
+        if ($avertissement !== null) {
+            $resultat['avertissements'][] = $avertissement;
+        }
+
+        return $resultat;
     }
 
     public function calculer(array $input): array

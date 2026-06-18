@@ -121,4 +121,91 @@ class PayrollCalculatorServiceTest extends TestCase
         $this->assertNotEmpty($result['avertissements']);
         $this->assertStringContainsString('salaire de base', $result['avertissements'][0]);
     }
+
+    public function test_net_to_gross_resolution_recovers_simple_base_salary(): void
+    {
+        $direct = $this->calculator->calculer(['salaire_base' => 8500]);
+
+        $resolved = $this->calculator->resoudreDepuisNet([
+            'net_cible' => $direct['salaire_net'],
+            'type_frais_pro' => 'commun',
+        ]);
+
+        $this->assertSame('net_to_gross', $resolved['mode']);
+        $this->assertTrue($resolved['resolution_net']['converge']);
+        $this->assertLessThanOrEqual(0.01, $resolved['resolution_net']['ecart']);
+        $this->assertEqualsWithDelta(8500, $resolved['input']['salaire_base'], 0.05);
+    }
+
+    public function test_net_to_gross_resolution_recovers_salary_with_family_deductions(): void
+    {
+        $input = [
+            'salaire_base' => 12000,
+            'type_frais_pro' => 'commun',
+            'nb_enfants' => 2,
+            'conjoint_charge' => true,
+        ];
+        $direct = $this->calculator->calculer($input);
+
+        $resolved = $this->calculator->resoudreDepuisNet([
+            'net_cible' => $direct['salaire_net'],
+            'type_frais_pro' => 'commun',
+            'nb_enfants' => 2,
+            'conjoint_charge' => true,
+        ]);
+
+        $this->assertTrue($resolved['resolution_net']['converge']);
+        $this->assertLessThanOrEqual(0.01, $resolved['resolution_net']['ecart']);
+        $this->assertEqualsWithDelta(12000, $resolved['input']['salaire_base'], 0.05);
+    }
+
+    public function test_net_to_gross_resolution_recovers_salary_with_decimal_cimr_rate(): void
+    {
+        $input = [
+            'salaire_base' => 15000,
+            'type_frais_pro' => 'commun',
+            'cimr_actif' => true,
+            'cimr_taux' => 3.5,
+        ];
+        $direct = $this->calculator->calculer($input);
+
+        $resolved = $this->calculator->resoudreDepuisNet([
+            'net_cible' => $direct['salaire_net'],
+            'type_frais_pro' => 'commun',
+            'cimr_actif' => true,
+            'cimr_taux' => 3.5,
+        ]);
+
+        $this->assertTrue($resolved['resolution_net']['converge']);
+        $this->assertLessThanOrEqual(0.01, $resolved['resolution_net']['ecart']);
+        $this->assertSame(0.035, $resolved['cimr_taux']);
+        $this->assertEqualsWithDelta(15000, $resolved['input']['salaire_base'], 0.05);
+    }
+
+    public function test_net_to_gross_resolution_handles_allowance_ceiling_based_on_base_salary(): void
+    {
+        $input = [
+            'salaire_base' => 10000,
+            'type_frais_pro' => 'commun',
+            'indemnites' => [['type' => 'representation', 'montant' => 1500]],
+        ];
+        $direct = $this->calculator->calculer($input);
+
+        $resolved = $this->calculator->resoudreDepuisNet([
+            'net_cible' => $direct['salaire_net'],
+            'type_frais_pro' => 'commun',
+            'indemnites' => [['type' => 'representation', 'montant' => 1500]],
+        ]);
+
+        $this->assertTrue($resolved['resolution_net']['converge']);
+        $this->assertLessThanOrEqual(0.01, $resolved['resolution_net']['ecart']);
+        $this->assertEqualsWithDelta(10000, $resolved['input']['salaire_base'], 0.05);
+    }
+
+    public function test_net_to_gross_resolution_rejects_non_positive_target(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $this->calculator->resoudreDepuisNet(['net_cible' => 0]);
+    }
 }

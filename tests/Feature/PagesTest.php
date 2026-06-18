@@ -84,8 +84,30 @@ class PagesTest extends TestCase
     {
         $this->get('/calculateur')->assertOk()
             ->assertSee('Le salaire de base suffit.')
+            ->assertSee('Je connais le net')
             ->assertSee('Afficher les options avancées')
             ->assertSee('Simulation pédagogique · environ 2 minutes');
+    }
+
+    public function test_net_to_gross_mode_returns_reconstructed_salary_and_employer_cost(): void
+    {
+        $this->post('/calculateur/calculer', [
+            'mode' => 'net_to_gross',
+            'net_cible' => 8000,
+            'type_frais_pro' => 'commun',
+        ])->assertOk()
+            ->assertSee('Reconstitution depuis le net')
+            ->assertSee('Base reconstituée')
+            ->assertSee('Coût Total Employeur');
+    }
+
+    public function test_net_to_gross_mode_requires_target_net(): void
+    {
+        $this->from('/calculateur')->post('/calculateur/calculer', [
+            'mode' => 'net_to_gross',
+            'type_frais_pro' => 'commun',
+        ])->assertRedirect('/calculateur')
+            ->assertSessionHasErrors(['net_cible' => 'Le net à payer cible est obligatoire.']);
     }
 
     public function test_locale_switch_persists_and_arabic_enables_rtl(): void

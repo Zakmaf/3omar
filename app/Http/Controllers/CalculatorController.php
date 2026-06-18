@@ -22,9 +22,12 @@ class CalculatorController extends Controller
     {
         $cimrMin = (int) (config('payroll.cimr.taux_min') * 100);
         $cimrMax = (int) (config('payroll.cimr.taux_max') * 100);
+        $mode = $request->input('mode', 'gross_to_net');
 
         $request->validate([
-            'salaire_base' => 'required|numeric|min:0',
+            'mode' => ['nullable', Rule::in(['gross_to_net', 'net_to_gross'])],
+            'salaire_base' => [Rule::excludeIf($mode !== 'gross_to_net'), Rule::requiredIf($mode === 'gross_to_net'), 'nullable', 'numeric', 'min:0'],
+            'net_cible' => [Rule::excludeIf($mode !== 'net_to_gross'), Rule::requiredIf($mode === 'net_to_gross'), 'nullable', 'numeric', 'min:0.01'],
             'nb_annees_anciennete' => 'nullable|integer|min:0|max:50',
             'prime_bilan' => 'nullable|numeric|min:0',
             'prime_rendement' => 'nullable|numeric|min:0',
@@ -44,6 +47,8 @@ class CalculatorController extends Controller
         ], [
             'salaire_base.required' => __('ui.validation.base_required'),
             'salaire_base.min' => __('ui.validation.base_positive'),
+            'net_cible.required' => __('ui.validation.net_target_required'),
+            'net_cible.min' => __('ui.validation.net_target_positive'),
             'type_frais_pro.in' => __('ui.validation.category_invalid'),
             'cimr_taux.min' => __('ui.validation.cimr_min', ['min' => $cimrMin]),
             'cimr_taux.max' => __('ui.validation.cimr_max', ['max' => $cimrMax]),
@@ -51,7 +56,7 @@ class CalculatorController extends Controller
         ]);
 
         $input = $request->only([
-            'salaire_base', 'nb_annees_anciennete',
+            'mode', 'salaire_base', 'net_cible', 'nb_annees_anciennete',
             'prime_bilan', 'prime_rendement', 'autres_primes',
             'type_frais_pro', 'nb_enfants', 'conjoint_charge',
             'cimr_actif', 'cimr_taux',
@@ -61,7 +66,12 @@ class CalculatorController extends Controller
             'jours_travailles',
         ]);
 
-        $result = $this->calculator->calculer($input);
+        if ($mode === 'net_to_gross') {
+            $result = $this->calculator->resoudreDepuisNet($input);
+        } else {
+            $result = $this->calculator->calculer($input);
+            $result['mode'] = 'gross_to_net';
+        }
 
         return view('calculator.result', [
             'r' => $result,
