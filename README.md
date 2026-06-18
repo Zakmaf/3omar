@@ -48,18 +48,51 @@ Il n'existe pas d'étape de build frontend : Bootstrap, Bootstrap Icons et Chart
 
 ## Déploiement
 
-Une image de production (PHP-FPM, Nginx et Supervisor dans un seul
-conteneur, build dans `docker/release/Dockerfile`) est publiée sur
-GitHub Container Registry à chaque release :
+Une image de production autonome (PHP-FPM + Nginx + Supervisor) est publiée sur GitHub Container Registry à chaque release depuis `docker/release/Dockerfile`.
+
+### Démarrage rapide
 
 ```bash
-docker run -d -p 8080:80 \
+docker run -d \
   -e APP_KEY="$(docker run --rm ghcr.io/zakmaf/3omar:latest php artisan key:generate --show)" \
+  -e APP_URL=https://votre-domaine.com \
+  -p 80:80 \
   ghcr.io/zakmaf/3omar:latest
 ```
 
-Tags disponibles : `latest`, `v1`, `v1.0`, `v1.0.0` (et leurs futures
-versions).
+### Variables d'environnement
+
+| Variable | Obligatoire | Description |
+|----------|-------------|-------------|
+| `APP_KEY` | Oui | Clé de chiffrement. Générer avec `php artisan key:generate --show`. Une clé raw base64 sans préfixe (`openssl rand -base64 32`) est aussi acceptée — le préfixe `base64:` est ajouté automatiquement. |
+| `APP_URL` | Recommandé | URL publique de l'application, ex : `https://3omar.ma`. Utilisée pour la génération des URL absolues. |
+| `APP_DEBUG` | Non | `false` par défaut. Passer à `true` uniquement pour déboguer. |
+| `ADSENSE_ENABLED` | Non | `true` pour activer Google AdSense (nécessite `ADSENSE_CLIENT`, `ADSENSE_SLOT_HEADER`, `ADSENSE_SLOT_FOOTER`). |
+
+### Tags disponibles
+
+| Tag | Usage recommandé |
+|-----|-----------------|
+| `latest` | Toujours la dernière version stable |
+| `v1` | Majeure 1.x.x (mises à jour automatiques) |
+| `v1.0` | Mineure 1.0.x (correctifs uniquement) |
+| `v1.0.2` | Version exacte (reproductible) |
+
+### Reverse proxy (Traefik, Nginx…)
+
+Le conteneur fait confiance aux en-têtes `X-Forwarded-*` transmis par n'importe quel proxy (`TrustProxies` activé). Passer `APP_URL` avec le schéma correct (`https://`) suffit pour que les URL et cookies soient cohérents côté application.
+
+### Health check
+
+Le conteneur expose un endpoint `/up` (HTTP 200) utilisé par le `HEALTHCHECK` Docker intégré (intervalle 30 s, grâce 30 s). `docker ps` affiche `(healthy)` dès que l'application est prête. Traefik et les orchestrateurs peuvent s'appuyer sur ce statut pour ne pas router avant la disponibilité.
+
+### Déboguer en production
+
+Les erreurs Laravel sont envoyées sur **stderr** et apparaissent directement dans `docker logs` :
+
+```bash
+docker logs <nom_du_conteneur>
+```
 
 ## Architecture
 
