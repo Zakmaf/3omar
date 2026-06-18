@@ -20,6 +20,16 @@ Ce document décrit le comportement réellement implémenté. `config/payroll.ph
 - Les frais professionnels utilisent le SBI et le plafond mensuel configuré.
 - L'avertissement SMIG compare le SMIG mensuel au salaire de base saisi.
 
+## Solver net → brut (V1.1)
+
+La méthode `resoudreDepuisNet()` est une couche de résolution au-dessus de `calculer()` — elle n'introduit pas de nouvelles règles de paie.
+
+- La variable résolue est `salaire_base` ; toutes les autres entrées (primes, indemnités, retenues) restent fixes.
+- Le net ciblé est le **net à payer** (`salaire_net`), pas le salaire net comptable.
+- Précision garantie : ≤ `0.01 MAD` dans les cas nominaux (écart résiduel d'arrondi accepté).
+- Si la résolution échoue (net impossible, plafond technique), un avertissement est ajouté au résultat ; aucune exception n'est levée côté applicatif.
+- Toute évolution des formules de `calculer()` est automatiquement répercutée sur le solver sans modification supplémentaire.
+
 ## Contrôles de cohérence
 
 - Aucun taux métier ne doit être dupliqué dans les vues.

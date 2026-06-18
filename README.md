@@ -10,10 +10,9 @@
 
 ## Fonctionnalités
 
-- CNSS, AMO, CIMR et IR progressif.
-- Frais professionnels, charges de famille et retraite complémentaire.
-- Prime d'ancienneté, heures supplémentaires et indemnités exonérées.
-- Salaire net, détail des retenues et coût total employeur.
+- **Brut → Net** : CNSS, AMO, CIMR et IR progressif, frais professionnels, charges de famille, retraite complémentaire, prime d'ancienneté, heures supplémentaires, indemnités exonérées.
+- **Net → Brut** *(V1.1)* : reconstitution du salaire de base à partir d'un net à payer cible, par résolution dichotomique. Toutes les hypothèses du mode direct sont disponibles (CIMR, charges de famille, indemnités…).
+- Salaire net, détail des retenues et coût total employeur pour les deux modes.
 - Documentation générée depuis `config/payroll.php`, source unique des paramètres.
 
 Tout cela, conforme aux derniers texte légaux et réglementaires qui régissent ces différentes rubriques.
@@ -36,6 +35,12 @@ docker compose exec app php artisan key:generate
 
 L'application est disponible sur **http://localhost:49173**.
 
+Un fichier `docker-compose.v1.1.yml` (port 49174) permet de lancer la V1.1 en parallèle de la V1.0 :
+
+```bash
+docker compose -f docker-compose.v1.1.yml up -d --build
+```
+
 ## Développement
 
 ```bash
@@ -48,31 +53,65 @@ Il n'existe pas d'étape de build frontend : Bootstrap, Bootstrap Icons et Chart
 
 ## Déploiement
 
-Une image de production (PHP-FPM, Nginx et Supervisor dans un seul
-conteneur, build dans `docker/release/Dockerfile`) est publiée sur
-GitHub Container Registry à chaque release :
+Une image de production autonome (PHP-FPM + Nginx + Supervisor) est publiée sur GitHub Container Registry à chaque release depuis `docker/release/Dockerfile`.
+
+### Démarrage rapide
 
 ```bash
-docker run -d -p 8080:80 \
+docker run -d \
   -e APP_KEY="$(docker run --rm ghcr.io/zakmaf/3omar:latest php artisan key:generate --show)" \
+  -e APP_URL=https://votre-domaine.com \
+  -p 80:80 \
   ghcr.io/zakmaf/3omar:latest
 ```
 
-Tags disponibles : `latest`, `v1`, `v1.0`, `v1.0.0` (et leurs futures
-versions).
+### Variables d'environnement
+
+| Variable | Obligatoire | Description |
+|----------|-------------|-------------|
+| `APP_KEY` | Oui | Clé de chiffrement. Générer avec `php artisan key:generate --show`. Une clé raw base64 sans préfixe (`openssl rand -base64 32`) est aussi acceptée — le préfixe `base64:` est ajouté automatiquement. |
+| `APP_URL` | Recommandé | URL publique de l'application, ex : `https://3omar.ma`. Utilisée pour la génération des URL absolues. |
+| `APP_DEBUG` | Non | `false` par défaut. Passer à `true` uniquement pour déboguer. |
+| `ADSENSE_ENABLED` | Non | `true` pour activer Google AdSense (nécessite `ADSENSE_CLIENT`, `ADSENSE_SLOT_HEADER`, `ADSENSE_SLOT_FOOTER`). |
+
+### Tags disponibles
+
+| Tag | Usage recommandé |
+|-----|-----------------|
+| `latest` | Toujours la dernière version stable |
+| `v1` | Majeure 1.x.x (mises à jour automatiques) |
+| `v1.1` | Mineure 1.1.x (correctifs uniquement) |
+| `v1.1.0` | Version exacte (reproductible) |
+
+### Reverse proxy (Traefik, Nginx…)
+
+Le conteneur fait confiance aux en-têtes `X-Forwarded-*` transmis par n'importe quel proxy (`TrustProxies` activé). Passer `APP_URL` avec le schéma correct (`https://`) suffit pour que les URL et cookies soient cohérents côté application.
+
+### Health check
+
+Le conteneur expose un endpoint `/up` (HTTP 200) utilisé par le `HEALTHCHECK` Docker intégré (intervalle 30 s, grâce 30 s). `docker ps` affiche `(healthy)` dès que l'application est prête.
+
+### Déboguer en production
+
+Les erreurs Laravel sont envoyées sur **stderr** et apparaissent directement dans `docker logs` :
+
+```bash
+docker logs <nom_du_conteneur>
+```
 
 ## Architecture
 
-- `app/Services/PayrollCalculatorService.php` : moteur de calcul.
+- `app/Services/PayrollCalculatorService.php` : moteur de calcul — `calculer()` (brut→net) et `resoudreDepuisNet()` (net→brut par dichotomie).
 - `app/Http/Controllers/` : validation et orchestration HTTP.
 - `config/payroll.php` : taux, plafonds, tranches et références.
 - `resources/views/` : interface Blade.
 - `public/img/` : identité et supports marketing approuvés.
-- `docker/` : PHP-FPM et Nginx.
+- `docker/` : PHP-FPM et Nginx (dev) ; `docker/release/` : image de production.
 
 Lors d'une modification réglementaire, mettez à jour `config/payroll.php`, ajoutez la référence correspondante et couvrez les limites par des tests.
-Consultez aussi [`docs/REGLES_GESTION.md`](docs/REGLES_GESTION.md) pour les formules implémentées et les hypothèses restant à valider.
+Consultez [`docs/REGLES_GESTION.md`](docs/REGLES_GESTION.md) pour les formules et le solver net→brut.
 La stratégie multilingue et les conventions de traduction sont décrites dans [`docs/I18N.md`](docs/I18N.md).
+Le détail de la fonctionnalité V1.1 est dans [`docs/V1_1_NET_TO_GROSS.md`](docs/V1_1_NET_TO_GROSS.md).
 
 ## Contribution
 
