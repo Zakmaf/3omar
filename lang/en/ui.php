@@ -33,6 +33,7 @@ return [
         'mode_label' => 'Calculation mode', 'mode_gross_to_net' => 'I know the gross', 'mode_net_to_gross' => 'I know the net',
         'net_target_label' => 'Target net pay', 'net_target_help' => 'Negotiated monthly net amount. The simulator reconstructs the matching gross base salary.',
         'step_required' => 'Required', 'step_optional' => 'Optional', 'step_continue' => 'Continue', 'step_skip' => 'Skip this section',
+        'result_direct_access_notice' => 'There is no result to show yet. Start a simulation from this form to get the calculation details.',
         'advanced_hide' => 'Hide advanced options', 'submit' => 'Simulate my payslip', 'reset' => 'Reset', 'errors' => 'Input errors:',
     ],
     'result' => ['eyebrow' => 'Simulation result', 'title' => 'Your payslip, clearly explained', 'intro' => 'Start with the key amounts, then open the details to verify each line.', 'edit' => 'Edit simulation', 'print' => 'Print', 'details' => 'View full calculation details', 'net_to_gross_badge' => 'Net-to-gross reconstruction', 'net_to_gross_title' => 'From negotiated net to employer budget', 'net_to_gross_intro' => 'The gross base salary is resolved iteratively from the target net pay and entered assumptions.', 'net_target' => 'Target net', 'net_resolved' => 'Resolved net', 'resolved_base_salary' => 'Resolved base', 'resolution_gap' => 'Gap'],

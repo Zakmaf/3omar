@@ -62,6 +62,16 @@ class PagesTest extends TestCase
             ->assertSeeText("Aucune donnée personnelle n'est stockée.");
     }
 
+    public function test_direct_result_url_redirects_to_calculator_with_friendly_notice(): void
+    {
+        $this->get('/calculateur/calculer')
+            ->assertRedirect('/calculateur');
+
+        $this->followRedirects($this->get('/calculateur/calculer'))
+            ->assertOk()
+            ->assertSee('Aucun résultat à afficher pour le moment');
+    }
+
     public function test_unknown_allowance_type_is_rejected(): void
     {
         $this->from('/calculateur')->post('/calculateur/calculer', [

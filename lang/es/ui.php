@@ -33,6 +33,7 @@ return [
         'mode_label' => 'Modo de cálculo', 'mode_gross_to_net' => 'Conozco el bruto', 'mode_net_to_gross' => 'Conozco el neto',
         'net_target_label' => 'Neto a pagar objetivo', 'net_target_help' => 'Importe neto mensual negociado. El simulador reconstruye el salario base bruto correspondiente.',
         'step_required' => 'Obligatorio', 'step_optional' => 'Opcional', 'step_continue' => 'Continuar', 'step_skip' => 'Omitir esta sección',
+        'result_direct_access_notice' => 'Aún no hay ningún resultado que mostrar. Inicia una simulación desde este formulario para obtener el detalle del cálculo.',
         'advanced_hide' => 'Ocultar opciones avanzadas', 'submit' => 'Simular mi nómina', 'reset' => 'Restablecer', 'errors' => 'Errores de entrada:',
     ],
     'result' => ['eyebrow' => 'Resultado de la simulación', 'title' => 'Tu nómina, explicada claramente', 'intro' => 'Empieza por los importes clave y abre el detalle para verificar cada línea.', 'edit' => 'Modificar simulación', 'print' => 'Imprimir', 'details' => 'Ver el detalle completo del cálculo', 'net_to_gross_badge' => 'Reconstrucción desde el neto', 'net_to_gross_title' => 'Del neto negociado al presupuesto del empleador', 'net_to_gross_intro' => 'El salario base bruto se resuelve por iteraciones a partir del neto a pagar objetivo y las hipótesis introducidas.', 'net_target' => 'Neto objetivo', 'net_resolved' => 'Neto obtenido', 'resolved_base_salary' => 'Base reconstruida', 'resolution_gap' => 'Diferencia'],

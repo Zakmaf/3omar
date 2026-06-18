@@ -10,6 +10,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::prefix('calculateur')->name('calculator.')->group(function () {
     Route::get('/', [CalculatorController::class, 'index'])->name('index');
+    Route::get('/calculer', [CalculatorController::class, 'resultatIndisponible'])->name('calculer.unavailable');
     Route::post('/calculer', [CalculatorController::class, 'calculer'])->name('calculer');
 });
 

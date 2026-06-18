@@ -18,6 +18,13 @@ class CalculatorController extends Controller
         ]);
     }
 
+    public function resultatIndisponible()
+    {
+        return redirect()
+            ->route('calculator.index')
+            ->with('calculator_notice', 'ui.calculator.result_direct_access_notice');
+    }
+
     public function calculer(Request $request)
     {
         $cimrMin = (int) (config('payroll.cimr.taux_min') * 100);

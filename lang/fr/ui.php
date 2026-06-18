@@ -56,6 +56,7 @@ return [
         'step_optional' => 'Optionnel',
         'step_continue' => 'Continuer',
         'step_skip' => 'Passer cette rubrique',
+        'result_direct_access_notice' => 'Aucun résultat à afficher pour le moment. Lancez une simulation depuis ce formulaire pour obtenir le détail du calcul.',
         'advanced_show' => 'Afficher les options avancées',
         'advanced_hide' => 'Masquer les options avancées',
         'submit' => 'Simuler mon bulletin',

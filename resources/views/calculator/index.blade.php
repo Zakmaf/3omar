@@ -78,6 +78,12 @@
     </div>
     @endif
 
+    @if (session('calculator_notice'))
+    <div class="alert alert-info border-0 shadow-sm mb-4" role="status">
+        <i class="bi bi-info-circle-fill me-2"></i>{{ __(session('calculator_notice')) }}
+    </div>
+    @endif
+
     <form method="POST" action="{{ route('calculator.calculer') }}" id="payrollForm">
         @csrf
 
