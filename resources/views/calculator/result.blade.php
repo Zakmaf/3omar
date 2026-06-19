@@ -233,6 +233,33 @@
                                 </tr>
                                 @endif
 
+                                @if($r['prime_scolarite'] > 0)
+                                <tr class="row-brut">
+                                    <td class="px-3 py-2">Prime de scolarité <span class="badge text-bg-info text-white ms-1">CNSS exo.</span></td>
+                                    <td class="text-end px-3 py-2 text-muted">—</td>
+                                    <td class="text-end px-3 py-2 text-muted">—</td>
+                                    <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-info)">{{ number_format($r['prime_scolarite'], 2, ',', ' ') }}</td>
+                                </tr>
+                                @endif
+
+                                @if($r['prime_aid'] > 0)
+                                <tr class="row-brut">
+                                    <td class="px-3 py-2">Prime des Aïd <span class="badge text-bg-info text-white ms-1">CNSS exo.</span></td>
+                                    <td class="text-end px-3 py-2 text-muted">—</td>
+                                    <td class="text-end px-3 py-2 text-muted">—</td>
+                                    <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-info)">{{ number_format($r['prime_aid'], 2, ',', ' ') }}</td>
+                                </tr>
+                                @endif
+
+                                @if($r['autres_avantages_cnss'] > 0)
+                                <tr class="row-brut">
+                                    <td class="px-3 py-2">Autres avantages CNSS exonérés <span class="badge text-bg-info text-white ms-1">CNSS exo.</span></td>
+                                    <td class="text-end px-3 py-2 text-muted">—</td>
+                                    <td class="text-end px-3 py-2 text-muted">—</td>
+                                    <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-info)">{{ number_format($r['autres_avantages_cnss'], 2, ',', ' ') }}</td>
+                                </tr>
+                                @endif
+
                                 <tr class="table-light">
                                     <td class="px-3 py-2 fw-bold" colspan="3">Salaire Brut Imposable (SBI)</td>
                                     <td class="text-end px-3 py-2 fw-bold" style="color:var(--s-info)">{{ number_format($r['sbi'], 2, ',', ' ') }}</td>
@@ -243,6 +270,9 @@
                                     <td class="px-3 py-2">
                                         CNSS salarié
                                         <span class="badge text-bg-light badge-legal ms-1">Dahir 1-72-184</span>
+                                        @if($r['total_avantages_cnss_exoneres'] > 0)
+                                        <br><small class="text-muted">Assiette hors avantages CNSS exonérés</small>
+                                        @endif
                                     </td>
                                     <td class="text-end px-3 py-2 text-muted">{{ number_format($r['assiette_cnss'], 2, ',', ' ') }}</td>
                                     <td class="text-end px-3 py-2 text-muted">{{ number_format(config('payroll.cnss.taux') * 100, 2, ',', '.') }}%</td>
@@ -254,7 +284,7 @@
                                         AMO salarié
                                         <span class="badge text-bg-light badge-legal ms-1">Loi 65-00</span>
                                     </td>
-                                    <td class="text-end px-3 py-2 text-muted">{{ number_format($r['sbi'], 2, ',', ' ') }}</td>
+                                    <td class="text-end px-3 py-2 text-muted">{{ number_format($r['assiette_sociale'], 2, ',', ' ') }}</td>
                                     <td class="text-end px-3 py-2 text-muted">{{ number_format(config('payroll.amo.taux') * 100, 2, ',', '.') }}%</td>
                                     <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-cot)">− {{ number_format($r['cotisation_amo'], 2, ',', ' ') }}</td>
                                 </tr>
@@ -262,7 +292,7 @@
                                 @if($r['cimr_actif'] && $r['cotisation_cimr'] > 0)
                                 <tr class="row-cotis">
                                     <td class="px-3 py-2">
-                                        CIMR
+                                        CIMR — part salarié
                                         <span class="badge text-bg-light badge-legal ms-1">Art. 28-III CGI</span>
                                     </td>
                                     <td class="text-end px-3 py-2 text-muted">{{ number_format($r['sbi'], 2, ',', ' ') }}</td>
@@ -422,6 +452,18 @@
                                     <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-warn)">{{ number_format($r['cout_tfp_patronal'], 2, ',', ' ') }}</td>
                                 </tr>
 
+                                @if($r['cimr_actif'] && $r['cotisation_cimr_patronale'] > 0)
+                                <tr class="row-patron">
+                                    <td class="px-3 py-2">
+                                        CIMR — part employeur
+                                        <span class="badge text-bg-light badge-legal ms-1">Art. 28-III CGI</span>
+                                    </td>
+                                    <td class="text-end px-3 py-2 text-muted">{{ number_format($r['sbi'], 2, ',', ' ') }}</td>
+                                    <td class="text-end px-3 py-2 text-muted">{{ rtrim(rtrim(number_format(($r['cimr_repartition'] === 'employeur' ? $r['cimr_taux'] : $r['cimr_taux_employeur']) * 100, 2, ',', ' '), '0'), ',') }}%</td>
+                                    <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-warn)">{{ number_format($r['cotisation_cimr_patronale'], 2, ',', ' ') }}</td>
+                                </tr>
+                                @endif
+
                                 @if($r['mutuelle_patronale'] > 0)
                                 <tr class="row-patron">
                                     <td class="px-3 py-2">Mutuelle — part employeur</td>
@@ -431,6 +473,18 @@
                                 </tr>
                                 @endif
 
+
+                                @if($r['rc_part_employeur'] > 0)
+                                <tr class="row-patron">
+                                    <td class="px-3 py-2">
+                                        Retraite complémentaire — part employeur
+                                        <span class="badge text-bg-light badge-legal ms-1">Art. 28-IV CGI</span>
+                                    </td>
+                                    <td class="text-end px-3 py-2 text-muted">—</td>
+                                    <td class="text-end px-3 py-2 text-muted">—</td>
+                                    <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-warn)">{{ number_format($r['rc_part_employeur'], 2, ',', ' ') }}</td>
+                                </tr>
+                                @endif
                                 {{-- COÛT TOTAL EMPLOYEUR --}}
                                 <tr class="row-employer">
                                     <td class="px-3 py-3" colspan="3">
@@ -528,8 +582,14 @@
                             <tr><td class="text-muted">AMO patronale ({{ number_format(config('payroll.amo.taux_patronal') * 100, 2, ',', '.') }}%)</td><td class="fw-semibold text-end" style="color:var(--s-warn)">+ {{ number_format($r['cout_amo_patronal'], 2, ',', ' ') }}</td></tr>
                             <tr><td class="text-muted">All. familiales ({{ number_format(config('payroll.allocations_familiales.taux_patronal') * 100, 2, ',', '.') }}%)</td><td class="fw-semibold text-end" style="color:var(--s-warn)">+ {{ number_format($r['cout_af_patronal'], 2, ',', ' ') }}</td></tr>
                             <tr><td class="text-muted">TFP ({{ number_format(config('payroll.taxe_formation.taux_patronal') * 100, 2, ',', '.') }}%)</td><td class="fw-semibold text-end" style="color:var(--s-warn)">+ {{ number_format($r['cout_tfp_patronal'], 2, ',', ' ') }}</td></tr>
+                            @if($r['cimr_actif'] && $r['cotisation_cimr_patronale'] > 0)
+                            <tr><td class="text-muted">CIMR employeur</td><td class="fw-semibold text-end" style="color:var(--s-warn)">+ {{ number_format($r['cotisation_cimr_patronale'], 2, ',', ' ') }}</td></tr>
+                            @endif
                             @if($r['mutuelle_patronale'] > 0)
                             <tr><td class="text-muted">Mutuelle employeur</td><td class="fw-semibold text-end" style="color:var(--s-warn)">+ {{ number_format($r['mutuelle_patronale'], 2, ',', ' ') }}</td></tr>
+                            @endif
+                            @if($r['rc_part_employeur'] > 0)
+                            <tr><td class="text-muted">Retraite compl. employeur</td><td class="fw-semibold text-end" style="color:var(--s-warn)">+ {{ number_format($r['rc_part_employeur'], 2, ',', ' ') }}</td></tr>
                             @endif
                             <tr class="table-warning">
                                 <td class="fw-bold">Coût total employeur</td>

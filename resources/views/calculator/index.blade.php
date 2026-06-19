@@ -296,13 +296,44 @@
                             <label class="form-check-label fw-semibold" for="cimrActif">Cotisant à la CIMR</label>
                         </div>
                         <div id="cimrSection" style="{{ old('cimr_actif') ? '' : 'display:none' }}">
-                            <label class="form-label fw-semibold" for="cimrTaux">Taux CIMR salarié : <span id="cimrTauxVal">{{ old('cimr_taux', 5) }}%</span></label>
-                            <input type="range" name="cimr_taux" id="cimrTaux" class="form-range"
-                                   min="3" max="10" step="0.5" value="{{ old('cimr_taux', 5) }}">
-                            <div class="d-flex justify-content-between small text-muted">
-                                <span>3% (min)</span><span>10% (max)</span>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold small">Prise en charge</label>
+                                <div class="btn-group w-100" role="group" aria-label="Répartition CIMR">
+                                    @php($cimrRep = old('cimr_repartition', 'salarie'))
+                                    <input type="radio" class="btn-check" name="cimr_repartition" id="cimrRepSalarie" value="salarie" {{ $cimrRep === 'salarie' ? 'checked' : '' }}>
+                                    <label class="btn btn-outline-secondary btn-sm" for="cimrRepSalarie">Salarié</label>
+                                    <input type="radio" class="btn-check" name="cimr_repartition" id="cimrRepEmployeur" value="employeur" {{ $cimrRep === 'employeur' ? 'checked' : '' }}>
+                                    <label class="btn btn-outline-secondary btn-sm" for="cimrRepEmployeur">Employeur</label>
+                                    <input type="radio" class="btn-check" name="cimr_repartition" id="cimrRepPartage" value="partage" {{ $cimrRep === 'partage' ? 'checked' : '' }}>
+                                    <label class="btn btn-outline-secondary btn-sm" for="cimrRepPartage">Partagé</label>
+                                </div>
                             </div>
-                            <div class="form-text mt-1">Taux librement choisi 3%–10%, 100% déductible IR (Art. 28-III CGI)</div>
+
+                            <div class="mb-3" id="cimrTauxGroup">
+                                <label class="form-label fw-semibold small" for="cimrTaux" id="cimrTauxLabel">Taux CIMR</label>
+                                <div class="input-group input-group-sm">
+                                    <input type="number" name="cimr_taux" id="cimrTaux"
+                                           class="form-control @error('cimr_taux') is-invalid @enderror"
+                                           value="{{ old('cimr_taux', 6) }}"
+                                           min="0" step="0.5" placeholder="6" inputmode="decimal">
+                                    <span class="input-group-text">%</span>
+                                </div>
+                                <div class="form-text">100% déductible IR (Art. 28-III CGI)</div>
+                            </div>
+
+                            <div class="mb-3" id="cimrTauxEmployeurGroup" style="{{ $cimrRep === 'partage' ? '' : 'display:none' }}">
+                                <label class="form-label fw-semibold small" for="cimrTauxEmployeur">Taux CIMR employeur</label>
+                                <div class="input-group input-group-sm">
+                                    <input type="number" name="cimr_taux_employeur" id="cimrTauxEmployeur"
+                                           class="form-control @error('cimr_taux_employeur') is-invalid @enderror"
+                                           value="{{ old('cimr_taux_employeur', 6) }}"
+                                           min="0" step="0.5" placeholder="6" inputmode="decimal">
+                                    <span class="input-group-text">%</span>
+                                </div>
+                                <div class="form-text">Part employeur, intégrée au coût total employeur</div>
+                            </div>
+
                         </div>
                         <div class="step-actions d-flex flex-column flex-sm-row justify-content-end gap-2">
                             <button type="button" class="btn fw-semibold" style="border:1px solid var(--ink-3);color:var(--ink-2)" data-step-skip>{{ __('ui.calculator.step_skip') }}</button>
@@ -374,10 +405,10 @@
 
                         <hr class="my-3">
 
-                        <div class="mb-1">
+                        <div class="mb-3">
                             <label class="form-label fw-semibold small" for="retraite_complementaire_mensuel">
                                 <i class="bi bi-bank me-1" style="color:var(--s-info)"></i>
-                                Retraite complémentaire bancassurance <span class="text-muted fw-normal">(mensuel)</span>
+                                Retraite complémentaire — Part salarié <span class="text-muted fw-normal">(mensuel)</span>
                             </label>
                             <div class="input-group">
                                 <input type="number" name="retraite_complementaire_mensuel" id="retraite_complementaire_mensuel"
@@ -390,6 +421,21 @@
                                 Déduction fiscale simulée dans la limite de 50% du SBI annuel.
                                 Ce montant n'est pas soustrait du net à payer — Art. 28-IV CGI.
                             </div>
+                        </div>
+
+                        <div class="mb-1">
+                            <label class="form-label fw-semibold small" for="rc_part_employeur">
+                                <i class="bi bi-bank me-1" style="color:var(--s-warn)"></i>
+                                Retraite complémentaire — Part employeur <span class="text-muted fw-normal">(mensuel)</span>
+                            </label>
+                            <div class="input-group">
+                                <input type="number" name="rc_part_employeur" id="rc_part_employeur"
+                                       class="form-control @error('rc_part_employeur') is-invalid @enderror"
+                                       value="{{ old('rc_part_employeur', 0) }}"
+                                       min="0" step="0.01" placeholder="0">
+                                <span class="input-group-text">MAD</span>
+                            </div>
+                            <div class="form-text">Intégrée au coût total employeur</div>
                         </div>
 
                         <div class="step-actions d-flex flex-column flex-sm-row justify-content-end gap-2">
@@ -468,7 +514,58 @@
                     </div>
                 </details>
 
-                {{-- 8. Autres retenues --}}
+                {{-- 8. Avantages CNSS exonérés --}}
+                <details class="step-section section-card mb-3" data-step-section {{ old('prime_scolarite') || old('prime_aid') || old('autres_avantages_cnss') ? 'open' : '' }}>
+                    <summary>
+                        <span><i class="bi bi-mortarboard me-2" style="color:var(--s-cot)"></i>8. Avantages CNSS exonérés</span>
+                        <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
+                    </summary>
+                    <div class="card-body px-4 py-3">
+                        <div class="form-text mb-3">Primes soumises à l'IR mais exclues de l'assiette CNSS/AMO (Art. 19 Dahir 1-72-184).</div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small" for="prime_scolarite">Prime de scolarité</label>
+                            <div class="input-group">
+                                <input type="number" name="prime_scolarite" id="prime_scolarite"
+                                       class="form-control @error('prime_scolarite') is-invalid @enderror"
+                                       value="{{ old('prime_scolarite', 0) }}"
+                                       min="0" step="0.01" placeholder="0">
+                                <span class="input-group-text">MAD</span>
+                            </div>
+                            <div class="form-text">Équivalent mensuel de la prime annuelle</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small" for="prime_aid">Prime des Aïd</label>
+                            <div class="input-group">
+                                <input type="number" name="prime_aid" id="prime_aid"
+                                       class="form-control @error('prime_aid') is-invalid @enderror"
+                                       value="{{ old('prime_aid', 0) }}"
+                                       min="0" step="0.01" placeholder="0">
+                                <span class="input-group-text">MAD</span>
+                            </div>
+                            <div class="form-text">Équivalent mensuel (Aïd El Fitr, Aïd El Adha)</div>
+                        </div>
+
+                        <div class="mb-1">
+                            <label class="form-label fw-semibold small" for="autres_avantages_cnss">Autres avantages CNSS exonérés</label>
+                            <div class="input-group">
+                                <input type="number" name="autres_avantages_cnss" id="autres_avantages_cnss"
+                                       class="form-control @error('autres_avantages_cnss') is-invalid @enderror"
+                                       value="{{ old('autres_avantages_cnss', 0) }}"
+                                       min="0" step="0.01" placeholder="0">
+                                <span class="input-group-text">MAD</span>
+                            </div>
+                        </div>
+
+                        <div class="step-actions d-flex flex-column flex-sm-row justify-content-end gap-2">
+                            <button type="button" class="btn fw-semibold" style="border:1px solid var(--ink-3);color:var(--ink-2)" data-step-skip>{{ __('ui.calculator.step_skip') }}</button>
+                            <button type="button" class="btn text-white fw-semibold" style="background:var(--g-500)" data-step-next>{{ __('ui.calculator.step_continue') }}</button>
+                        </div>
+                    </div>
+                </details>
+
+                {{-- 9. Autres retenues --}}
                 <details class="step-section section-card mb-3" data-step-section {{ old('autres_retenues') ? 'open' : '' }}>
                     <summary>
                         <span><i class="bi bi-dash-circle me-2" style="color:var(--s-neutral)"></i>8. Autres retenues</span>
@@ -705,17 +802,31 @@ document.querySelectorAll('.remove-row').forEach(btn => {
     });
 });
 
-// ---- CIMR toggle ----
+// ---- CIMR toggle & répartition ----
 const cimrActif   = document.getElementById('cimrActif');
 const cimrSection = document.getElementById('cimrSection');
-const cimrTaux    = document.getElementById('cimrTaux');
-const cimrTauxVal = document.getElementById('cimrTauxVal');
+const cimrTauxGroup = document.getElementById('cimrTauxGroup');
+const cimrTauxLabel = document.getElementById('cimrTauxLabel');
+const cimrTauxEmployeurGroup = document.getElementById('cimrTauxEmployeurGroup');
+const cimrRepInputs = document.querySelectorAll('input[name="cimr_repartition"]');
 
 cimrActif.addEventListener('change', () => {
     cimrSection.style.display = cimrActif.checked ? '' : 'none';
 });
-cimrTaux.addEventListener('input', () => {
-    cimrTauxVal.textContent = cimrTaux.value + '%';
-});
+
+function updateCimrRepartition() {
+    const rep = document.querySelector('input[name="cimr_repartition"]:checked')?.value || 'salarie';
+    cimrTauxEmployeurGroup.style.display = rep === 'partage' ? '' : 'none';
+    if (rep === 'salarie') {
+        cimrTauxLabel.textContent = 'Taux CIMR salarié';
+    } else if (rep === 'employeur') {
+        cimrTauxLabel.textContent = 'Taux CIMR employeur';
+    } else {
+        cimrTauxLabel.textContent = 'Taux CIMR salarié';
+    }
+}
+
+cimrRepInputs.forEach(input => input.addEventListener('change', updateCimrRepartition));
+updateCimrRepartition();
 </script>
 @endpush
