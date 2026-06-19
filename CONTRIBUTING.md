@@ -63,6 +63,7 @@ Message en français, impératif présent, pas de point final.
 - Toujours créer la release depuis `main` après merge.
 - Rédiger les release notes en français avec la section **Correctifs** et/ou **Nouveautés**.
 - Mettre à jour la table des tags dans [docs/DEPLOIEMENT.md](docs/DEPLOIEMENT.md) lors d'une nouvelle mineure.
+- **Mettre à jour le numéro de version** dans `config/app.php` (`'version' => env('APP_VERSION', 'VX.Y.Z')`) **avant chaque release**. Ce numéro est affiché dans le footer du site.
 
 ## Documentation
 

@@ -33,7 +33,14 @@ Le backlog ci-dessous sert à rendre visibles les fonctions à venir. Lorsqu'une
 - [ ] Sauvegarder temporairement et partager une simulation via URL compacte ou stockage local ([#50](https://github.com/Zakmaf/3omar/issues/50)).
 - [ ] Ajouter des profils de simulation prêts à l'emploi : `SMIG`, salarié standard, cadre, journaliste, avec CIMR, avec primes ([#51](https://github.com/Zakmaf/3omar/issues/51)).
 
-### En cours sur V1.2
+### Livrés en V1.2
+
+- [x] ~~CIMR : saisie libre du taux + choix de la prise en charge (salarié, employeur, partagé)~~
+- [x] ~~Avantages CNSS exonérés : prime de scolarité, prime des Aïd, autres (imposables IR, exclus CNSS/AMO)~~
+- [x] ~~Retraite complémentaire : part employeur distincte~~
+- [x] ~~Montée Laravel 12 — correctif CVE-2026-48019~~
+
+### En continu
 
 - [ ] Protéger `POST /calculateur/calculer` contre le déni de service applicatif ([#42](https://github.com/Zakmaf/3omar/issues/42)).
 - [ ] Ajouter une `Content-Security-Policy` et les en-têtes de sécurité navigateur ([#43](https://github.com/Zakmaf/3omar/issues/43)).
