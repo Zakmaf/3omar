@@ -4,12 +4,12 @@ Ce document décrit le comportement réellement implémenté. `config/payroll.ph
 
 ## Séquence brut → net
 
-1. Le **SBI** (salaire brut imposable) additionne salaire de base, primes imposables, ancienneté, heures supplémentaires et excédents d'indemnités dépassant leur plafond exonéré.
-2. **CNSS, AMO et CIMR** sont calculées sur leurs assiettes respectives configurées dans `config/payroll.php`.
+1. Le **SBI** (salaire brut imposable) additionne salaire de base, primes imposables, ancienneté, heures supplémentaires, excédents d'indemnités dépassant leur plafond exonéré et avantages CNSS exonérés (imposables IR mais exclus de l'assiette CNSS/AMO).
+2. **CNSS et AMO** sont calculées sur l'**assiette sociale** (SBI hors avantages CNSS exonérés). La **CIMR** peut être à la charge du salarié, de l'employeur ou partagée ; seule la part salarié est déduite du SNC.
 3. Le **RNI** (revenu net imposable) déduit les cotisations sociales et les frais professionnels du SBI.
 4. L'**IR** est calculé sur le RNI annualisé, puis diminué des charges de famille.
 5. Le **net à payer** ajoute les parts d'indemnités traitées comme exonérées et retire les retenues salariales (mutuelle, autres retenues).
-6. Le **coût total employeur** additionne le salaire brut total versé (indemnités comprises) et les charges patronales (CNSS, AMO, AF, TFP, mutuelle patronale).
+6. Le **coût total employeur** additionne le salaire brut total versé (indemnités comprises) et les charges patronales (CNSS, AMO, AF, TFP, mutuelle patronale, CIMR part employeur, retraite complémentaire part employeur).
 
 ## Hypothèses explicites
 
@@ -19,6 +19,30 @@ Ce document décrit le comportement réellement implémenté. `config/payroll.ph
 - Les déclarations d'une même indemnité sont agrégées avant application d'un plafond unique.
 - Les frais professionnels utilisent le SBI et le plafond mensuel configuré.
 - L'avertissement SMIG compare le SMIG mensuel au **salaire de base** saisi, pas au SBI total.
+
+## CIMR — Répartition employeur/salarié (V1.2)
+
+Le taux CIMR est librement saisi (pas de plafond technique). Un avertissement signale les taux hors de la fourchette réglementaire 3–10 % (Art. 28-III CGI).
+
+| Répartition | Part salarié | Part employeur |
+|-------------|-------------|----------------|
+| `salarie` | `SBI × taux` (déduit du SNC, déductible IR) | — |
+| `employeur` | — | `SBI × taux` (charge patronale) |
+| `partage` | `SBI × taux_salarié` | `SBI × taux_employeur` |
+
+La part employeur est intégrée au `total_patronal` et au `cout_total_employeur` sans impacter le net salarié.
+
+## Avantages CNSS exonérés (V1.2)
+
+Les primes de scolarité, des Aïd et autres avantages configurés dans `config('payroll.avantages_cnss_exoneres')` sont :
+
+- **Inclus** dans le SBI (soumis à l'IR).
+- **Exclus** de l'assiette sociale : CNSS et AMO sont calculées sur `assiette_sociale = SBI − total_avantages_cnss_exoneres`.
+- Les cotisations patronales (CNSS, AMO, AF, TFP) utilisent également cette assiette réduite.
+
+## Retraite complémentaire — Part employeur (V1.2)
+
+Le champ `rc_part_employeur` permet de distinguer la part employeur de la cotisation bancassurance. Ce montant est ajouté au `total_patronal` sans affecter le net salarié ni l'assiette IR.
 
 ## Solver net → brut (V1.1)
 
