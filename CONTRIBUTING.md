@@ -69,6 +69,11 @@ Message en français, impératif présent, pas de point final.
 - Ne pas dupliquer le contenu entre fichiers — lier plutôt que copier.
 - Les valeurs chiffrées (taux, plafonds) viennent de `config/payroll.php`, jamais des docs.
 - Un doc technique doit décrire ce qui est **implémenté**, pas ce qui était prévu.
+- Le backlog produit visible dans `README.md` sert de référence publique pour les fonctions à venir.
+- Quand une fonctionnalité du backlog est implémentée, son item doit être mis à jour **dans la même PR** :
+  - si la fonctionnalité est entièrement livrée, barrer l'item avec la syntaxe Markdown `- [x] ~~Fonctionnalité~~`;
+  - si la formulation doit être affinée après livraison, conserver le lien vers l'issue ou la PR associée ;
+  - ne pas supprimer l'item immédiatement : le texte barré sert d'historique lisible des livraisons.
 
 ## Calcul et règles métier
 
