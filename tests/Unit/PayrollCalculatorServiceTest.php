@@ -208,4 +208,127 @@ class PayrollCalculatorServiceTest extends TestCase
 
         $this->calculator->resoudreDepuisNet(['net_cible' => 0]);
     }
+    // =========================================================================
+    // V1.2 — CIMR répartition
+    // =========================================================================
+
+    public function test_cimr_employer_only_does_not_deduct_from_employee_salary(): void
+    {
+        $result = $this->calculator->calculer([
+            'salaire_base' => 10000,
+            'cimr_actif' => true,
+            'cimr_taux' => 6,
+            'cimr_repartition' => 'employeur',
+        ]);
+
+        $this->assertSame(0.0, $result['cotisation_cimr']);
+        $this->assertSame(600.0, $result['cotisation_cimr_patronale']);
+        $this->assertSame('employeur', $result['cimr_repartition']);
+    }
+
+    public function test_cimr_shared_splits_between_employee_and_employer(): void
+    {
+        $result = $this->calculator->calculer([
+            'salaire_base' => 10000,
+            'cimr_actif' => true,
+            'cimr_taux' => 3,
+            'cimr_taux_employeur' => 6,
+            'cimr_repartition' => 'partage',
+        ]);
+
+        $this->assertSame(300.0, $result['cotisation_cimr']);
+        $this->assertSame(600.0, $result['cotisation_cimr_patronale']);
+    }
+
+    public function test_cimr_employer_cost_includes_employer_cimr(): void
+    {
+        $without = $this->calculator->calculer([
+            'salaire_base' => 10000,
+        ]);
+        $with = $this->calculator->calculer([
+            'salaire_base' => 10000,
+            'cimr_actif' => true,
+            'cimr_taux' => 6,
+            'cimr_repartition' => 'employeur',
+        ]);
+
+        $this->assertSame(
+            $without['cout_total_employeur'] + 600,
+            $with['cout_total_employeur'],
+        );
+    }
+
+    public function test_cimr_free_rate_above_ten_percent_triggers_warning(): void
+    {
+        $result = $this->calculator->calculer([
+            'salaire_base' => 10000,
+            'cimr_actif' => true,
+            'cimr_taux' => 15,
+            'cimr_repartition' => 'salarie',
+        ]);
+
+        $this->assertSame(1500.0, $result['cotisation_cimr']);
+        $this->assertNotEmpty($result['avertissements']);
+    }
+
+    // =========================================================================
+    // V1.2 — Avantages CNSS exonérés
+    // =========================================================================
+
+    public function test_cnss_exempt_primes_are_excluded_from_cnss_base(): void
+    {
+        $without = $this->calculator->calculer(['salaire_base' => 5000]);
+        $with = $this->calculator->calculer([
+            'salaire_base' => 5000,
+            'prime_scolarite' => 500,
+        ]);
+
+        $this->assertSame($without['cotisation_cnss'], $with['cotisation_cnss']);
+        $this->assertSame($without['cotisation_amo'], $with['cotisation_amo']);
+        $this->assertSame(5500.0, $with['sbi']);
+        $this->assertSame(5000.0, $with['assiette_sociale']);
+    }
+
+    public function test_cnss_exempt_primes_are_included_in_ir_base(): void
+    {
+        $without = $this->calculator->calculer(['salaire_base' => 10000]);
+        $with = $this->calculator->calculer([
+            'salaire_base' => 10000,
+            'prime_aid' => 1000,
+        ]);
+
+        $this->assertGreaterThan($without['sbi'], $with['sbi']);
+        $this->assertSame(11000.0, $with['sbi']);
+    }
+
+    public function test_cnss_exempt_primes_employer_cost_excludes_from_social_charges(): void
+    {
+        $without = $this->calculator->calculer(['salaire_base' => 5000]);
+        $with = $this->calculator->calculer([
+            'salaire_base' => 5000,
+            'prime_scolarite' => 500,
+        ]);
+
+        $this->assertSame($without['cout_cnss_patronal'], $with['cout_cnss_patronal']);
+        $this->assertSame($without['cout_amo_patronal'], $with['cout_amo_patronal']);
+    }
+
+    // =========================================================================
+    // V1.2 — Retraite complémentaire part employeur
+    // =========================================================================
+
+    public function test_rc_employer_share_is_added_to_employer_cost(): void
+    {
+        $without = $this->calculator->calculer(['salaire_base' => 10000]);
+        $with = $this->calculator->calculer([
+            'salaire_base' => 10000,
+            'rc_part_employeur' => 500,
+        ]);
+
+        $this->assertSame(
+            $without['cout_total_employeur'] + 500,
+            $with['cout_total_employeur'],
+        );
+        $this->assertSame($without['salaire_net'], $with['salaire_net']);
+    }
 }

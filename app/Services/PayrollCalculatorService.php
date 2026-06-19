@@ -11,15 +11,17 @@ namespace App\Services;
  *         + excédent des indemnités au-delà des plafonds (part imposable)
  *  2. CNSS salarié = min(SBI, plafond) × 4,48%      (Dahir 1-72-184)
  *  3. AMO salarié  = SBI × 2,26%                    (Loi 65-00)
- *  4. CIMR         = SBI × taux_choisi [3%–10%]     (Art. 28-III CGI)
- *  5. SNC  = SBI − CNSS − AMO − CIMR
+ *  4. CIMR salarié = SBI × taux_choisi               (Art. 28-III CGI)
+ *     CIMR employeur = SBI × taux_employeur          (charge patronale)
+ *  5. SNC  = SBI − CNSS − AMO − CIMR_salarié
  *  6. FP   = min(SBI × taux_fp, plafond_fp)          (Art. 59 I-A CGI — assiette = revenu brut imposable)
  *  7. RNI mensuel = SNC − FP
  *  8. IR   = barème(RNI × 12 − retraite_comp)       (Art. 73 CGI)
  *          − déduction charges de famille             (Art. 74 CGI)
  *  9. Indemnités exonérées (dans la limite des plafonds — Arrêté 1314-25)
- * 10. Net  = SBI − CNSS − AMO − CIMR − IR + Indemnités exonérées − Retenues
- * 11. Coût employeur = brut total versé + cotisations patronales
+ * 10. Avantages CNSS exonérés : imposables IR, exclus de CNSS/AMO
+ * 11. Net  = SBI − CNSS − AMO − CIMR_salarié − IR + Indemnités exonérées − Retenues
+ * 12. Coût employeur = brut total versé + cotisations patronales + CIMR employeur
  */
 class PayrollCalculatorService
 {
@@ -217,6 +219,8 @@ class PayrollCalculatorService
         // Ne pas arrondir le ratio : round(0.035, 2) donnerait 0.04 (3,5% → 4%).
         // Seul le montant de la cotisation est arrondi.
         $cimrTaux = ((float) ($input['cimr_taux'] ?? 0)) / 100;
+        $cimrRepartition = $input['cimr_repartition'] ?? 'salarie';
+        $cimrTauxEmployeur = ((float) ($input['cimr_taux_employeur'] ?? 0)) / 100;
         $nbEnfants = (int) ($input['nb_enfants'] ?? 0);
         $conjointCharge = ! empty($input['conjoint_charge']);
         $typeFraisPro = $input['type_frais_pro'] ?? 'commun';
@@ -225,6 +229,11 @@ class PayrollCalculatorService
         $mutuelleSalarie = (float) ($input['mutuelle_salarie'] ?? 0);
         $mutuellePatronale = (float) ($input['mutuelle_patronale'] ?? 0);
         $retraiteComplementaireMensuel = (float) ($input['retraite_complementaire_mensuel'] ?? 0);
+        $rcPartEmployeur = (float) ($input['rc_part_employeur'] ?? 0);
+
+        $primeScolarite = (float) ($input['prime_scolarite'] ?? 0);
+        $primeAid = (float) ($input['prime_aid'] ?? 0);
+        $autresAvantagesCnss = (float) ($input['autres_avantages_cnss'] ?? 0);
 
         $avertissements = [];
 
@@ -321,25 +330,44 @@ class PayrollCalculatorService
             }
         }
 
-        $sbi = $this->r2($salaireBase + $totalPrimesImposables + $totalHS + $excedentIndemnites);
+        // Avantages CNSS exonérés : imposables IR, exclus de l'assiette CNSS/AMO
+        $totalAvantagesCnssExoneres = $this->r2($primeScolarite + $primeAid + $autresAvantagesCnss);
+
+        $sbi = $this->r2($salaireBase + $totalPrimesImposables + $totalHS + $excedentIndemnites + $totalAvantagesCnssExoneres);
+
+        // Assiette CNSS/AMO : SBI hors avantages CNSS exonérés
+        $assietteSociale = $this->r2($sbi - $totalAvantagesCnssExoneres);
 
         // =====================================================================
         // ÉTAPE 2 — CNSS salarié (Dahir n° 1-72-184)
         // =====================================================================
-        $assietteCNSS = min($sbi, config('payroll.cnss.plafond'));
+        $assietteCNSS = min($assietteSociale, config('payroll.cnss.plafond'));
         $cotisationCNSS = $this->r2($assietteCNSS * config('payroll.cnss.taux'));
 
         // =====================================================================
         // ÉTAPE 3 — AMO salarié (Loi n° 65-00)
         // =====================================================================
-        $cotisationAMO = $this->r2($sbi * config('payroll.amo.taux'));
+        $cotisationAMO = $this->r2($assietteSociale * config('payroll.amo.taux'));
 
         // =====================================================================
         // ÉTAPE 4 — CIMR (Art. 28-III CGI)
+        // Répartition : salarié seul, employeur seul, ou partagé
         // =====================================================================
         $cotisationCIMR = 0.0;
-        if ($cimrActif && $cimrTaux > 0) {
-            $cotisationCIMR = $this->r2($sbi * $cimrTaux);
+        $cotisationCIMRPatronale = 0.0;
+        if ($cimrActif) {
+            if ($cimrRepartition === 'salarie' && $cimrTaux > 0) {
+                $cotisationCIMR = $this->r2($sbi * $cimrTaux);
+            } elseif ($cimrRepartition === 'employeur' && $cimrTaux > 0) {
+                $cotisationCIMRPatronale = $this->r2($sbi * $cimrTaux);
+            } elseif ($cimrRepartition === 'partage') {
+                if ($cimrTaux > 0) {
+                    $cotisationCIMR = $this->r2($sbi * $cimrTaux);
+                }
+                if ($cimrTauxEmployeur > 0) {
+                    $cotisationCIMRPatronale = $this->r2($sbi * $cimrTauxEmployeur);
+                }
+            }
         }
 
         $totalSociales = $this->r2($cotisationCNSS + $cotisationAMO + $cotisationCIMR);
@@ -422,12 +450,12 @@ class PayrollCalculatorService
         // =====================================================================
         // COTISATIONS PATRONALES — Coût total employeur
         // =====================================================================
-        $assietteCNSSPatronal = min($sbi, config('payroll.cnss.plafond'));
+        $assietteCNSSPatronal = min($assietteSociale, config('payroll.cnss.plafond'));
         $coutCNSSPatronal = $this->r2($assietteCNSSPatronal * config('payroll.cnss.taux_patronal'));
-        $coutAMOPatronal = $this->r2($sbi * config('payroll.amo.taux_patronal'));
-        $coutAFPatronal = $this->r2($sbi * config('payroll.allocations_familiales.taux_patronal'));
-        $coutTFPPatronal = $this->r2($sbi * config('payroll.taxe_formation.taux_patronal'));
-        $totalPatronal = $this->r2($coutCNSSPatronal + $coutAMOPatronal + $coutAFPatronal + $coutTFPPatronal + $mutuellePatronale);
+        $coutAMOPatronal = $this->r2($assietteSociale * config('payroll.amo.taux_patronal'));
+        $coutAFPatronal = $this->r2($assietteSociale * config('payroll.allocations_familiales.taux_patronal'));
+        $coutTFPPatronal = $this->r2($assietteSociale * config('payroll.taxe_formation.taux_patronal'));
+        $totalPatronal = $this->r2($coutCNSSPatronal + $coutAMOPatronal + $coutAFPatronal + $coutTFPPatronal + $mutuellePatronale + $cotisationCIMRPatronale + $rcPartEmployeur);
         $coutTotalEmployeur = $this->r2($salaireBrutTotal + $totalPatronal);
 
         // =====================================================================
@@ -491,13 +519,23 @@ class PayrollCalculatorService
             'autres_primes' => $autresPrimes,
             'total_primes' => $totalPrimesImposables,
 
+            // — Avantages CNSS exonérés —
+            'prime_scolarite' => $primeScolarite,
+            'prime_aid' => $primeAid,
+            'autres_avantages_cnss' => $autresAvantagesCnss,
+            'total_avantages_cnss_exoneres' => $totalAvantagesCnssExoneres,
+            'assiette_sociale' => $assietteSociale,
+
             // — Cotisations salariales —
             'assiette_cnss' => $assietteCNSS,
             'cotisation_cnss' => $cotisationCNSS,
             'cotisation_amo' => $cotisationAMO,
             'cimr_actif' => $cimrActif,
             'cimr_taux' => $cimrTaux,
+            'cimr_repartition' => $cimrRepartition,
+            'cimr_taux_employeur' => $cimrTauxEmployeur,
             'cotisation_cimr' => $cotisationCIMR,
+            'cotisation_cimr_patronale' => $cotisationCIMRPatronale,
             'total_sociales' => $totalSociales,
 
             // — Cotisations patronales —
@@ -506,6 +544,7 @@ class PayrollCalculatorService
             'cout_af_patronal' => $coutAFPatronal,
             'cout_tfp_patronal' => $coutTFPPatronal,
             'mutuelle_patronale' => $mutuellePatronale,
+            'rc_part_employeur' => $rcPartEmployeur,
             'total_patronal' => $totalPatronal,
             'cout_total_employeur' => $coutTotalEmployeur,
 
