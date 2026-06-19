@@ -18,6 +18,21 @@ Ces règles s'appliquent à tous les contributeurs — humains, Claude et Codex.
 - Une branche = un sujet. Ne pas mélanger fonctionnalité et refactoring.
 - Supprimer la branche après merge.
 
+## Collaboration multi-agents
+
+Ces règles sont obligatoires quand plusieurs intervenants travaillent en parallèle sur le dépôt.
+
+- `main` reste la branche stable de référence : ne pas y travailler directement.
+- Une issue = une branche = un sujet = un agent.
+- Ne jamais faire travailler deux agents sur la même branche.
+- Ne jamais réutiliser une branche déjà active pour un autre sujet.
+- Toute branche de travail doit référencer un numéro d'issue quand il existe.
+- Avant de commencer, vérifier `git status` et signaler immédiatement tout changement inattendu.
+- Si un autre agent modifie déjà un fichier central (`app/Services/PayrollCalculatorService.php`, `config/payroll.php`, `README.md`, vues principales), ouvrir une branche séparée et éviter le travail concurrent sur le même fichier.
+- Pas de refactor opportuniste hors périmètre du ticket traité.
+- Toute livraison doit annoncer clairement les fichiers touchés et les commandes de vérification exécutées.
+- Merge rapide des petits sujets terminés pour réduire les conflits de dérive.
+
 ## Commits
 
 Format : `type(scope): description courte en français`
