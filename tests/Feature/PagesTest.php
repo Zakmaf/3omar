@@ -96,6 +96,18 @@ class PagesTest extends TestCase
             ->assertSessionHasErrors('indemnites.0.type');
     }
 
+    public function test_calculator_has_nine_step_sections_with_auto_numbering(): void
+    {
+        $response = $this->get('/calculateur')->assertOk();
+        $html = $response->getContent();
+
+        preg_match_all('/<details[^>]*data-step-section/', $html, $matches);
+        $this->assertCount(9, $matches[0], "Le formulaire doit contenir exactement 9 sections d'étape");
+
+        $this->assertStringContainsString('class="step-label"', $html);
+        $this->assertStringContainsString('counter-reset: step', $html);
+    }
+
     public function test_calculator_prioritizes_simple_path_and_exposes_advanced_options(): void
     {
         $this->get('/calculateur')->assertOk()

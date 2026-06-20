@@ -7,9 +7,14 @@
     .simulator-flow {
         max-width: 960px;
         margin-inline: auto;
+        counter-reset: step;
     }
     .step-section {
         overflow: hidden;
+        counter-increment: step;
+    }
+    .step-section > summary .step-label::before {
+        content: counter(step) ". ";
     }
     .step-section > summary {
         display: flex;
@@ -110,7 +115,7 @@
                 {{-- 1. Rémunération de base --}}
                 <details class="step-section section-card mb-3" open data-step-section>
                     <summary>
-                        <span><i class="bi bi-cash-coin me-2" style="color:var(--s-info)"></i>1. Salaire de départ</span>
+                        <span class="step-label"><i class="bi bi-cash-coin me-2" style="color:var(--s-info)"></i>Salaire de départ</span>
                         <span class="step-pill">{{ __('ui.calculator.step_required') }}</span>
                     </summary>
                     <div class="card-body px-4 py-3">
@@ -162,7 +167,7 @@
                 {{-- 2. Primes et ancienneté --}}
                 <details class="step-section section-card mb-3" data-step-section {{ old('nb_annees_anciennete') || old('prime_bilan') || old('prime_rendement') || old('autres_primes') ? 'open' : '' }}>
                     <summary>
-                        <span><i class="bi bi-cash-stack me-2" style="color:var(--s-warn)"></i>2. Primes et ancienneté</span>
+                        <span class="step-label"><i class="bi bi-cash-stack me-2" style="color:var(--s-warn)"></i>Primes et ancienneté</span>
                         <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
                     </summary>
                     <div class="card-body px-4 py-3">
@@ -236,7 +241,7 @@
                 {{-- 3. Heures supplémentaires --}}
                 <details class="step-section section-card mb-3" data-step-section {{ old('heures_sup') ? 'open' : '' }}>
                     <summary>
-                        <span><i class="bi bi-clock-history me-2" style="color:var(--s-info)"></i>3. Heures supplémentaires</span>
+                        <span class="step-label"><i class="bi bi-clock-history me-2" style="color:var(--s-info)"></i>Heures supplémentaires</span>
                         <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
                     </summary>
                     <div class="card-body px-4 py-3">
@@ -286,7 +291,7 @@
                 {{-- 4. CIMR --}}
                 <details class="step-section section-card mb-3" data-step-section {{ old('cimr_actif') ? 'open' : '' }}>
                     <summary>
-                        <span><i class="bi bi-piggy-bank me-2" style="color:var(--s-cot)"></i>4. Retraite complémentaire (CIMR)</span>
+                        <span class="step-label"><i class="bi bi-piggy-bank me-2" style="color:var(--s-cot)"></i>Retraite complémentaire (CIMR)</span>
                         <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
                     </summary>
                     <div class="card-body px-4 py-3">
@@ -345,7 +350,7 @@
                 {{-- 5. Charges de famille --}}
                 <details class="step-section section-card mb-3" data-step-section {{ old('nb_enfants') || old('conjoint_charge') ? 'open' : '' }}>
                     <summary>
-                        <span><i class="bi bi-people-fill me-2" style="color:var(--s-succ)"></i>5. Charges de famille</span>
+                        <span class="step-label"><i class="bi bi-people-fill me-2" style="color:var(--s-succ)"></i>Charges de famille</span>
                         <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
                     </summary>
                     <div class="card-body px-4 py-3">
@@ -374,7 +379,7 @@
                 {{-- 6. Santé & Retraite complémentaire --}}
                 <details class="step-section section-card mb-3" data-step-section {{ old('mutuelle_salarie') || old('mutuelle_patronale') || old('retraite_complementaire_mensuel') ? 'open' : '' }}>
                     <summary>
-                        <span><i class="bi bi-heart-pulse-fill me-2" style="color:var(--s-tax)"></i>6. Santé &amp; retraite complémentaire</span>
+                        <span class="step-label"><i class="bi bi-heart-pulse-fill me-2" style="color:var(--s-tax)"></i>Santé &amp; retraite complémentaire</span>
                         <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
                     </summary>
                     <div class="card-body px-4 py-3">
@@ -448,7 +453,7 @@
                 {{-- 7. Indemnités traitées comme exonérées --}}
                 <details class="step-section section-card mb-3" data-step-section {{ old('indemnites') ? 'open' : '' }}>
                     <summary>
-                        <span><i class="bi bi-gift me-2" style="color:var(--s-succ)"></i>7. Indemnités traitées comme exonérées</span>
+                        <span class="step-label"><i class="bi bi-gift me-2" style="color:var(--s-succ)"></i>Indemnités traitées comme exonérées</span>
                         <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
                     </summary>
                     <div class="card-body px-4 py-3">
@@ -517,7 +522,7 @@
                 {{-- 8. Avantages CNSS exonérés --}}
                 <details class="step-section section-card mb-3" data-step-section {{ old('prime_scolarite') || old('prime_aid') || old('autres_avantages_cnss') ? 'open' : '' }}>
                     <summary>
-                        <span><i class="bi bi-mortarboard me-2" style="color:var(--s-cot)"></i>8. Avantages CNSS exonérés</span>
+                        <span class="step-label"><i class="bi bi-mortarboard me-2" style="color:var(--s-cot)"></i>Avantages CNSS exonérés</span>
                         <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
                     </summary>
                     <div class="card-body px-4 py-3">
@@ -568,7 +573,7 @@
                 {{-- 9. Autres retenues --}}
                 <details class="step-section section-card mb-3" data-step-section {{ old('autres_retenues') ? 'open' : '' }}>
                     <summary>
-                        <span><i class="bi bi-dash-circle me-2" style="color:var(--s-neutral)"></i>8. Autres retenues</span>
+                        <span class="step-label"><i class="bi bi-dash-circle me-2" style="color:var(--s-neutral)"></i>Autres retenues</span>
                         <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
                     </summary>
                     <div class="card-body px-4 py-3">
