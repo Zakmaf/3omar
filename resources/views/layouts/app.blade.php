@@ -317,6 +317,21 @@
             border-top: 1px solid rgba(255,255,255,0.12);
         }
 
+        @media (max-width: 991.98px) {
+            .navbar-brand img {
+                max-width: clamp(100px, 40vw, 160px);
+                height: auto;
+            }
+            .navbar-collapse.collapse.show,
+            .navbar-collapse.collapsing {
+                max-height: calc(100vh - 60px);
+                max-height: calc(100dvh - 60px);
+                overflow-y: auto;
+            }
+            .language-switcher {
+                flex-wrap: wrap;
+            }
+        }
         @media (max-width: 576px) {
             .net-amount { font-size: 2rem; }
             .mobile-sticky {
@@ -505,7 +520,7 @@
 
 <!-- Bootstrap 5 JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc4s9bIOgUxi8T/jzmE3FGjEe6xcMuB/93AAnXrwEAX" crossorigin="anonymous"></script>
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
 @stack('scripts')
 @if (app()->environment('production') && config('ads.enabled') && config('ads.client'))
