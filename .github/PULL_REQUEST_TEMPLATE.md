@@ -19,7 +19,7 @@ Types acceptés : feat, fix, docs, chore, test, refactor
 
 - [ ] Une PR = un sujet (pas de fourre-tout, pas de refactor opportuniste hors périmètre)
 - [ ] Branche partie de `main` à jour
-- [ ] Tests verts en local (`php artisan test`)
+- [ ] Tests verts en local (`vendor/bin/phpunit`)
 - [ ] Si `app/Services/PayrollCalculatorService.php` est touché → tests unitaires ajoutés/mis à jour
 - [ ] Si une valeur réglementaire change → elle vit dans `config/payroll.php` (jamais en dur)
 - [ ] Si l'interface change → clés i18n ajoutées dans les **quatre** langues (fr, en, ar, es)

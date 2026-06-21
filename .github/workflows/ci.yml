@@ -48,4 +48,4 @@ jobs:
           php artisan key:generate
 
       - name: Lancer les tests
-        run: php artisan test
+        run: vendor/bin/phpunit
