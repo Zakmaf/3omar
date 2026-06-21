@@ -1,7 +1,7 @@
 # =========================================================================
 # Stage 1 — Installer les dépendances Composer (image légère)
 # =========================================================================
-FROM composer:2.7 AS composer-stage
+FROM composer:2.10 AS composer-stage
 
 WORKDIR /app
 
