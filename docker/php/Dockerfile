@@ -25,7 +25,7 @@ RUN composer dump-autoload --optimize --no-scripts
 # =========================================================================
 # Stage 2 — Image PHP-FPM 8.4 de production
 # =========================================================================
-FROM php:8.4-fpm
+FROM php:8.5-fpm
 
 # ---- Dépendances système ----
 RUN apt-get update -qq && apt-get install -y -q --no-install-recommends \
