@@ -135,6 +135,7 @@ class PagesTest extends TestCase
             ->assertDontSee('for="cimrRepSalarie"', false)
             ->assertSee('name="nb_enfants"', false)
             ->assertSee('data-max-personnes="6"', false)
+            ->assertSee('6 ou plus')
             ->assertSee('Conjoint à charge')
             ->assertSee('Déduction fiscale simulée');
     }

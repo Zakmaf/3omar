@@ -377,7 +377,7 @@
                                 <label class="form-label fw-semibold" for="nb_enfants">Enfants à charge</label>
                                 <select name="nb_enfants" id="nb_enfants" class="form-select" data-max-personnes="{{ $maxPersonnesCharge }}">
                                     @for($i = 0; $i <= $maxEnfantsCharge; $i++)
-                                    <option value="{{ $i }}" {{ $selectedNbEnfants === $i ? 'selected' : '' }}>{{ $i }}</option>
+                                    <option value="{{ $i }}" {{ $selectedNbEnfants === $i ? 'selected' : '' }}>{{ $i === $maxEnfantsCharge ? $i.' ou plus' : $i }}</option>
                                     @endfor
                                 </select>
                             </div>
@@ -696,7 +696,7 @@ function updateChildrenOptions() {
     for (let i = 0; i <= maxEnfants; i++) {
         const option = document.createElement('option');
         option.value = i;
-        option.textContent = i;
+        option.textContent = i === maxEnfants ? i + ' ou plus' : i;
         option.selected = i === currentValue;
         nbEnfantsSelect.appendChild(option);
     }
