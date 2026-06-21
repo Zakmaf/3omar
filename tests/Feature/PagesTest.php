@@ -18,7 +18,7 @@ class PagesTest extends TestCase
     {
         $this->get('/')->assertOk()
             ->assertSee('Le bulletin de paie Marocain open source')
-            ->assertSee('Version ' . config('app.version'));
+            ->assertSee('Version '.config('app.version'));
         $this->get('/calculateur')->assertOk()->assertSee('Simuler mon bulletin');
         $this->get('/documentation')->assertOk()
             ->assertSee('Documentation des règles')
@@ -113,8 +113,30 @@ class PagesTest extends TestCase
         $this->get('/calculateur')->assertOk()
             ->assertSee('Simulation guidée étape par étape')
             ->assertSee('Je connais le net')
+            ->assertSee('Lancer le calcul du bulletin')
+            ->assertSee('Un salaire de départ suffit pour lancer une simulation')
+            ->assertSee('quick-submit-panel', false)
             ->assertSee('Passer cette rubrique')
             ->assertSee('Simulation pédagogique · environ 2 minutes');
+    }
+
+    public function test_calculator_uses_constrained_inputs_for_common_bounded_choices(): void
+    {
+        $this->get('/calculateur')->assertOk()
+            ->assertSee('Tranche d', false)
+            ->assertSee('name="nb_annees_anciennete"', false)
+            ->assertSee('2 à 4 ans · 5%')
+            ->assertSee('Primes imposables')
+            ->assertSee('name="prime_bilan" value="0"', false)
+            ->assertSee('name="prime_rendement" value="0"', false)
+            ->assertSee('name="cimr_repartition" value="partage"', false)
+            ->assertSee('Taux CIMR salarié')
+            ->assertSee('Taux CIMR employeur')
+            ->assertDontSee('for="cimrRepSalarie"', false)
+            ->assertSee('name="nb_enfants"', false)
+            ->assertSee('data-max-personnes="6"', false)
+            ->assertSee('Conjoint à charge')
+            ->assertSee('Déduction fiscale simulée');
     }
 
     public function test_net_to_gross_mode_returns_reconstructed_salary_and_employer_cost(): void
@@ -126,7 +148,7 @@ class PagesTest extends TestCase
         ])->assertOk()
             ->assertSee('Reconstitution depuis le net')
             ->assertSee('Base reconstituée')
-            ->assertSee('Coût Total Employeur');
+            ->assertSee('Coût total employeur');
     }
 
     public function test_net_to_gross_mode_requires_target_net(): void

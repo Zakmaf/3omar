@@ -57,12 +57,28 @@
         margin-top: 1rem;
         padding-top: 1rem;
     }
+    .quick-submit-panel {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: 1fr auto;
+        align-items: center;
+    }
+    @media (max-width: 767.98px) {
+        .quick-submit-panel {
+            grid-template-columns: 1fr;
+        }
+        .quick-submit-panel .btn {
+            width: 100%;
+        }
+    }
 </style>
 @endpush
 
 @section('content')
 <div class="container">
-    @php($mode = old('mode', 'gross_to_net'))
+    @php
+        $mode = old('mode', 'gross_to_net');
+    @endphp
 
     <div class="row mb-4">
         <div class="col">
@@ -93,9 +109,15 @@
         @csrf
 
         <div class="section-card p-3 p-md-4 mb-4 d-flex flex-column gap-3">
-            <div>
-                <div class="fw-semibold">{{ __('ui.calculator.journey_title') }}</div>
-                <div class="small" style="color:var(--ink-2)">{{ __('ui.calculator.journey_text') }}</div>
+            <div class="quick-submit-panel">
+                <div>
+                    <div class="fw-semibold">{{ __('ui.calculator.journey_title') }}</div>
+                    <div class="small" style="color:var(--ink-2)">{{ __('ui.calculator.journey_text') }}</div>
+                    <div class="small mt-2" style="color:var(--ink-3)">{{ __('ui.calculator.submit_hint') }}</div>
+                </div>
+                <button type="submit" class="btn btn-lg text-white fw-bold px-4" style="background:var(--g-500); font-family:var(--f-body)">
+                    <i class="bi bi-calculator-fill me-2"></i>{{ __('ui.calculator.submit') }}
+                </button>
             </div>
             <div class="btn-group" role="group" aria-label="{{ __('ui.calculator.mode_label') }}">
                 <input type="radio" class="btn-check" name="mode" id="modeGrossToNet" value="gross_to_net" autocomplete="off" {{ $mode === 'gross_to_net' ? 'checked' : '' }}>
@@ -172,6 +194,27 @@
                     </summary>
                     <div class="card-body px-4 py-3">
 
+                        @php
+                            $ancienneteTranches = config('payroll.anciennete.tranches');
+                            $premiereTrancheAnciennete = $ancienneteTranches[0]['min_annees'] ?? 0;
+                            $ancienneteOptions = collect([[
+                                'annees' => 0,
+                                'label' => '< '.$premiereTrancheAnciennete.' ans · 0%',
+                            ]])->merge(collect($ancienneteTranches)->map(function ($tranche) {
+                                $taux = number_format($tranche['taux'] * 100, 0, ',', ' ');
+                                $label = $tranche['max_annees'] === null
+                                    ? $tranche['min_annees'].' ans et plus · '.$taux.'%'
+                                    : $tranche['min_annees'].' à '.$tranche['max_annees'].' ans · '.$taux.'%';
+
+                                return [
+                                    'annees' => $tranche['min_annees'],
+                                    'label' => $label,
+                                ];
+                            }));
+                            $ancienneteValue = (int) old('nb_annees_anciennete', 0);
+                            $oldPrimesImposables = (float) old('autres_primes', 0) + (float) old('prime_bilan', 0) + (float) old('prime_rendement', 0);
+                        @endphp
+
                         {{-- Ancienneté --}}
                         <div class="p-3 rounded-2 mb-3" style="background:var(--s-warn-bg); border:1px solid rgba(217,119,6,0.2);">
                             <div class="fw-semibold small mb-2">
@@ -179,11 +222,12 @@
                             </div>
                             <div class="row g-2 align-items-end">
                                 <div class="col-7">
-                                    <label class="form-label small mb-1" for="nb_annees_anciennete">Années d'ancienneté</label>
-                                    <input type="number" name="nb_annees_anciennete" id="nb_annees_anciennete"
-                                           class="form-control form-control-sm"
-                                           value="{{ old('nb_annees_anciennete', 0) }}"
-                                           min="0" max="50" step="1" placeholder="0">
+                                    <label class="form-label small mb-1" for="nb_annees_anciennete">Tranche d'ancienneté</label>
+                                    <select name="nb_annees_anciennete" id="nb_annees_anciennete" class="form-select form-select-sm">
+                                        @foreach($ancienneteOptions as $option)
+                                        <option value="{{ $option['annees'] }}" {{ $ancienneteValue === $option['annees'] ? 'selected' : '' }}>{{ $option['label'] }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                                 <div class="col-5 text-end">
                                     <div class="small text-muted">Taux applicable :</div>
@@ -191,44 +235,22 @@
                                     <div class="small" id="anciennete_montant_label" style="color:var(--s-succ)"></div>
                                 </div>
                             </div>
-                            <div class="form-text mt-1">
-                                &lt;2 ans : 0% · 2–4 ans : 5% · 5–11 ans : 10% · 12–19 ans : 15% · 20–24 ans : 20% · ≥25 ans : 25%
-                            </div>
+                            <div class="form-text mt-1">La liste reprend les tranches légales configurées ; le simulateur utilise l'année de début de tranche.</div>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold small" for="prime_bilan">Prime de bilan / 13<sup>ème</sup> mois <span class="text-muted fw-normal">(équivalent mensuel)</span></label>
-                            <div class="input-group">
-                                <input type="number" name="prime_bilan" id="prime_bilan"
-                                       class="form-control @error('prime_bilan') is-invalid @enderror"
-                                       value="{{ old('prime_bilan', 0) }}"
-                                       min="0" step="0.01" placeholder="0">
-                                <span class="input-group-text">MAD</span>
-                            </div>
-                            <div class="form-text">Ex : 13<sup>ème</sup> mois annuel ÷ 12 — entièrement imposable</div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold small" for="prime_rendement">Prime de rendement / performance</label>
-                            <div class="input-group">
-                                <input type="number" name="prime_rendement" id="prime_rendement"
-                                       class="form-control @error('prime_rendement') is-invalid @enderror"
-                                       value="{{ old('prime_rendement', 0) }}"
-                                       min="0" step="0.01" placeholder="0">
-                                <span class="input-group-text">MAD</span>
-                            </div>
-                        </div>
+                        <input type="hidden" name="prime_bilan" value="0">
+                        <input type="hidden" name="prime_rendement" value="0">
 
                         <div class="mb-1">
-                            <label class="form-label fw-semibold small" for="autres_primes">Autres primes imposables</label>
+                            <label class="form-label fw-semibold small" for="autres_primes">Primes imposables <span class="text-muted fw-normal">(toutes primes confondues, équivalent mensuel)</span></label>
                             <div class="input-group">
                                 <input type="number" name="autres_primes" id="autres_primes"
                                        class="form-control @error('autres_primes') is-invalid @enderror"
-                                       value="{{ old('autres_primes', 0) }}"
+                                       value="{{ $oldPrimesImposables }}"
                                        min="0" step="0.01" placeholder="0">
                                 <span class="input-group-text">MAD</span>
                             </div>
-                            <div class="form-text">Toutes autres primes soumises à cotisations sociales et IR</div>
+                            <div class="form-text">Additionnez 13ème mois, prime de bilan, rendement et autres primes imposables dans ce seul montant.</div>
                         </div>
 
                         <div class="step-actions d-flex flex-column flex-sm-row justify-content-end gap-2">
@@ -301,43 +323,33 @@
                             <label class="form-check-label fw-semibold" for="cimrActif">Cotisant à la CIMR</label>
                         </div>
                         <div id="cimrSection" style="{{ old('cimr_actif') ? '' : 'display:none' }}">
+                            <input type="hidden" name="cimr_repartition" value="partage">
 
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold small">Prise en charge</label>
-                                <div class="btn-group w-100" role="group" aria-label="Répartition CIMR">
-                                    @php($cimrRep = old('cimr_repartition', 'salarie'))
-                                    <input type="radio" class="btn-check" name="cimr_repartition" id="cimrRepSalarie" value="salarie" {{ $cimrRep === 'salarie' ? 'checked' : '' }}>
-                                    <label class="btn btn-outline-secondary btn-sm" for="cimrRepSalarie">Salarié</label>
-                                    <input type="radio" class="btn-check" name="cimr_repartition" id="cimrRepEmployeur" value="employeur" {{ $cimrRep === 'employeur' ? 'checked' : '' }}>
-                                    <label class="btn btn-outline-secondary btn-sm" for="cimrRepEmployeur">Employeur</label>
-                                    <input type="radio" class="btn-check" name="cimr_repartition" id="cimrRepPartage" value="partage" {{ $cimrRep === 'partage' ? 'checked' : '' }}>
-                                    <label class="btn btn-outline-secondary btn-sm" for="cimrRepPartage">Partagé</label>
+                            <div class="row g-3">
+                                <div class="col-sm-6">
+                                    <label class="form-label fw-semibold small" for="cimrTaux">Taux CIMR salarié</label>
+                                    <div class="input-group input-group-sm">
+                                        <input type="number" name="cimr_taux" id="cimrTaux"
+                                               class="form-control @error('cimr_taux') is-invalid @enderror"
+                                               value="{{ old('cimr_taux', 6) }}"
+                                               min="0" step="0.5" placeholder="6" inputmode="decimal">
+                                        <span class="input-group-text">%</span>
+                                    </div>
+                                    <div class="form-text">Part salarié, déduite du salaire net comptable.</div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label class="form-label fw-semibold small" for="cimrTauxEmployeur">Taux CIMR employeur</label>
+                                    <div class="input-group input-group-sm">
+                                        <input type="number" name="cimr_taux_employeur" id="cimrTauxEmployeur"
+                                               class="form-control @error('cimr_taux_employeur') is-invalid @enderror"
+                                               value="{{ old('cimr_taux_employeur', 6) }}"
+                                               min="0" step="0.5" placeholder="6" inputmode="decimal">
+                                        <span class="input-group-text">%</span>
+                                    </div>
+                                    <div class="form-text">Part employeur, intégrée au coût total employeur.</div>
                                 </div>
                             </div>
-
-                            <div class="mb-3" id="cimrTauxGroup">
-                                <label class="form-label fw-semibold small" for="cimrTaux" id="cimrTauxLabel">Taux CIMR</label>
-                                <div class="input-group input-group-sm">
-                                    <input type="number" name="cimr_taux" id="cimrTaux"
-                                           class="form-control @error('cimr_taux') is-invalid @enderror"
-                                           value="{{ old('cimr_taux', 6) }}"
-                                           min="0" step="0.5" placeholder="6" inputmode="decimal">
-                                    <span class="input-group-text">%</span>
-                                </div>
-                                <div class="form-text">100% déductible IR (Art. 28-III CGI)</div>
-                            </div>
-
-                            <div class="mb-3" id="cimrTauxEmployeurGroup" style="{{ $cimrRep === 'partage' ? '' : 'display:none' }}">
-                                <label class="form-label fw-semibold small" for="cimrTauxEmployeur">Taux CIMR employeur</label>
-                                <div class="input-group input-group-sm">
-                                    <input type="number" name="cimr_taux_employeur" id="cimrTauxEmployeur"
-                                           class="form-control @error('cimr_taux_employeur') is-invalid @enderror"
-                                           value="{{ old('cimr_taux_employeur', 6) }}"
-                                           min="0" step="0.5" placeholder="6" inputmode="decimal">
-                                    <span class="input-group-text">%</span>
-                                </div>
-                                <div class="form-text">Part employeur, intégrée au coût total employeur</div>
-                            </div>
+                            <div class="form-text mt-2">La simulation CIMR est cadrée en répartition partagée.</div>
 
                         </div>
                         <div class="step-actions d-flex flex-column flex-sm-row justify-content-end gap-2">
@@ -354,18 +366,28 @@
                         <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
                     </summary>
                     <div class="card-body px-4 py-3">
+                        @php
+                            $maxPersonnesCharge = (int) floor(config('payroll.charges_famille.plafond') / config('payroll.charges_famille.par_personne'));
+                            $maxEnfantsCharge = max(0, $maxPersonnesCharge);
+                            $conjointChecked = (bool) old('conjoint_charge');
+                            $selectedNbEnfants = min((int) old('nb_enfants', 0), $conjointChecked ? max(0, $maxEnfantsCharge - 1) : $maxEnfantsCharge);
+                        @endphp
                         <div class="row g-3">
                             <div class="col-sm-6">
                                 <label class="form-label fw-semibold" for="nb_enfants">Enfants à charge</label>
-                                <input type="number" name="nb_enfants" id="nb_enfants" class="form-control"
-                                       value="{{ old('nb_enfants', 0) }}" min="0" max="20">
+                                <select name="nb_enfants" id="nb_enfants" class="form-select" data-max-personnes="{{ $maxPersonnesCharge }}">
+                                    @for($i = 0; $i <= $maxEnfantsCharge; $i++)
+                                    <option value="{{ $i }}" {{ $selectedNbEnfants === $i ? 'selected' : '' }}>{{ $i }}</option>
+                                    @endfor
+                                </select>
                             </div>
-                            <div class="col-sm-6 d-flex align-items-end">
-                                <div class="form-check pb-2">
+                        </div>
+                        <div class="mt-3 p-3 rounded-2" style="background:var(--g-50); border:1px solid var(--g-200)">
+                            <div class="form-check mb-0">
                                     <input class="form-check-input" type="checkbox" name="conjoint_charge"
-                                           id="conjointCharge" value="1" {{ old('conjoint_charge') ? 'checked' : '' }}>
+                                           id="conjointCharge" value="1" {{ $conjointChecked ? 'checked' : '' }}>
                                     <label class="form-check-label fw-semibold" for="conjointCharge">Conjoint à charge</label>
-                                </div>
+                                    <div class="form-text">Compte comme une personne à charge dans le plafond fiscal.</div>
                             </div>
                         </div>
                         <div class="form-text mt-2">{{ number_format(config('payroll.charges_famille.par_personne'), 2, ',', ' ') }} MAD/mois × nombre de personnes, plafond {{ number_format(config('payroll.charges_famille.plafond'), 2, ',', ' ') }} MAD/mois (Art. 74 CGI)</div>
@@ -658,9 +680,30 @@ function updateAnciennete() {
     montantEl.textContent = taux > 0 ? '→ ' + montant.toLocaleString(INTL_LOCALE, {minimumFractionDigits:2, maximumFractionDigits:2}) + ' MAD' : '';
 }
 
-document.getElementById('nb_annees_anciennete').addEventListener('input', updateAnciennete);
+document.getElementById('nb_annees_anciennete').addEventListener('change', updateAnciennete);
 document.getElementById('salaire_base').addEventListener('input', updateAnciennete);
 updateAnciennete(); // Init
+
+const nbEnfantsSelect = document.getElementById('nb_enfants');
+const conjointChargeInput = document.getElementById('conjointCharge');
+
+function updateChildrenOptions() {
+    const maxPersonnes = parseInt(nbEnfantsSelect.dataset.maxPersonnes, 10) || 0;
+    const maxEnfants = conjointChargeInput.checked ? Math.max(0, maxPersonnes - 1) : maxPersonnes;
+    const currentValue = Math.min(parseInt(nbEnfantsSelect.value, 10) || 0, maxEnfants);
+
+    nbEnfantsSelect.innerHTML = '';
+    for (let i = 0; i <= maxEnfants; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = i;
+        option.selected = i === currentValue;
+        nbEnfantsSelect.appendChild(option);
+    }
+}
+
+conjointChargeInput.addEventListener('change', updateChildrenOptions);
+updateChildrenOptions();
 
 // ---- Parcours étape par étape ----
 const stepSections = Array.from(document.querySelectorAll('[data-step-section]'));
@@ -807,31 +850,12 @@ document.querySelectorAll('.remove-row').forEach(btn => {
     });
 });
 
-// ---- CIMR toggle & répartition ----
+// ---- CIMR toggle ----
 const cimrActif   = document.getElementById('cimrActif');
 const cimrSection = document.getElementById('cimrSection');
-const cimrTauxGroup = document.getElementById('cimrTauxGroup');
-const cimrTauxLabel = document.getElementById('cimrTauxLabel');
-const cimrTauxEmployeurGroup = document.getElementById('cimrTauxEmployeurGroup');
-const cimrRepInputs = document.querySelectorAll('input[name="cimr_repartition"]');
 
 cimrActif.addEventListener('change', () => {
     cimrSection.style.display = cimrActif.checked ? '' : 'none';
 });
-
-function updateCimrRepartition() {
-    const rep = document.querySelector('input[name="cimr_repartition"]:checked')?.value || 'salarie';
-    cimrTauxEmployeurGroup.style.display = rep === 'partage' ? '' : 'none';
-    if (rep === 'salarie') {
-        cimrTauxLabel.textContent = 'Taux CIMR salarié';
-    } else if (rep === 'employeur') {
-        cimrTauxLabel.textContent = 'Taux CIMR employeur';
-    } else {
-        cimrTauxLabel.textContent = 'Taux CIMR salarié';
-    }
-}
-
-cimrRepInputs.forEach(input => input.addEventListener('change', updateCimrRepartition));
-updateCimrRepartition();
 </script>
 @endpush
