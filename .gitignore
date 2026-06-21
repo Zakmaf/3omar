@@ -24,6 +24,10 @@ yarn-error.log
 /storage/framework/views/
 /storage/logs/
 
+# Environnements de test Docker locaux (non versionnés)
+/docker-compose.test.yml
+/docker/nginx/test.conf
+
 # Config locale Claude Code
 /.claude/
 

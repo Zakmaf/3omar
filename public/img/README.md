@@ -2,7 +2,7 @@
 
 Ce dossier est la **source de vérité** des déclinaisons officielles du logo.
 Toute version absente de ce dossier n'existe pas officiellement (voir
-`charte-graphique-editoriale.html`, section 02).
+`docs/charte-graphique-editoriale.html`, section 02).
 
 | Fichier | Usage |
 |---|---|
