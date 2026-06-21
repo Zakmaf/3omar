@@ -1,0 +1,41 @@
+name: "✨ Demande de fonctionnalité"
+description: Proposer une amélioration ou une nouvelle fonctionnalité
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Merci pour la proposition. Vérifiez le backlog produit du README avant d'ouvrir.
+  - type: textarea
+    id: probleme
+    attributes:
+      label: Problème ou besoin
+      description: Quel besoin la fonctionnalité couvre-t-elle ? Pour quel usager ?
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Solution proposée
+      description: Comment imagines-tu la fonctionnalité ?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives envisagées
+  - type: dropdown
+    id: domaine
+    attributes:
+      label: Domaine
+      options:
+        - Calcul / règles métier
+        - UX / interface
+        - i18n / traductions
+        - Déploiement / Docker
+        - Documentation
+        - Autre
+  - type: textarea
+    id: contexte
+    attributes:
+      label: Contexte additionnel
