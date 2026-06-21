@@ -6,7 +6,7 @@ Cette licence MIT s'applique au **code uniquement**. Elle ne couvre pas les él�
 
 - Le nom **« 3omar »** et le nom de domaine `3omar.ma` ;
 - Les logos, icônes et déclinaisons graphiques du dossier [`public/img/`](public/img/) (`logo.svg`, `app_icon_*.png`, `logo_header_*.png`, `logo_banner_*.png`, etc.) ;
-- La charte graphique et éditoriale ([`charte-graphique-editoriale.html`](charte-graphique-editoriale.html)) et les éléments de design qui y sont décrits (palette, typographies, ton éditorial).
+- La charte graphique et éditoriale ([`charte-graphique-editoriale.html`](docs/charte-graphique-editoriale.html)) et les éléments de design qui y sont décrits (palette, typographies, ton éditorial).
 
 ## Ce que vous pouvez faire
 

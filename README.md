@@ -81,7 +81,7 @@ docker run -d -p 80:80 \
 ## Contribution
 
 Les corrections de calcul doivent inclure un scénario de test reproductible (voir [docs/CALCUL.md](docs/CALCUL.md)).  
-Les changements visuels doivent respecter la [charte de marque](charte-graphique-editoriale.html).
+Les changements visuels doivent respecter la [charte de marque](docs/charte-graphique-editoriale.html).
 
 ## Licence
 
