@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question ou discussion
+    url: https://github.com/Zakmaf/3omar/discussions
+    about: Pour les questions d'usage, idées et échanges (hors bug et demande de fonctionnalité).
+  - name: Signalement de sécurité
+    url: https://github.com/Zakmaf/3omar/security/policy
+    about: Ne créez pas d'issue publique pour une faille. Suivez la politique de sécurité.

@@ -1,0 +1,39 @@
+version: 2
+updates:
+  # Dépendances PHP
+  - package-ecosystem: composer
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+    labels:
+      - dependencies
+
+  # Actions GitHub utilisées dans les workflows
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    commit-message:
+      prefix: "chore(ci)"
+    labels:
+      - dependencies
+      - ci
+
+  # Images de base Docker (dev + release)
+  - package-ecosystem: docker
+    directories:
+      - "/docker/php"
+      - "/docker/release"
+    schedule:
+      interval: weekly
+      day: monday
+    commit-message:
+      prefix: "chore(docker)"
+    labels:
+      - dependencies
+      - docker
