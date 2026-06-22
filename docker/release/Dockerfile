@@ -19,35 +19,40 @@ COPY . .
 RUN composer dump-autoload --optimize --no-scripts
 
 # =========================================================================
-# Stage 2 — Image de production : PHP-FPM 8.4 + Nginx + Supervisor
+# Stage 2 — Image de production : PHP-FPM 8.5 Alpine + Nginx + Supervisor
 # =========================================================================
-FROM php:8.5-fpm
+FROM php:8.5-fpm-alpine
 
-# ---- Dépendances système ----
-RUN apt-get update -qq && apt-get install -y -q --no-install-recommends \
-        nginx \
-        supervisor \
+# ---- Dépendances de build (temporaires) ----
+RUN apk add --no-cache --virtual .build-deps \
         libzip-dev \
-        libonig-dev \
+        oniguruma-dev \
         libxml2-dev \
-        unzip \
-        curl \
     && docker-php-ext-install \
         pdo \
-        pdo_mysql \
+        pdo_sqlite \
         mbstring \
         xml \
         zip \
         opcache \
-    && rm -rf /var/lib/apt/lists/* \
-    && rm -f /etc/nginx/sites-enabled/default /etc/nginx/sites-available/default
+    && apk del .build-deps
+
+# ---- Dépendances runtime ----
+RUN apk add --no-cache \
+        nginx \
+        supervisor \
+        libzip \
+        oniguruma \
+        libxml2 \
+        curl \
+    && rm -f /etc/nginx/http.d/default.conf
 
 # ---- Configuration PHP optimisée ----
 COPY docker/php/php.ini /usr/local/etc/php/conf.d/custom.ini
 RUN mkdir -p /var/log/php
 
 # ---- Configuration Nginx & Supervisor ----
-COPY docker/release/nginx.conf /etc/nginx/conf.d/app.conf
+COPY docker/release/nginx.conf /etc/nginx/http.d/app.conf
 COPY docker/release/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # ---- Code applicatif ----

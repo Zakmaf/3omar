@@ -9,6 +9,8 @@
 .phpunit.cache
 AGENTS.md
 CLAUDE.md
+CONTRIBUTING.md
+SECURITY.md
 node_modules
 public/hot
 storage/logs/*
@@ -17,3 +19,5 @@ storage/framework/sessions/*
 storage/framework/views/*
 tests
 vendor
+docs
+charte-graphique-editoriale.html
