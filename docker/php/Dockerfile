@@ -32,6 +32,7 @@ RUN apk add --no-cache --virtual .build-deps \
         libzip-dev \
         oniguruma-dev \
         libxml2-dev \
+        sqlite-dev \
     && docker-php-ext-install \
         pdo \
         pdo_sqlite \
@@ -46,6 +47,7 @@ RUN apk add --no-cache \
         libzip \
         oniguruma \
         libxml2 \
+        sqlite-libs \
         curl
 
 # ---- Configuration PHP optimisée ----
