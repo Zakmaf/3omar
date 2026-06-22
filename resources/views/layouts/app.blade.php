@@ -111,6 +111,13 @@
         }
         [data-bs-theme="dark"] footer {
             background: #111315;
+            color: #E8E6E1;
+        }
+        [data-bs-theme="dark"] footer h6 {
+            color: #E8E6E1;
+        }
+        [data-bs-theme="dark"] footer .footer-brand-text {
+            color: #E8E6E1;
         }
         [data-bs-theme="dark"] .action-bar {
             background: rgba(33,37,41,0.94);
@@ -409,6 +416,9 @@
         footer a:hover {
             color: #fff;
         }
+        footer .footer-brand-text {
+            color: var(--cream);
+        }
         footer h6 {
             color: var(--cream);
         }
@@ -560,12 +570,12 @@
             <div class="col-md-4">
                 <div class="d-flex align-items-center gap-2 mb-3">
                     <img src="{{ asset('img/app_icon_192.png') }}" alt="" width="36" height="36" style="border-radius:.5rem">
-                    <span style="font-family:var(--f-display);font-weight:700;font-size:1.3rem;color:var(--cream)">3omar</span>
+                    <span class="footer-brand-text" style="font-family:var(--f-display);font-weight:700;font-size:1.3rem">3omar</span>
                 </div>
                 <p class="footer-body-text small mb-2" style="font-family:var(--f-body)">
                     {{ __('ui.footer.tagline') }}
                 </p>
-                <p class="small mb-1" style="color:var(--cream)">
+                <p class="small mb-1 footer-brand-text">
                     <i class="bi bi-person-circle me-1"></i>
                     <strong>Zakaria Maftah</strong>
                 </p>
