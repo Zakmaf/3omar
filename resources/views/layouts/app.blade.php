@@ -76,11 +76,21 @@
             --s-cot-bg: #251A30;
             --g-50: #1A2E26;
             --g-100: #1E3830;
+            --g-200: #4D9376;
+            --g-300: #6BB89F;
+            --g-400: #7DCDB4;
+            --g-600: #6BB89F;
+            --g-700: #87D4B5;
             --zellige-bg: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cdefs%3E%3Cg id='star'%3E%3Cpath d='M60 10 L66 38 L94 32 L74 52 L94 72 L66 66 L60 94 L54 66 L26 72 L46 52 L26 32 L54 38 Z' fill='none' stroke='%234D9376' stroke-width='1'/%3E%3C/g%3E%3C/defs%3E%3Cuse href='%23star'/%3E%3Cuse href='%23star' x='-60' y='-60'/%3E%3Cuse href='%23star' x='60' y='-60'/%3E%3Cuse href='%23star' x='-60' y='60'/%3E%3Cuse href='%23star' x='60' y='60'/%3E%3C/svg%3E");
         }
         [data-bs-theme="dark"] .navbar {
             background: var(--paper);
             border-bottom-color: var(--hairline);
+        }
+        [data-bs-theme="dark"] .navbar-brand img {
+            background: #fff;
+            border-radius: 6px;
+            padding: 4px 8px;
         }
         [data-bs-theme="dark"] footer {
             background: #111315;
