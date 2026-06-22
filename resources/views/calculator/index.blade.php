@@ -5,8 +5,6 @@
 @push('head')
 <style>
     .simulator-flow {
-        max-width: 960px;
-        margin-inline: auto;
         counter-reset: step;
     }
     .step-section {
@@ -38,7 +36,7 @@
         font-size: 1.15rem;
     }
     .step-section[open] > summary::after {
-        content: "−";
+        content: "\2212";
     }
     .step-pill {
         display: inline-flex;
@@ -51,11 +49,6 @@
         font-size: .68rem;
         font-weight: 700;
         white-space: nowrap;
-    }
-    .step-actions {
-        border-top: 1px solid var(--hairline);
-        margin-top: 1rem;
-        padding-top: 1rem;
     }
     .quick-submit-panel {
         display: grid;
@@ -71,6 +64,171 @@
             width: 100%;
         }
     }
+
+    /* ---- Wizard sidebar (desktop) ---- */
+    .wizard-sidebar {
+        position: sticky;
+        top: 80px;
+        max-height: calc(100vh - 100px);
+        overflow-y: auto;
+        scrollbar-width: thin;
+    }
+    .wizard-sidebar::-webkit-scrollbar {
+        width: 4px;
+    }
+    .wizard-sidebar::-webkit-scrollbar-thumb {
+        background: var(--g-300);
+        border-radius: 4px;
+    }
+    .wizard-mode-badge {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+        padding: .5rem .75rem;
+        border-radius: 8px;
+        background: var(--g-50);
+        border: 1px solid var(--g-200);
+        font-size: .8rem;
+        font-weight: 600;
+        color: var(--g-700);
+    }
+    .wizard-mode-badge i {
+        font-size: 1rem;
+        color: var(--g-500);
+    }
+    .wizard-step-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        counter-reset: wizard-step;
+    }
+    .wizard-step {
+        counter-increment: wizard-step;
+    }
+    .wizard-step-btn {
+        display: flex;
+        align-items: flex-start;
+        gap: .65rem;
+        width: 100%;
+        padding: .55rem .6rem;
+        border: none;
+        background: transparent;
+        border-radius: 8px;
+        cursor: pointer;
+        text-align: start;
+        transition: background .15s;
+        font-family: var(--f-body);
+    }
+    .wizard-step-btn:hover {
+        background: var(--g-50);
+    }
+    .wizard-step-number {
+        flex-shrink: 0;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .75rem;
+        font-weight: 700;
+        background: var(--g-100);
+        color: var(--g-600);
+        transition: background .2s, color .2s;
+        font-family: var(--f-mono);
+    }
+    .wizard-step-number::before {
+        content: counter(wizard-step);
+    }
+    .wizard-step.active .wizard-step-number {
+        background: var(--g-500);
+        color: #fff;
+    }
+    .wizard-step.completed .wizard-step-number {
+        background: var(--s-succ);
+        color: #fff;
+    }
+    .wizard-step.completed .wizard-step-number::before {
+        content: "\2713";
+    }
+    .wizard-step-label {
+        font-size: .8rem;
+        font-weight: 600;
+        color: var(--ink-1);
+        line-height: 1.3;
+    }
+    .wizard-step-summary {
+        font-size: .7rem;
+        color: var(--g-500);
+        line-height: 1.3;
+        margin-top: .1rem;
+        font-weight: 400;
+    }
+    .wizard-step.active .wizard-step-label {
+        color: var(--g-600);
+    }
+
+    /* ---- Mobile progress bar ---- */
+    .wizard-progress-mobile {
+        display: flex;
+        gap: .4rem;
+        overflow-x: auto;
+        padding: .5rem 0;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    .wizard-progress-mobile::-webkit-scrollbar {
+        display: none;
+    }
+    .wizard-progress-pill {
+        flex-shrink: 0;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: 2px solid var(--g-200);
+        background: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .72rem;
+        font-weight: 700;
+        color: var(--g-500);
+        cursor: pointer;
+        transition: border-color .2s, background .2s, color .2s;
+        font-family: var(--f-mono);
+        padding: 0;
+    }
+    .wizard-progress-pill.active {
+        border-color: var(--g-500);
+        background: var(--g-500);
+        color: #fff;
+    }
+    .wizard-progress-pill.completed {
+        border-color: var(--s-succ);
+        background: var(--s-succ);
+        color: #fff;
+    }
+
+    /* ---- Responsive visibility ---- */
+    .wizard-sidebar-wrap {
+        display: none;
+    }
+    .wizard-mobile-wrap {
+        display: block;
+    }
+    @media (min-width: 992px) {
+        .wizard-sidebar-wrap {
+            display: block;
+        }
+        .wizard-mobile-wrap {
+            display: none;
+        }
+    }
+
+    /* ---- RTL support ---- */
+    [dir="rtl"] .wizard-step-btn {
+        text-align: end;
+    }
 </style>
 @endpush
 
@@ -78,6 +236,18 @@
 <div class="container">
     @php
         $mode = old('mode', 'gross_to_net');
+
+        $wizardSteps = [
+            ['key' => 'step1_title', 'icon' => 'bi-cash-coin', 'color' => 'var(--s-info)', 'required' => true],
+            ['key' => 'step2_title', 'icon' => 'bi-cash-stack', 'color' => 'var(--s-warn)'],
+            ['key' => 'step3_title', 'icon' => 'bi-clock-history', 'color' => 'var(--s-info)'],
+            ['key' => 'step4_title', 'icon' => 'bi-piggy-bank', 'color' => 'var(--s-cot)'],
+            ['key' => 'step5_title', 'icon' => 'bi-people-fill', 'color' => 'var(--s-succ)'],
+            ['key' => 'step6_title', 'icon' => 'bi-heart-pulse-fill', 'color' => 'var(--s-tax)'],
+            ['key' => 'step7_title', 'icon' => 'bi-gift', 'color' => 'var(--s-succ)'],
+            ['key' => 'step8_title', 'icon' => 'bi-mortarboard', 'color' => 'var(--s-cot)'],
+            ['key' => 'step9_title', 'icon' => 'bi-dash-circle', 'color' => 'var(--s-neutral)'],
+        ];
     @endphp
 
     <div class="row mb-4">
@@ -132,9 +302,62 @@
             </div>
         </div>
 
-        <div class="simulator-flow">
+        {{-- Mobile progress bar --}}
+        <div class="wizard-mobile-wrap mb-3">
+            <nav aria-label="{{ __('ui.calculator.wizard_nav_aria') }}">
+                <div class="wizard-progress-mobile" id="wizardMobileBar">
+                    @foreach($wizardSteps as $i => $ws)
+                    <button type="button"
+                            class="wizard-progress-pill{{ $i === 0 ? ' active' : '' }}"
+                            data-wizard-mobile="{{ $i }}"
+                            aria-label="{{ __('ui.calculator.'.$ws['key']) }}">{{ $i + 1 }}</button>
+                    @endforeach
+                </div>
+            </nav>
+        </div>
 
-                {{-- 1. Rémunération de base --}}
+        <p class="text-muted small mb-3"><i class="bi bi-signpost-split me-1"></i>{{ __('ui.calculator.step_skip') }} : cliquez sur une rubrique dans la barre de navigation.</p>
+
+        {{-- Two-column wizard layout --}}
+        <div class="row g-4">
+            {{-- Sidebar (desktop only) --}}
+            <div class="col-lg-3 wizard-sidebar-wrap">
+                <nav class="wizard-sidebar section-card p-3" aria-label="{{ __('ui.calculator.wizard_nav_aria') }}">
+                    {{-- Mode badge --}}
+                    <div class="wizard-mode-badge mb-3" id="wizardModeBadge">
+                        <i class="bi bi-arrow-down-circle"></i>
+                        <span id="wizardModeLabel">{{ $mode === 'net_to_gross' ? __('ui.calculator.wizard_mode_net') : __('ui.calculator.wizard_mode_gross') }}</span>
+                    </div>
+
+                    {{-- Step list --}}
+                    <ul class="wizard-step-list">
+                        @foreach($wizardSteps as $i => $ws)
+                        <li class="wizard-step{{ $i === 0 ? ' active' : '' }}" data-wizard-step="{{ $i }}">
+                            <button type="button" class="wizard-step-btn" data-wizard-nav="{{ $i }}">
+                                <span class="wizard-step-number"></span>
+                                <span>
+                                    <span class="wizard-step-label">{{ __('ui.calculator.'.$ws['key']) }}</span>
+                                    <div class="wizard-step-summary" data-wizard-summary="{{ $i }}"></div>
+                                </span>
+                            </button>
+                        </li>
+                        @endforeach
+                    </ul>
+
+                    {{-- Sidebar submit --}}
+                    <div class="mt-3 pt-3" style="border-top:1px solid var(--hairline)">
+                        <button type="submit" class="btn btn-sm text-white fw-bold w-100" style="background:var(--g-500); font-family:var(--f-body)">
+                            <i class="bi bi-calculator-fill me-1"></i>{{ __('ui.calculator.submit') }}
+                        </button>
+                    </div>
+                </nav>
+            </div>
+
+            {{-- Form column --}}
+            <div class="col-lg-9">
+                <div class="simulator-flow">
+
+                {{-- 1. Remuneration de base --}}
                 <details class="step-section section-card mb-3" open data-step-section>
                     <summary>
                         <span class="step-label"><i class="bi bi-cash-coin me-2" style="color:var(--s-info)"></i>{{ __('ui.calculator.step1_title') }}</span>
@@ -178,15 +401,10 @@
                             <div class="form-text">{{ __('ui.calculator.category_help', ['cap' => number_format(config('payroll.frais_pro.commun.haut.plafond'), 2, ',', ' ')]) }}</div>
                         </div>
 
-                        <div class="step-actions d-flex justify-content-end">
-                            <button type="button" class="btn text-white fw-semibold" style="background:var(--g-500)" data-step-next>
-                                {{ __('ui.calculator.step_continue') }} <i class="bi bi-arrow-right-short ms-1"></i>
-                            </button>
-                        </div>
                     </div>
                 </details>
 
-                {{-- 2. Primes et ancienneté --}}
+                {{-- 2. Primes et anciennete --}}
                 <details class="step-section section-card mb-3" data-step-section {{ old('nb_annees_anciennete') || old('prime_bilan') || old('prime_rendement') || old('autres_primes') ? 'open' : '' }}>
                     <summary>
                         <span class="step-label"><i class="bi bi-cash-stack me-2" style="color:var(--s-warn)"></i>{{ __('ui.calculator.step2_title') }}</span>
@@ -215,7 +433,7 @@
                             $oldPrimesImposables = (float) old('autres_primes', 0) + (float) old('prime_bilan', 0) + (float) old('prime_rendement', 0);
                         @endphp
 
-                        {{-- Ancienneté --}}
+                        {{-- Anciennete --}}
                         <div class="p-3 rounded-2 mb-3" style="background:var(--s-warn-bg); border:1px solid rgba(217,119,6,0.2);">
                             <div class="fw-semibold small mb-2">
                                 <i class="bi bi-hourglass-split me-1" style="color:var(--s-warn)"></i>{{ __('ui.calculator.seniority_heading') }}
@@ -231,7 +449,7 @@
                                 </div>
                                 <div class="col-5 text-end">
                                     <div class="small text-muted">{{ __('ui.calculator.seniority_rate') }}</div>
-                                    <div class="fw-bold" id="anciennete_taux_label">—</div>
+                                    <div class="fw-bold" id="anciennete_taux_label">-</div>
                                     <div class="small" id="anciennete_montant_label" style="color:var(--s-succ)"></div>
                                 </div>
                             </div>
@@ -253,14 +471,10 @@
                             <div class="form-text">{{ __('ui.calculator.taxable_bonuses_help') }}</div>
                         </div>
 
-                        <div class="step-actions d-flex flex-column flex-sm-row justify-content-end gap-2">
-                            <button type="button" class="btn fw-semibold" style="border:1px solid var(--ink-3);color:var(--ink-2)" data-step-skip>{{ __('ui.calculator.step_skip') }}</button>
-                            <button type="button" class="btn text-white fw-semibold" style="background:var(--g-500)" data-step-next>{{ __('ui.calculator.step_continue') }}</button>
-                        </div>
                     </div>
                 </details>
 
-                {{-- 3. Heures supplémentaires --}}
+                {{-- 3. Heures supplementaires --}}
                 <details class="step-section section-card mb-3" data-step-section {{ old('heures_sup') ? 'open' : '' }}>
                     <summary>
                         <span class="step-label"><i class="bi bi-clock-history me-2" style="color:var(--s-info)"></i>{{ __('ui.calculator.step3_title') }}</span>
@@ -303,10 +517,6 @@
                         <p class="text-muted small mb-0" id="hsPlaceholder" {{ old('heures_sup') ? 'style=display:none' : '' }}>
                             <i class="bi bi-info-circle me-1"></i>{{ __('ui.calculator.overtime_placeholder') }}
                         </p>
-                        <div class="step-actions d-flex flex-column flex-sm-row justify-content-end gap-2">
-                            <button type="button" class="btn fw-semibold" style="border:1px solid var(--ink-3);color:var(--ink-2)" data-step-skip>{{ __('ui.calculator.step_skip') }}</button>
-                            <button type="button" class="btn text-white fw-semibold" style="background:var(--g-500)" data-step-next>{{ __('ui.calculator.step_continue') }}</button>
-                        </div>
                     </div>
                 </details>
 
@@ -352,10 +562,6 @@
                             <div class="form-text mt-2">{{ __('ui.calculator.cimr_mode_help') }}</div>
 
                         </div>
-                        <div class="step-actions d-flex flex-column flex-sm-row justify-content-end gap-2">
-                            <button type="button" class="btn fw-semibold" style="border:1px solid var(--ink-3);color:var(--ink-2)" data-step-skip>{{ __('ui.calculator.step_skip') }}</button>
-                            <button type="button" class="btn text-white fw-semibold" style="background:var(--g-500)" data-step-next>{{ __('ui.calculator.step_continue') }}</button>
-                        </div>
                     </div>
                 </details>
 
@@ -390,15 +596,11 @@
                                     <div class="form-text">{{ __('ui.calculator.spouse_help') }}</div>
                             </div>
                         </div>
-                        <div class="form-text mt-2">{{ number_format(config('payroll.charges_famille.par_personne'), 2, ',', ' ') }} MAD/mois × nombre de personnes, plafond {{ number_format(config('payroll.charges_famille.plafond'), 2, ',', ' ') }} MAD/mois (Art. 74 CGI)</div>
-                        <div class="step-actions d-flex flex-column flex-sm-row justify-content-end gap-2">
-                            <button type="button" class="btn fw-semibold" style="border:1px solid var(--ink-3);color:var(--ink-2)" data-step-skip>{{ __('ui.calculator.step_skip') }}</button>
-                            <button type="button" class="btn text-white fw-semibold" style="background:var(--g-500)" data-step-next>{{ __('ui.calculator.step_continue') }}</button>
-                        </div>
+                        <div class="form-text mt-2">{{ number_format(config('payroll.charges_famille.par_personne'), 2, ',', ' ') }} MAD/mois x nombre de personnes, plafond {{ number_format(config('payroll.charges_famille.plafond'), 2, ',', ' ') }} MAD/mois (Art. 74 CGI)</div>
                     </div>
                 </details>
 
-                {{-- 6. Santé & Retraite complémentaire --}}
+                {{-- 6. Sante & Retraite complementaire --}}
                 <details class="step-section section-card mb-3" data-step-section {{ old('mutuelle_salarie') || old('mutuelle_patronale') || old('retraite_complementaire_mensuel') ? 'open' : '' }}>
                     <summary>
                         <span class="step-label"><i class="bi bi-heart-pulse-fill me-2" style="color:var(--s-tax)"></i>{{ __('ui.calculator.step6_title') }}</span>
@@ -464,14 +666,10 @@
                             <div class="form-text">{{ __('ui.calculator.mutual_employer_help') }}</div>
                         </div>
 
-                        <div class="step-actions d-flex flex-column flex-sm-row justify-content-end gap-2">
-                            <button type="button" class="btn fw-semibold" style="border:1px solid var(--ink-3);color:var(--ink-2)" data-step-skip>{{ __('ui.calculator.step_skip') }}</button>
-                            <button type="button" class="btn text-white fw-semibold" style="background:var(--g-500)" data-step-next>{{ __('ui.calculator.step_continue') }}</button>
-                        </div>
                     </div>
                 </details>
 
-                {{-- 7. Indemnités traitées comme exonérées --}}
+                {{-- 7. Indemnites traitees comme exonerees --}}
                 <details class="step-section section-card mb-3" data-step-section {{ old('indemnites') ? 'open' : '' }}>
                     <summary>
                         <span class="step-label"><i class="bi bi-gift me-2" style="color:var(--s-succ)"></i>{{ __('ui.calculator.step7_title') }}</span>
@@ -505,7 +703,7 @@
                                         <select name="indemnites[{{ $i }}][type]" id="indemnites_{{ $i }}_type" class="form-select form-select-sm ind-type-select">
                                             @foreach($indemnites_config as $key => $cfg)
                                             <option value="{{ $key }}" {{ ($ind['type'] ?? '') === $key ? 'selected' : '' }}
-                                                    data-plafond="{{ $cfg['base_salaire'] ? ($cfg['pct'] * 100).'% du SB' : number_format($cfg['montant'], !empty($cfg['par_jour']) ? 2 : 0, ',', ' ').' MAD/'.(!empty($cfg['par_jour']) ? 'jour travaillé' : 'mois') }}">
+                                                    data-plafond="{{ $cfg['base_salaire'] ? ($cfg['pct'] * 100).'% du SB' : number_format($cfg['montant'], !empty($cfg['par_jour']) ? 2 : 0, ',', ' ').' MAD/'.(!empty($cfg['par_jour']) ? 'jour travaille' : 'mois') }}">
                                                 {{ $cfg['label'] }}
                                             </option>
                                             @endforeach
@@ -533,14 +731,10 @@
                         <p class="text-muted small mb-0" id="indemnitePlaceholder" {{ old('indemnites') ? 'style=display:none' : '' }}>
                             <i class="bi bi-info-circle me-1"></i>{{ __('ui.calculator.allowance_placeholder') }}
                         </p>
-                        <div class="step-actions d-flex flex-column flex-sm-row justify-content-end gap-2">
-                            <button type="button" class="btn fw-semibold" style="border:1px solid var(--ink-3);color:var(--ink-2)" data-step-skip>{{ __('ui.calculator.step_skip') }}</button>
-                            <button type="button" class="btn text-white fw-semibold" style="background:var(--g-500)" data-step-next>{{ __('ui.calculator.step_continue') }}</button>
-                        </div>
                     </div>
                 </details>
 
-                {{-- 8. Avantages CNSS exonérés --}}
+                {{-- 8. Avantages CNSS exoneres --}}
                 <details class="step-section section-card mb-3" data-step-section {{ old('prime_scolarite') || old('prime_aid') || old('autres_avantages_cnss') ? 'open' : '' }}>
                     <summary>
                         <span class="step-label"><i class="bi bi-mortarboard me-2" style="color:var(--s-cot)"></i>{{ __('ui.calculator.step8_title') }}</span>
@@ -584,10 +778,6 @@
                             </div>
                         </div>
 
-                        <div class="step-actions d-flex flex-column flex-sm-row justify-content-end gap-2">
-                            <button type="button" class="btn fw-semibold" style="border:1px solid var(--ink-3);color:var(--ink-2)" data-step-skip>{{ __('ui.calculator.step_skip') }}</button>
-                            <button type="button" class="btn text-white fw-semibold" style="background:var(--g-500)" data-step-next>{{ __('ui.calculator.step_continue') }}</button>
-                        </div>
                     </div>
                 </details>
 
@@ -605,12 +795,11 @@
                             <span class="input-group-text">{{ __('ui.result.unit_mad_month_label') }}</span>
                         </div>
                         <div class="form-text">{{ __('ui.calculator.other_deductions_help') }}</div>
-                        <div class="step-actions d-flex flex-column flex-sm-row justify-content-end gap-2">
-                            <button type="button" class="btn fw-semibold" style="border:1px solid var(--ink-3);color:var(--ink-2)" data-step-skip>{{ __('ui.calculator.step_skip') }}</button>
-                            <button type="button" class="btn text-white fw-semibold" style="background:var(--g-500)" data-step-next>{{ __('ui.calculator.step_continue') }}</button>
-                        </div>
                     </div>
                 </details>
+
+                </div>
+            </div>
         </div>
 
         {{-- Submit --}}
@@ -646,6 +835,8 @@ const TRANS_ALLOWANCE_AMOUNT = @json(__('ui.calculator.allowance_amount_label'))
 const TRANS_REMOVE_ALLOWANCE = @json(__('ui.calculator.remove_allowance_aria'));
 const TRANS_OR_MORE = @json(__('ui.calculator.children_or_more'));
 const TRANS_CEILING_SIMULATED = @json(__('ui.calculator.ceiling_simulated'));
+const TRANS_WIZARD_MODE_GROSS = @json(__('ui.calculator.wizard_mode_gross'));
+const TRANS_WIZARD_MODE_NET = @json(__('ui.calculator.wizard_mode_net'));
 
 const salaireBaseGroup = document.getElementById('salaireBaseGroup');
 const salaireBaseInput = document.getElementById('salaire_base');
@@ -661,12 +852,20 @@ function updateCalculationMode() {
     salaireBaseInput.required = !isNetToGross;
     netCibleGroup.hidden = !isNetToGross;
     netCibleInput.required = isNetToGross;
+
+    // Update wizard mode badge
+    const badgeIcon = document.querySelector('#wizardModeBadge i');
+    const badgeLabel = document.getElementById('wizardModeLabel');
+    if (badgeIcon && badgeLabel) {
+        badgeIcon.className = isNetToGross ? 'bi bi-arrow-up-circle' : 'bi bi-arrow-down-circle';
+        badgeLabel.textContent = isNetToGross ? TRANS_WIZARD_MODE_NET : TRANS_WIZARD_MODE_GROSS;
+    }
 }
 
 modeInputs.forEach(input => input.addEventListener('change', updateCalculationMode));
 updateCalculationMode();
 
-// Tranches d'ancienneté (pour aperçu côté client)
+// Tranches d'anciennete (pour apercu cote client)
 const ANCIENNETE_TRANCHES = @json(config('payroll.anciennete.tranches'));
 
 function getTauxAnciennete(annees) {
@@ -713,39 +912,157 @@ function updateChildrenOptions() {
 conjointChargeInput.addEventListener('change', updateChildrenOptions);
 updateChildrenOptions();
 
-// ---- Parcours étape par étape ----
+// ---- Wizard navigation ----
 const stepSections = Array.from(document.querySelectorAll('[data-step-section]'));
+const wizardStepItems = document.querySelectorAll('[data-wizard-step]');
+const wizardMobilePills = document.querySelectorAll('[data-wizard-mobile]');
+const wizardSummaryEls = document.querySelectorAll('[data-wizard-summary]');
 
-function openStep(section) {
-    if (!section) return;
-    stepSections.forEach(item => {
-        if (item !== section) item.open = false;
-    });
-    section.open = true;
-    section.scrollIntoView({behavior: 'smooth', block: 'start'});
+function formatMAD(val) {
+    if (!val || val <= 0) return '';
+    return val.toLocaleString(INTL_LOCALE, {maximumFractionDigits: 0}) + ' MAD';
 }
 
-function openNextStep(button) {
-    const current = button.closest('[data-step-section]');
-    const currentIndex = stepSections.indexOf(current);
-    const next = stepSections[currentIndex + 1];
+function getStepSummary(index) {
+    const section = stepSections[index];
+    if (!section) return '';
 
-    if (next) {
-        openStep(next);
-        return;
+    switch (index) {
+        case 0: {
+            const mode = document.querySelector('input[name="mode"]:checked')?.value || MODE_GROSS_TO_NET;
+            const isNet = mode === MODE_NET_TO_GROSS;
+            const val = parseFloat((isNet ? netCibleInput : salaireBaseInput).value) || 0;
+            return val > 0 ? formatMAD(val) : '';
+        }
+        case 1: {
+            const parts = [];
+            const annees = parseInt(document.getElementById('nb_annees_anciennete').value) || 0;
+            const taux = getTauxAnciennete(annees);
+            if (taux > 0) parts.push(taux + '% anc.');
+            const primes = parseFloat(document.getElementById('autres_primes').value) || 0;
+            if (primes > 0) parts.push(formatMAD(primes));
+            return parts.join(' + ');
+        }
+        case 2: {
+            const rows = section.querySelectorAll('#hsContainer .hs-row');
+            const count = rows.length;
+            return count > 0 ? count + ' ligne' + (count > 1 ? 's' : '') + ' HS' : '';
+        }
+        case 3: {
+            const active = document.getElementById('cimrActif').checked;
+            if (!active) return '';
+            const taux = parseFloat(document.getElementById('cimrTaux').value) || 0;
+            return taux > 0 ? 'CIMR ' + taux + '%' : '';
+        }
+        case 4: {
+            const parts = [];
+            const nb = parseInt(document.getElementById('nb_enfants').value) || 0;
+            if (nb > 0) parts.push(nb + ' enf.');
+            if (document.getElementById('conjointCharge').checked) parts.push('conjoint');
+            return parts.join(' + ');
+        }
+        case 5: {
+            const mut = parseFloat(document.getElementById('mutuelle_salarie').value) || 0;
+            return mut > 0 ? 'Mut. ' + formatMAD(mut) : '';
+        }
+        case 6: {
+            const rows = section.querySelectorAll('#indemniteContainer .ind-row');
+            const count = rows.length;
+            return count > 0 ? count + ' indemnite' + (count > 1 ? 's' : '') : '';
+        }
+        case 7: {
+            const s = parseFloat(document.getElementById('prime_scolarite').value) || 0;
+            const a = parseFloat(document.getElementById('prime_aid').value) || 0;
+            const o = parseFloat(document.getElementById('autres_avantages_cnss').value) || 0;
+            const total = s + a + o;
+            return total > 0 ? 'Av. CNSS ' + formatMAD(total) : '';
+        }
+        case 8: {
+            const val = parseFloat(document.getElementById('autres_retenues').value) || 0;
+            return val > 0 ? 'Ret. ' + formatMAD(val) : '';
+        }
+        default:
+            return '';
     }
-
-    document.querySelector('.mobile-sticky')?.scrollIntoView({behavior: 'smooth', block: 'center'});
 }
 
-document.querySelectorAll('[data-step-next], [data-step-skip]').forEach(button => {
-    button.addEventListener('click', () => openNextStep(button));
+function updateWizardState() {
+    stepSections.forEach((section, i) => {
+        const isOpen = section.open;
+        const summary = getStepSummary(i);
+        const hasContent = summary.length > 0;
+
+        // Update desktop sidebar
+        const stepItem = document.querySelector(`[data-wizard-step="${i}"]`);
+        if (stepItem) {
+            stepItem.classList.toggle('active', isOpen);
+            stepItem.classList.toggle('completed', !isOpen && hasContent);
+        }
+
+        // Update summary text
+        const summaryEl = document.querySelector(`[data-wizard-summary="${i}"]`);
+        if (summaryEl) {
+            summaryEl.textContent = summary;
+        }
+
+        // Update mobile pills
+        const pill = document.querySelector(`[data-wizard-mobile="${i}"]`);
+        if (pill) {
+            pill.classList.toggle('active', isOpen);
+            pill.classList.toggle('completed', !isOpen && hasContent);
+            pill.innerHTML = (!isOpen && hasContent) ? '✓' : String(i + 1);
+        }
+    });
+}
+
+function navigateToStep(index) {
+    const target = stepSections[index];
+    if (!target) return;
+
+    stepSections.forEach((section, i) => {
+        if (i !== index) section.open = false;
+    });
+    target.open = true;
+    target.scrollIntoView({behavior: 'smooth', block: 'start'});
+    updateWizardState();
+}
+
+// Sidebar click handlers
+document.querySelectorAll('[data-wizard-nav]').forEach(btn => {
+    btn.addEventListener('click', () => {
+        navigateToStep(parseInt(btn.dataset.wizardNav, 10));
+    });
 });
+
+// Mobile pill click handlers
+wizardMobilePills.forEach(pill => {
+    pill.addEventListener('click', () => {
+        navigateToStep(parseInt(pill.dataset.wizardMobile, 10));
+    });
+});
+
+// Listen to toggle events on details to sync wizard state
+stepSections.forEach(section => {
+    section.addEventListener('toggle', () => {
+        updateWizardState();
+    });
+});
+
+// Listen to input/change events to update summaries
+document.getElementById('payrollForm').addEventListener('input', () => {
+    updateWizardState();
+});
+document.getElementById('payrollForm').addEventListener('change', () => {
+    updateWizardState();
+});
+
+// Initialize wizard state
+updateWizardState();
 
 const formErrors = document.getElementById('formErrors');
 if (formErrors) formErrors.focus();
 
-// ---- Heures supplémentaires ----
+// ---- Heures supplementaires ----
 let hsIndex = {{ old('heures_sup') ? count(old('heures_sup')) : 0 }};
 
 function buildHsOptions(selectedType) {
@@ -775,7 +1092,9 @@ document.getElementById('addHS').addEventListener('click', () => {
     row.querySelector('.remove-row').addEventListener('click', () => {
         row.remove();
         updateHsPlaceholder();
+        updateWizardState();
     });
+    updateWizardState();
 });
 
 function updateHsPlaceholder() {
@@ -783,7 +1102,7 @@ function updateHsPlaceholder() {
         document.querySelectorAll('#hsContainer .hs-row').length ? 'none' : '';
 }
 
-// ---- Indemnités ----
+// ---- Indemnites ----
 let indIndex = {{ old('indemnites') ? count(old('indemnites')) : 0 }};
 
 function buildIndOptions(selectedType) {
@@ -791,7 +1110,7 @@ function buildIndOptions(selectedType) {
         const plafondTxt = cfg.base_salaire
             ? `${(cfg.pct * 100).toFixed(0)}% du salaire de base`
             : cfg.par_jour
-                ? `${cfg.montant.toLocaleString(INTL_LOCALE)} MAD/jour travaillé`
+                ? `${cfg.montant.toLocaleString(INTL_LOCALE)} MAD/jour travaille`
                 : `${cfg.montant.toLocaleString(INTL_LOCALE)} MAD/mois`;
         return `<option value="${k}" ${k === selectedType ? 'selected' : ''} data-plafond="${plafondTxt}">${cfg.label}</option>`;
     }).join('');
@@ -828,6 +1147,7 @@ function createIndRow(i, selectedType) {
     row.querySelector('.remove-row').addEventListener('click', () => {
         row.remove();
         updateIndemnitePlaceholder();
+        updateWizardState();
     });
     return row;
 }
@@ -836,6 +1156,7 @@ document.getElementById('addIndemnite').addEventListener('click', () => {
     const i = indIndex++;
     document.getElementById('indemniteContainer').appendChild(createIndRow(i, null));
     document.getElementById('indemnitePlaceholder').style.display = 'none';
+    updateWizardState();
 });
 
 function updateIndemnitePlaceholder() {
@@ -843,7 +1164,7 @@ function updateIndemnitePlaceholder() {
         document.querySelectorAll('#indemniteContainer .ind-row').length ? 'none' : '';
 }
 
-// Hints sur les lignes existantes (rechargement après erreur)
+// Hints sur les lignes existantes (rechargement apres erreur)
 document.querySelectorAll('.ind-type-select').forEach(sel => {
     const hint = sel.closest('.col-7').querySelector('.ind-plafond-hint');
     if (hint) hint.textContent = getPlafondHint(sel);
@@ -854,7 +1175,7 @@ document.querySelectorAll('.ind-type-select').forEach(sel => {
 document.querySelectorAll('.remove-row').forEach(btn => {
     btn.addEventListener('click', () => {
         const row = btn.closest('.hs-row, .ind-row');
-        if (row) { row.remove(); updateHsPlaceholder(); updateIndemnitePlaceholder(); }
+        if (row) { row.remove(); updateHsPlaceholder(); updateIndemnitePlaceholder(); updateWizardState(); }
     });
 });
 
