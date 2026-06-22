@@ -23,19 +23,9 @@ RUN composer dump-autoload --optimize --no-scripts
 # =========================================================================
 FROM php:8.5-fpm-alpine
 
-# ---- Dépendances de build (temporaires) ----
-RUN apk add --no-cache --virtual .build-deps \
-        libzip-dev \
-        oniguruma-dev \
-        libxml2-dev \
-        sqlite-dev \
-    && docker-php-ext-install \
-        pdo \
-        pdo_sqlite \
-        mbstring \
-        xml \
-        zip \
-        opcache \
+# ---- Extension zip (la seule non incluse dans l'image de base) ----
+RUN apk add --no-cache --virtual .build-deps libzip-dev \
+    && docker-php-ext-install zip \
     && apk del .build-deps
 
 # ---- Dépendances runtime ----
@@ -43,9 +33,6 @@ RUN apk add --no-cache \
         nginx \
         supervisor \
         libzip \
-        oniguruma \
-        libxml2 \
-        sqlite-libs \
         curl \
     && rm -f /etc/nginx/http.d/default.conf
 
