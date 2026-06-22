@@ -16,11 +16,11 @@
             <div class="alert alert-warning small mb-0">
                 {{ __('ui.documentation.warning') }}
             </div>
-            <nav class="d-flex flex-wrap gap-2 mt-3" aria-label="Accès rapide aux règles">
-                <a class="btn btn-sm" href="#cotisations" style="border:1px solid var(--hairline-strong)">Cotisations</a>
-                <a class="btn btn-sm" href="#impot" style="border:1px solid var(--hairline-strong)">Impôt</a>
-                <a class="btn btn-sm" href="#remuneration" style="border:1px solid var(--hairline-strong)">Rémunération</a>
-                <a class="btn btn-sm" href="#indemnites" style="border:1px solid var(--hairline-strong)">Indemnités</a>
+            <nav class="d-flex flex-wrap gap-2 mt-3" aria-label="{{ __('ui.documentation.quick_access') }}">
+                <a class="btn btn-sm" href="#cotisations" style="border:1px solid var(--hairline-strong)">{{ __('ui.documentation.nav_contributions') }}</a>
+                <a class="btn btn-sm" href="#impot" style="border:1px solid var(--hairline-strong)">{{ __('ui.documentation.nav_tax') }}</a>
+                <a class="btn btn-sm" href="#remuneration" style="border:1px solid var(--hairline-strong)">{{ __('ui.documentation.nav_remuneration') }}</a>
+                <a class="btn btn-sm" href="#indemnites" style="border:1px solid var(--hairline-strong)">{{ __('ui.documentation.nav_allowances') }}</a>
             </nav>
         </div>
     </div>
@@ -34,26 +34,26 @@
             <div class="card section-card mb-4" id="cotisations">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
                     <span class="badge rounded-circle p-2" style="background:var(--s-info)"><i class="bi bi-building"></i></span>
-                    <span>CNSS · Caisse Nationale de Sécurité Sociale</span>
+                    <span>{{ __('ui.documentation.cnss_title') }}</span>
                 </div>
                 <div class="card-body px-4 py-3">
-                    <p class="text-muted mb-3">Référence : <code>Dahir portant loi n° 1-72-184 du 27 juillet 1972</code></p>
+                    <p class="text-muted mb-3">{{ __('ui.documentation.reference') }} <code>{{ __('ui.documentation.cnss_ref') }}</code></p>
                     <table class="table table-sm">
-                        <thead class="table-light"><tr><th>Paramètre</th><th>Salarié</th><th>Employeur</th><th class="text-muted">Note</th></tr></thead>
+                        <thead class="table-light"><tr><th>{{ __('ui.documentation.col_parameter') }}</th><th>{{ __('ui.documentation.col_employee') }}</th><th>{{ __('ui.documentation.col_employer') }}</th><th class="text-muted">{{ __('ui.documentation.col_note') }}</th></tr></thead>
                         <tbody>
                             <tr>
-                                <td>Taux global</td>
+                                <td>{{ __('ui.documentation.global_rate') }}</td>
                                 <td class="fw-bold">{{ number_format($payroll['cnss']['taux'] * 100, 2, ',', '.') }}%</td>
                                 <td class="fw-bold">{{ number_format($payroll['cnss']['taux_patronal'] * 100, 2, ',', '.') }}%</td>
-                                <td class="text-muted">CT + LT</td>
+                                <td class="text-muted">{{ __('ui.documentation.ct_lt') }}</td>
                             </tr>
                             <tr>
-                                <td>Plafond mensuel</td>
+                                <td>{{ __('ui.documentation.monthly_ceiling') }}</td>
                                 <td class="fw-bold" colspan="2">{{ number_format($payroll['cnss']['plafond'], 0, ',', ' ') }} MAD</td>
-                                <td class="text-muted">Assiette plafonnée</td>
+                                <td class="text-muted">{{ __('ui.documentation.capped_base') }}</td>
                             </tr>
                             <tr>
-                                <td>Cotisation max salarié/mois</td>
+                                <td>{{ __('ui.documentation.max_employee_month') }}</td>
                                 <td class="fw-bold">{{ number_format($payroll['cnss']['plafond'] * $payroll['cnss']['taux'], 2, ',', ' ') }} MAD</td>
                                 <td class="text-muted">—</td>
                                 <td class="text-muted">{{ number_format($payroll['cnss']['plafond'], 0, ',', ' ') }} × {{ number_format($payroll['cnss']['taux'] * 100, 2, ',', '.') }}%</td>
@@ -62,8 +62,7 @@
                     </table>
                     <div class="alert alert-info py-2 small mb-0">
                         <i class="bi bi-info-circle me-1"></i>
-                        Le plafond s'applique sur le SBI : si SBI &gt; {{ number_format($payroll['cnss']['plafond'], 0, ',', ' ') }} MAD,
-                        la cotisation salarié est fixe à {{ number_format($payroll['cnss']['plafond'] * $payroll['cnss']['taux'], 2, ',', ' ') }} MAD/mois.
+                        {{ __('ui.documentation.cnss_ceiling_note', ['ceiling' => number_format($payroll['cnss']['plafond'], 0, ',', ' '), 'max' => number_format($payroll['cnss']['plafond'] * $payroll['cnss']['taux'], 2, ',', ' ')]) }}
                     </div>
                 </div>
             </div>
@@ -74,23 +73,23 @@
             <div class="card section-card mb-4">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
                     <span class="badge rounded-circle p-2" style="background:var(--s-cot)"><i class="bi bi-heart-pulse"></i></span>
-                    <span>AMO · Assurance Maladie Obligatoire</span>
+                    <span>{{ __('ui.documentation.amo_title') }}</span>
                 </div>
                 <div class="card-body px-4 py-3">
-                    <p class="text-muted mb-3">Référence : <code>Loi n° 65-00 portant code de la couverture médicale de base</code></p>
+                    <p class="text-muted mb-3">{{ __('ui.documentation.reference') }} <code>{{ __('ui.documentation.amo_ref') }}</code></p>
                     <table class="table table-sm">
-                        <thead class="table-light"><tr><th>Paramètre</th><th>Salarié</th><th>Employeur</th><th class="text-muted">Note</th></tr></thead>
+                        <thead class="table-light"><tr><th>{{ __('ui.documentation.col_parameter') }}</th><th>{{ __('ui.documentation.col_employee') }}</th><th>{{ __('ui.documentation.col_employer') }}</th><th class="text-muted">{{ __('ui.documentation.col_note') }}</th></tr></thead>
                         <tbody>
                             <tr>
-                                <td>Taux</td>
+                                <td>{{ __('ui.documentation.rate') }}</td>
                                 <td class="fw-bold">{{ number_format($payroll['amo']['taux'] * 100, 2, ',', '.') }}%</td>
                                 <td class="fw-bold">{{ number_format($payroll['amo']['taux_patronal'] * 100, 2, ',', '.') }}%</td>
-                                <td class="text-muted">Sans plafond</td>
+                                <td class="text-muted">{{ __('ui.documentation.no_ceiling') }}</td>
                             </tr>
                             <tr>
-                                <td>Base de calcul</td>
-                                <td class="fw-bold" colspan="2">SBI total</td>
-                                <td class="text-muted">Intégralité du SBI</td>
+                                <td>{{ __('ui.documentation.calculation_base') }}</td>
+                                <td class="fw-bold" colspan="2">{{ __('ui.documentation.sbi_total') }}</td>
+                                <td class="text-muted">{{ __('ui.documentation.full_sbi') }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -103,31 +102,27 @@
             <div class="card section-card mb-4">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
                     <span class="badge rounded-circle p-2" style="background:var(--s-warn)"><i class="bi bi-building-up"></i></span>
-                    <span>Charges patronales complémentaires</span>
+                    <span>{{ __('ui.documentation.employer_charges_title') }}</span>
                 </div>
                 <div class="card-body px-4 py-3">
-                    <p class="text-muted mb-3">Charges exclusivement à la charge de l'employeur (non prélevées sur le salarié).</p>
+                    <p class="text-muted mb-3">{{ __('ui.documentation.employer_charges_intro') }}</p>
                     <table class="table table-sm">
-                        <thead class="table-light"><tr><th>Charge</th><th class="text-center">Taux</th><th>Plafond</th></tr></thead>
+                        <thead class="table-light"><tr><th>{{ __('ui.documentation.col_charge') }}</th><th class="text-center">{{ __('ui.documentation.col_rate') }}</th><th>{{ __('ui.documentation.col_ceiling') }}</th></tr></thead>
                         <tbody>
                             <tr>
-                                <td>Allocations familiales</td>
+                                <td>{{ __('ui.documentation.family_allowances_doc') }}</td>
                                 <td class="text-center fw-bold">{{ number_format($payroll['allocations_familiales']['taux_patronal'] * 100, 2, ',', '.') }}%</td>
-                                <td class="text-muted">Sans plafond</td>
+                                <td class="text-muted">{{ __('ui.documentation.no_ceiling') }}</td>
                             </tr>
                             <tr>
-                                <td>Taxe de Formation Professionnelle (TFP)</td>
+                                <td>{{ __('ui.documentation.tfp_doc') }}</td>
                                 <td class="text-center fw-bold">{{ number_format($payroll['taxe_formation']['taux_patronal'] * 100, 2, ',', '.') }}%</td>
-                                <td class="text-muted">Sans plafond</td>
+                                <td class="text-muted">{{ __('ui.documentation.no_ceiling') }}</td>
                             </tr>
                         </tbody>
                     </table>
                     <div class="alert alert-secondary py-2 small mb-0">
-                        <strong>Coût total employeur</strong> = salaire brut total versé, indemnités comprises,
-                        + CNSS patronal ({{ number_format($payroll['cnss']['taux_patronal'] * 100, 2, ',', '.') }}%)
-                        + AMO patronale ({{ number_format($payroll['amo']['taux_patronal'] * 100, 2, ',', '.') }}%)
-                        + AF ({{ number_format($payroll['allocations_familiales']['taux_patronal'] * 100, 2, ',', '.') }}%)
-                        + TFP ({{ number_format($payroll['taxe_formation']['taux_patronal'] * 100, 2, ',', '.') }}%)
+                        <strong>{{ __('ui.documentation.total_employer_formula') }}</strong> {{ __('ui.documentation.total_employer_formula_detail', ['cnss' => number_format($payroll['cnss']['taux_patronal'] * 100, 2, ',', '.'), 'amo' => number_format($payroll['amo']['taux_patronal'] * 100, 2, ',', '.'), 'af' => number_format($payroll['allocations_familiales']['taux_patronal'] * 100, 2, ',', '.'), 'tfp' => number_format($payroll['taxe_formation']['taux_patronal'] * 100, 2, ',', '.')]) }}
                     </div>
                 </div>
             </div>
@@ -138,15 +133,15 @@
             <div class="card section-card mb-4">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
                     <span class="badge rounded-circle p-2" style="background:var(--s-succ)"><i class="bi bi-piggy-bank"></i></span>
-                    <span>CIMR · Caisse Interprofessionnelle Marocaine de Retraite</span>
+                    <span>{{ __('ui.documentation.cimr_title') }}</span>
                 </div>
                 <div class="card-body px-4 py-3">
-                    <p class="text-muted mb-3">Référence : <code>Article 28-III CGI, Loi n° 64-12</code></p>
+                    <p class="text-muted mb-3">{{ __('ui.documentation.reference') }} <code>{{ __('ui.documentation.cimr_ref') }}</code></p>
                     <table class="table table-sm">
                         <tbody>
-                            <tr><td>Fourchette de taux salarié</td><td class="fw-bold">{{ round($payroll['cimr']['taux_min'] * 100) }}% à {{ round($payroll['cimr']['taux_max'] * 100) }}%</td><td class="text-muted">Librement choisi</td></tr>
-                            <tr><td>Plafond d'assiette</td><td class="fw-bold">Aucun</td><td class="text-muted">SBI total</td></tr>
-                            <tr><td>Déductibilité IR</td><td class="fw-bold" style="color:var(--s-succ)">100%</td><td class="text-muted">Déduit intégralement de l'assiette</td></tr>
+                            <tr><td>{{ __('ui.documentation.employee_rate_range') }}</td><td class="fw-bold">{{ __('ui.documentation.rate_range', ['min' => round($payroll['cimr']['taux_min'] * 100), 'max' => round($payroll['cimr']['taux_max'] * 100)]) }}</td><td class="text-muted">{{ __('ui.documentation.freely_chosen') }}</td></tr>
+                            <tr><td>{{ __('ui.documentation.ceiling_base') }}</td><td class="fw-bold">{{ __('ui.documentation.none') }}</td><td class="text-muted">{{ __('ui.documentation.sbi_total') }}</td></tr>
+                            <tr><td>{{ __('ui.documentation.ir_deductibility') }}</td><td class="fw-bold" style="color:var(--s-succ)">100%</td><td class="text-muted">{{ __('ui.documentation.fully_deducted') }}</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -158,19 +153,19 @@
             <div class="card section-card mb-4" id="impot">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
                     <span class="badge rounded-circle p-2" style="background:var(--s-tax)"><i class="bi bi-percent"></i></span>
-                    <span>Barème IR annuel 2026 · Article 73 CGI</span>
+                    <span>{{ __('ui.documentation.ir_schedule_title', ['year' => 2026]) }}</span>
                 </div>
                 <div class="card-body px-4 py-3">
                     <p class="text-muted mb-3">
-                        Formule : <code>IR annuel = RNI_annuel × taux − déduction_fixe</code><br>
-                        <small>Le RNI mensuel est annualisé (× {{ $payroll['ir']['nb_mois'] }}) pour déterminer la tranche, puis l'IR annuel est divisé par {{ $payroll['ir']['nb_mois'] }}.</small>
+                        {{ __('ui.documentation.ir_formula') }} <code>{{ __('ui.documentation.ir_formula_detail') }}</code><br>
+                        <small>{{ __('ui.documentation.ir_formula_note', ['months' => $payroll['ir']['nb_mois']]) }}</small>
                     </p>
                     <table class="table table-sm table-hover">
                         <thead class="table-light">
                             <tr>
-                                <th>Tranche de RNI annuel (MAD)</th>
-                                <th class="text-center">Taux marginal</th>
-                                <th class="text-end">Déduction fixe (MAD)</th>
+                                <th>{{ __('ui.documentation.col_rni_bracket') }}</th>
+                                <th class="text-center">{{ __('ui.documentation.col_marginal_rate') }}</th>
+                                <th class="text-end">{{ __('ui.documentation.col_fixed_deduction') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -181,7 +176,7 @@
                                     @if($t['max'] !== null)
                                         — {{ number_format($t['max'], 0, ',', ' ') }}
                                     @else
-                                        et plus
+                                        {{ __('ui.documentation.and_above') }}
                                     @endif
                                 </td>
                                 <td class="text-center fw-bold">{{ round($t['taux'] * 100) }}%</td>
@@ -191,7 +186,7 @@
                         </tbody>
                     </table>
                     <div class="alert alert-secondary py-2 small mb-0">
-                        La tranche, le taux et la déduction fixe sont lus directement depuis <code>config/payroll.php</code>.
+                        {{ __('ui.documentation.ir_config_note') }}
                     </div>
                 </div>
             </div>
@@ -202,32 +197,32 @@
             <div class="card section-card mb-4">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
                     <span class="badge rounded-circle p-2" style="background:var(--s-warn)"><i class="bi bi-briefcase"></i></span>
-                    <span>Frais Professionnels · Article 59 I-A CGI</span>
+                    <span>{{ __('ui.documentation.pro_fees_title') }}</span>
                 </div>
                 <div class="card-body px-4 py-3">
-                    <p class="text-muted mb-3">Déductibles de l'assiette IR (non remboursés au salarié). Calculés sur le salaire brut imposable (SBI), dans la limite du plafond mensuel. Seuil mensuel : <strong>{{ number_format($payroll['frais_pro']['seuil_mensuel'], 0, ',', ' ') }} MAD</strong>.</p>
+                    <p class="text-muted mb-3">{!! __('ui.documentation.pro_fees_intro', ['threshold' => number_format($payroll['frais_pro']['seuil_mensuel'], 0, ',', ' ')]) !!}</p>
                     <table class="table table-sm">
                         <thead class="table-light">
-                            <tr><th>Catégorie</th><th class="text-center">Taux</th><th class="text-end">Plafond mensuel</th></tr>
+                            <tr><th>{{ __('ui.documentation.col_category') }}</th><th class="text-center">{{ __('ui.documentation.col_rate') }}</th><th class="text-end">{{ __('ui.documentation.col_monthly_ceiling') }}</th></tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>Salarié commun (SBI ≤ {{ number_format($payroll['frais_pro']['seuil_mensuel'], 0, ',', ' ') }} MAD)</td>
+                                <td>{{ __('ui.documentation.common_low', ['threshold' => number_format($payroll['frais_pro']['seuil_mensuel'], 0, ',', ' ')]) }}</td>
                                 <td class="text-center fw-bold">{{ round($payroll['frais_pro']['commun']['bas']['taux'] * 100) }}%</td>
                                 <td class="text-end">{{ number_format($payroll['frais_pro']['commun']['bas']['plafond'], 2, ',', ' ') }} MAD</td>
                             </tr>
                             <tr>
-                                <td>Salarié commun (SBI &gt; {{ number_format($payroll['frais_pro']['seuil_mensuel'], 0, ',', ' ') }} MAD)</td>
+                                <td>{{ __('ui.documentation.common_high', ['threshold' => number_format($payroll['frais_pro']['seuil_mensuel'], 0, ',', ' ')]) }}</td>
                                 <td class="text-center fw-bold">{{ round($payroll['frais_pro']['commun']['haut']['taux'] * 100) }}%</td>
                                 <td class="text-end">{{ number_format($payroll['frais_pro']['commun']['haut']['plafond'], 2, ',', ' ') }} MAD</td>
                             </tr>
                             <tr>
-                                <td>Journaliste / Correspondant de presse</td>
+                                <td>{{ __('ui.documentation.journalist') }}</td>
                                 <td class="text-center fw-bold">{{ round($payroll['frais_pro']['journaliste']['taux'] * 100) }}%</td>
                                 <td class="text-end">{{ number_format($payroll['frais_pro']['journaliste']['plafond'], 2, ',', ' ') }} MAD</td>
                             </tr>
                             <tr>
-                                <td>Artiste / Créateur</td>
+                                <td>{{ __('ui.documentation.artist') }}</td>
                                 <td class="text-center fw-bold">{{ round($payroll['frais_pro']['artiste']['taux'] * 100) }}%</td>
                                 <td class="text-end">{{ number_format($payroll['frais_pro']['artiste']['plafond'], 2, ',', ' ') }} MAD</td>
                             </tr>
@@ -242,28 +237,27 @@
             <div class="card section-card mb-4" id="remuneration">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
                     <span class="badge rounded-circle p-2" style="background:var(--s-info)"><i class="bi bi-hourglass-split"></i></span>
-                    <span>Prime d'ancienneté · Article 350 Code du Travail</span>
+                    <span>{{ __('ui.documentation.seniority_title') }}</span>
                 </div>
                 <div class="card-body px-4 py-3">
-                    <p class="text-muted mb-3">Référence : <code>Loi n° 65-99 (Code du Travail), art. 350</code>. Calculée sur le salaire de base mensuel brut.</p>
+                    <p class="text-muted mb-3">{{ __('ui.documentation.reference') }} <code>{{ __('ui.documentation.seniority_ref') }}</code>. {{ __('ui.documentation.seniority_intro') }}</p>
                     <table class="table table-sm table-hover">
                         <thead class="table-light">
-                            <tr><th>Ancienneté</th><th class="text-center">Taux</th><th>Exemple (SB = 5 000 MAD)</th></tr>
+                            <tr><th>{{ __('ui.documentation.col_seniority') }}</th><th class="text-center">{{ __('ui.documentation.col_rate') }}</th><th>{{ __('ui.documentation.col_example') }}</th></tr>
                         </thead>
                         <tbody>
                             <tr class="table-light">
-                                <td>Moins de 2 ans</td>
+                                <td>{{ __('ui.documentation.less_than_2_years') }}</td>
                                 <td class="text-center fw-bold">0%</td>
                                 <td class="text-muted">0,00 MAD</td>
                             </tr>
                             @foreach($payroll['anciennete']['tranches'] as $t)
                             <tr>
                                 <td>
-                                    {{ $t['min_annees'] }}
                                     @if($t['max_annees'] !== null)
-                                        à {{ $t['max_annees'] }} ans
+                                        {{ __('ui.documentation.years_to', ['min' => $t['min_annees'], 'max' => $t['max_annees']]) }}
                                     @else
-                                        ans et plus
+                                        {{ __('ui.documentation.years_and_above', ['min' => $t['min_annees']]) }}
                                     @endif
                                 </td>
                                 <td class="text-center fw-bold" style="color:var(--s-info)">{{ round($t['taux'] * 100) }}%</td>
@@ -281,22 +275,22 @@
             <div class="card section-card mb-4">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
                     <span class="badge rounded-circle p-2" style="background:var(--s-info)"><i class="bi bi-bank"></i></span>
-                    <span>Retraite complémentaire (Bancassurance) · {{ $payroll['retraite_complementaire']['article'] }}</span>
+                    <span>{{ __('ui.documentation.rc_title') }} · {{ $payroll['retraite_complementaire']['article'] }}</span>
                 </div>
                 <div class="card-body px-4 py-3">
-                    <p class="text-muted mb-3">Référence : <code>{{ $payroll['retraite_complementaire']['article'] }}</code></p>
+                    <p class="text-muted mb-3">{{ __('ui.documentation.reference') }} <code>{{ $payroll['retraite_complementaire']['article'] }}</code></p>
                     <table class="table table-sm">
                         <tbody>
                             <tr>
-                                <td>Déductibilité IR (plafond)</td>
-                                <td class="fw-bold" style="color:var(--s-succ)">{{ round($payroll['retraite_complementaire']['deduction_ir_max_pct'] * 100) }}% du SBI annuel</td>
+                                <td>{{ __('ui.documentation.rc_deductibility') }}</td>
+                                <td class="fw-bold" style="color:var(--s-succ)">{{ __('ui.documentation.rc_deductibility_value', ['pct' => round($payroll['retraite_complementaire']['deduction_ir_max_pct'] * 100)]) }}</td>
                             </tr>
                             <tr>
-                                <td>Base de calcul du plafond</td>
-                                <td class="fw-bold">SBI mensuel × {{ $payroll['ir']['nb_mois'] }}</td>
+                                <td>{{ __('ui.documentation.rc_ceiling_base') }}</td>
+                                <td class="fw-bold">{{ __('ui.documentation.rc_ceiling_formula', ['months' => $payroll['ir']['nb_mois']]) }}</td>
                             </tr>
                             <tr>
-                                <td>Exemple (SBI = 8 000 MAD/mois)</td>
+                                <td>{{ __('ui.documentation.rc_example') }}</td>
                                 <td class="text-muted">
                                     Plafond = 8 000 × {{ $payroll['ir']['nb_mois'] }} × {{ round($payroll['retraite_complementaire']['deduction_ir_max_pct'] * 100) }}%
                                     = {{ number_format(8000 * $payroll['ir']['nb_mois'] * $payroll['retraite_complementaire']['deduction_ir_max_pct'], 0, ',', ' ') }} MAD/an
@@ -306,8 +300,7 @@
                     </table>
                     <div class="alert alert-info py-2 small mb-0">
                         <i class="bi bi-info-circle me-1"></i>
-                        Le simulateur applique une déduction fiscale plafonnée à {{ round($payroll['retraite_complementaire']['deduction_ir_max_pct'] * 100) }}%
-                        du salaire brut annuel. Le versement déclaré n'est pas soustrait du net à payer.
+                        {{ __('ui.documentation.rc_note', ['pct' => round($payroll['retraite_complementaire']['deduction_ir_max_pct'] * 100)]) }}
                     </div>
                 </div>
             </div>
@@ -318,13 +311,13 @@
             <div class="card section-card mb-4" id="indemnites">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
                     <span class="badge rounded-circle p-2" style="background:var(--s-succ)"><i class="bi bi-gift"></i></span>
-                    <span>Indemnités traitées comme exonérées par le simulateur</span>
+                    <span>{{ __('ui.documentation.allowances_title') }}</span>
                 </div>
                 <div class="card-body px-4 py-3">
-                    <p class="text-muted mb-3">Le simulateur applique les plafonds ci-dessous et réintègre tout excédent au salaire brut imposable. L'éligibilité CNSS et IR doit être confirmée selon la nature et les justificatifs de chaque indemnité.</p>
+                    <p class="text-muted mb-3">{{ __('ui.documentation.allowances_intro') }}</p>
                     <table class="table table-sm table-hover">
                         <thead class="table-light">
-                            <tr><th>Type d'indemnité</th><th class="text-end">Plafond légal</th></tr>
+                            <tr><th>{{ __('ui.documentation.col_allowance_type') }}</th><th class="text-end">{{ __('ui.documentation.col_legal_ceiling') }}</th></tr>
                         </thead>
                         <tbody>
                             @foreach($indemnites_config as $key => $cfg)
@@ -332,11 +325,11 @@
                                 <td>{{ $cfg['label'] }}</td>
                                 <td class="text-end fw-semibold">
                                     @if($cfg['base_salaire'])
-                                        {{ round($cfg['pct'] * 100) }}% du salaire de base
+                                        {{ __('ui.documentation.pct_of_base', ['pct' => round($cfg['pct'] * 100)]) }}
                                     @elseif(!empty($cfg['par_jour']))
-                                        {{ number_format($cfg['montant'], 2, ',', ' ') }} MAD/jour travaillé
+                                        {{ __('ui.documentation.per_working_day', ['amount' => number_format($cfg['montant'], 2, ',', ' ')]) }}
                                     @else
-                                        {{ number_format($cfg['montant'], 0, ',', ' ') }} MAD/mois
+                                        {{ __('ui.documentation.per_month', ['amount' => number_format($cfg['montant'], 0, ',', ' ')]) }}
                                     @endif
                                 </td>
                             </tr>
@@ -352,20 +345,20 @@
             <div class="card section-card mb-4">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
                     <span class="badge rounded-circle p-2" style="background:var(--s-info)"><i class="bi bi-clock-history"></i></span>
-                    <span>SMIG 2026 &amp; Heures supplémentaires</span>
+                    <span>{{ __('ui.documentation.smig_title', ['year' => 2026]) }}</span>
                 </div>
                 <div class="card-body px-4 py-3">
-                    <p class="text-muted mb-3">Référence : <code>Décret n° 2.25.983</code> · <code>Art. 196 &amp; 201 Code du Travail (Loi 65-99)</code></p>
+                    <p class="text-muted mb-3">{{ __('ui.documentation.reference') }} <code>{{ __('ui.documentation.smig_ref') }}</code> · <code>{{ __('ui.documentation.overtime_ref') }}</code></p>
                     <table class="table table-sm mb-4">
                         <tbody>
-                            <tr><td>SMIG horaire 2026</td><td class="fw-bold">{{ number_format($payroll['smig']['horaire'], 2, ',', ' ') }} MAD/h</td></tr>
-                            <tr><td>SMIG mensuel ({{ $payroll['smig']['heures_legales'] }}h)</td><td class="fw-bold">{{ number_format($payroll['smig']['mensuel'], 2, ',', ' ') }} MAD/mois</td></tr>
-                            <tr><td>Heures légales/mois</td><td class="fw-bold">{{ $payroll['smig']['heures_legales'] }} heures</td></tr>
+                            <tr><td>{{ __('ui.documentation.smig_hourly', ['year' => 2026]) }}</td><td class="fw-bold">{{ number_format($payroll['smig']['horaire'], 2, ',', ' ') }} MAD/h</td></tr>
+                            <tr><td>{{ __('ui.documentation.smig_monthly', ['hours' => $payroll['smig']['heures_legales']]) }}</td><td class="fw-bold">{{ number_format($payroll['smig']['mensuel'], 2, ',', ' ') }} MAD/mois</td></tr>
+                            <tr><td>{{ __('ui.documentation.legal_hours') }}</td><td class="fw-bold">{{ $payroll['smig']['heures_legales'] }} {{ __('ui.documentation.hours_unit') }}</td></tr>
                         </tbody>
                     </table>
-                    <h6 class="fw-semibold">Majorations heures supplémentaires</h6>
+                    <h6 class="fw-semibold">{{ __('ui.documentation.overtime_rates_title') }}</h6>
                     <table class="table table-sm">
-                        <thead class="table-light"><tr><th>Type</th><th class="text-center">Majoration</th></tr></thead>
+                        <thead class="table-light"><tr><th>{{ __('ui.documentation.col_type') }}</th><th class="text-center">{{ __('ui.documentation.col_surcharge') }}</th></tr></thead>
                         <tbody>
                             @foreach($payroll['heures_sup']['majorations'] as $type => $taux)
                             <tr>
@@ -377,7 +370,7 @@
                             @endforeach
                         </tbody>
                     </table>
-                    <div class="form-text">Taux horaire = Salaire de base mensuel ÷ {{ $payroll['smig']['heures_legales'] }} heures</div>
+                    <div class="form-text">{{ __('ui.documentation.hourly_rate_formula', ['hours' => $payroll['smig']['heures_legales']]) }}</div>
                 </div>
             </div>
 
@@ -390,18 +383,18 @@
 
             <div class="card section-card mb-4">
                 <div class="card-header px-4 py-3">
-                    <i class="bi bi-link-45deg me-2" style="color:var(--g-500)"></i>Références citées
+                    <i class="bi bi-link-45deg me-2" style="color:var(--g-500)"></i>{{ __('ui.documentation.sidebar_references') }}
                 </div>
                 <div class="card-body px-4 py-3">
                     <ul class="list-unstyled mb-0">
                         @foreach([
-                            ['titre' => 'Code Général des Impôts (CGI) 2026', 'desc' => 'Art. 28-III, 28-IV, 59, 73, 74'],
-                            ['titre' => 'Code du Travail (Loi n° 65-99)',     'desc' => 'Art. 196, 201, 350'],
-                            ['titre' => 'Dahir n° 1-72-184 du 27/07/1972',    'desc' => 'CNSS, sécurité sociale'],
-                            ['titre' => 'Loi n° 65-00',                        'desc' => 'AMO, couverture médicale'],
-                            ['titre' => 'Arrêté n° 1314-25',                   'desc' => 'BO n° 7443 du 29/09/2025, indemnités'],
-                            ['titre' => 'Décret n° 2.25.983',                  'desc' => 'SMIG 2026'],
-                            ['titre' => 'Loi de Finances 50-25',               'desc' => 'CGI 2026, exercice fiscal'],
+                            ['titre' => __('ui.documentation.ref_cgi', ['year' => 2026]), 'desc' => __('ui.documentation.ref_cgi_articles')],
+                            ['titre' => __('ui.documentation.ref_labor'),                 'desc' => __('ui.documentation.ref_labor_articles')],
+                            ['titre' => __('ui.documentation.ref_dahir'),                 'desc' => __('ui.documentation.ref_dahir_desc')],
+                            ['titre' => __('ui.documentation.ref_amo'),                   'desc' => __('ui.documentation.ref_amo_desc')],
+                            ['titre' => __('ui.documentation.ref_arrete'),                'desc' => __('ui.documentation.ref_arrete_desc')],
+                            ['titre' => __('ui.documentation.ref_smig'),                  'desc' => __('ui.documentation.ref_smig_desc')],
+                            ['titre' => __('ui.documentation.ref_ldf'),                   'desc' => __('ui.documentation.ref_ldf_desc')],
                         ] as $ref)
                         <li class="mb-3 pb-3 border-bottom">
                             <div class="fw-semibold small">{{ $ref['titre'] }}</div>

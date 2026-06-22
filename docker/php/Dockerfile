@@ -23,25 +23,30 @@ COPY . .
 RUN composer dump-autoload --optimize --no-scripts
 
 # =========================================================================
-# Stage 2 — Image PHP-FPM 8.4 de production
+# Stage 2 — Image PHP-FPM 8.5 Alpine
 # =========================================================================
-FROM php:8.5-fpm
+FROM php:8.5-fpm-alpine
 
-# ---- Dépendances système ----
-RUN apt-get update -qq && apt-get install -y -q --no-install-recommends \
+# ---- Dépendances de build (temporaires) ----
+RUN apk add --no-cache --virtual .build-deps \
         libzip-dev \
-        libonig-dev \
+        oniguruma-dev \
         libxml2-dev \
-        unzip \
-        curl \
     && docker-php-ext-install \
         pdo \
-        pdo_mysql \
+        pdo_sqlite \
         mbstring \
         xml \
         zip \
         opcache \
-    && rm -rf /var/lib/apt/lists/*
+    && apk del .build-deps
+
+# ---- Dépendances runtime ----
+RUN apk add --no-cache \
+        libzip \
+        oniguruma \
+        libxml2 \
+        curl
 
 # ---- Configuration PHP optimisée ----
 COPY docker/php/php.ini /usr/local/etc/php/conf.d/custom.ini
