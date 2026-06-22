@@ -1,0 +1,381 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "3omar - Simulateur de salaire net marocain",
+    "description": "API REST du simulateur de paie marocaine pour le secteur prive, exercice 2026.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "3omar",
+      "url": "https://github.com/Zakmaf/3omar"
+    }
+  },
+  "servers": [
+    {
+      "url": "/api/v1",
+      "description": "API v1"
+    }
+  ],
+  "paths": {
+    "/simuler/brut-vers-net": {
+      "post": {
+        "summary": "Simuler le salaire net a partir du brut",
+        "description": "Calcule le bulletin de paie complet (cotisations, IR, net) a partir du salaire de base brut et des parametres optionnels.",
+        "operationId": "simulerBrutVersNet",
+        "tags": ["Simulation"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BrutVersNetInput"
+              },
+              "example": {
+                "salaire_base": 10000,
+                "type_frais_pro": "commun",
+                "nb_enfants": 2,
+                "conjoint_charge": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Simulation reussie",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimulationResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Erreur de validation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RFC7807Error"
+                },
+                "example": {
+                  "type": "about:blank",
+                  "title": "Unprocessable Content",
+                  "status": 422,
+                  "detail": "The salaire_base field is required.",
+                  "errors": {
+                    "salaire_base": ["The salaire_base field is required."]
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de debit depassee",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RFC7807Error"
+                },
+                "example": {
+                  "type": "about:blank",
+                  "title": "Too Many Requests",
+                  "status": 429,
+                  "detail": "Rate limit exceeded. Try again later."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/simuler/net-vers-brut": {
+      "post": {
+        "summary": "Resoudre le salaire brut a partir du net cible",
+        "description": "Recherche par dichotomie le salaire de base brut qui produit le net cible souhaite.",
+        "operationId": "simulerNetVersBrut",
+        "tags": ["Simulation"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NetVersBrutInput"
+              },
+              "example": {
+                "net_cible": 8000,
+                "type_frais_pro": "commun"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Resolution reussie",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/SimulationResult" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "resolution_net": {
+                          "$ref": "#/components/schemas/ResolutionNet"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "$ref": "#/paths/~1simuler~1brut-vers-net/post/responses/422"
+          },
+          "429": {
+            "$ref": "#/paths/~1simuler~1brut-vers-net/post/responses/429"
+          }
+        }
+      }
+    },
+    "/parametres": {
+      "get": {
+        "summary": "Recuperer les parametres reglementaires",
+        "description": "Retourne la configuration complete du simulateur : taux CNSS, AMO, bareme IR, plafonds, indemnites, etc.",
+        "operationId": "getParametres",
+        "tags": ["Reference"],
+        "responses": {
+          "200": {
+            "description": "Parametres reglementaires",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "year": { "type": "integer", "example": 2026 },
+                    "cnss": {
+                      "type": "object",
+                      "properties": {
+                        "taux": { "type": "number", "example": 0.0448 },
+                        "taux_patronal": { "type": "number", "example": 0.0898 },
+                        "plafond": { "type": "number", "example": 6000 }
+                      }
+                    },
+                    "amo": {
+                      "type": "object",
+                      "properties": {
+                        "taux": { "type": "number" },
+                        "taux_patronal": { "type": "number" }
+                      }
+                    },
+                    "ir": {
+                      "type": "object",
+                      "properties": {
+                        "baremes": {
+                          "type": "array",
+                          "items": { "type": "object" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Verification de l'etat du service",
+        "description": "Retourne le statut, la version et l'horodatage du service.",
+        "operationId": "getHealth",
+        "tags": ["Systeme"],
+        "responses": {
+          "200": {
+            "description": "Service operationnel",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                },
+                "example": {
+                  "status": "ok",
+                  "version": "V1.5.0",
+                  "timestamp": "2026-06-22T12:00:00+00:00"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BrutVersNetInput": {
+        "type": "object",
+        "required": ["salaire_base", "type_frais_pro"],
+        "properties": {
+          "salaire_base": { "type": "number", "minimum": 0, "maximum": 10000000, "description": "Salaire de base mensuel brut en MAD" },
+          "type_frais_pro": { "type": "string", "enum": ["commun", "journaliste", "artiste"], "description": "Categorie de frais professionnels" },
+          "nb_annees_anciennete": { "type": "integer", "minimum": 0, "maximum": 50, "description": "Nombre d'annees d'anciennete" },
+          "prime_bilan": { "type": "number", "minimum": 0, "description": "Prime de bilan mensuelle en MAD" },
+          "prime_rendement": { "type": "number", "minimum": 0, "description": "Prime de rendement mensuelle en MAD" },
+          "autres_primes": { "type": "number", "minimum": 0, "description": "Autres primes imposables mensuelles en MAD" },
+          "nb_enfants": { "type": "integer", "minimum": 0, "maximum": 20, "description": "Nombre d'enfants a charge" },
+          "conjoint_charge": { "type": "boolean", "description": "Conjoint a charge" },
+          "cimr_actif": { "type": "boolean", "description": "Activer la cotisation CIMR" },
+          "cimr_taux": { "type": "number", "minimum": 0, "description": "Taux CIMR en pourcentage (ex: 6 pour 6%)" },
+          "cimr_repartition": { "type": "string", "enum": ["salarie", "employeur", "partage"], "description": "Repartition de la cotisation CIMR" },
+          "cimr_taux_employeur": { "type": "number", "minimum": 0, "description": "Taux CIMR employeur en pourcentage (si repartition partage)" },
+          "retraite_complementaire_mensuel": { "type": "number", "minimum": 0, "description": "Retraite complementaire mensuelle en MAD" },
+          "rc_part_employeur": { "type": "number", "minimum": 0, "description": "Part employeur retraite complementaire en MAD" },
+          "mutuelle_salarie": { "type": "number", "minimum": 0, "description": "Cotisation mutuelle salarie en MAD" },
+          "mutuelle_patronale": { "type": "number", "minimum": 0, "description": "Cotisation mutuelle patronale en MAD" },
+          "autres_retenues": { "type": "number", "minimum": 0, "description": "Autres retenues mensuelles en MAD" },
+          "jours_travailles": { "type": "integer", "minimum": 1, "maximum": 31, "description": "Nombre de jours travailles dans le mois" },
+          "heures_sup": {
+            "type": "array",
+            "maxItems": 10,
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": { "type": "string", "enum": ["semaine_diurne", "semaine_nocturne", "repos_diurne", "repos_nocturne"] },
+                "nb_heures": { "type": "number", "minimum": 0, "maximum": 744 }
+              }
+            },
+            "description": "Heures supplementaires"
+          },
+          "indemnites": {
+            "type": "array",
+            "maxItems": 10,
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": { "type": "string", "enum": ["transport", "panier", "representation", "salissure", "outillage", "vestimentaire", "logement", "voiture_fonction"] },
+                "montant": { "type": "number", "minimum": 0, "maximum": 1000000 }
+              }
+            },
+            "description": "Indemnites exonerees"
+          },
+          "prime_scolarite": { "type": "number", "minimum": 0, "description": "Prime de scolarite en MAD" },
+          "prime_aid": { "type": "number", "minimum": 0, "description": "Prime des Aid en MAD" },
+          "autres_avantages_cnss": { "type": "number", "minimum": 0, "description": "Autres avantages CNSS exoneres en MAD" }
+        }
+      },
+      "NetVersBrutInput": {
+        "type": "object",
+        "required": ["net_cible", "type_frais_pro"],
+        "properties": {
+          "net_cible": { "type": "number", "minimum": 0.01, "maximum": 10000000, "description": "Salaire net cible en MAD" },
+          "type_frais_pro": { "type": "string", "enum": ["commun", "journaliste", "artiste"] },
+          "nb_annees_anciennete": { "type": "integer", "minimum": 0, "maximum": 50 },
+          "prime_bilan": { "type": "number", "minimum": 0 },
+          "prime_rendement": { "type": "number", "minimum": 0 },
+          "autres_primes": { "type": "number", "minimum": 0 },
+          "nb_enfants": { "type": "integer", "minimum": 0, "maximum": 20 },
+          "conjoint_charge": { "type": "boolean" },
+          "cimr_actif": { "type": "boolean" },
+          "cimr_taux": { "type": "number", "minimum": 0 },
+          "cimr_repartition": { "type": "string", "enum": ["salarie", "employeur", "partage"] },
+          "cimr_taux_employeur": { "type": "number", "minimum": 0 },
+          "retraite_complementaire_mensuel": { "type": "number", "minimum": 0 },
+          "rc_part_employeur": { "type": "number", "minimum": 0 },
+          "mutuelle_salarie": { "type": "number", "minimum": 0 },
+          "mutuelle_patronale": { "type": "number", "minimum": 0 },
+          "autres_retenues": { "type": "number", "minimum": 0 },
+          "jours_travailles": { "type": "integer", "minimum": 1, "maximum": 31 },
+          "heures_sup": {
+            "type": "array",
+            "maxItems": 10,
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": { "type": "string", "enum": ["semaine_diurne", "semaine_nocturne", "repos_diurne", "repos_nocturne"] },
+                "nb_heures": { "type": "number", "minimum": 0, "maximum": 744 }
+              }
+            }
+          },
+          "indemnites": {
+            "type": "array",
+            "maxItems": 10,
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": { "type": "string", "enum": ["transport", "panier", "representation", "salissure", "outillage", "vestimentaire", "logement", "voiture_fonction"] },
+                "montant": { "type": "number", "minimum": 0, "maximum": 1000000 }
+              }
+            }
+          },
+          "prime_scolarite": { "type": "number", "minimum": 0 },
+          "prime_aid": { "type": "number", "minimum": 0 },
+          "autres_avantages_cnss": { "type": "number", "minimum": 0 }
+        }
+      },
+      "SimulationResult": {
+        "type": "object",
+        "properties": {
+          "mode": { "type": "string", "enum": ["gross_to_net", "net_to_gross"] },
+          "sbi": { "type": "number", "description": "Salaire Brut Imposable" },
+          "salaire_brut_total": { "type": "number" },
+          "salaire_net": { "type": "number", "description": "Salaire net a payer" },
+          "cotisation_cnss": { "type": "number" },
+          "cotisation_amo": { "type": "number" },
+          "cotisation_cimr": { "type": "number" },
+          "ir_net": { "type": "number", "description": "IR net mensuel" },
+          "frais_pro": { "type": "number" },
+          "rni": { "type": "number", "description": "Revenu Net Imposable mensuel" },
+          "total_indemnites": { "type": "number" },
+          "total_sociales": { "type": "number" },
+          "total_patronal": { "type": "number" },
+          "cout_total_employeur": { "type": "number" },
+          "prime_anciennete": { "type": "number" },
+          "repartition": { "type": "object", "description": "Donnees pour graphique (Chart.js)" },
+          "avertissements": { "type": "array", "items": { "type": "string" } },
+          "detail_hs": { "type": "array", "items": { "type": "object" } },
+          "detail_indemnites": { "type": "array", "items": { "type": "object" } }
+        }
+      },
+      "ResolutionNet": {
+        "type": "object",
+        "properties": {
+          "net_cible": { "type": "number" },
+          "net_obtenu": { "type": "number" },
+          "ecart": { "type": "number" },
+          "iterations": { "type": "integer" },
+          "precision": { "type": "number" },
+          "borne_basse": { "type": "number" },
+          "borne_haute": { "type": "number" },
+          "converge": { "type": "boolean" }
+        }
+      },
+      "HealthResponse": {
+        "type": "object",
+        "required": ["status", "version", "timestamp"],
+        "properties": {
+          "status": { "type": "string", "example": "ok" },
+          "version": { "type": "string", "example": "V1.5.0" },
+          "timestamp": { "type": "string", "format": "date-time" }
+        }
+      },
+      "RFC7807Error": {
+        "type": "object",
+        "required": ["type", "title", "status", "detail"],
+        "properties": {
+          "type": { "type": "string", "example": "about:blank" },
+          "title": { "type": "string", "example": "Unprocessable Content" },
+          "status": { "type": "integer", "example": 422 },
+          "detail": { "type": "string", "example": "The salaire_base field is required." },
+          "errors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "description": "Erreurs de validation par champ (present uniquement pour le statut 422)"
+          }
+        }
+      }
+    }
+  }
+}
