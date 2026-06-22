@@ -375,7 +375,7 @@
             <img src="{{ asset('img/logo_header_400x100.png') }}" alt="3omar" height="40" width="160">
         </a>
         <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#nav"
-                aria-controls="nav" aria-expanded="false" aria-label="Afficher la navigation">
+                aria-controls="nav" aria-expanded="false" aria-label="{{ __('ui.toggle_nav_aria') }}">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="nav">
