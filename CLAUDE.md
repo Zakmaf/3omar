@@ -158,6 +158,64 @@ Follow the release notes standard defined in `CONTRIBUTING.md` (section "Redacti
 
 ---
 
+## Agent routing policy
+
+This project uses specialized Claude Code subagents. Delegate work to agents instead of handling everything in the main context.
+
+### Available agents
+
+| Agent | Domain |
+|---|---|
+| `payroll-rules-engineer` | Moroccan payroll formulas, `config/payroll.php`, `PayrollCalculatorService`, gross/net logic, employer cost, monthly/annual rules |
+| `laravel-maintainer` | Laravel structure, controllers, routes, validation, middleware, security, maintainability |
+| `ux-accessibility-designer` | Blade UI, mobile UX, accessibility, RTL, results page, guided forms, print/PDF layout |
+| `i18n-localization-agent` | FR/EN/AR/ES translations, RTL wording, locale files, user-facing strings |
+| `release-devops-agent` | Docker, GHCR, CI, deployment, production configuration, release safety |
+| `test-qa-engineer` | PHPUnit coverage, regression tests, golden tests, edge cases, validation tests |
+| `code-reviewer` | Final diff review before commit, PR, merge, or release |
+
+### Default routing
+
+- Payroll calculation changes: `payroll-rules-engineer` -> `test-qa-engineer` -> `code-reviewer`.
+- Laravel implementation work: `laravel-maintainer` -> `test-qa-engineer` -> `code-reviewer`.
+- UI work: `ux-accessibility-designer` -> `i18n-localization-agent` (if text changes) -> `test-qa-engineer` -> `code-reviewer`.
+- Translation or wording changes: `i18n-localization-agent`. Escalate to `payroll-rules-engineer` if the wording describes legal, fiscal, social, or payroll assumptions.
+- Docker, CI, deployment, or GHCR work: `release-devops-agent` -> `test-qa-engineer` (if app behavior changed) -> `code-reviewer`.
+- Before any PR or merge: `code-reviewer`.
+
+### Model selection
+
+- **Haiku**: cheap, narrow, low-risk work (simple translation completion, backlog cleanup, issue formatting, simple documentation wording, basic search or file inspection).
+- **Sonnet** (default): implementation work (PHP/Laravel code edits, payroll tests, UX changes, i18n with business wording, Docker/CI changes, refactors, code review).
+- **Opus**: high-risk reasoning only (payroll engine redesign, net-to-gross solver changes, monthly/annual calculation architecture, final pre-release audit, ambiguous legal/fiscal/social interpretation, large multi-file refactors, debugging regressions where the cause is unclear).
+
+### Effort levels
+
+- **Low**: mechanical edits, formatting, labels, obvious docs fixes, simple translation sync.
+- **Medium**: normal feature work, Laravel edits, UI edits, Docker changes, regular tests.
+- **High**: payroll formulas, legal assumptions, boundary cases, regressions, architecture decisions, final reviews.
+- When payroll correctness or user trust is at stake, prefer Sonnet with high effort.
+- Use Opus with high effort only when the cost is justified by risk.
+
+### Quality gates
+
+- Any payroll behavior change must include tests.
+- Any user-facing text change must update all supported locales: FR, EN, AR, ES.
+- Any calculation assumption change must update documentation.
+- Any UI change must consider mobile and RTL.
+- Any deployment change must preserve safe production defaults.
+- Any non-trivial change must pass through `code-reviewer` before being considered done.
+
+### Execution rules
+
+1. State which agent or agent sequence you will use before starting.
+2. Keep each agent within its domain. Do not let UI agents change payroll formulas. Do not let i18n agents invent legal/payroll terminology without flagging uncertainty. Do not let DevOps changes weaken production safety.
+3. After implementation, run checks: `docker compose exec app vendor/bin/phpunit` and `docker compose exec app vendor/bin/pint`.
+4. If tests cannot run, explain why and state the residual risk.
+5. Summarize: agents used, files changed, tests run, remaining risks, recommended next step.
+
+---
+
 ## Writing style
 
 - **Never use the em dash (`—`)** anywhere: not in code, commits, docs, PR descriptions, or release notes. Use a simple dash (`-`), a colon (`:`) or reformulate the sentence.
