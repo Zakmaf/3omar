@@ -137,7 +137,7 @@
                 {{-- 1. Rémunération de base --}}
                 <details class="step-section section-card mb-3" open data-step-section>
                     <summary>
-                        <span class="step-label"><i class="bi bi-cash-coin me-2" style="color:var(--s-info)"></i>Salaire de départ</span>
+                        <span class="step-label"><i class="bi bi-cash-coin me-2" style="color:var(--s-info)"></i>{{ __('ui.calculator.step1_title') }}</span>
                         <span class="step-pill">{{ __('ui.calculator.step_required') }}</span>
                     </summary>
                     <div class="card-body px-4 py-3">
@@ -150,32 +150,32 @@
                                        value="{{ old('net_cible', 8000) }}"
                                        min="0.01" step="0.01" placeholder="Ex : 8 000" inputmode="decimal"
                                        aria-describedby="netCibleHelp">
-                                <span class="input-group-text">MAD</span>
+                                <span class="input-group-text">{{ __('ui.result.unit_mad_month_label') }}</span>
                             </div>
                             <div class="form-text" id="netCibleHelp">{{ __('ui.calculator.net_target_help') }}</div>
                         </div>
 
                         <div class="mb-3" id="salaireBaseGroup">
-                            <label class="form-label fw-semibold" for="salaire_base">Salaire de base brut <span style="color:var(--s-tax)">*</span></label>
+                            <label class="form-label fw-semibold" for="salaire_base">{{ __('ui.calculator.base_salary_label') }} <span style="color:var(--s-tax)">*</span></label>
                             <div class="input-group">
                                 <input type="number" name="salaire_base" id="salaire_base"
                                        class="form-control @error('salaire_base') is-invalid @enderror"
                                        value="{{ old('salaire_base', 5000) }}"
                                        min="0" step="0.01" placeholder="Ex : 8 500" inputmode="decimal"
                                        aria-describedby="salaireBaseHelp">
-                                <span class="input-group-text">MAD</span>
+                                <span class="input-group-text">{{ __('ui.result.unit_mad_month_label') }}</span>
                             </div>
-                            <div class="form-text" id="salaireBaseHelp">Montant brut mensuel avant cotisations. Repère SMIG simulé : {{ number_format(config('payroll.smig.mensuel'), 2, ',', ' ') }} MAD/mois.</div>
+                            <div class="form-text" id="salaireBaseHelp">{{ __('ui.calculator.base_salary_help', ['smig' => number_format(config('payroll.smig.mensuel'), 2, ',', ' ')]) }}</div>
                         </div>
 
                         <div class="mb-2">
-                            <label class="form-label fw-semibold" for="type_frais_pro">Catégorie professionnelle (frais pro)</label>
+                            <label class="form-label fw-semibold" for="type_frais_pro">{{ __('ui.calculator.category_label') }}</label>
                             <select name="type_frais_pro" id="type_frais_pro" class="form-select">
-                                <option value="commun"      {{ old('type_frais_pro','commun') === 'commun'      ? 'selected' : '' }}>Salarié commun (35% ou 25% selon SBI)</option>
-                                <option value="journaliste" {{ old('type_frais_pro','commun') === 'journaliste' ? 'selected' : '' }}>Journaliste / Correspondant de presse (45%)</option>
-                                <option value="artiste"     {{ old('type_frais_pro','commun') === 'artiste'     ? 'selected' : '' }}>Artiste / Créateur (40%)</option>
+                                <option value="commun"      {{ old('type_frais_pro','commun') === 'commun'      ? 'selected' : '' }}>{{ __('ui.calculator.category_common') }}</option>
+                                <option value="journaliste" {{ old('type_frais_pro','commun') === 'journaliste' ? 'selected' : '' }}>{{ __('ui.calculator.category_journalist') }}</option>
+                                <option value="artiste"     {{ old('type_frais_pro','commun') === 'artiste'     ? 'selected' : '' }}>{{ __('ui.calculator.category_artist') }}</option>
                             </select>
-                            <div class="form-text">Art. 59 I-A CGI — plafond {{ number_format(config('payroll.frais_pro.commun.haut.plafond'), 2, ',', ' ') }} MAD/mois</div>
+                            <div class="form-text">{{ __('ui.calculator.category_help', ['cap' => number_format(config('payroll.frais_pro.commun.haut.plafond'), 2, ',', ' ')]) }}</div>
                         </div>
 
                         <div class="step-actions d-flex justify-content-end">
@@ -189,7 +189,7 @@
                 {{-- 2. Primes et ancienneté --}}
                 <details class="step-section section-card mb-3" data-step-section {{ old('nb_annees_anciennete') || old('prime_bilan') || old('prime_rendement') || old('autres_primes') ? 'open' : '' }}>
                     <summary>
-                        <span class="step-label"><i class="bi bi-cash-stack me-2" style="color:var(--s-warn)"></i>Primes et ancienneté</span>
+                        <span class="step-label"><i class="bi bi-cash-stack me-2" style="color:var(--s-warn)"></i>{{ __('ui.calculator.step2_title') }}</span>
                         <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
                     </summary>
                     <div class="card-body px-4 py-3">
@@ -218,11 +218,11 @@
                         {{-- Ancienneté --}}
                         <div class="p-3 rounded-2 mb-3" style="background:var(--s-warn-bg); border:1px solid rgba(217,119,6,0.2);">
                             <div class="fw-semibold small mb-2">
-                                <i class="bi bi-hourglass-split me-1" style="color:var(--s-warn)"></i>Prime d'ancienneté (Art. 350 Code du Travail)
+                                <i class="bi bi-hourglass-split me-1" style="color:var(--s-warn)"></i>{{ __('ui.calculator.seniority_heading') }}
                             </div>
                             <div class="row g-2 align-items-end">
                                 <div class="col-7">
-                                    <label class="form-label small mb-1" for="nb_annees_anciennete">Tranche d'ancienneté</label>
+                                    <label class="form-label small mb-1" for="nb_annees_anciennete">{{ __('ui.calculator.seniority_bracket') }}</label>
                                     <select name="nb_annees_anciennete" id="nb_annees_anciennete" class="form-select form-select-sm">
                                         @foreach($ancienneteOptions as $option)
                                         <option value="{{ $option['annees'] }}" {{ $ancienneteValue === $option['annees'] ? 'selected' : '' }}>{{ $option['label'] }}</option>
@@ -230,27 +230,27 @@
                                     </select>
                                 </div>
                                 <div class="col-5 text-end">
-                                    <div class="small text-muted">Taux applicable :</div>
+                                    <div class="small text-muted">{{ __('ui.calculator.seniority_rate') }}</div>
                                     <div class="fw-bold" id="anciennete_taux_label">—</div>
                                     <div class="small" id="anciennete_montant_label" style="color:var(--s-succ)"></div>
                                 </div>
                             </div>
-                            <div class="form-text mt-1">La liste reprend les tranches légales configurées ; le simulateur utilise l'année de début de tranche.</div>
+                            <div class="form-text mt-1">{{ __('ui.calculator.seniority_help') }}</div>
                         </div>
 
                         <input type="hidden" name="prime_bilan" value="0">
                         <input type="hidden" name="prime_rendement" value="0">
 
                         <div class="mb-1">
-                            <label class="form-label fw-semibold small" for="autres_primes">Primes imposables <span class="text-muted fw-normal">(toutes primes confondues, équivalent mensuel)</span></label>
+                            <label class="form-label fw-semibold small" for="autres_primes">{{ __('ui.calculator.taxable_bonuses_label') }} <span class="text-muted fw-normal">{{ __('ui.calculator.taxable_bonuses_sub') }}</span></label>
                             <div class="input-group">
                                 <input type="number" name="autres_primes" id="autres_primes"
                                        class="form-control @error('autres_primes') is-invalid @enderror"
                                        value="{{ $oldPrimesImposables }}"
                                        min="0" step="0.01" placeholder="0">
-                                <span class="input-group-text">MAD</span>
+                                <span class="input-group-text">{{ __('ui.result.unit_mad_month_label') }}</span>
                             </div>
-                            <div class="form-text">Additionnez 13ème mois, prime de bilan, rendement et autres primes imposables dans ce seul montant.</div>
+                            <div class="form-text">{{ __('ui.calculator.taxable_bonuses_help') }}</div>
                         </div>
 
                         <div class="step-actions d-flex flex-column flex-sm-row justify-content-end gap-2">
@@ -263,22 +263,22 @@
                 {{-- 3. Heures supplémentaires --}}
                 <details class="step-section section-card mb-3" data-step-section {{ old('heures_sup') ? 'open' : '' }}>
                     <summary>
-                        <span class="step-label"><i class="bi bi-clock-history me-2" style="color:var(--s-info)"></i>Heures supplémentaires</span>
+                        <span class="step-label"><i class="bi bi-clock-history me-2" style="color:var(--s-info)"></i>{{ __('ui.calculator.step3_title') }}</span>
                         <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
                     </summary>
                     <div class="card-body px-4 py-3">
                         <div class="d-flex justify-content-end mb-3">
                         <button type="button" class="btn btn-sm" id="addHS" style="border:1px solid var(--s-info);color:var(--s-info)">
-                            <i class="bi bi-plus-circle me-1"></i>Ajouter
+                            <i class="bi bi-plus-circle me-1"></i>{{ __('ui.calculator.add') }}
                         </button>
                         </div>
-                        <div class="form-text mb-3">Art. 201 Code du Travail (Loi n° 65-99) — Taux horaire = Salaire base / 191 h</div>
+                        <div class="form-text mb-3">{{ __('ui.calculator.overtime_help') }}</div>
                         <div id="hsContainer">
                             @if(old('heures_sup'))
                                 @foreach(old('heures_sup') as $i => $hs)
                                 <div class="hs-row row g-2 mb-2 align-items-end">
                                     <div class="col-7">
-                                        <label class="form-label small mb-1" for="heures_sup_{{ $i }}_type">Type</label>
+                                        <label class="form-label small mb-1" for="heures_sup_{{ $i }}_type">{{ __('ui.calculator.type_label') }}</label>
                                         <select name="heures_sup[{{ $i }}][type]" id="heures_sup_{{ $i }}_type" class="form-select form-select-sm">
                                             @foreach($hs_labels as $key => $label)
                                             <option value="{{ $key }}" {{ ($hs['type'] ?? '') === $key ? 'selected' : '' }}>{{ $label }}</option>
@@ -286,13 +286,13 @@
                                         </select>
                                     </div>
                                     <div class="col-4">
-                                        <label class="form-label small mb-1" for="heures_sup_{{ $i }}_nb_heures">Heures</label>
+                                        <label class="form-label small mb-1" for="heures_sup_{{ $i }}_nb_heures">{{ __('ui.calculator.hours_label') }}</label>
                                         <input type="number" name="heures_sup[{{ $i }}][nb_heures]" id="heures_sup_{{ $i }}_nb_heures"
                                                class="form-control form-control-sm"
                                                value="{{ $hs['nb_heures'] ?? '' }}" min="0" step="0.5">
                                     </div>
                                     <div class="col-1">
-                                        <button type="button" class="btn btn-sm btn-outline-danger remove-row" title="Supprimer" aria-label="Supprimer cette ligne d'heures supplémentaires">
+                                        <button type="button" class="btn btn-sm btn-outline-danger remove-row" title="{{ __('ui.calculator.remove') }}" aria-label="{{ __('ui.calculator.remove_overtime_aria') }}">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
@@ -301,7 +301,7 @@
                             @endif
                         </div>
                         <p class="text-muted small mb-0" id="hsPlaceholder" {{ old('heures_sup') ? 'style=display:none' : '' }}>
-                            <i class="bi bi-info-circle me-1"></i>Cliquez « Ajouter » pour saisir des heures supplémentaires.
+                            <i class="bi bi-info-circle me-1"></i>{{ __('ui.calculator.overtime_placeholder') }}
                         </p>
                         <div class="step-actions d-flex flex-column flex-sm-row justify-content-end gap-2">
                             <button type="button" class="btn fw-semibold" style="border:1px solid var(--ink-3);color:var(--ink-2)" data-step-skip>{{ __('ui.calculator.step_skip') }}</button>
@@ -313,21 +313,21 @@
                 {{-- 4. CIMR --}}
                 <details class="step-section section-card mb-3" data-step-section {{ old('cimr_actif') ? 'open' : '' }}>
                     <summary>
-                        <span class="step-label"><i class="bi bi-piggy-bank me-2" style="color:var(--s-cot)"></i>Retraite complémentaire (CIMR)</span>
+                        <span class="step-label"><i class="bi bi-piggy-bank me-2" style="color:var(--s-cot)"></i>{{ __('ui.calculator.step4_title') }}</span>
                         <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
                     </summary>
                     <div class="card-body px-4 py-3">
                         <div class="form-check form-switch mb-3">
                             <input class="form-check-input" type="checkbox" name="cimr_actif" id="cimrActif"
                                    value="1" {{ old('cimr_actif') ? 'checked' : '' }}>
-                            <label class="form-check-label fw-semibold" for="cimrActif">Cotisant à la CIMR</label>
+                            <label class="form-check-label fw-semibold" for="cimrActif">{{ __('ui.calculator.cimr_subscriber') }}</label>
                         </div>
                         <div id="cimrSection" style="{{ old('cimr_actif') ? '' : 'display:none' }}">
                             <input type="hidden" name="cimr_repartition" value="partage">
 
                             <div class="row g-3">
                                 <div class="col-sm-6">
-                                    <label class="form-label fw-semibold small" for="cimrTaux">Taux CIMR salarié</label>
+                                    <label class="form-label fw-semibold small" for="cimrTaux">{{ __('ui.calculator.cimr_employee_rate') }}</label>
                                     <div class="input-group input-group-sm">
                                         <input type="number" name="cimr_taux" id="cimrTaux"
                                                class="form-control @error('cimr_taux') is-invalid @enderror"
@@ -335,10 +335,10 @@
                                                min="0" step="0.5" placeholder="6" inputmode="decimal">
                                         <span class="input-group-text">%</span>
                                     </div>
-                                    <div class="form-text">Part salarié, déduite du salaire net comptable.</div>
+                                    <div class="form-text">{{ __('ui.calculator.cimr_employee_help') }}</div>
                                 </div>
                                 <div class="col-sm-6">
-                                    <label class="form-label fw-semibold small" for="cimrTauxEmployeur">Taux CIMR employeur</label>
+                                    <label class="form-label fw-semibold small" for="cimrTauxEmployeur">{{ __('ui.calculator.cimr_employer_rate') }}</label>
                                     <div class="input-group input-group-sm">
                                         <input type="number" name="cimr_taux_employeur" id="cimrTauxEmployeur"
                                                class="form-control @error('cimr_taux_employeur') is-invalid @enderror"
@@ -346,10 +346,10 @@
                                                min="0" step="0.5" placeholder="6" inputmode="decimal">
                                         <span class="input-group-text">%</span>
                                     </div>
-                                    <div class="form-text">Part employeur, intégrée au coût total employeur.</div>
+                                    <div class="form-text">{{ __('ui.calculator.cimr_employer_help') }}</div>
                                 </div>
                             </div>
-                            <div class="form-text mt-2">La simulation CIMR est cadrée en répartition partagée.</div>
+                            <div class="form-text mt-2">{{ __('ui.calculator.cimr_mode_help') }}</div>
 
                         </div>
                         <div class="step-actions d-flex flex-column flex-sm-row justify-content-end gap-2">
@@ -362,7 +362,7 @@
                 {{-- 5. Charges de famille --}}
                 <details class="step-section section-card mb-3" data-step-section {{ old('nb_enfants') || old('conjoint_charge') ? 'open' : '' }}>
                     <summary>
-                        <span class="step-label"><i class="bi bi-people-fill me-2" style="color:var(--s-succ)"></i>Charges de famille</span>
+                        <span class="step-label"><i class="bi bi-people-fill me-2" style="color:var(--s-succ)"></i>{{ __('ui.calculator.step5_title') }}</span>
                         <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
                     </summary>
                     <div class="card-body px-4 py-3">
@@ -374,10 +374,10 @@
                         @endphp
                         <div class="row g-3">
                             <div class="col-sm-6">
-                                <label class="form-label fw-semibold" for="nb_enfants">Enfants à charge</label>
+                                <label class="form-label fw-semibold" for="nb_enfants">{{ __('ui.calculator.children_label') }}</label>
                                 <select name="nb_enfants" id="nb_enfants" class="form-select" data-max-personnes="{{ $maxPersonnesCharge }}">
                                     @for($i = 0; $i <= $maxEnfantsCharge; $i++)
-                                    <option value="{{ $i }}" {{ $selectedNbEnfants === $i ? 'selected' : '' }}>{{ $i === $maxEnfantsCharge ? $i.' ou plus' : $i }}</option>
+                                    <option value="{{ $i }}" {{ $selectedNbEnfants === $i ? 'selected' : '' }}>{{ $i === $maxEnfantsCharge ? $i.' '.__('ui.calculator.children_or_more') : $i }}</option>
                                     @endfor
                                 </select>
                             </div>
@@ -386,8 +386,8 @@
                             <div class="form-check mb-0">
                                     <input class="form-check-input" type="checkbox" name="conjoint_charge"
                                            id="conjointCharge" value="1" {{ $conjointChecked ? 'checked' : '' }}>
-                                    <label class="form-check-label fw-semibold" for="conjointCharge">Conjoint à charge</label>
-                                    <div class="form-text">Compte comme une personne à charge dans le plafond fiscal.</div>
+                                    <label class="form-check-label fw-semibold" for="conjointCharge">{{ __('ui.calculator.spouse_label') }}</label>
+                                    <div class="form-text">{{ __('ui.calculator.spouse_help') }}</div>
                             </div>
                         </div>
                         <div class="form-text mt-2">{{ number_format(config('payroll.charges_famille.par_personne'), 2, ',', ' ') }} MAD/mois × nombre de personnes, plafond {{ number_format(config('payroll.charges_famille.plafond'), 2, ',', ' ') }} MAD/mois (Art. 74 CGI)</div>
@@ -401,33 +401,33 @@
                 {{-- 6. Santé & Retraite complémentaire --}}
                 <details class="step-section section-card mb-3" data-step-section {{ old('mutuelle_salarie') || old('mutuelle_patronale') || old('retraite_complementaire_mensuel') ? 'open' : '' }}>
                     <summary>
-                        <span class="step-label"><i class="bi bi-heart-pulse-fill me-2" style="color:var(--s-tax)"></i>Santé &amp; retraite complémentaire</span>
+                        <span class="step-label"><i class="bi bi-heart-pulse-fill me-2" style="color:var(--s-tax)"></i>{{ __('ui.calculator.step6_title') }}</span>
                         <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
                     </summary>
                     <div class="card-body px-4 py-3">
 
                         <div class="mb-3">
-                            <label class="form-label fw-semibold small" for="mutuelle_salarie">Mutuelle — Part salarié</label>
+                            <label class="form-label fw-semibold small" for="mutuelle_salarie">{{ __('ui.calculator.mutual_employee_label') }}</label>
                             <div class="input-group">
                                 <input type="number" name="mutuelle_salarie" id="mutuelle_salarie"
                                        class="form-control @error('mutuelle_salarie') is-invalid @enderror"
                                        value="{{ old('mutuelle_salarie', 0) }}"
                                        min="0" step="0.01" placeholder="0">
-                                <span class="input-group-text">MAD</span>
+                                <span class="input-group-text">{{ __('ui.result.unit_mad_month_label') }}</span>
                             </div>
-                            <div class="form-text">Retenue post-fiscale (déduite du net à payer)</div>
+                            <div class="form-text">{{ __('ui.calculator.mutual_employee_help') }}</div>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label fw-semibold small" for="mutuelle_patronale">Mutuelle — Part employeur</label>
+                            <label class="form-label fw-semibold small" for="mutuelle_patronale">{{ __('ui.calculator.mutual_employer_label') }}</label>
                             <div class="input-group">
                                 <input type="number" name="mutuelle_patronale" id="mutuelle_patronale"
                                        class="form-control @error('mutuelle_patronale') is-invalid @enderror"
                                        value="{{ old('mutuelle_patronale', 0) }}"
                                        min="0" step="0.01" placeholder="0">
-                                <span class="input-group-text">MAD</span>
+                                <span class="input-group-text">{{ __('ui.result.unit_mad_month_label') }}</span>
                             </div>
-                            <div class="form-text">Intégrée au coût total employeur</div>
+                            <div class="form-text">{{ __('ui.calculator.mutual_employer_help') }}</div>
                         </div>
 
                         <hr class="my-3">
@@ -435,34 +435,33 @@
                         <div class="mb-3">
                             <label class="form-label fw-semibold small" for="retraite_complementaire_mensuel">
                                 <i class="bi bi-bank me-1" style="color:var(--s-info)"></i>
-                                Retraite complémentaire — Part salarié <span class="text-muted fw-normal">(mensuel)</span>
+                                {{ __('ui.calculator.rc_employee_label') }} <span class="text-muted fw-normal">{{ __('ui.calculator.monthly') }}</span>
                             </label>
                             <div class="input-group">
                                 <input type="number" name="retraite_complementaire_mensuel" id="retraite_complementaire_mensuel"
                                        class="form-control @error('retraite_complementaire_mensuel') is-invalid @enderror"
                                        value="{{ old('retraite_complementaire_mensuel', 0) }}"
                                        min="0" step="0.01" placeholder="0">
-                                <span class="input-group-text">MAD</span>
+                                <span class="input-group-text">{{ __('ui.result.unit_mad_month_label') }}</span>
                             </div>
                             <div class="form-text">
-                                Déduction fiscale simulée dans la limite de 50% du SBI annuel.
-                                Ce montant n'est pas soustrait du net à payer — Art. 28-IV CGI.
+                                {{ __('ui.calculator.rc_employee_help') }}
                             </div>
                         </div>
 
                         <div class="mb-1">
                             <label class="form-label fw-semibold small" for="rc_part_employeur">
                                 <i class="bi bi-bank me-1" style="color:var(--s-warn)"></i>
-                                Retraite complémentaire — Part employeur <span class="text-muted fw-normal">(mensuel)</span>
+                                {{ __('ui.calculator.rc_employer_label') }} <span class="text-muted fw-normal">{{ __('ui.calculator.monthly') }}</span>
                             </label>
                             <div class="input-group">
                                 <input type="number" name="rc_part_employeur" id="rc_part_employeur"
                                        class="form-control @error('rc_part_employeur') is-invalid @enderror"
                                        value="{{ old('rc_part_employeur', 0) }}"
                                        min="0" step="0.01" placeholder="0">
-                                <span class="input-group-text">MAD</span>
+                                <span class="input-group-text">{{ __('ui.result.unit_mad_month_label') }}</span>
                             </div>
-                            <div class="form-text">Intégrée au coût total employeur</div>
+                            <div class="form-text">{{ __('ui.calculator.mutual_employer_help') }}</div>
                         </div>
 
                         <div class="step-actions d-flex flex-column flex-sm-row justify-content-end gap-2">
@@ -475,26 +474,26 @@
                 {{-- 7. Indemnités traitées comme exonérées --}}
                 <details class="step-section section-card mb-3" data-step-section {{ old('indemnites') ? 'open' : '' }}>
                     <summary>
-                        <span class="step-label"><i class="bi bi-gift me-2" style="color:var(--s-succ)"></i>Indemnités traitées comme exonérées</span>
+                        <span class="step-label"><i class="bi bi-gift me-2" style="color:var(--s-succ)"></i>{{ __('ui.calculator.step7_title') }}</span>
                         <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
                     </summary>
                     <div class="card-body px-4 py-3">
                         <div class="d-flex justify-content-end mb-3">
                         <button type="button" class="btn btn-sm" id="addIndemnite" style="border:1px solid var(--s-succ);color:var(--s-succ)">
-                            <i class="bi bi-plus-circle me-1"></i>Ajouter
+                            <i class="bi bi-plus-circle me-1"></i>{{ __('ui.calculator.add') }}
                         </button>
                         </div>
-                        <div class="form-text mb-3">Le simulateur traite ces indemnités comme exonérées dans les plafonds configurés. Vérifie leur éligibilité selon ta situation ; l'excédent est réintégré au brut imposable.</div>
+                        <div class="form-text mb-3">{{ __('ui.calculator.allowance_help') }}</div>
                         <div class="row g-2 mb-3 align-items-end">
                             <div class="col-7">
-                                <label class="form-label small mb-1 fw-semibold" for="joursTravailles">Jours travaillés dans le mois</label>
+                                <label class="form-label small mb-1 fw-semibold" for="joursTravailles">{{ __('ui.calculator.working_days_label') }}</label>
                                 <input type="number" name="jours_travailles" id="joursTravailles"
                                        class="form-control form-control-sm @error('jours_travailles') is-invalid @enderror"
                                        value="{{ old('jours_travailles', config('payroll.jours_travailles_defaut')) }}"
                                        min="1" max="31" step="1">
                             </div>
                             <div class="col-5">
-                                <div class="form-text mb-1">Sert au plafond journalier (ex. panier)</div>
+                                <div class="form-text mb-1">{{ __('ui.calculator.working_days_help') }}</div>
                             </div>
                         </div>
                         <div id="indemniteContainer">
@@ -502,7 +501,7 @@
                                 @foreach(old('indemnites') as $i => $ind)
                                 <div class="ind-row row g-2 mb-2 align-items-end">
                                     <div class="col-7">
-                                        <label class="form-label small mb-1" for="indemnites_{{ $i }}_type">Type d'indemnité</label>
+                                        <label class="form-label small mb-1" for="indemnites_{{ $i }}_type">{{ __('ui.calculator.allowance_type_label') }}</label>
                                         <select name="indemnites[{{ $i }}][type]" id="indemnites_{{ $i }}_type" class="form-select form-select-sm ind-type-select">
                                             @foreach($indemnites_config as $key => $cfg)
                                             <option value="{{ $key }}" {{ ($ind['type'] ?? '') === $key ? 'selected' : '' }}
@@ -514,16 +513,16 @@
                                         <div class="form-text ind-plafond-hint"></div>
                                     </div>
                                     <div class="col-4">
-                                        <label class="form-label small mb-1" for="indemnites_{{ $i }}_montant">Montant déclaré</label>
+                                        <label class="form-label small mb-1" for="indemnites_{{ $i }}_montant">{{ __('ui.calculator.allowance_amount_label') }}</label>
                                         <div class="input-group input-group-sm">
                                             <input type="number" name="indemnites[{{ $i }}][montant]" id="indemnites_{{ $i }}_montant"
                                                    class="form-control form-control-sm"
                                                    value="{{ $ind['montant'] ?? '' }}" min="0" step="0.01">
-                                            <span class="input-group-text">MAD</span>
+                                            <span class="input-group-text">{{ __('ui.result.unit_mad_month_label') }}</span>
                                         </div>
                                     </div>
                                     <div class="col-1">
-                                        <button type="button" class="btn btn-sm btn-outline-danger remove-row" aria-label="Supprimer cette indemnité">
+                                        <button type="button" class="btn btn-sm btn-outline-danger remove-row" aria-label="{{ __('ui.calculator.remove_allowance_aria') }}">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
@@ -532,7 +531,7 @@
                             @endif
                         </div>
                         <p class="text-muted small mb-0" id="indemnitePlaceholder" {{ old('indemnites') ? 'style=display:none' : '' }}>
-                            <i class="bi bi-info-circle me-1"></i>Clique « Ajouter » pour déclarer une indemnité.
+                            <i class="bi bi-info-circle me-1"></i>{{ __('ui.calculator.allowance_placeholder') }}
                         </p>
                         <div class="step-actions d-flex flex-column flex-sm-row justify-content-end gap-2">
                             <button type="button" class="btn fw-semibold" style="border:1px solid var(--ink-3);color:var(--ink-2)" data-step-skip>{{ __('ui.calculator.step_skip') }}</button>
@@ -544,44 +543,44 @@
                 {{-- 8. Avantages CNSS exonérés --}}
                 <details class="step-section section-card mb-3" data-step-section {{ old('prime_scolarite') || old('prime_aid') || old('autres_avantages_cnss') ? 'open' : '' }}>
                     <summary>
-                        <span class="step-label"><i class="bi bi-mortarboard me-2" style="color:var(--s-cot)"></i>Avantages CNSS exonérés</span>
+                        <span class="step-label"><i class="bi bi-mortarboard me-2" style="color:var(--s-cot)"></i>{{ __('ui.calculator.step8_title') }}</span>
                         <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
                     </summary>
                     <div class="card-body px-4 py-3">
-                        <div class="form-text mb-3">Primes soumises à l'IR mais exclues de l'assiette CNSS/AMO (Art. 19 Dahir 1-72-184).</div>
+                        <div class="form-text mb-3">{{ __('ui.calculator.cnss_exempt_help') }}</div>
 
                         <div class="mb-3">
-                            <label class="form-label fw-semibold small" for="prime_scolarite">Prime de scolarité</label>
+                            <label class="form-label fw-semibold small" for="prime_scolarite">{{ __('ui.calculator.school_bonus_label') }}</label>
                             <div class="input-group">
                                 <input type="number" name="prime_scolarite" id="prime_scolarite"
                                        class="form-control @error('prime_scolarite') is-invalid @enderror"
                                        value="{{ old('prime_scolarite', 0) }}"
                                        min="0" step="0.01" placeholder="0">
-                                <span class="input-group-text">MAD</span>
+                                <span class="input-group-text">{{ __('ui.result.unit_mad_month_label') }}</span>
                             </div>
-                            <div class="form-text">Équivalent mensuel de la prime annuelle</div>
+                            <div class="form-text">{{ __('ui.calculator.school_bonus_help') }}</div>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label fw-semibold small" for="prime_aid">Prime des Aïd</label>
+                            <label class="form-label fw-semibold small" for="prime_aid">{{ __('ui.calculator.eid_bonus_label') }}</label>
                             <div class="input-group">
                                 <input type="number" name="prime_aid" id="prime_aid"
                                        class="form-control @error('prime_aid') is-invalid @enderror"
                                        value="{{ old('prime_aid', 0) }}"
                                        min="0" step="0.01" placeholder="0">
-                                <span class="input-group-text">MAD</span>
+                                <span class="input-group-text">{{ __('ui.result.unit_mad_month_label') }}</span>
                             </div>
-                            <div class="form-text">Équivalent mensuel (Aïd El Fitr, Aïd El Adha)</div>
+                            <div class="form-text">{{ __('ui.calculator.eid_bonus_help') }}</div>
                         </div>
 
                         <div class="mb-1">
-                            <label class="form-label fw-semibold small" for="autres_avantages_cnss">Autres avantages CNSS exonérés</label>
+                            <label class="form-label fw-semibold small" for="autres_avantages_cnss">{{ __('ui.calculator.other_cnss_exempt_label') }}</label>
                             <div class="input-group">
                                 <input type="number" name="autres_avantages_cnss" id="autres_avantages_cnss"
                                        class="form-control @error('autres_avantages_cnss') is-invalid @enderror"
                                        value="{{ old('autres_avantages_cnss', 0) }}"
                                        min="0" step="0.01" placeholder="0">
-                                <span class="input-group-text">MAD</span>
+                                <span class="input-group-text">{{ __('ui.result.unit_mad_month_label') }}</span>
                             </div>
                         </div>
 
@@ -595,17 +594,17 @@
                 {{-- 9. Autres retenues --}}
                 <details class="step-section section-card mb-3" data-step-section {{ old('autres_retenues') ? 'open' : '' }}>
                     <summary>
-                        <span class="step-label"><i class="bi bi-dash-circle me-2" style="color:var(--s-neutral)"></i>Autres retenues</span>
+                        <span class="step-label"><i class="bi bi-dash-circle me-2" style="color:var(--s-neutral)"></i>{{ __('ui.calculator.step9_title') }}</span>
                         <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
                     </summary>
                     <div class="card-body px-4 py-3">
-                        <label class="form-label fw-semibold" for="autres_retenues">Autres retenues (montant total)</label>
+                        <label class="form-label fw-semibold" for="autres_retenues">{{ __('ui.calculator.other_deductions_label') }}</label>
                         <div class="input-group">
                             <input type="number" name="autres_retenues" id="autres_retenues" class="form-control"
                                    value="{{ old('autres_retenues', 0) }}" min="0" step="0.01" placeholder="0">
-                            <span class="input-group-text">MAD</span>
+                            <span class="input-group-text">{{ __('ui.result.unit_mad_month_label') }}</span>
                         </div>
-                        <div class="form-text">Avances sur salaire, oppositions, saisies-arrêts… (post-fiscales, hors mutuelle)</div>
+                        <div class="form-text">{{ __('ui.calculator.other_deductions_help') }}</div>
                         <div class="step-actions d-flex flex-column flex-sm-row justify-content-end gap-2">
                             <button type="button" class="btn fw-semibold" style="border:1px solid var(--ink-3);color:var(--ink-2)" data-step-skip>{{ __('ui.calculator.step_skip') }}</button>
                             <button type="button" class="btn text-white fw-semibold" style="background:var(--g-500)" data-step-next>{{ __('ui.calculator.step_continue') }}</button>
@@ -638,6 +637,15 @@ const HS_LABELS = @json($hs_labels);
 const INTL_LOCALE = @json(config('app.supported_locales.'.app()->getLocale().'.intl'));
 const MODE_GROSS_TO_NET = 'gross_to_net';
 const MODE_NET_TO_GROSS = 'net_to_gross';
+const TRANS_TYPE = @json(__('ui.calculator.type_label'));
+const TRANS_HOURS = @json(__('ui.calculator.hours_label'));
+const TRANS_REMOVE = @json(__('ui.calculator.remove'));
+const TRANS_REMOVE_OVERTIME = @json(__('ui.calculator.remove_overtime_aria'));
+const TRANS_ALLOWANCE_TYPE = @json(__('ui.calculator.allowance_type_label'));
+const TRANS_ALLOWANCE_AMOUNT = @json(__('ui.calculator.allowance_amount_label'));
+const TRANS_REMOVE_ALLOWANCE = @json(__('ui.calculator.remove_allowance_aria'));
+const TRANS_OR_MORE = @json(__('ui.calculator.children_or_more'));
+const TRANS_CEILING_SIMULATED = @json(__('ui.calculator.ceiling_simulated'));
 
 const salaireBaseGroup = document.getElementById('salaireBaseGroup');
 const salaireBaseInput = document.getElementById('salaire_base');
@@ -677,7 +685,7 @@ function updateAnciennete() {
     const labelEl = document.getElementById('anciennete_taux_label');
     const montantEl = document.getElementById('anciennete_montant_label');
     labelEl.textContent = taux > 0 ? taux + '%' : '0% (< 2 ans)';
-    montantEl.textContent = taux > 0 ? '→ ' + montant.toLocaleString(INTL_LOCALE, {minimumFractionDigits:2, maximumFractionDigits:2}) + ' MAD' : '';
+    montantEl.textContent = taux > 0 ? '→ ' + montant.toLocaleString(INTL_LOCALE, {minimumFractionDigits:2, maximumFractionDigits:2}) + ' {{ __('ui.result.unit_mad_month_label') }}' : '';
 }
 
 document.getElementById('nb_annees_anciennete').addEventListener('change', updateAnciennete);
@@ -696,7 +704,7 @@ function updateChildrenOptions() {
     for (let i = 0; i <= maxEnfants; i++) {
         const option = document.createElement('option');
         option.value = i;
-        option.textContent = i === maxEnfants ? i + ' ou plus' : i;
+        option.textContent = i === maxEnfants ? i + ' ' + TRANS_OR_MORE : i;
         option.selected = i === currentValue;
         nbEnfantsSelect.appendChild(option);
     }
@@ -752,15 +760,15 @@ document.getElementById('addHS').addEventListener('click', () => {
     row.className = 'hs-row row g-2 mb-2 align-items-end';
     row.innerHTML = `
         <div class="col-7">
-            <label class="form-label small mb-1" for="heures_sup_${i}_type">Type</label>
+            <label class="form-label small mb-1" for="heures_sup_${i}_type">${TRANS_TYPE}</label>
             <select name="heures_sup[${i}][type]" id="heures_sup_${i}_type" class="form-select form-select-sm">${buildHsOptions('semaine_diurne')}</select>
         </div>
         <div class="col-4">
-            <label class="form-label small mb-1" for="heures_sup_${i}_nb_heures">Heures</label>
+            <label class="form-label small mb-1" for="heures_sup_${i}_nb_heures">${TRANS_HOURS}</label>
             <input type="number" name="heures_sup[${i}][nb_heures]" id="heures_sup_${i}_nb_heures" class="form-control form-control-sm" value="" min="0" step="0.5" placeholder="0">
         </div>
         <div class="col-1">
-            <button type="button" class="btn btn-sm btn-outline-danger remove-row" title="Supprimer" aria-label="Supprimer cette ligne d'heures supplémentaires"><i class="bi bi-trash"></i></button>
+            <button type="button" class="btn btn-sm btn-outline-danger remove-row" title="${TRANS_REMOVE}" aria-label="${TRANS_REMOVE_OVERTIME}"><i class="bi bi-trash"></i></button>
         </div>`;
     document.getElementById('hsContainer').appendChild(row);
     document.getElementById('hsPlaceholder').style.display = 'none';
@@ -791,7 +799,7 @@ function buildIndOptions(selectedType) {
 
 function getPlafondHint(select) {
     const opt = select.options[select.selectedIndex];
-    return opt ? `Plafond simulé : ${opt.dataset.plafond}` : '';
+    return opt ? `${TRANS_CEILING_SIMULATED} ${opt.dataset.plafond}` : '';
 }
 
 function createIndRow(i, selectedType) {
@@ -799,19 +807,19 @@ function createIndRow(i, selectedType) {
     row.className = 'ind-row row g-2 mb-2 align-items-end';
     row.innerHTML = `
         <div class="col-7">
-            <label class="form-label small mb-1" for="indemnites_${i}_type">Type d'indemnité</label>
+            <label class="form-label small mb-1" for="indemnites_${i}_type">${TRANS_ALLOWANCE_TYPE}</label>
             <select name="indemnites[${i}][type]" id="indemnites_${i}_type" class="form-select form-select-sm ind-type-select">${buildIndOptions(selectedType || Object.keys(INDEMNITES_CONFIG)[0])}</select>
             <div class="form-text ind-plafond-hint"></div>
         </div>
         <div class="col-4">
-            <label class="form-label small mb-1" for="indemnites_${i}_montant">Montant déclaré</label>
+            <label class="form-label small mb-1" for="indemnites_${i}_montant">${TRANS_ALLOWANCE_AMOUNT}</label>
             <div class="input-group input-group-sm">
                 <input type="number" name="indemnites[${i}][montant]" id="indemnites_${i}_montant" class="form-control form-control-sm" value="" min="0" step="0.01" placeholder="0">
-                <span class="input-group-text">MAD</span>
+                <span class="input-group-text">{{ __('ui.result.unit_mad_month_label') }}</span>
             </div>
         </div>
         <div class="col-1">
-            <button type="button" class="btn btn-sm btn-outline-danger remove-row" aria-label="Supprimer cette indemnité"><i class="bi bi-trash"></i></button>
+            <button type="button" class="btn btn-sm btn-outline-danger remove-row" aria-label="${TRANS_REMOVE_ALLOWANCE}"><i class="bi bi-trash"></i></button>
         </div>`;
     const sel = row.querySelector('.ind-type-select');
     const hint = row.querySelector('.ind-plafond-hint');

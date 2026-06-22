@@ -116,19 +116,19 @@
             <div class="row g-3 flex-grow-1">
                 <div class="col-sm-6 col-xl-3">
                     <div class="small text-uppercase fw-semibold" style="color:var(--ink-3)">{{ __('ui.result.net_target') }}</div>
-                    <div class="fs-5 fw-bold">{{ number_format($r['resolution_net']['net_cible'], 2, ',', ' ') }} <small class="fs-6">MAD</small></div>
+                    <div class="fs-5 fw-bold">{{ $madMonth($r['resolution_net']['net_cible']) }}</div>
                 </div>
                 <div class="col-sm-6 col-xl-3">
                     <div class="small text-uppercase fw-semibold" style="color:var(--ink-3)">{{ __('ui.result.net_resolved') }}</div>
-                    <div class="fs-5 fw-bold">{{ number_format($r['resolution_net']['net_obtenu'], 2, ',', ' ') }} <small class="fs-6">MAD</small></div>
+                    <div class="fs-5 fw-bold">{{ $madMonth($r['resolution_net']['net_obtenu']) }}</div>
                 </div>
                 <div class="col-sm-6 col-xl-3">
                     <div class="small text-uppercase fw-semibold" style="color:var(--ink-3)">{{ __('ui.result.resolved_base_salary') }}</div>
-                    <div class="fs-5 fw-bold" style="color:var(--s-info)">{{ number_format($r['input']['salaire_base'], 2, ',', ' ') }} <small class="fs-6">MAD</small></div>
+                    <div class="fs-5 fw-bold" style="color:var(--s-info)">{{ $madMonth($r['input']['salaire_base']) }}</div>
                 </div>
                 <div class="col-sm-6 col-xl-3">
                     <div class="small text-uppercase fw-semibold" style="color:var(--ink-3)">{{ __('ui.result.resolution_gap') }}</div>
-                    <div class="fs-5 fw-bold" style="color:{{ $r['resolution_net']['converge'] ? 'var(--s-succ)' : 'var(--s-tax)' }}">{{ number_format($r['resolution_net']['ecart'], 2, ',', ' ') }} <small class="fs-6">MAD</small></div>
+                    <div class="fs-5 fw-bold" style="color:{{ $r['resolution_net']['converge'] ? 'var(--s-succ)' : 'var(--s-tax)' }}">{{ $madMonth($r['resolution_net']['ecart']) }}</div>
                 </div>
             </div>
         </div>
@@ -138,7 +138,7 @@
     {{-- Avertissements --}}
     @if(!empty($r['avertissements']))
     <div class="alert alert-warning border-0 shadow-sm mb-4">
-        <h6 class="fw-bold mb-2"><i class="bi bi-exclamation-triangle-fill me-2"></i>Avertissements réglementaires</h6>
+        <h6 class="fw-bold mb-2"><i class="bi bi-exclamation-triangle-fill me-2"></i>{{ __('ui.result.warnings_title') }}</h6>
         <ul class="mb-0">
             @foreach($r['avertissements'] as $w)
             <li>{{ $w }}</li>
@@ -165,8 +165,8 @@
             <div class="col-md-4">
                 <div class="section-card kpi-card kpi-card-primary h-100 py-3 px-3">
                     <div class="small text-uppercase fw-semibold mb-2" style="color:var(--ink-3)">{{ __('ui.result.net_pay') }}</div>
-                    <div class="net-amount">{{ number_format($r['salaire_net'], 2, ',', ' ') }}</div>
-                    <div class="text-muted small">{{ __('ui.result.unit_mad_month_label') }}</div>
+                    <div class="fs-3 fw-bold" style="color:var(--s-succ)">{{ $madMonth($r['salaire_net']) }}</div>
+                    <div class="text-muted small mt-2">{{ __('ui.result.net_pay_help') }}</div>
                 </div>
             </div>
 
@@ -234,17 +234,17 @@
                         <table class="table table-sm mb-0 detail-table">
                             <thead class="table-light">
                                 <tr>
-                                    <th class="px-3 py-2" style="width:45%">Poste</th>
-                                    <th class="text-end px-3 py-2" style="width:25%">Base / Assiette (MAD/mois)</th>
-                                    <th class="text-end px-3 py-2" style="width:15%">Taux</th>
-                                    <th class="text-end px-3 py-2" style="width:15%">Montant (MAD/mois)</th>
+                                    <th class="px-3 py-2" style="width:45%">{{ __('ui.result.detail_col_item') }}</th>
+                                    <th class="text-end px-3 py-2" style="width:25%">{{ __('ui.result.detail_col_base') }}</th>
+                                    <th class="text-end px-3 py-2" style="width:15%">{{ __('ui.result.detail_col_rate') }}</th>
+                                    <th class="text-end px-3 py-2" style="width:15%">{{ __('ui.result.detail_col_amount') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
 
                                 {{-- GAINS --}}
                                 <tr class="row-brut">
-                                    <td class="px-3 py-2">Salaire de base</td>
+                                    <td class="px-3 py-2">{{ __('ui.result.base_salary') }}</td>
                                     <td class="text-end px-3 py-2 text-muted">—</td>
                                     <td class="text-end px-3 py-2 text-muted">—</td>
                                     <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-info)">{{ number_format($r['input']['salaire_base'], 2, ',', ' ') }}</td>
@@ -253,7 +253,7 @@
                                 @if($r['prime_anciennete'] > 0)
                                 <tr class="row-brut">
                                     <td class="px-3 py-2">
-                                        Prime d'ancienneté — {{ $r['nb_annees_anciennete'] }} ans
+                                        {{ __('ui.result.seniority_bonus', ['years' => $r['nb_annees_anciennete']]) }}
                                         <span class="badge text-bg-light badge-legal ms-1">Art. 350 CT</span>
                                     </td>
                                     <td class="text-end px-3 py-2 text-muted">{{ number_format($r['input']['salaire_base'], 2, ',', ' ') }}</td>
@@ -264,7 +264,7 @@
 
                                 @if($r['prime_bilan'] > 0)
                                 <tr class="row-brut">
-                                    <td class="px-3 py-2">Prime de bilan / 13ème mois</td>
+                                    <td class="px-3 py-2">{{ __('ui.result.year_bonus') }}</td>
                                     <td class="text-end px-3 py-2 text-muted">—</td>
                                     <td class="text-end px-3 py-2 text-muted">—</td>
                                     <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-info)">{{ number_format($r['prime_bilan'], 2, ',', ' ') }}</td>
@@ -273,7 +273,7 @@
 
                                 @if($r['prime_rendement'] > 0)
                                 <tr class="row-brut">
-                                    <td class="px-3 py-2">Prime de rendement</td>
+                                    <td class="px-3 py-2">{{ __('ui.result.performance_bonus') }}</td>
                                     <td class="text-end px-3 py-2 text-muted">—</td>
                                     <td class="text-end px-3 py-2 text-muted">—</td>
                                     <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-info)">{{ number_format($r['prime_rendement'], 2, ',', ' ') }}</td>
@@ -282,7 +282,7 @@
 
                                 @if($r['autres_primes'] > 0)
                                 <tr class="row-brut">
-                                    <td class="px-3 py-2">Autres primes imposables</td>
+                                    <td class="px-3 py-2">{{ __('ui.result.other_taxable_bonuses') }}</td>
                                     <td class="text-end px-3 py-2 text-muted">—</td>
                                     <td class="text-end px-3 py-2 text-muted">—</td>
                                     <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-info)">{{ number_format($r['autres_primes'], 2, ',', ' ') }}</td>
@@ -291,7 +291,7 @@
 
                                 @foreach($r['detail_hs'] as $hs)
                                 <tr class="row-brut">
-                                    <td class="px-3 py-2">Heures sup. {{ $hs['label'] }}</td>
+                                    <td class="px-3 py-2">{{ __('ui.result.overtime_line', ['label' => $hs['label']]) }}</td>
                                     <td class="text-end px-3 py-2 text-muted">{{ $hs['nb_heures'] }}h × {{ number_format($hs['taux_horaire'], 2, ',', '.') }}</td>
                                     <td class="text-end px-3 py-2 text-muted">×{{ number_format(1 + $hs['majoration'], 2, ',', '.') }}</td>
                                     <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-info)">{{ number_format($hs['montant'], 2, ',', ' ') }}</td>
@@ -301,7 +301,7 @@
                                 @if($r['excedent_indemnites'] > 0)
                                 <tr class="row-brut">
                                     <td class="px-3 py-2">
-                                        Excédent d'indemnités (part imposable)
+                                        {{ __('ui.result.excess_allowances') }}
                                         <span class="badge text-bg-light badge-legal ms-1">Arrêté 1314-25</span>
                                     </td>
                                     <td class="text-end px-3 py-2 text-muted">—</td>
@@ -312,7 +312,7 @@
 
                                 @if($r['prime_scolarite'] > 0)
                                 <tr class="row-brut">
-                                    <td class="px-3 py-2">Prime de scolarité <span class="badge text-bg-info text-white ms-1">CNSS exo.</span></td>
+                                    <td class="px-3 py-2">{{ __('ui.result.school_bonus') }} <span class="badge text-bg-info text-white ms-1">{{ __('ui.result.cnss_exempt_badge') }}</span></td>
                                     <td class="text-end px-3 py-2 text-muted">—</td>
                                     <td class="text-end px-3 py-2 text-muted">—</td>
                                     <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-info)">{{ number_format($r['prime_scolarite'], 2, ',', ' ') }}</td>
@@ -321,7 +321,7 @@
 
                                 @if($r['prime_aid'] > 0)
                                 <tr class="row-brut">
-                                    <td class="px-3 py-2">Prime des Aïd <span class="badge text-bg-info text-white ms-1">CNSS exo.</span></td>
+                                    <td class="px-3 py-2">{{ __('ui.result.eid_bonus') }} <span class="badge text-bg-info text-white ms-1">{{ __('ui.result.cnss_exempt_badge') }}</span></td>
                                     <td class="text-end px-3 py-2 text-muted">—</td>
                                     <td class="text-end px-3 py-2 text-muted">—</td>
                                     <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-info)">{{ number_format($r['prime_aid'], 2, ',', ' ') }}</td>
@@ -330,7 +330,7 @@
 
                                 @if($r['autres_avantages_cnss'] > 0)
                                 <tr class="row-brut">
-                                    <td class="px-3 py-2">Autres avantages CNSS exonérés <span class="badge text-bg-info text-white ms-1">CNSS exo.</span></td>
+                                    <td class="px-3 py-2">{{ __('ui.result.other_cnss_exempt') }} <span class="badge text-bg-info text-white ms-1">{{ __('ui.result.cnss_exempt_badge') }}</span></td>
                                     <td class="text-end px-3 py-2 text-muted">—</td>
                                     <td class="text-end px-3 py-2 text-muted">—</td>
                                     <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-info)">{{ number_format($r['autres_avantages_cnss'], 2, ',', ' ') }}</td>
@@ -338,17 +338,17 @@
                                 @endif
 
                                 <tr class="table-light">
-                                    <td class="px-3 py-2 fw-bold" colspan="3">Salaire Brut Imposable (SBI)</td>
+                                    <td class="px-3 py-2 fw-bold" colspan="3">{{ __('ui.result.sbi_label') }}</td>
                                     <td class="text-end px-3 py-2 fw-bold" style="color:var(--s-info)">{{ number_format($r['sbi'], 2, ',', ' ') }}</td>
                                 </tr>
 
                                 {{-- COTISATIONS SALARIALES --}}
                                 <tr class="row-cotis">
                                     <td class="px-3 py-2">
-                                        CNSS salarié
+                                        {{ __('ui.result.cnss_employee') }}
                                         <span class="badge text-bg-light badge-legal ms-1">Dahir 1-72-184</span>
                                         @if($r['total_avantages_cnss_exoneres'] > 0)
-                                        <br><small class="text-muted">Assiette hors avantages CNSS exonérés</small>
+                                        <br><small class="text-muted">{{ __('ui.result.cnss_base_note') }}</small>
                                         @endif
                                     </td>
                                     <td class="text-end px-3 py-2 text-muted">{{ number_format($r['assiette_cnss'], 2, ',', ' ') }}</td>
@@ -358,7 +358,7 @@
 
                                 <tr class="row-cotis">
                                     <td class="px-3 py-2">
-                                        AMO salarié
+                                        {{ __('ui.result.amo_employee') }}
                                         <span class="badge text-bg-light badge-legal ms-1">Loi 65-00</span>
                                     </td>
                                     <td class="text-end px-3 py-2 text-muted">{{ number_format($r['assiette_sociale'], 2, ',', ' ') }}</td>
@@ -369,7 +369,7 @@
                                 @if($r['cimr_actif'] && $r['cotisation_cimr'] > 0)
                                 <tr class="row-cotis">
                                     <td class="px-3 py-2">
-                                        CIMR — part salarié
+                                        {{ __('ui.result.cimr_employee') }}
                                         <span class="badge text-bg-light badge-legal ms-1">Art. 28-III CGI</span>
                                     </td>
                                     <td class="text-end px-3 py-2 text-muted">{{ number_format($r['sbi'], 2, ',', ' ') }}</td>
@@ -379,15 +379,15 @@
                                 @endif
 
                                 <tr class="table-light">
-                                    <td class="px-3 py-2 fw-semibold" colspan="3">Salaire Net Comptable (SNC)</td>
+                                    <td class="px-3 py-2 fw-semibold" colspan="3">{{ __('ui.result.snc_label') }}</td>
                                     <td class="text-end px-3 py-2 fw-semibold">{{ number_format($r['snc'], 2, ',', ' ') }}</td>
                                 </tr>
 
                                 {{-- FRAIS PRO & RNI --}}
                                 <tr class="row-impot">
                                     <td class="px-3 py-2">
-                                        Frais professionnels (déd. IR)
-                                        <br><small class="text-muted">{{ $r['desc_fp'] }}{{ $r['fp_plafonne'] ? ' — plafonné' : '' }}</small>
+                                        {{ __('ui.result.pro_fees') }}
+                                        <br><small class="text-muted">{{ $r['desc_fp'] }}{{ $r['fp_plafonne'] ? ' — '.__('ui.result.pro_fees_capped') : '' }}</small>
                                         <span class="badge text-bg-light badge-legal ms-1">Art. 59 CGI</span>
                                     </td>
                                     <td class="text-end px-3 py-2 text-muted">{{ number_format($r['sbi'], 2, ',', ' ') }}</td>
@@ -398,25 +398,25 @@
                                 @if($r['rc_deduite'] > 0)
                                 <tr class="row-impot">
                                     <td class="px-3 py-2">
-                                        Retraite complémentaire (déd. IR)
-                                        <br><small class="text-muted">{{ number_format($r['rc_annuel'], 0, ',', ' ') }} MAD/an{{ $r['rc_annuel'] > $r['rc_deduite'] ? ' — plafonné' : '' }}</small>
+                                        {{ __('ui.result.rc_ir_deduction') }}
+                                        <br><small class="text-muted">{{ number_format($r['rc_annuel'], 0, ',', ' ') }} MAD/an{{ $r['rc_annuel'] > $r['rc_deduite'] ? ' — '.__('ui.result.rc_capped') : '' }}</small>
                                         <span class="badge text-bg-light badge-legal ms-1">Art. 28-IV CGI</span>
                                     </td>
                                     <td class="text-end px-3 py-2 text-muted">—</td>
-                                    <td class="text-end px-3 py-2 text-muted">annuel</td>
+                                    <td class="text-end px-3 py-2 text-muted">{{ __('ui.result.annual') }}</td>
                                     <td class="text-end px-3 py-2 text-muted fst-italic">− {{ number_format($r['rc_deduite'] / 12, 2, ',', ' ') }}</td>
                                 </tr>
                                 @endif
 
                                 <tr class="table-light">
-                                    <td class="px-3 py-2 fw-semibold" colspan="3">RNI mensuel (× 12 = {{ number_format($r['rni_annuel_net'], 2, ',', ' ') }} MAD/an imposable)</td>
+                                    <td class="px-3 py-2 fw-semibold" colspan="3">{{ __('ui.result.rni_label', ['annual' => number_format($r['rni_annuel_net'], 2, ',', ' ')]) }}</td>
                                     <td class="text-end px-3 py-2 fw-semibold">{{ number_format($r['rni'], 2, ',', ' ') }}</td>
                                 </tr>
 
                                 {{-- IR --}}
                                 <tr class="row-impot">
                                     <td class="px-3 py-2">
-                                        Impôt sur le Revenu (IR brut)
+                                        {{ __('ui.result.ir_gross') }}
                                         <br><small class="text-muted">{{ round($r['tranche_ir']['taux'] * 100) }}% × {{ number_format($r['rni_annuel_net'], 0, ',', ' ') }} − {{ number_format($r['tranche_ir']['deduction'], 0, ',', ' ') }} = {{ number_format($r['ir_annuel_brut'], 2, ',', ' ') }} MAD/an</small>
                                         <span class="badge text-bg-light badge-legal ms-1">Art. 73 CGI</span>
                                     </td>
@@ -428,8 +428,8 @@
                                 @if($r['charges_famille'] > 0)
                                 <tr class="row-impot">
                                     <td class="px-3 py-2">
-                                        Déd. charges de famille
-                                        <br><small class="text-muted">{{ $r['nb_personnes'] }} personne(s) × {{ number_format(config('payroll.charges_famille.par_personne'), 0, ',', ' ') }} MAD</small>
+                                        {{ __('ui.result.family_deduction') }}
+                                        <br><small class="text-muted">{{ __('ui.result.family_deduction_detail', ['count' => $r['nb_personnes'], 'amount' => number_format(config('payroll.charges_famille.par_personne'), 0, ',', ' ')]) }}</small>
                                         <span class="badge text-bg-light badge-legal ms-1">Art. 74 CGI</span>
                                     </td>
                                     <td class="text-end px-3 py-2 text-muted">—</td>
@@ -439,7 +439,7 @@
                                 @endif
 
                                 <tr class="row-impot">
-                                    <td class="px-3 py-2 fw-semibold">IR net retenu à la source</td>
+                                    <td class="px-3 py-2 fw-semibold">{{ __('ui.result.ir_net_withheld') }}</td>
                                     <td class="text-end px-3 py-2 text-muted" colspan="2">—</td>
                                     <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-tax)">− {{ number_format($r['ir_net'], 2, ',', ' ') }}</td>
                                 </tr>
@@ -448,15 +448,15 @@
                                 @foreach($r['detail_indemnites'] as $ind)
                                 <tr class="row-indem">
                                     <td class="px-3 py-2">
-                                        Indemnité — {{ $ind['label'] }}
+                                        {{ __('ui.result.allowance_line', ['label' => $ind['label']]) }}
                                         @if($ind['depasse'])
-                                        <span class="badge text-bg-warning ms-1">Plafonné à {{ number_format($ind['plafond'], 0, ',', ' ') }} MAD</span>
-                                        <br><small class="text-muted">Excédent {{ number_format($ind['excedent'], 2, ',', ' ') }} MAD réintégré au brut imposable</small>
+                                        <span class="badge text-bg-warning ms-1">{{ __('ui.result.capped_at', ['cap' => number_format($ind['plafond'], 0, ',', ' ')]) }}</span>
+                                        <br><small class="text-muted">{{ __('ui.result.excess_reintegrated', ['amount' => number_format($ind['excedent'], 2, ',', ' ')]) }}</small>
                                         @endif
                                         <span class="badge text-bg-light badge-legal ms-1">Arrêté 1314-25</span>
                                     </td>
-                                    <td class="text-end px-3 py-2 text-muted">Plafond: {{ number_format($ind['plafond'], 0, ',', ' ') }}</td>
-                                    <td class="text-end px-3 py-2 text-muted">exo.</td>
+                                    <td class="text-end px-3 py-2 text-muted">{{ __('ui.result.ceiling_label') }} {{ number_format($ind['plafond'], 0, ',', ' ') }}</td>
+                                    <td class="text-end px-3 py-2 text-muted">{{ __('ui.result.exempt') }}</td>
                                     <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-succ)">+ {{ number_format($ind['retenu'], 2, ',', ' ') }}</td>
                                 </tr>
                                 @endforeach
@@ -464,7 +464,7 @@
                                 {{-- Retenues diverses --}}
                                 @if($r['mutuelle_salarie'] > 0)
                                 <tr class="row-retenue">
-                                    <td class="px-3 py-2">Mutuelle — part salarié</td>
+                                    <td class="px-3 py-2">{{ __('ui.result.mutual_employee') }}</td>
                                     <td class="text-end px-3 py-2 text-muted">—</td>
                                     <td class="text-end px-3 py-2 text-muted">—</td>
                                     <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-tax)">− {{ number_format($r['mutuelle_salarie'], 2, ',', ' ') }}</td>
@@ -473,7 +473,7 @@
 
                                 @if($r['autres_retenues'] > 0)
                                 <tr class="row-retenue">
-                                    <td class="px-3 py-2">Autres retenues (avances, saisies…)</td>
+                                    <td class="px-3 py-2">{{ __('ui.result.other_deductions_line') }}</td>
                                     <td class="text-end px-3 py-2 text-muted">—</td>
                                     <td class="text-end px-3 py-2 text-muted">—</td>
                                     <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-tax)">− {{ number_format($r['autres_retenues'], 2, ',', ' ') }}</td>
@@ -483,21 +483,21 @@
                                 {{-- NET --}}
                                 <tr class="row-net">
                                     <td class="px-3 py-3" colspan="3">
-                                        <i class="bi bi-check-circle-fill me-1" style="color:var(--s-succ)"></i>NET À PAYER
+                                        <i class="bi bi-check-circle-fill me-1" style="color:var(--s-succ)"></i>{{ __('ui.result.net_to_pay') }}
                                     </td>
-                                    <td class="text-end px-3 py-3 fs-5">{{ number_format($r['salaire_net'], 2, ',', ' ') }} MAD</td>
+                                    <td class="text-end px-3 py-3 fs-5">{{ $madMonth($r['salaire_net']) }}</td>
                                 </tr>
 
                                 {{-- COTISATIONS PATRONALES --}}
                                 <tr class="table-light">
                                     <td class="px-3 py-2 fw-semibold text-muted small" colspan="4">
-                                        <i class="bi bi-building-up me-1" style="color:var(--s-warn)"></i>Cotisations patronales (charge employeur)
+                                        <i class="bi bi-building-up me-1" style="color:var(--s-warn)"></i>{{ __('ui.result.employer_contributions_heading') }}
                                     </td>
                                 </tr>
 
                                 <tr class="row-patron">
                                     <td class="px-3 py-2">
-                                        CNSS employeur
+                                        {{ __('ui.result.cnss_employer') }}
                                         <span class="badge text-bg-light badge-legal ms-1">Dahir 1-72-184</span>
                                     </td>
                                     <td class="text-end px-3 py-2 text-muted">{{ number_format($r['assiette_cnss'], 2, ',', ' ') }}</td>
@@ -507,7 +507,7 @@
 
                                 <tr class="row-patron">
                                     <td class="px-3 py-2">
-                                        AMO employeur
+                                        {{ __('ui.result.amo_employer') }}
                                         <span class="badge text-bg-light badge-legal ms-1">Loi 65-00</span>
                                     </td>
                                     <td class="text-end px-3 py-2 text-muted">{{ number_format($r['sbi'], 2, ',', ' ') }}</td>
@@ -516,14 +516,14 @@
                                 </tr>
 
                                 <tr class="row-patron">
-                                    <td class="px-3 py-2">Allocations familiales</td>
+                                    <td class="px-3 py-2">{{ __('ui.result.family_allowances') }}</td>
                                     <td class="text-end px-3 py-2 text-muted">{{ number_format($r['sbi'], 2, ',', ' ') }}</td>
                                     <td class="text-end px-3 py-2 text-muted">{{ number_format(config('payroll.allocations_familiales.taux_patronal') * 100, 2, ',', '.') }}%</td>
                                     <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-warn)">{{ number_format($r['cout_af_patronal'], 2, ',', ' ') }}</td>
                                 </tr>
 
                                 <tr class="row-patron">
-                                    <td class="px-3 py-2">Taxe de formation professionnelle (TFP)</td>
+                                    <td class="px-3 py-2">{{ __('ui.result.tfp') }}</td>
                                     <td class="text-end px-3 py-2 text-muted">{{ number_format($r['sbi'], 2, ',', ' ') }}</td>
                                     <td class="text-end px-3 py-2 text-muted">{{ number_format(config('payroll.taxe_formation.taux_patronal') * 100, 2, ',', '.') }}%</td>
                                     <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-warn)">{{ number_format($r['cout_tfp_patronal'], 2, ',', ' ') }}</td>
@@ -532,7 +532,7 @@
                                 @if($r['cimr_actif'] && $r['cotisation_cimr_patronale'] > 0)
                                 <tr class="row-patron">
                                     <td class="px-3 py-2">
-                                        CIMR — part employeur
+                                        {{ __('ui.result.cimr_employer') }}
                                         <span class="badge text-bg-light badge-legal ms-1">Art. 28-III CGI</span>
                                     </td>
                                     <td class="text-end px-3 py-2 text-muted">{{ number_format($r['sbi'], 2, ',', ' ') }}</td>
@@ -543,7 +543,7 @@
 
                                 @if($r['mutuelle_patronale'] > 0)
                                 <tr class="row-patron">
-                                    <td class="px-3 py-2">Mutuelle — part employeur</td>
+                                    <td class="px-3 py-2">{{ __('ui.result.mutual_employer') }}</td>
                                     <td class="text-end px-3 py-2 text-muted">—</td>
                                     <td class="text-end px-3 py-2 text-muted">—</td>
                                     <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-warn)">{{ number_format($r['mutuelle_patronale'], 2, ',', ' ') }}</td>
@@ -554,7 +554,7 @@
                                 @if($r['rc_part_employeur'] > 0)
                                 <tr class="row-patron">
                                     <td class="px-3 py-2">
-                                        Retraite complémentaire — part employeur
+                                        {{ __('ui.result.rc_employer') }}
                                         <span class="badge text-bg-light badge-legal ms-1">Art. 28-IV CGI</span>
                                     </td>
                                     <td class="text-end px-3 py-2 text-muted">—</td>
@@ -565,10 +565,10 @@
                                 {{-- COÛT TOTAL EMPLOYEUR --}}
                                 <tr class="row-employer">
                                     <td class="px-3 py-3" colspan="3">
-                                        <i class="bi bi-building-up me-1" style="color:var(--s-warn)"></i>COÛT TOTAL EMPLOYEUR
-                                        <small class="text-muted fw-normal ms-2">(brut versé + charges patronales)</small>
+                                        <i class="bi bi-building-up me-1" style="color:var(--s-warn)"></i>{{ __('ui.result.total_employer_cost_label') }}
+                                        <small class="text-muted fw-normal ms-2">{{ __('ui.result.total_employer_cost_sub') }}</small>
                                     </td>
-                                    <td class="text-end px-3 py-3 fs-5" style="color:var(--r-500)">{{ number_format($r['cout_total_employeur'], 2, ',', ' ') }} MAD</td>
+                                    <td class="text-end px-3 py-3 fs-5" style="color:var(--r-500)">{{ $madMonth($r['cout_total_employeur']) }}</td>
                                 </tr>
 
                             </tbody>
@@ -613,7 +613,7 @@
             {{-- Donut --}}
             <div class="card section-card mb-4">
                 <div class="card-header px-4 py-3">
-                    <i class="bi bi-pie-chart-fill me-2" style="color:var(--s-info)"></i>Répartition du salaire brut
+                    <i class="bi bi-pie-chart-fill me-2" style="color:var(--s-info)"></i>{{ __('ui.result.chart_title') }}
                 </div>
                 <div class="card-body text-center py-3">
                     <canvas id="payrollChart" style="max-height:260px"></canvas>
@@ -624,49 +624,49 @@
             {{-- Récap IR --}}
             <div class="card section-card mb-4">
                 <div class="card-header px-4 py-3">
-                    <i class="bi bi-percent me-2" style="color:var(--s-tax)"></i>Barème IR — Tranche applicable
+                    <i class="bi bi-percent me-2" style="color:var(--s-tax)"></i>{{ __('ui.result.ir_bracket_title') }}
                 </div>
                 <div class="card-body px-4 py-3">
                     <table class="table table-sm mb-0">
                         <tbody>
                             <tr>
-                                <td class="text-muted">RNI mensuel</td>
+                                <td class="text-muted">{{ __('ui.result.rni_monthly') }}</td>
                                 <td class="fw-semibold text-end">{{ $madMonth($r['rni']) }}</td>
                             </tr>
                             <tr>
-                                <td class="text-muted">RNI annualisé</td>
+                                <td class="text-muted">{{ __('ui.result.rni_annual') }}</td>
                                 <td class="fw-semibold text-end">{{ $madYear($r['rni_annuel']) }}</td>
                             </tr>
                             @if($r['rc_deduite'] > 0)
                             <tr>
-                                <td class="text-muted">− Retraite complémentaire</td>
+                                <td class="text-muted">{{ __('ui.result.minus_rc') }}</td>
                                 <td class="fw-semibold text-end" style="color:var(--s-succ)">− {{ $madYear($r['rc_deduite']) }}</td>
                             </tr>
                             <tr>
-                                <td class="text-muted">RNI imposable</td>
+                                <td class="text-muted">{{ __('ui.result.rni_taxable') }}</td>
                                 <td class="fw-semibold text-end">{{ $madYear($r['rni_annuel_net']) }}</td>
                             </tr>
                             @endif
                             <tr class="table-danger">
-                                <td>Taux marginal</td>
+                                <td>{{ __('ui.result.marginal_rate') }}</td>
                                 <td class="fw-bold text-end" style="color:var(--s-tax)">{{ round($r['tranche_ir']['taux'] * 100) }}%</td>
                             </tr>
                             <tr>
-                                <td class="text-muted">Déduction fixe</td>
+                                <td class="text-muted">{{ __('ui.result.fixed_deduction') }}</td>
                                 <td class="fw-semibold text-end">{{ number_format($r['tranche_ir']['deduction'], 0, ',', ' ') }} {{ __('ui.result.unit_mad_year_label') }}</td>
                             </tr>
                             <tr>
-                                <td class="text-muted">IR annuel brut</td>
+                                <td class="text-muted">{{ __('ui.result.ir_annual_gross') }}</td>
                                 <td class="fw-semibold text-end">{{ $madYear($r['ir_annuel_brut']) }}</td>
                             </tr>
                             @if($r['charges_famille'] > 0)
                             <tr>
-                                <td class="text-muted">Charges famille</td>
+                                <td class="text-muted">{{ __('ui.result.family_charges') }}</td>
                                 <td class="fw-semibold text-end" style="color:var(--s-succ)">− {{ $madYear($r['charges_famille']) }}</td>
                             </tr>
                             @endif
                             <tr class="table-warning">
-                                <td class="fw-bold">IR mensuel net</td>
+                                <td class="fw-bold">{{ __('ui.result.ir_monthly_net') }}</td>
                                 <td class="fw-bold text-end">{{ $madMonth($r['ir_net']) }}</td>
                             </tr>
                         </tbody>
@@ -677,7 +677,7 @@
             {{-- Récap employeur --}}
             <div class="card section-card mb-4" style="border-left:3px solid var(--s-warn)">
                 <div class="card-header px-4 py-3">
-                    <i class="bi bi-building-up me-2" style="color:var(--s-warn)"></i>Coût employeur détaillé
+                    <i class="bi bi-building-up me-2" style="color:var(--s-warn)"></i>{{ __('ui.result.employer_detail_title') }}
                 </div>
                 <div class="card-body px-4 py-3">
                     <table class="table table-sm mb-0">
@@ -750,7 +750,7 @@ new Chart(ctx, {
                         const k = activeKeys[ctx.dataIndex];
                         const pct = repartition[k].pct;
                         const amt = repartition[k].montant.toLocaleString(intlLocale, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                        return ` ${amt} MAD (${pct}%)`;
+                        return ` ${amt} {{ __('ui.result.unit_mad_month_label') }} (${pct}%)`;
                     }
                 }
             }
@@ -764,7 +764,7 @@ legend.innerHTML = activeKeys.map((k, i) => {
     const amt = repartition[k].montant.toLocaleString(intlLocale, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     return `<div class="d-flex align-items-center justify-content-between mb-1 small">
         <span><span style="display:inline-block;width:12px;height:12px;background:${colors[i]};border-radius:2px;margin-right:6px"></span>${chartLabels[i]}</span>
-        <span class="text-muted">${amt} MAD <strong>(${pct}%)</strong></span>
+        <span class="text-muted">${amt} {{ __('ui.result.unit_mad_month_label') }} <strong>(${pct}%)</strong></span>
     </div>`;
 }).join('');
 </script>
