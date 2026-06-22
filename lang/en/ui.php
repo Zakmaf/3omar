@@ -8,6 +8,7 @@ return [
     'ads' => ['label' => 'Advertisement'],
     'nav' => ['home' => 'Home', 'calculator' => 'Calculator', 'documentation' => 'Documentation', 'language' => 'Language'],
     'toggle_nav_aria' => 'Toggle navigation',
+    'theme_toggle_aria' => 'Toggle dark mode',
     'footer' => [
         'tagline' => 'Payroll simulator, built for Morocco', 'navigation' => 'Navigation', 'simulate' => 'Simulate my payslip',
         'rules' => 'Calculation rules', 'source' => 'GitHub source code', 'report' => 'Report an issue', 'warning' => 'Warning',

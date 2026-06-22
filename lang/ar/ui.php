@@ -8,6 +8,7 @@ return [
     'ads' => ['label' => 'إعلان'],
     'nav' => ['home' => 'الرئيسية', 'calculator' => 'الحاسبة', 'documentation' => 'التوثيق', 'language' => 'اللغة'],
     'toggle_nav_aria' => 'إظهار القائمة',
+    'theme_toggle_aria' => 'تبديل الوضع الداكن',
     'footer' => [
         'tagline' => 'محاكي أجور، مصمم للمغرب',
         'navigation' => 'التنقل',

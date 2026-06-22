@@ -29,12 +29,12 @@ class SecurityHeaders
     {
         $directives = [
             "default-src 'self'",
-            "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net" . $this->adScriptSrc(),
+            "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net".$this->adScriptSrc(),
             "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com",
             "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net",
-            "img-src 'self' data:" . $this->adImgSrc(),
-            "connect-src 'self'" . $this->adConnectSrc(),
-            "frame-src" . ($this->adsEnabled() ? $this->adFrameSrc() : " 'none'"),
+            "img-src 'self' data:".$this->adImgSrc(),
+            "connect-src 'self'".$this->adConnectSrc(),
+            'frame-src'.($this->adsEnabled() ? $this->adFrameSrc() : " 'none'"),
             "frame-ancestors 'none'",
             "base-uri 'self'",
             "form-action 'self'",
@@ -74,7 +74,7 @@ class SecurityHeaders
     private function adFrameSrc(): string
     {
         return $this->adsEnabled()
-            ? " https://googleads.g.doubleclick.net https://tpc.googlesyndication.com"
+            ? ' https://googleads.g.doubleclick.net https://tpc.googlesyndication.com'
             : '';
     }
 }

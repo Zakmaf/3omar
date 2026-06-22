@@ -170,7 +170,7 @@ class PagesTest extends TestCase
             ->assertRedirect('/documentation');
 
         $this->get('/')->assertOk()
-            ->assertSee('<html lang="ar" dir="rtl">', false)
+            ->assertSee('<html lang="ar" dir="rtl" data-bs-theme="light">', false)
             ->assertSee('كشف الأجر المغربي، مفتوح المصدر');
 
         $this->get('/calculateur')->assertOk()

@@ -8,6 +8,7 @@ return [
     'ads' => ['label' => 'Publicidad'],
     'nav' => ['home' => 'Inicio', 'calculator' => 'Calculadora', 'documentation' => 'Documentación', 'language' => 'Idioma'],
     'toggle_nav_aria' => 'Mostrar la navegación',
+    'theme_toggle_aria' => 'Alternar modo oscuro',
     'footer' => [
         'tagline' => 'Simulador de nómina, pensado para Marruecos',
         'navigation' => 'Navegación',
