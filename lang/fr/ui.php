@@ -130,6 +130,9 @@ return [
         'other_deductions_label' => 'Autres retenues (montant total)',
         'other_deductions_help' => 'Avances sur salaire, oppositions, saisies-arrêts… (post-fiscales, hors mutuelle)',
         'ceiling_simulated' => 'Plafond simulé :',
+        'wizard_nav_aria' => 'Navigation du formulaire',
+        'wizard_mode_gross' => 'Brut vers Net',
+        'wizard_mode_net' => 'Net vers Brut',
     ],
     'result' => [
         'eyebrow' => 'Résultat de simulation',

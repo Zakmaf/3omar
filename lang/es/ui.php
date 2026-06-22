@@ -130,6 +130,9 @@ return [
         'other_deductions_label' => 'Otras retenciones (importe total)',
         'other_deductions_help' => 'Anticipos de salario, embargos, retenciones judiciales… (post-fiscales, excepto seguro de salud)',
         'ceiling_simulated' => 'Tope simulado:',
+        'wizard_nav_aria' => 'Navegacion del formulario',
+        'wizard_mode_gross' => 'Bruto a Neto',
+        'wizard_mode_net' => 'Neto a Bruto',
     ],
     'result' => [
         'eyebrow' => 'Resultado de la simulación',

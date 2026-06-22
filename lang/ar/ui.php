@@ -137,6 +137,9 @@ return [
         'other_deductions_label' => 'اقتطاعات أخرى (المبلغ الإجمالي)',
         'other_deductions_help' => 'سلف على الأجر، معارضات، حجوزات… (بعد الضريبة، خارج التعاضدية)',
         'ceiling_simulated' => 'السقف المحاكى :',
+        'wizard_nav_aria' => 'التنقل في النموذج',
+        'wizard_mode_gross' => 'من الإجمالي إلى الصافي',
+        'wizard_mode_net' => 'من الصافي إلى الإجمالي',
     ],
     'result' => [
         'eyebrow' => 'نتيجة المحاكاة',
