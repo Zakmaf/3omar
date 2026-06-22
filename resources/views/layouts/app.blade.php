@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="{{ app()->getLocale() }}" dir="{{ config('app.supported_locales.'.app()->getLocale().'.dir', 'ltr') }}">
+<html lang="{{ app()->getLocale() }}" dir="{{ config('app.supported_locales.'.app()->getLocale().'.dir', 'ltr') }}" data-bs-theme="light">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -57,6 +57,69 @@
 
             /* Zellige pattern */
             --zellige-bg: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cdefs%3E%3Cg id='star'%3E%3Cpath d='M60 10 L66 38 L94 32 L74 52 L94 72 L66 66 L60 94 L54 66 L26 72 L46 52 L26 32 L54 38 Z' fill='none' stroke='%2321704F' stroke-width='1'/%3E%3C/g%3E%3C/defs%3E%3Cuse href='%23star'/%3E%3Cuse href='%23star' x='-60' y='-60'/%3E%3Cuse href='%23star' x='60' y='-60'/%3E%3Cuse href='%23star' x='-60' y='60'/%3E%3Cuse href='%23star' x='60' y='60'/%3E%3C/svg%3E");
+        }
+
+        [data-bs-theme="dark"] {
+            --ink: #E8E6E1;
+            --ink-2: #B8B5AE;
+            --ink-3: #8A8780;
+            --cream: #1A1D20;
+            --paper: #212529;
+            --hairline: rgba(255,255,255,0.10);
+            --hairline-strong: rgba(255,255,255,0.18);
+            --shadow-1: 0 1px 2px rgba(0,0,0,0.20), 0 1px 1px rgba(0,0,0,0.15);
+            --shadow-2: 0 4px 16px rgba(0,0,0,0.30), 0 2px 4px rgba(0,0,0,0.15);
+            --s-succ-bg: #1A2E26;
+            --s-warn-bg: #2E2416;
+            --s-info-bg: #1A2540;
+            --s-tax-bg: #2E1A1B;
+            --s-cot-bg: #251A30;
+            --g-50: #1A2E26;
+            --g-100: #1E3830;
+            --zellige-bg: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cdefs%3E%3Cg id='star'%3E%3Cpath d='M60 10 L66 38 L94 32 L74 52 L94 72 L66 66 L60 94 L54 66 L26 72 L46 52 L26 32 L54 38 Z' fill='none' stroke='%234D9376' stroke-width='1'/%3E%3C/g%3E%3C/defs%3E%3Cuse href='%23star'/%3E%3Cuse href='%23star' x='-60' y='-60'/%3E%3Cuse href='%23star' x='60' y='-60'/%3E%3Cuse href='%23star' x='-60' y='60'/%3E%3Cuse href='%23star' x='60' y='60'/%3E%3C/svg%3E");
+        }
+        [data-bs-theme="dark"] .navbar {
+            background: var(--paper);
+            border-bottom-color: var(--hairline);
+        }
+        [data-bs-theme="dark"] footer {
+            background: #111315;
+        }
+        [data-bs-theme="dark"] .action-bar {
+            background: rgba(33,37,41,0.94);
+        }
+        [data-bs-theme="dark"] .language-switcher {
+            background: var(--paper);
+            border-color: var(--hairline);
+        }
+        [data-bs-theme="dark"] .language-switcher-link.active {
+            background: var(--g-500);
+            color: #fff;
+        }
+        [data-bs-theme="dark"] .badge-legal {
+            background: rgba(255,255,255,0.08);
+            color: var(--g-300);
+            border-color: rgba(255,255,255,0.12);
+        }
+        [data-bs-theme="dark"] .ad-slot {
+            background: var(--paper);
+            border-radius: var(--radius-sm);
+        }
+        [data-bs-theme="dark"] h1,
+        [data-bs-theme="dark"] h2,
+        [data-bs-theme="dark"] h3,
+        [data-bs-theme="dark"] h4,
+        [data-bs-theme="dark"] h5,
+        [data-bs-theme="dark"] h6 {
+            color: var(--ink);
+        }
+        [data-bs-theme="dark"] .form-text {
+            color: var(--ink-3);
+        }
+        [data-bs-theme="dark"] .btn-check:checked + .btn {
+            background: var(--g-500);
+            color: #fff !important;
+            border-color: var(--g-500);
         }
 
         body {
@@ -358,6 +421,14 @@
         }
     </style>
 
+    <script>
+    (function() {
+        var s = localStorage.getItem('theme');
+        var t = s || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-bs-theme', t);
+    })();
+    </script>
+
     @stack('head')
     @if (app()->environment('production') && config('ads.enabled') && config('ads.client'))
     <script async
@@ -420,6 +491,13 @@
                         </a>
                         @endforeach
                     </div>
+                </li>
+                <li class="nav-item mt-2 mt-lg-0 ms-lg-1">
+                    <button type="button" class="btn btn-sm border-0 p-2" id="themeToggle"
+                            aria-label="{{ __('ui.theme_toggle_aria') }}"
+                            style="color:var(--ink-2);min-height:38px;min-width:38px">
+                        <i class="bi bi-sun-fill" id="themeIcon"></i>
+                    </button>
                 </li>
             </ul>
         </div>
@@ -521,6 +599,37 @@
 <!-- Bootstrap 5 JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+<script>
+(function() {
+    var toggle = document.getElementById('themeToggle');
+    var icon = document.getElementById('themeIcon');
+
+    function updateIcon() {
+        var isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+        icon.className = isDark ? 'bi bi-moon-fill' : 'bi bi-sun-fill';
+    }
+
+    if (toggle) {
+        toggle.addEventListener('click', function() {
+            var current = document.documentElement.getAttribute('data-bs-theme');
+            var next = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-bs-theme', next);
+            localStorage.setItem('theme', next);
+            updateIcon();
+        });
+    }
+
+    updateIcon();
+
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+        if (!localStorage.getItem('theme')) {
+            document.documentElement.setAttribute('data-bs-theme', e.matches ? 'dark' : 'light');
+            updateIcon();
+        }
+    });
+})();
+</script>
 
 @stack('scripts')
 @if (app()->environment('production') && config('ads.enabled') && config('ads.client'))

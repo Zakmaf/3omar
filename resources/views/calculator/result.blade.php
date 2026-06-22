@@ -738,7 +738,7 @@ new Chart(ctx, {
     type: 'doughnut',
     data: {
         labels: chartLabels,
-        datasets: [{ data: data, backgroundColor: colors, borderWidth: 2, borderColor: '#fff' }]
+        datasets: [{ data: data, backgroundColor: colors, borderWidth: 2, borderColor: getComputedStyle(document.documentElement).getPropertyValue('--paper').trim() || '#fff' }]
     },
     options: {
         cutout: '65%',
