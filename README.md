@@ -1,69 +1,32 @@
-# 3omar · Le bulletin de paie Marocain open source
+# 3omar · Le bulletin de paie marocain open source
 
 ![Logotype 3omar](public/img/logo_banner_1200x630.png)
 
-3omar est un simulateur pédagogique qui aide à comprendre les principaux calculs d'un salaire marocain. Chaque simulation affiche les taux, assiettes et références réglementaires utilisés. Aucune donnée personnelle n'est collectée.
+3omar est un simulateur pedagogique qui aide a comprendre les principaux calculs d'un salaire marocain. Chaque simulation affiche les taux, assiettes et references reglementaires utilises. Aucune donnee personnelle n'est collectee.
 
-> **Pourquoi « 3omar » ?** En darija marocaine, عمر (Omar) s'écrit « 3omar », le chiffre 3 dessine le ع.
+> **Pourquoi « 3omar » ?** En darija marocaine, عمر (Omar) s'ecrit « 3omar », le chiffre 3 dessine le ع.
 
-3omar reste une simulation pédagogique. Pour un bulletin officiel ou une situation particulière, consultez votre employeur ou un professionnel.
+3omar reste une simulation de bulletin de paie pedagogique. Pour un bulletin de paie officiel ou une situation particuliere, consultez votre employeur ou un professionnel.
 
-## Fonctionnalités
+## Fonctionnalites
 
-- **Brut → Net** : CNSS, AMO, CIMR, IR progressif, frais professionnels, charges de famille, retraite complémentaire, prime d'ancienneté, heures supplémentaires, indemnités exonérées.
-- **Net → Brut** *(V1.1)* : reconstitution du salaire de base à partir d'un net à payer cible — mêmes hypothèses disponibles que le mode direct.
-- Coût total employeur, détail complet des retenues, affichage des références réglementaires.
-- Interface disponible en français, anglais, arabe (RTL) et espagnol.
+- **Brut → Net** : CNSS, AMO, CIMR, IR progressif, frais professionnels, charges de famille, retraite complementaire, prime d'anciennete, heures supplementaires, indemnites exonerees.
+- **Net → Brut** : reconstitution du salaire de base a partir d'un net a payer cible, memes hypotheses disponibles que le mode direct.
+- **API REST** : endpoints JSON publics pour integrer la simulation dans des applications tierces (`/api/v1/`).
+- **Parcours guide** : progression visuelle par etapes avec recapitulatif en temps reel des saisies.
+- **Mode sombre** : detection automatique de la preference systeme, toggle dans la navbar, persistance du choix.
+- Cout total employeur, detail complet des retenues, affichage des references reglementaires.
+- Interface disponible en francais, anglais, arabe (RTL) et espagnol.
 
-## Backlog produit
+La feuille de route est geree dans les [issues GitHub](https://github.com/Zakmaf/3omar/issues).
 
-Le backlog ci-dessous sert à rendre visibles les fonctions à venir. Lorsqu'une fonctionnalité est livrée, elle doit être **barrée** dans cette liste au moment de la PR ou du merge correspondant, afin de garder un historique lisible de l'avancement.
+## Demarrage rapide
 
-### V1.3
-
-- [ ] Séparer explicitement les simulations **mensuelles** et **annuelles** avec 4 parcours dédiés : `brut → net` et `net → brut` pour chaque période ([#44](https://github.com/Zakmaf/3omar/issues/44)).
-- [ ] Afficher l'unité courante partout dans le simulateur et les résultats : `MAD/mois` ou `MAD/an` ([#45](https://github.com/Zakmaf/3omar/issues/45)).
-- [x] ~~Ajouter des golden tests sur des bulletins complets de référence pour sécuriser les nouveaux parcours~~ ([#46](https://github.com/Zakmaf/3omar/issues/46)).
-- [ ] Ajouter un mode employeur centré sur le **coût total employeur** ([#48](https://github.com/Zakmaf/3omar/issues/48)).
-- [ ] Ajouter un export PDF propre, lisible et partageable de la simulation ([#49](https://github.com/Zakmaf/3omar/issues/49)).
-
-### V2.0
-
-- [ ] Ajouter une comparaison de scénarios de paie côte à côte ([#47](https://github.com/Zakmaf/3omar/issues/47)).
-- [ ] Sauvegarder temporairement et partager une simulation via URL compacte ou stockage local ([#50](https://github.com/Zakmaf/3omar/issues/50)).
-- [ ] Ajouter des profils de simulation prêts à l'emploi : `SMIG`, salarié standard, cadre, journaliste, avec CIMR, avec primes ([#51](https://github.com/Zakmaf/3omar/issues/51)).
-
-### Livrés en V1.2
-
-- [x] ~~CIMR : saisie libre du taux + choix de la prise en charge (salarié, employeur, partagé)~~
-- [x] ~~Avantages CNSS exonérés : prime de scolarité, prime des Aïd, autres (imposables IR, exclus CNSS/AMO)~~
-- [x] ~~Retraite complémentaire : part employeur distincte~~
-- [x] ~~Montée Laravel 12 — correctif CVE-2026-48019~~
-
-### En continu
-
-- [x] ~~Protéger `POST /calculateur/calculer` contre le déni de service applicatif~~ ([#42](https://github.com/Zakmaf/3omar/issues/42)).
-- [x] ~~Ajouter une `Content-Security-Policy` et les en-têtes de sécurité navigateur~~ ([#43](https://github.com/Zakmaf/3omar/issues/43)).
-- [ ] Traduire exhaustivement les libellés métier et détails réglementaires ([#17](https://github.com/Zakmaf/3omar/issues/17)).
-- [ ] Tester les parcours mobiles et automatiser l'accessibilité ([#16](https://github.com/Zakmaf/3omar/issues/16)).
-
-## Documentation
-
-| Document | Audience |
-|----------|----------|
-| [Développement](docs/DEVELOPPEMENT.md) | Développeurs — setup local, architecture, tests |
-| [Déploiement](docs/DEPLOIEMENT.md) | Ops — image Docker, variables, reverse proxy |
-| [Règles de calcul](docs/CALCUL.md) | Développeurs & RH — formules, solver net→brut |
-| [Internationalisation](docs/I18N.md) | Développeurs — conventions de traduction |
-| [UX & accessibilité](docs/UX.md) | Product & design — principes, suivi recommandé |
-
-## Démarrage rapide
-
-**Développement :**
+**Developpement :**
 ```bash
 cp .env.example .env && docker compose up -d --build
 docker run --rm -v "$PWD":/app -v paie_maroc_vendor:/app/vendor \
-  -w /app composer:2.7 composer install
+  -w /app composer:2.10 composer install
 docker compose exec app php artisan key:generate
 # → http://localhost:49173
 ```
@@ -78,12 +41,27 @@ docker run -d -p 80:80 \
 
 → Voir [docs/DEPLOIEMENT.md](docs/DEPLOIEMENT.md) pour les variables, tags et reverse proxy.
 
+## Documentation
+
+| Document | Audience |
+|----------|----------|
+| [Developpement](docs/DEVELOPPEMENT.md) | Developpeurs : setup local, architecture, tests |
+| [Deploiement](docs/DEPLOIEMENT.md) | Ops : image Docker, variables, reverse proxy |
+| [Regles de calcul](docs/CALCUL.md) | Developpeurs & RH : formules, solver net→brut |
+| [API REST](docs/API.md) | Developpeurs : endpoints, requetes, reponses |
+| [Internationalisation](docs/I18N.md) | Developpeurs : conventions de traduction |
+| [UX & accessibilite](docs/UX.md) | Product & design : principes, suivi recommande |
+| [Historique des versions](docs/RELEASES.md) | Tous : changelog par release |
+
 ## Contribution
 
-Les corrections de calcul doivent inclure un scénario de test reproductible (voir [docs/CALCUL.md](docs/CALCUL.md)).  
+Voir [CONTRIBUTING.md](CONTRIBUTING.md) pour les conventions de contribution, le format des commits et des release notes.
+
+Les corrections de calcul doivent inclure un scenario de test reproductible (voir [docs/CALCUL.md](docs/CALCUL.md)).
 Les changements visuels doivent respecter la [charte de marque](docs/charte-graphique-editoriale.html).
+Pour signaler une vulnerabilite, suivre la procedure decrite dans [SECURITY.md](SECURITY.md).
 
 ## Licence
 
-Le code est distribué sous licence [MIT](LICENSE).  
-Le nom « 3omar », les logos et la charte graphique sont soumis à des conditions distinctes : voir [LICENSE-ASSETS.md](LICENSE-ASSETS.md).
+Le code est distribue sous licence [MIT](LICENSE).
+Le nom « 3omar », les logos et la charte graphique sont soumis a des conditions distinctes : voir [LICENSE-ASSETS.md](LICENSE-ASSETS.md).
