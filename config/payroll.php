@@ -49,13 +49,12 @@ return [
 
     // =========================================================================
     // CIMR — Art. 28-III CGI
-    // Taux librement choisi, 100 % déductible IR (part salarié)
-    // Répartition : salarié seul, employeur seul, ou partagé
+    // Taux librement choisi, 100 % deductible IR (part salarie)
+    // Toujours en repartition partagee (salarie + employeur)
     // =========================================================================
     'cimr' => [
-        'taux_min' => 0.03,
-        'taux_max' => 0.10,
-        'repartitions' => ['salarie', 'employeur', 'partage'],
+        'taux_min' => 0,
+        'taux_max' => 0.50,
     ],
 
     // =========================================================================
@@ -158,16 +157,6 @@ return [
     'retraite_complementaire' => [
         'deduction_ir_max_pct' => 0.50,
         'article' => 'Art. 28-IV CGI',
-    ],
-
-    // =========================================================================
-    // Avantages sociaux exonérés de CNSS — Art. 19 Dahir 1-72-184
-    // Imposables à l'IR mais exclus de l'assiette CNSS/AMO
-    // =========================================================================
-    'avantages_cnss_exoneres' => [
-        'prime_scolarite' => ['label' => 'Prime de scolarité'],
-        'prime_aid' => ['label' => 'Prime des Aïd'],
-        'autres_avantages' => ['label' => 'Autres avantages CNSS exonérés'],
     ],
 
 ];

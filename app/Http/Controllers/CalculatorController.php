@@ -40,13 +40,20 @@ class CalculatorController extends Controller
             'type_frais_pro' => 'required|in:commun,journaliste,artiste',
             'nb_enfants' => 'nullable|integer|min:0|max:20',
             'cimr_taux' => 'nullable|numeric|min:0',
-            'cimr_repartition' => ['nullable', Rule::in(config('payroll.cimr.repartitions'))],
             'cimr_taux_employeur' => 'nullable|numeric|min:0',
             'retraite_complementaire_mensuel' => 'nullable|numeric|min:0',
             'rc_part_employeur' => 'nullable|numeric|min:0',
+            'rc_part_employeur_inconnu' => 'nullable|boolean',
+            'cimr_taux_employeur_inconnu' => 'nullable|boolean',
             'mutuelle_salarie' => 'nullable|numeric|min:0',
             'mutuelle_patronale' => 'nullable|numeric|min:0',
-            'autres_retenues' => 'nullable|numeric|min:0',
+            'mutuelle_patronale_inconnu' => 'nullable|boolean',
+            'assurance_at_taux' => 'nullable|numeric|min:0|max:100',
+            'assurance_at_taux_inconnu' => 'nullable|boolean',
+            'assurance_rc_pro' => 'nullable|numeric|min:0',
+            'assurance_rc_pro_inconnu' => 'nullable|boolean',
+            'retenues_exonerees_ir' => 'nullable|numeric|min:0',
+            'retenues_imposees_ir' => 'nullable|numeric|min:0',
             'jours_travailles' => 'nullable|integer|min:1|max:31',
             'heures_sup' => 'nullable|array|max:10',
             'heures_sup.*.type' => 'required_with:heures_sup.*.nb_heures|in:semaine_diurne,semaine_nocturne,repos_diurne,repos_nocturne',
@@ -54,9 +61,7 @@ class CalculatorController extends Controller
             'indemnites' => 'nullable|array|max:10',
             'indemnites.*.type' => ['required_with:indemnites.*.montant', 'distinct', Rule::in(array_keys(config('payroll.indemnites')))],
             'indemnites.*.montant' => 'nullable|numeric|min:0|max:1000000',
-            'prime_scolarite' => 'nullable|numeric|min:0',
-            'prime_aid' => 'nullable|numeric|min:0',
-            'autres_avantages_cnss' => 'nullable|numeric|min:0',
+            'avantages_cnss' => 'nullable|numeric|min:0',
         ], [
             'salaire_base.required' => __('ui.validation.base_required'),
             'salaire_base.min' => __('ui.validation.base_positive'),
@@ -70,19 +75,29 @@ class CalculatorController extends Controller
             'mode', 'salaire_base', 'net_cible', 'nb_annees_anciennete',
             'prime_bilan', 'prime_rendement', 'autres_primes',
             'type_frais_pro', 'nb_enfants', 'conjoint_charge',
-            'cimr_actif', 'cimr_taux', 'cimr_repartition', 'cimr_taux_employeur',
-            'retraite_complementaire_mensuel', 'rc_part_employeur',
-            'mutuelle_salarie', 'mutuelle_patronale',
-            'autres_retenues', 'heures_sup', 'indemnites',
+            'cimr_taux', 'cimr_taux_employeur', 'cimr_taux_employeur_inconnu',
+            'retraite_complementaire_mensuel', 'rc_part_employeur', 'rc_part_employeur_inconnu',
+            'mutuelle_salarie', 'mutuelle_patronale', 'mutuelle_patronale_inconnu',
+            'assurance_at_taux', 'assurance_at_taux_inconnu',
+            'assurance_rc_pro', 'assurance_rc_pro_inconnu',
+            'retenues_exonerees_ir', 'retenues_imposees_ir',
+            'heures_sup', 'indemnites',
             'jours_travailles',
-            'prime_scolarite', 'prime_aid', 'autres_avantages_cnss',
+            'avantages_cnss',
         ]);
 
-        if ($mode === 'net_to_gross') {
-            $result = $this->calculator->resoudreDepuisNet($input);
-        } else {
-            $result = $this->calculator->calculer($input);
-            $result['mode'] = 'gross_to_net';
+        try {
+            if ($mode === 'net_to_gross') {
+                $result = $this->calculator->resoudreDepuisNet($input);
+            } else {
+                $result = $this->calculator->calculer($input);
+                $result['mode'] = 'gross_to_net';
+            }
+        } catch (\InvalidArgumentException $e) {
+            return redirect()
+                ->route('calculator.index')
+                ->withInput()
+                ->withErrors(['calculator' => $e->getMessage()]);
         }
 
         return view('calculator.result', [

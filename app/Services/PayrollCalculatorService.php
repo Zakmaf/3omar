@@ -215,25 +215,50 @@ class PayrollCalculatorService
         $autresPrimes = (float) ($input['autres_primes'] ?? 0);
         $heuresSup = $input['heures_sup'] ?? [];
         $indemnites = $input['indemnites'] ?? [];
-        $cimrActif = ! empty($input['cimr_actif']);
         // Ne pas arrondir le ratio : round(0.035, 2) donnerait 0.04 (3,5% → 4%).
         // Seul le montant de la cotisation est arrondi.
         $cimrTaux = ((float) ($input['cimr_taux'] ?? 0)) / 100;
-        $cimrRepartition = $input['cimr_repartition'] ?? 'salarie';
-        $cimrTauxEmployeur = ((float) ($input['cimr_taux_employeur'] ?? 0)) / 100;
         $nbEnfants = (int) ($input['nb_enfants'] ?? 0);
         $conjointCharge = ! empty($input['conjoint_charge']);
         $typeFraisPro = $input['type_frais_pro'] ?? 'commun';
-        $autresRetenues = (float) ($input['autres_retenues'] ?? 0);
+        // Retenues scindées : exonérées d'IR (pré-fiscales, réduisent le RNI)
+        // et imposées à l'IR (post-fiscales, réduisent le net après IR).
+        // Compatibilité ascendante : l'ancien champ autres_retenues mappe sur retenues_imposees_ir.
+        $retenuesExonereesIr = (float) ($input['retenues_exonerees_ir'] ?? 0);
+        $retenuesImposeesIr = (float) ($input['retenues_imposees_ir'] ?? $input['autres_retenues'] ?? 0);
         $joursTravailles = (int) ($input['jours_travailles'] ?? config('payroll.jours_travailles_defaut'));
         $mutuelleSalarie = (float) ($input['mutuelle_salarie'] ?? 0);
-        $mutuellePatronale = (float) ($input['mutuelle_patronale'] ?? 0);
         $retraiteComplementaireMensuel = (float) ($input['retraite_complementaire_mensuel'] ?? 0);
-        $rcPartEmployeur = (float) ($input['rc_part_employeur'] ?? 0);
 
-        $primeScolarite = (float) ($input['prime_scolarite'] ?? 0);
-        $primeAid = (float) ($input['prime_aid'] ?? 0);
-        $autresAvantagesCnss = (float) ($input['autres_avantages_cnss'] ?? 0);
+        // Champs patronaux pouvant être « inconnus » (null) plutôt que 0.
+        // Un drapeau _inconnu = 1 (ou une valeur null explicite) signifie « non renseigné ».
+        $coutEmployeurPartiel = false;
+        $champInconnu = function (string $champ) use ($input, &$coutEmployeurPartiel): bool {
+            $inconnu = ! empty($input[$champ.'_inconnu']) || (array_key_exists($champ, $input) && $input[$champ] === null);
+            if ($inconnu) {
+                $coutEmployeurPartiel = true;
+            }
+
+            return $inconnu;
+        };
+
+        $mutuellePatronaleInconnue = $champInconnu('mutuelle_patronale');
+        $mutuellePatronale = $mutuellePatronaleInconnue ? 0.0 : (float) ($input['mutuelle_patronale'] ?? 0);
+
+        $rcPartEmployeurInconnu = $champInconnu('rc_part_employeur');
+        $rcPartEmployeur = $rcPartEmployeurInconnu ? 0.0 : (float) ($input['rc_part_employeur'] ?? 0);
+
+        $cimrTauxEmployeurInconnu = $champInconnu('cimr_taux_employeur');
+        // Ne pas arrondir le ratio : seul le montant de la cotisation est arrondi.
+        $cimrTauxEmployeur = $cimrTauxEmployeurInconnu ? 0.0 : ((float) ($input['cimr_taux_employeur'] ?? 0)) / 100;
+
+        $assuranceAtInconnue = $champInconnu('assurance_at_taux');
+        $tauxAT = $assuranceAtInconnue ? 0.0 : ((float) ($input['assurance_at_taux'] ?? 0)) / 100;
+
+        $assuranceRcProInconnue = $champInconnu('assurance_rc_pro');
+        $assuranceRCPro = $assuranceRcProInconnue ? 0.0 : (float) ($input['assurance_rc_pro'] ?? 0);
+
+        $avantagesCnss = (float) ($input['avantages_cnss'] ?? 0);
 
         $avertissements = [];
 
@@ -331,7 +356,7 @@ class PayrollCalculatorService
         }
 
         // Avantages CNSS exonérés : imposables IR, exclus de l'assiette CNSS/AMO
-        $totalAvantagesCnssExoneres = $this->r2($primeScolarite + $primeAid + $autresAvantagesCnss);
+        $totalAvantagesCnssExoneres = $this->r2($avantagesCnss);
 
         $sbi = $this->r2($salaireBase + $totalPrimesImposables + $totalHS + $excedentIndemnites + $totalAvantagesCnssExoneres);
 
@@ -353,22 +378,8 @@ class PayrollCalculatorService
         // ÉTAPE 4 — CIMR (Art. 28-III CGI)
         // Répartition : salarié seul, employeur seul, ou partagé
         // =====================================================================
-        $cotisationCIMR = 0.0;
-        $cotisationCIMRPatronale = 0.0;
-        if ($cimrActif) {
-            if ($cimrRepartition === 'salarie' && $cimrTaux > 0) {
-                $cotisationCIMR = $this->r2($sbi * $cimrTaux);
-            } elseif ($cimrRepartition === 'employeur' && $cimrTaux > 0) {
-                $cotisationCIMRPatronale = $this->r2($sbi * $cimrTaux);
-            } elseif ($cimrRepartition === 'partage') {
-                if ($cimrTaux > 0) {
-                    $cotisationCIMR = $this->r2($sbi * $cimrTaux);
-                }
-                if ($cimrTauxEmployeur > 0) {
-                    $cotisationCIMRPatronale = $this->r2($sbi * $cimrTauxEmployeur);
-                }
-            }
-        }
+        $cotisationCIMR = $cimrTaux > 0 ? $this->r2($sbi * $cimrTaux) : 0.0;
+        $cotisationCIMRPatronale = $cimrTauxEmployeur > 0 ? $this->r2($sbi * $cimrTauxEmployeur) : 0.0;
 
         $totalSociales = $this->r2($cotisationCNSS + $cotisationAMO + $cotisationCIMR);
 
@@ -409,8 +420,9 @@ class PayrollCalculatorService
 
         // =====================================================================
         // ÉTAPE 7 — RNI mensuel
+        // Les retenues exonérées d'IR (pré-fiscales) réduisent le RNI avant le barème.
         // =====================================================================
-        $rni = $this->r2($snc - $fraisPro);
+        $rni = $this->r2($snc - $fraisPro - $retenuesExonereesIr);
 
         // =====================================================================
         // ÉTAPE 8 — IR (Art. 73 CGI) avec déduction retraite complémentaire
@@ -443,7 +455,9 @@ class PayrollCalculatorService
         // =====================================================================
         // ÉTAPE 10 — Net à payer
         // =====================================================================
-        $totalRetenues = $this->r2($autresRetenues + $mutuelleSalarie);
+        // Net : retenues post-fiscales (imposées IR) + mutuelle salarié.
+        // Les retenues exonérées d'IR n'impactent que l'assiette IR (réduisent déjà le RNI).
+        $totalRetenues = $this->r2($retenuesImposeesIr + $mutuelleSalarie);
         $salaireNet = $this->r2($sbi - $cotisationCNSS - $cotisationAMO - $cotisationCIMR - $irNet + $totalIndemnites - $totalRetenues);
         $salaireBrutTotal = $this->r2($sbi + $totalIndemnites);
 
@@ -455,7 +469,11 @@ class PayrollCalculatorService
         $coutAMOPatronal = $this->r2($assietteSociale * config('payroll.amo.taux_patronal'));
         $coutAFPatronal = $this->r2($assietteSociale * config('payroll.allocations_familiales.taux_patronal'));
         $coutTFPPatronal = $this->r2($assietteSociale * config('payroll.taxe_formation.taux_patronal'));
-        $totalPatronal = $this->r2($coutCNSSPatronal + $coutAMOPatronal + $coutAFPatronal + $coutTFPPatronal + $mutuellePatronale + $cotisationCIMRPatronale + $rcPartEmployeur);
+
+        // Assurances employeur (taux variable par contrat, hors config)
+        $assuranceAT = $tauxAT > 0 ? $this->r2($sbi * $tauxAT) : 0.0;
+
+        $totalPatronal = $this->r2($coutCNSSPatronal + $coutAMOPatronal + $coutAFPatronal + $coutTFPPatronal + $mutuellePatronale + $cotisationCIMRPatronale + $rcPartEmployeur + $assuranceAT + $assuranceRCPro);
         $coutTotalEmployeur = $this->r2($salaireBrutTotal + $totalPatronal);
 
         // =====================================================================
@@ -467,11 +485,14 @@ class PayrollCalculatorService
             $avertissements[] = "Le salaire de base ({$salaireBase} MAD) est inférieur au SMIG 2026 ({$smigFmt} MAD) — Décret n° 2.25.983.";
         }
 
-        $cimrMin = config('payroll.cimr.taux_min');
         $cimrMax = config('payroll.cimr.taux_max');
-        if ($cimrActif && ($cimrTaux < $cimrMin || $cimrTaux > $cimrMax)) {
+        if ($cimrTaux > $cimrMax) {
             $pct = round($cimrTaux * 100, 2);
-            $avertissements[] = "Le taux CIMR ({$pct}%) doit être compris entre ".($cimrMin * 100).'% et '.($cimrMax * 100).'% (Art. 28-III CGI).';
+            $avertissements[] = "Le taux CIMR salarie ({$pct}%) depasse le plafond de ".($cimrMax * 100).'% (Art. 28-III CGI).';
+        }
+        if ($cimrTauxEmployeur > $cimrMax) {
+            $pct = round($cimrTauxEmployeur * 100, 2);
+            $avertissements[] = "Le taux CIMR employeur ({$pct}%) depasse le plafond de ".($cimrMax * 100).'% (Art. 28-III CGI).';
         }
 
         $maxPersonnes = (int) (config('payroll.charges_famille.plafond') / config('payroll.charges_famille.par_personne'));
@@ -484,6 +505,10 @@ class PayrollCalculatorService
             $rcDeclareFmt = number_format($rcAnnuel, 2, ',', ' ');
             $rcPlafondFmt = number_format($rcPlafond, 2, ',', ' ');
             $avertissements[] = "Retraite complémentaire ({$rcDeclareFmt} MAD/an) : dépasse le plafond de déductibilité ({$rcPlafondFmt} MAD = 50% du SBI annuel). Seul le plafond est déduit (Art. 28-IV CGI).";
+        }
+
+        if ($coutEmployeurPartiel) {
+            $avertissements[] = "Coût employeur partiel : certaines cotisations patronales n'ont pas été renseignées et sont considérées comme nulles dans le total affiché.";
         }
 
         // =====================================================================
@@ -520,9 +545,7 @@ class PayrollCalculatorService
             'total_primes' => $totalPrimesImposables,
 
             // — Avantages CNSS exonérés —
-            'prime_scolarite' => $primeScolarite,
-            'prime_aid' => $primeAid,
-            'autres_avantages_cnss' => $autresAvantagesCnss,
+            'avantages_cnss' => $this->r2($avantagesCnss),
             'total_avantages_cnss_exoneres' => $totalAvantagesCnssExoneres,
             'assiette_sociale' => $assietteSociale,
 
@@ -530,9 +553,7 @@ class PayrollCalculatorService
             'assiette_cnss' => $assietteCNSS,
             'cotisation_cnss' => $cotisationCNSS,
             'cotisation_amo' => $cotisationAMO,
-            'cimr_actif' => $cimrActif,
             'cimr_taux' => $cimrTaux,
-            'cimr_repartition' => $cimrRepartition,
             'cimr_taux_employeur' => $cimrTauxEmployeur,
             'cotisation_cimr' => $cotisationCIMR,
             'cotisation_cimr_patronale' => $cotisationCIMRPatronale,
@@ -544,7 +565,16 @@ class PayrollCalculatorService
             'cout_af_patronal' => $coutAFPatronal,
             'cout_tfp_patronal' => $coutTFPPatronal,
             'mutuelle_patronale' => $mutuellePatronale,
+            'mutuelle_patronale_inconnue' => $mutuellePatronaleInconnue,
             'rc_part_employeur' => $rcPartEmployeur,
+            'rc_part_employeur_inconnu' => $rcPartEmployeurInconnu,
+            'cimr_taux_employeur_inconnu' => $cimrTauxEmployeurInconnu,
+            'assurance_at' => $assuranceAT,
+            'assurance_at_taux' => $tauxAT,
+            'assurance_at_inconnue' => $assuranceAtInconnue,
+            'assurance_rc_pro' => $assuranceRCPro,
+            'assurance_rc_pro_inconnue' => $assuranceRcProInconnue,
+            'cout_employeur_partiel' => $coutEmployeurPartiel,
             'total_patronal' => $totalPatronal,
             'cout_total_employeur' => $coutTotalEmployeur,
 
@@ -571,7 +601,8 @@ class PayrollCalculatorService
 
             // — Net —
             'mutuelle_salarie' => $mutuelleSalarie,
-            'autres_retenues' => $autresRetenues,
+            'retenues_exonerees_ir' => $this->r2($retenuesExonereesIr),
+            'retenues_imposees_ir' => $this->r2($retenuesImposeesIr),
             'total_retenues' => $totalRetenues,
             'salaire_net' => $salaireNet,
 

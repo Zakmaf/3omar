@@ -18,12 +18,14 @@ class ApiCalculatorController extends Controller
             'salaire_base', 'nb_annees_anciennete',
             'prime_bilan', 'prime_rendement', 'autres_primes',
             'type_frais_pro', 'nb_enfants', 'conjoint_charge',
-            'cimr_actif', 'cimr_taux', 'cimr_repartition', 'cimr_taux_employeur',
+            'cimr_taux', 'cimr_taux_employeur',
             'retraite_complementaire_mensuel', 'rc_part_employeur',
             'mutuelle_salarie', 'mutuelle_patronale',
-            'autres_retenues', 'heures_sup', 'indemnites',
+            'assurance_at_taux', 'assurance_rc_pro',
+            'retenues_exonerees_ir', 'retenues_imposees_ir', 'autres_retenues',
+            'heures_sup', 'indemnites',
             'jours_travailles',
-            'prime_scolarite', 'prime_aid', 'autres_avantages_cnss',
+            'avantages_cnss',
         ]);
 
         $result = $this->calculator->calculer($input);
@@ -38,12 +40,14 @@ class ApiCalculatorController extends Controller
             'net_cible', 'nb_annees_anciennete',
             'prime_bilan', 'prime_rendement', 'autres_primes',
             'type_frais_pro', 'nb_enfants', 'conjoint_charge',
-            'cimr_actif', 'cimr_taux', 'cimr_repartition', 'cimr_taux_employeur',
+            'cimr_taux', 'cimr_taux_employeur',
             'retraite_complementaire_mensuel', 'rc_part_employeur',
             'mutuelle_salarie', 'mutuelle_patronale',
-            'autres_retenues', 'heures_sup', 'indemnites',
+            'assurance_at_taux', 'assurance_rc_pro',
+            'retenues_exonerees_ir', 'retenues_imposees_ir', 'autres_retenues',
+            'heures_sup', 'indemnites',
             'jours_travailles',
-            'prime_scolarite', 'prime_aid', 'autres_avantages_cnss',
+            'avantages_cnss',
         ]);
 
         $result = $this->calculator->resoudreDepuisNet($input);
