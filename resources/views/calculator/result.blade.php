@@ -366,7 +366,7 @@
                                     <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-cot)">− {{ number_format($r['cotisation_amo'], 2, ',', ' ') }}</td>
                                 </tr>
 
-                                @if($r['cimr_actif'] && $r['cotisation_cimr'] > 0)
+                                @if($r['cotisation_cimr'] > 0)
                                 <tr class="row-cotis">
                                     <td class="px-3 py-2">
                                         {{ __('ui.result.cimr_employee') }}
@@ -529,14 +529,14 @@
                                     <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-warn)">{{ number_format($r['cout_tfp_patronal'], 2, ',', ' ') }}</td>
                                 </tr>
 
-                                @if($r['cimr_actif'] && $r['cotisation_cimr_patronale'] > 0)
+                                @if($r['cotisation_cimr_patronale'] > 0)
                                 <tr class="row-patron">
                                     <td class="px-3 py-2">
                                         {{ __('ui.result.cimr_employer') }}
                                         <span class="badge text-bg-light badge-legal ms-1">Art. 28-III CGI</span>
                                     </td>
                                     <td class="text-end px-3 py-2 text-muted">{{ number_format($r['sbi'], 2, ',', ' ') }}</td>
-                                    <td class="text-end px-3 py-2 text-muted">{{ rtrim(rtrim(number_format(($r['cimr_repartition'] === 'employeur' ? $r['cimr_taux'] : $r['cimr_taux_employeur']) * 100, 2, ',', ' '), '0'), ',') }}%</td>
+                                    <td class="text-end px-3 py-2 text-muted">{{ rtrim(rtrim(number_format($r['cimr_taux_employeur'] * 100, 2, ',', ' '), '0'), ',') }}%</td>
                                     <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-warn)">{{ number_format($r['cotisation_cimr_patronale'], 2, ',', ' ') }}</td>
                                 </tr>
                                 @endif
@@ -687,7 +687,7 @@
                             <tr><td class="text-muted">AMO patronale ({{ number_format(config('payroll.amo.taux_patronal') * 100, 2, ',', '.') }}%)</td><td class="fw-semibold text-end" style="color:var(--s-warn)">+ {{ $madMonth($r['cout_amo_patronal']) }}</td></tr>
                             <tr><td class="text-muted">All. familiales ({{ number_format(config('payroll.allocations_familiales.taux_patronal') * 100, 2, ',', '.') }}%)</td><td class="fw-semibold text-end" style="color:var(--s-warn)">+ {{ $madMonth($r['cout_af_patronal']) }}</td></tr>
                             <tr><td class="text-muted">TFP ({{ number_format(config('payroll.taxe_formation.taux_patronal') * 100, 2, ',', '.') }}%)</td><td class="fw-semibold text-end" style="color:var(--s-warn)">+ {{ $madMonth($r['cout_tfp_patronal']) }}</td></tr>
-                            @if($r['cimr_actif'] && $r['cotisation_cimr_patronale'] > 0)
+                            @if($r['cotisation_cimr_patronale'] > 0)
                             <tr><td class="text-muted">CIMR employeur</td><td class="fw-semibold text-end" style="color:var(--s-warn)">+ {{ $madMonth($r['cotisation_cimr_patronale']) }}</td></tr>
                             @endif
                             @if($r['mutuelle_patronale'] > 0)

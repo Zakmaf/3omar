@@ -49,13 +49,12 @@ return [
 
     // =========================================================================
     // CIMR — Art. 28-III CGI
-    // Taux librement choisi, 100 % déductible IR (part salarié)
-    // Répartition : salarié seul, employeur seul, ou partagé
+    // Taux librement choisi, 100 % deductible IR (part salarie)
+    // Toujours en repartition partagee (salarie + employeur)
     // =========================================================================
     'cimr' => [
-        'taux_min' => 0.03,
-        'taux_max' => 0.10,
-        'repartitions' => ['salarie', 'employeur', 'partage'],
+        'taux_min' => 0,
+        'taux_max' => 0.50,
     ],
 
     // =========================================================================

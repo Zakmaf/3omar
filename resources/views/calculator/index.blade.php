@@ -520,48 +520,78 @@
                     </div>
                 </details>
 
-                {{-- 4. CIMR --}}
-                <details class="step-section section-card mb-3" data-step-section {{ old('cimr_actif') ? 'open' : '' }}>
+                {{-- 4. CIMR & epargne retraite --}}
+                <details class="step-section section-card mb-3" data-step-section {{ old('cimr_taux') || old('retraite_complementaire_mensuel') ? 'open' : '' }}>
                     <summary>
                         <span class="step-label"><i class="bi bi-piggy-bank me-2" style="color:var(--s-cot)"></i>{{ __('ui.calculator.step4_title') }}</span>
                         <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
                     </summary>
                     <div class="card-body px-4 py-3">
-                        <div class="form-check form-switch mb-3">
-                            <input class="form-check-input" type="checkbox" name="cimr_actif" id="cimrActif"
-                                   value="1" {{ old('cimr_actif') ? 'checked' : '' }}>
-                            <label class="form-check-label fw-semibold" for="cimrActif">{{ __('ui.calculator.cimr_subscriber') }}</label>
-                        </div>
-                        <div id="cimrSection" style="{{ old('cimr_actif') ? '' : 'display:none' }}">
-                            <input type="hidden" name="cimr_repartition" value="partage">
 
-                            <div class="row g-3">
-                                <div class="col-sm-6">
-                                    <label class="form-label fw-semibold small" for="cimrTaux">{{ __('ui.calculator.cimr_employee_rate') }}</label>
-                                    <div class="input-group input-group-sm">
-                                        <input type="number" name="cimr_taux" id="cimrTaux"
-                                               class="form-control @error('cimr_taux') is-invalid @enderror"
-                                               value="{{ old('cimr_taux', 6) }}"
-                                               min="0" step="0.5" placeholder="6" inputmode="decimal">
-                                        <span class="input-group-text">%</span>
-                                    </div>
-                                    <div class="form-text">{{ __('ui.calculator.cimr_employee_help') }}</div>
+                        <div class="fw-semibold small mb-2">
+                            <i class="bi bi-bank me-1" style="color:var(--s-cot)"></i>{{ __('ui.calculator.cimr_section_heading') }}
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-sm-6">
+                                <label class="form-label fw-semibold small" for="cimrTaux">{{ __('ui.calculator.cimr_employee_rate') }}</label>
+                                <div class="input-group input-group-sm">
+                                    <input type="number" name="cimr_taux" id="cimrTaux"
+                                           class="form-control @error('cimr_taux') is-invalid @enderror"
+                                           value="{{ old('cimr_taux', 0) }}"
+                                           min="0" max="50" step="0.5" placeholder="0" inputmode="decimal">
+                                    <span class="input-group-text">%</span>
                                 </div>
-                                <div class="col-sm-6">
-                                    <label class="form-label fw-semibold small" for="cimrTauxEmployeur">{{ __('ui.calculator.cimr_employer_rate') }}</label>
-                                    <div class="input-group input-group-sm">
-                                        <input type="number" name="cimr_taux_employeur" id="cimrTauxEmployeur"
-                                               class="form-control @error('cimr_taux_employeur') is-invalid @enderror"
-                                               value="{{ old('cimr_taux_employeur', 6) }}"
-                                               min="0" step="0.5" placeholder="6" inputmode="decimal">
-                                        <span class="input-group-text">%</span>
-                                    </div>
-                                    <div class="form-text">{{ __('ui.calculator.cimr_employer_help') }}</div>
+                                <div class="form-text">{{ __('ui.calculator.cimr_employee_help') }}</div>
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label fw-semibold small" for="cimrTauxEmployeur">{{ __('ui.calculator.cimr_employer_rate') }}</label>
+                                <div class="input-group input-group-sm">
+                                    <input type="number" name="cimr_taux_employeur" id="cimrTauxEmployeur"
+                                           class="form-control @error('cimr_taux_employeur') is-invalid @enderror"
+                                           value="{{ old('cimr_taux_employeur', 0) }}"
+                                           min="0" max="50" step="0.5" placeholder="0" inputmode="decimal">
+                                    <span class="input-group-text">%</span>
+                                </div>
+                                <div class="form-text">{{ __('ui.calculator.cimr_employer_help') }}</div>
+                            </div>
+                        </div>
+
+                        <hr class="my-3">
+
+                        <div class="fw-semibold small mb-1">
+                            <i class="bi bi-shield-check me-1" style="color:var(--s-info)"></i>{{ __('ui.calculator.rc_section_heading') }}
+                        </div>
+                        <div class="form-text mb-3">{{ __('ui.calculator.rc_section_help') }}</div>
+
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <label class="form-label fw-semibold small" for="retraite_complementaire_mensuel">
+                                    {{ __('ui.calculator.rc_employee_label') }} <span class="text-muted fw-normal">{{ __('ui.calculator.monthly') }}</span>
+                                </label>
+                                <div class="input-group input-group-sm">
+                                    <input type="number" name="retraite_complementaire_mensuel" id="retraite_complementaire_mensuel"
+                                           class="form-control @error('retraite_complementaire_mensuel') is-invalid @enderror"
+                                           value="{{ old('retraite_complementaire_mensuel', 0) }}"
+                                           min="0" step="0.01" placeholder="0">
+                                    <span class="input-group-text">{{ __('ui.result.unit_mad_month_label') }}</span>
+                                </div>
+                                <div class="form-text">{{ __('ui.calculator.rc_employee_help') }}</div>
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label fw-semibold small" for="rc_part_employeur">
+                                    {{ __('ui.calculator.rc_employer_label') }} <span class="text-muted fw-normal">{{ __('ui.calculator.monthly') }}</span>
+                                </label>
+                                <div class="input-group input-group-sm">
+                                    <input type="number" name="rc_part_employeur" id="rc_part_employeur"
+                                           class="form-control @error('rc_part_employeur') is-invalid @enderror"
+                                           value="{{ old('rc_part_employeur', 0) }}"
+                                           min="0" step="0.01" placeholder="0">
+                                    <span class="input-group-text">{{ __('ui.result.unit_mad_month_label') }}</span>
                                 </div>
                             </div>
-                            <div class="form-text mt-2">{{ __('ui.calculator.cimr_mode_help') }}</div>
-
                         </div>
+
                     </div>
                 </details>
 
@@ -600,8 +630,8 @@
                     </div>
                 </details>
 
-                {{-- 6. Sante & Retraite complementaire --}}
-                <details class="step-section section-card mb-3" data-step-section {{ old('mutuelle_salarie') || old('mutuelle_patronale') || old('retraite_complementaire_mensuel') ? 'open' : '' }}>
+                {{-- 6. Mutuelle sante --}}
+                <details class="step-section section-card mb-3" data-step-section {{ old('mutuelle_salarie') || old('mutuelle_patronale') ? 'open' : '' }}>
                     <summary>
                         <span class="step-label"><i class="bi bi-heart-pulse-fill me-2" style="color:var(--s-tax)"></i>{{ __('ui.calculator.step6_title') }}</span>
                         <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
@@ -620,46 +650,12 @@
                             <div class="form-text">{{ __('ui.calculator.mutual_employee_help') }}</div>
                         </div>
 
-                        <div class="mb-3">
+                        <div class="mb-1">
                             <label class="form-label fw-semibold small" for="mutuelle_patronale">{{ __('ui.calculator.mutual_employer_label') }}</label>
                             <div class="input-group">
                                 <input type="number" name="mutuelle_patronale" id="mutuelle_patronale"
                                        class="form-control @error('mutuelle_patronale') is-invalid @enderror"
                                        value="{{ old('mutuelle_patronale', 0) }}"
-                                       min="0" step="0.01" placeholder="0">
-                                <span class="input-group-text">{{ __('ui.result.unit_mad_month_label') }}</span>
-                            </div>
-                            <div class="form-text">{{ __('ui.calculator.mutual_employer_help') }}</div>
-                        </div>
-
-                        <hr class="my-3">
-
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold small" for="retraite_complementaire_mensuel">
-                                <i class="bi bi-bank me-1" style="color:var(--s-info)"></i>
-                                {{ __('ui.calculator.rc_employee_label') }} <span class="text-muted fw-normal">{{ __('ui.calculator.monthly') }}</span>
-                            </label>
-                            <div class="input-group">
-                                <input type="number" name="retraite_complementaire_mensuel" id="retraite_complementaire_mensuel"
-                                       class="form-control @error('retraite_complementaire_mensuel') is-invalid @enderror"
-                                       value="{{ old('retraite_complementaire_mensuel', 0) }}"
-                                       min="0" step="0.01" placeholder="0">
-                                <span class="input-group-text">{{ __('ui.result.unit_mad_month_label') }}</span>
-                            </div>
-                            <div class="form-text">
-                                {{ __('ui.calculator.rc_employee_help') }}
-                            </div>
-                        </div>
-
-                        <div class="mb-1">
-                            <label class="form-label fw-semibold small" for="rc_part_employeur">
-                                <i class="bi bi-bank me-1" style="color:var(--s-warn)"></i>
-                                {{ __('ui.calculator.rc_employer_label') }} <span class="text-muted fw-normal">{{ __('ui.calculator.monthly') }}</span>
-                            </label>
-                            <div class="input-group">
-                                <input type="number" name="rc_part_employeur" id="rc_part_employeur"
-                                       class="form-control @error('rc_part_employeur') is-invalid @enderror"
-                                       value="{{ old('rc_part_employeur', 0) }}"
                                        min="0" step="0.01" placeholder="0">
                                 <span class="input-group-text">{{ __('ui.result.unit_mad_month_label') }}</span>
                             </div>
@@ -949,10 +945,12 @@ function getStepSummary(index) {
             return count > 0 ? count + ' ligne' + (count > 1 ? 's' : '') + ' HS' : '';
         }
         case 3: {
-            const active = document.getElementById('cimrActif').checked;
-            if (!active) return '';
+            const parts = [];
             const taux = parseFloat(document.getElementById('cimrTaux').value) || 0;
-            return taux > 0 ? 'CIMR ' + taux + '%' : '';
+            if (taux > 0) parts.push('CIMR ' + taux + '%');
+            const rc = parseFloat(document.getElementById('retraite_complementaire_mensuel').value) || 0;
+            if (rc > 0) parts.push('RC ' + formatMAD(rc));
+            return parts.join(' + ');
         }
         case 4: {
             const parts = [];
@@ -1179,12 +1177,5 @@ document.querySelectorAll('.remove-row').forEach(btn => {
     });
 });
 
-// ---- CIMR toggle ----
-const cimrActif   = document.getElementById('cimrActif');
-const cimrSection = document.getElementById('cimrSection');
-
-cimrActif.addEventListener('change', () => {
-    cimrSection.style.display = cimrActif.checked ? '' : 'none';
-});
 </script>
 @endpush

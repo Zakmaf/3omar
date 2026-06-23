@@ -20,7 +20,6 @@ class PayrollCalculatorServiceTest extends TestCase
     {
         $result = $this->calculator->calculer([
             'salaire_base' => 10000,
-            'cimr_actif' => true,
             'cimr_taux' => 3.5,
         ]);
 
@@ -164,7 +163,6 @@ class PayrollCalculatorServiceTest extends TestCase
         $input = [
             'salaire_base' => 15000,
             'type_frais_pro' => 'commun',
-            'cimr_actif' => true,
             'cimr_taux' => 3.5,
         ];
         $direct = $this->calculator->calculer($input);
@@ -172,7 +170,6 @@ class PayrollCalculatorServiceTest extends TestCase
         $resolved = $this->calculator->resoudreDepuisNet([
             'net_cible' => $direct['salaire_net'],
             'type_frais_pro' => 'commun',
-            'cimr_actif' => true,
             'cimr_taux' => 3.5,
         ]);
 
@@ -209,31 +206,27 @@ class PayrollCalculatorServiceTest extends TestCase
         $this->calculator->resoudreDepuisNet(['net_cible' => 0]);
     }
     // =========================================================================
-    // V1.2 — CIMR répartition
+    // CIMR
     // =========================================================================
 
-    public function test_cimr_employer_only_does_not_deduct_from_employee_salary(): void
+    public function test_cimr_zero_rate_produces_no_contribution(): void
     {
         $result = $this->calculator->calculer([
             'salaire_base' => 10000,
-            'cimr_actif' => true,
-            'cimr_taux' => 6,
-            'cimr_repartition' => 'employeur',
+            'cimr_taux' => 0,
+            'cimr_taux_employeur' => 0,
         ]);
 
         $this->assertSame(0.0, $result['cotisation_cimr']);
-        $this->assertSame(600.0, $result['cotisation_cimr_patronale']);
-        $this->assertSame('employeur', $result['cimr_repartition']);
+        $this->assertSame(0.0, $result['cotisation_cimr_patronale']);
     }
 
     public function test_cimr_shared_splits_between_employee_and_employer(): void
     {
         $result = $this->calculator->calculer([
             'salaire_base' => 10000,
-            'cimr_actif' => true,
             'cimr_taux' => 3,
             'cimr_taux_employeur' => 6,
-            'cimr_repartition' => 'partage',
         ]);
 
         $this->assertSame(300.0, $result['cotisation_cimr']);
@@ -247,9 +240,7 @@ class PayrollCalculatorServiceTest extends TestCase
         ]);
         $with = $this->calculator->calculer([
             'salaire_base' => 10000,
-            'cimr_actif' => true,
-            'cimr_taux' => 6,
-            'cimr_repartition' => 'employeur',
+            'cimr_taux_employeur' => 6,
         ]);
 
         $this->assertSame(
@@ -258,16 +249,14 @@ class PayrollCalculatorServiceTest extends TestCase
         );
     }
 
-    public function test_cimr_free_rate_above_ten_percent_triggers_warning(): void
+    public function test_cimr_rate_above_max_triggers_warning(): void
     {
         $result = $this->calculator->calculer([
             'salaire_base' => 10000,
-            'cimr_actif' => true,
-            'cimr_taux' => 15,
-            'cimr_repartition' => 'salarie',
+            'cimr_taux' => 55,
         ]);
 
-        $this->assertSame(1500.0, $result['cotisation_cimr']);
+        $this->assertSame(5500.0, $result['cotisation_cimr']);
         $this->assertNotEmpty($result['avertissements']);
     }
 

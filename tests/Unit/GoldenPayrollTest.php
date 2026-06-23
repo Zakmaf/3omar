@@ -64,15 +64,12 @@ class GoldenPayrollTest extends TestCase
         $r = $this->calculator->calculer([
             'salaire_base' => 10000,
             'type_frais_pro' => 'commun',
-            'cimr_actif' => true,
             'cimr_taux' => 6,
             'cimr_taux_employeur' => 3,
-            'cimr_repartition' => 'partage',
         ]);
 
         $this->assertSame(600.0, $r['cotisation_cimr']);
         $this->assertSame(300.0, $r['cotisation_cimr_patronale']);
-        $this->assertSame('partage', $r['cimr_repartition']);
         $this->assertSame(447.71, $r['ir_net']);
         $this->assertSame(8457.49, $r['salaire_net']);
         $this->assertSame(12049.8, $r['cout_total_employeur']);

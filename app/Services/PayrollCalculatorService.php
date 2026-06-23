@@ -215,11 +215,9 @@ class PayrollCalculatorService
         $autresPrimes = (float) ($input['autres_primes'] ?? 0);
         $heuresSup = $input['heures_sup'] ?? [];
         $indemnites = $input['indemnites'] ?? [];
-        $cimrActif = ! empty($input['cimr_actif']);
         // Ne pas arrondir le ratio : round(0.035, 2) donnerait 0.04 (3,5% → 4%).
         // Seul le montant de la cotisation est arrondi.
         $cimrTaux = ((float) ($input['cimr_taux'] ?? 0)) / 100;
-        $cimrRepartition = $input['cimr_repartition'] ?? 'salarie';
         $cimrTauxEmployeur = ((float) ($input['cimr_taux_employeur'] ?? 0)) / 100;
         $nbEnfants = (int) ($input['nb_enfants'] ?? 0);
         $conjointCharge = ! empty($input['conjoint_charge']);
@@ -353,22 +351,8 @@ class PayrollCalculatorService
         // ÉTAPE 4 — CIMR (Art. 28-III CGI)
         // Répartition : salarié seul, employeur seul, ou partagé
         // =====================================================================
-        $cotisationCIMR = 0.0;
-        $cotisationCIMRPatronale = 0.0;
-        if ($cimrActif) {
-            if ($cimrRepartition === 'salarie' && $cimrTaux > 0) {
-                $cotisationCIMR = $this->r2($sbi * $cimrTaux);
-            } elseif ($cimrRepartition === 'employeur' && $cimrTaux > 0) {
-                $cotisationCIMRPatronale = $this->r2($sbi * $cimrTaux);
-            } elseif ($cimrRepartition === 'partage') {
-                if ($cimrTaux > 0) {
-                    $cotisationCIMR = $this->r2($sbi * $cimrTaux);
-                }
-                if ($cimrTauxEmployeur > 0) {
-                    $cotisationCIMRPatronale = $this->r2($sbi * $cimrTauxEmployeur);
-                }
-            }
-        }
+        $cotisationCIMR = $cimrTaux > 0 ? $this->r2($sbi * $cimrTaux) : 0.0;
+        $cotisationCIMRPatronale = $cimrTauxEmployeur > 0 ? $this->r2($sbi * $cimrTauxEmployeur) : 0.0;
 
         $totalSociales = $this->r2($cotisationCNSS + $cotisationAMO + $cotisationCIMR);
 
@@ -467,11 +451,14 @@ class PayrollCalculatorService
             $avertissements[] = "Le salaire de base ({$salaireBase} MAD) est inférieur au SMIG 2026 ({$smigFmt} MAD) — Décret n° 2.25.983.";
         }
 
-        $cimrMin = config('payroll.cimr.taux_min');
         $cimrMax = config('payroll.cimr.taux_max');
-        if ($cimrActif && ($cimrTaux < $cimrMin || $cimrTaux > $cimrMax)) {
+        if ($cimrTaux > $cimrMax) {
             $pct = round($cimrTaux * 100, 2);
-            $avertissements[] = "Le taux CIMR ({$pct}%) doit être compris entre ".($cimrMin * 100).'% et '.($cimrMax * 100).'% (Art. 28-III CGI).';
+            $avertissements[] = "Le taux CIMR salarie ({$pct}%) depasse le plafond de ".($cimrMax * 100).'% (Art. 28-III CGI).';
+        }
+        if ($cimrTauxEmployeur > $cimrMax) {
+            $pct = round($cimrTauxEmployeur * 100, 2);
+            $avertissements[] = "Le taux CIMR employeur ({$pct}%) depasse le plafond de ".($cimrMax * 100).'% (Art. 28-III CGI).';
         }
 
         $maxPersonnes = (int) (config('payroll.charges_famille.plafond') / config('payroll.charges_famille.par_personne'));
@@ -530,9 +517,7 @@ class PayrollCalculatorService
             'assiette_cnss' => $assietteCNSS,
             'cotisation_cnss' => $cotisationCNSS,
             'cotisation_amo' => $cotisationAMO,
-            'cimr_actif' => $cimrActif,
             'cimr_taux' => $cimrTaux,
-            'cimr_repartition' => $cimrRepartition,
             'cimr_taux_employeur' => $cimrTauxEmployeur,
             'cotisation_cimr' => $cotisationCIMR,
             'cotisation_cimr_patronale' => $cotisationCIMRPatronale,
