@@ -520,6 +520,13 @@
                         <i class="bi bi-journal-text me-1"></i>{{ __('ui.nav.documentation') }}
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('api.documentation') ? 'active fw-semibold' : '' }}"
+                       @if(request()->routeIs('api.documentation')) aria-current="page" @endif
+                       href="{{ route('api.documentation') }}">
+                        <i class="bi bi-braces me-1"></i>{{ __('ui.nav.api') }}
+                    </a>
+                </li>
                 <li class="nav-item mt-2 mt-lg-0">
                     <div class="language-switcher" aria-label="{{ __('ui.nav.language') }}">
                         <span class="language-switcher-label" aria-hidden="true">
@@ -599,6 +606,11 @@
                     <li class="mb-2">
                         <a href="{{ route('documentation') }}">
                             <i class="bi bi-journal-text me-1"></i>{{ __('ui.footer.rules') }}
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="{{ route('api.documentation') }}">
+                            <i class="bi bi-braces me-1"></i>{{ __('ui.footer.api') }}
                         </a>
                     </li>
                     <li class="mb-2">
