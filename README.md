@@ -6,7 +6,7 @@
 
 > **Pourquoi « 3omar » ?** En darija marocaine, عمر (Omar) s'ecrit « 3omar », le chiffre 3 dessine le ع.
 
-3omar reste une simulation pedagogique. Pour un bulletin officiel ou une situation particuliere, consultez votre employeur ou un professionnel.
+3omar reste une simulation de bulletin de paie pedagogique. Pour un bulletin de paie officiel ou une situation particuliere, consultez votre employeur ou un professionnel.
 
 ## Fonctionnalites
 
