@@ -269,7 +269,7 @@ class PayrollCalculatorServiceTest extends TestCase
         $without = $this->calculator->calculer(['salaire_base' => 5000]);
         $with = $this->calculator->calculer([
             'salaire_base' => 5000,
-            'prime_scolarite' => 500,
+            'avantages_cnss' => 500,
         ]);
 
         $this->assertSame($without['cotisation_cnss'], $with['cotisation_cnss']);
@@ -283,7 +283,7 @@ class PayrollCalculatorServiceTest extends TestCase
         $without = $this->calculator->calculer(['salaire_base' => 10000]);
         $with = $this->calculator->calculer([
             'salaire_base' => 10000,
-            'prime_aid' => 1000,
+            'avantages_cnss' => 1000,
         ]);
 
         $this->assertGreaterThan($without['sbi'], $with['sbi']);
@@ -295,7 +295,7 @@ class PayrollCalculatorServiceTest extends TestCase
         $without = $this->calculator->calculer(['salaire_base' => 5000]);
         $with = $this->calculator->calculer([
             'salaire_base' => 5000,
-            'prime_scolarite' => 500,
+            'avantages_cnss' => 500,
         ]);
 
         $this->assertSame($without['cout_cnss_patronal'], $with['cout_cnss_patronal']);
@@ -319,5 +319,97 @@ class PayrollCalculatorServiceTest extends TestCase
             $with['cout_total_employeur'],
         );
         $this->assertSame($without['salaire_net'], $with['salaire_net']);
+    }
+
+    // =========================================================================
+    // Phase 2 — Retenues scindées, assurances employeur, valeurs « inconnues »
+    // =========================================================================
+
+    public function test_retenues_exonerees_ir_reduce_income_tax(): void
+    {
+        $without = $this->calculator->calculer(['salaire_base' => 15000]);
+        $with = $this->calculator->calculer([
+            'salaire_base' => 15000,
+            'retenues_exonerees_ir' => 1000,
+        ]);
+
+        // Le RNI diminue, donc l'IR diminue.
+        $this->assertLessThan($without['rni'], $with['rni']);
+        $this->assertLessThan($without['ir_net'], $with['ir_net']);
+        // Les retenues exonérées d'IR ne sont pas dans le total des retenues du net.
+        $this->assertSame($without['total_retenues'], $with['total_retenues']);
+    }
+
+    public function test_retenues_imposees_ir_reduce_net_without_changing_tax(): void
+    {
+        $without = $this->calculator->calculer(['salaire_base' => 15000]);
+        $with = $this->calculator->calculer([
+            'salaire_base' => 15000,
+            'retenues_imposees_ir' => 800,
+        ]);
+
+        $this->assertSame($without['ir_net'], $with['ir_net']);
+        $this->assertSame($this->round2($without['salaire_net'] - 800), $with['salaire_net']);
+    }
+
+    public function test_autres_retenues_alias_maps_to_retenues_imposees_ir(): void
+    {
+        $alias = $this->calculator->calculer([
+            'salaire_base' => 15000,
+            'autres_retenues' => 800,
+        ]);
+
+        $this->assertSame(800.0, $alias['retenues_imposees_ir']);
+    }
+
+    public function test_assurance_at_is_added_to_employer_cost(): void
+    {
+        $without = $this->calculator->calculer(['salaire_base' => 10000]);
+        $with = $this->calculator->calculer([
+            'salaire_base' => 10000,
+            'assurance_at_taux' => 1, // 1% du SBI
+        ]);
+
+        $expectedAt = $this->round2($with['sbi'] * 0.01);
+        $this->assertSame($expectedAt, $with['assurance_at']);
+        $this->assertSame(
+            $this->round2($without['cout_total_employeur'] + $expectedAt),
+            $with['cout_total_employeur'],
+        );
+        $this->assertSame($without['salaire_net'], $with['salaire_net']);
+    }
+
+    public function test_assurance_rc_pro_is_added_to_employer_cost(): void
+    {
+        $without = $this->calculator->calculer(['salaire_base' => 10000]);
+        $with = $this->calculator->calculer([
+            'salaire_base' => 10000,
+            'assurance_rc_pro' => 250,
+        ]);
+
+        $this->assertSame(
+            $this->round2($without['cout_total_employeur'] + 250),
+            $with['cout_total_employeur'],
+        );
+    }
+
+    public function test_unknown_employer_flag_marks_partial_cost(): void
+    {
+        $result = $this->calculator->calculer([
+            'salaire_base' => 10000,
+            'mutuelle_patronale' => 300,
+            'mutuelle_patronale_inconnu' => 1,
+        ]);
+
+        $this->assertTrue($result['cout_employeur_partiel']);
+        $this->assertTrue($result['mutuelle_patronale_inconnue']);
+        // La valeur saisie est ignorée (traitée comme nulle) dans le coût.
+        $this->assertSame(0.0, $result['mutuelle_patronale']);
+        $this->assertNotEmpty($result['avertissements']);
+    }
+
+    private function round2(float $v): float
+    {
+        return round($v, 2);
     }
 }

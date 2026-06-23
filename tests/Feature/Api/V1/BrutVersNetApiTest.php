@@ -70,7 +70,10 @@ class BrutVersNetApiTest extends TestCase
             'rc_part_employeur' => 300,
             'mutuelle_salarie' => 200,
             'mutuelle_patronale' => 300,
-            'autres_retenues' => 100,
+            'assurance_at_taux' => 1.5,
+            'assurance_rc_pro' => 150,
+            'retenues_exonerees_ir' => 50,
+            'retenues_imposees_ir' => 100,
             'jours_travailles' => 26,
             'heures_sup' => [
                 ['type' => 'semaine_diurne', 'nb_heures' => 10],
@@ -78,9 +81,7 @@ class BrutVersNetApiTest extends TestCase
             'indemnites' => [
                 ['type' => 'transport', 'montant' => 500],
             ],
-            'prime_scolarite' => 1000,
-            'prime_aid' => 500,
-            'autres_avantages_cnss' => 200,
+            'avantages_cnss' => 1700,
         ]);
 
         $response->assertOk()

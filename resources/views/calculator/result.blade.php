@@ -310,30 +310,12 @@
                                 </tr>
                                 @endif
 
-                                @if($r['prime_scolarite'] > 0)
+                                @if($r['total_avantages_cnss_exoneres'] > 0)
                                 <tr class="row-brut">
-                                    <td class="px-3 py-2">{{ __('ui.result.school_bonus') }} <span class="badge text-bg-info text-white ms-1">{{ __('ui.result.cnss_exempt_badge') }}</span></td>
+                                    <td class="px-3 py-2">{{ __('ui.result.cnss_exempt_line') }} <span class="badge text-bg-info text-white ms-1">{{ __('ui.result.cnss_exempt_badge') }}</span></td>
                                     <td class="text-end px-3 py-2 text-muted">—</td>
                                     <td class="text-end px-3 py-2 text-muted">—</td>
-                                    <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-info)">{{ number_format($r['prime_scolarite'], 2, ',', ' ') }}</td>
-                                </tr>
-                                @endif
-
-                                @if($r['prime_aid'] > 0)
-                                <tr class="row-brut">
-                                    <td class="px-3 py-2">{{ __('ui.result.eid_bonus') }} <span class="badge text-bg-info text-white ms-1">{{ __('ui.result.cnss_exempt_badge') }}</span></td>
-                                    <td class="text-end px-3 py-2 text-muted">—</td>
-                                    <td class="text-end px-3 py-2 text-muted">—</td>
-                                    <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-info)">{{ number_format($r['prime_aid'], 2, ',', ' ') }}</td>
-                                </tr>
-                                @endif
-
-                                @if($r['autres_avantages_cnss'] > 0)
-                                <tr class="row-brut">
-                                    <td class="px-3 py-2">{{ __('ui.result.other_cnss_exempt') }} <span class="badge text-bg-info text-white ms-1">{{ __('ui.result.cnss_exempt_badge') }}</span></td>
-                                    <td class="text-end px-3 py-2 text-muted">—</td>
-                                    <td class="text-end px-3 py-2 text-muted">—</td>
-                                    <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-info)">{{ number_format($r['autres_avantages_cnss'], 2, ',', ' ') }}</td>
+                                    <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-info)">{{ number_format($r['total_avantages_cnss_exoneres'], 2, ',', ' ') }}</td>
                                 </tr>
                                 @endif
 
@@ -408,6 +390,15 @@
                                 </tr>
                                 @endif
 
+                                @if($r['retenues_exonerees_ir'] > 0)
+                                <tr class="row-impot">
+                                    <td class="px-3 py-2">{{ __('ui.result.retenues_exonerees_ir_line') }}</td>
+                                    <td class="text-end px-3 py-2 text-muted">—</td>
+                                    <td class="text-end px-3 py-2 text-muted">—</td>
+                                    <td class="text-end px-3 py-2 text-muted fst-italic">− {{ number_format($r['retenues_exonerees_ir'], 2, ',', ' ') }}</td>
+                                </tr>
+                                @endif
+
                                 <tr class="table-light">
                                     <td class="px-3 py-2 fw-semibold" colspan="3">{{ __('ui.result.rni_label', ['annual' => number_format($r['rni_annuel_net'], 2, ',', ' ')]) }}</td>
                                     <td class="text-end px-3 py-2 fw-semibold">{{ number_format($r['rni'], 2, ',', ' ') }}</td>
@@ -471,12 +462,12 @@
                                 </tr>
                                 @endif
 
-                                @if($r['autres_retenues'] > 0)
+                                @if($r['retenues_imposees_ir'] > 0)
                                 <tr class="row-retenue">
                                     <td class="px-3 py-2">{{ __('ui.result.other_deductions_line') }}</td>
                                     <td class="text-end px-3 py-2 text-muted">—</td>
                                     <td class="text-end px-3 py-2 text-muted">—</td>
-                                    <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-tax)">− {{ number_format($r['autres_retenues'], 2, ',', ' ') }}</td>
+                                    <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-tax)">− {{ number_format($r['retenues_imposees_ir'], 2, ',', ' ') }}</td>
                                 </tr>
                                 @endif
 
@@ -529,29 +520,28 @@
                                     <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-warn)">{{ number_format($r['cout_tfp_patronal'], 2, ',', ' ') }}</td>
                                 </tr>
 
-                                @if($r['cotisation_cimr_patronale'] > 0)
+                                @if($r['cotisation_cimr_patronale'] > 0 || ($r['cimr_taux_employeur_inconnu'] ?? false))
                                 <tr class="row-patron">
                                     <td class="px-3 py-2">
                                         {{ __('ui.result.cimr_employer') }}
                                         <span class="badge text-bg-light badge-legal ms-1">Art. 28-III CGI</span>
                                     </td>
                                     <td class="text-end px-3 py-2 text-muted">{{ number_format($r['sbi'], 2, ',', ' ') }}</td>
-                                    <td class="text-end px-3 py-2 text-muted">{{ rtrim(rtrim(number_format($r['cimr_taux_employeur'] * 100, 2, ',', ' '), '0'), ',') }}%</td>
-                                    <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-warn)">{{ number_format($r['cotisation_cimr_patronale'], 2, ',', ' ') }}</td>
+                                    <td class="text-end px-3 py-2 text-muted">{{ ($r['cimr_taux_employeur_inconnu'] ?? false) ? '—' : rtrim(rtrim(number_format($r['cimr_taux_employeur'] * 100, 2, ',', ' '), '0'), ',').'%' }}</td>
+                                    <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-warn)">{{ ($r['cimr_taux_employeur_inconnu'] ?? false) ? __('ui.result.not_provided') : number_format($r['cotisation_cimr_patronale'], 2, ',', ' ') }}</td>
                                 </tr>
                                 @endif
 
-                                @if($r['mutuelle_patronale'] > 0)
+                                @if($r['mutuelle_patronale'] > 0 || ($r['mutuelle_patronale_inconnue'] ?? false))
                                 <tr class="row-patron">
                                     <td class="px-3 py-2">{{ __('ui.result.mutual_employer') }}</td>
                                     <td class="text-end px-3 py-2 text-muted">—</td>
                                     <td class="text-end px-3 py-2 text-muted">—</td>
-                                    <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-warn)">{{ number_format($r['mutuelle_patronale'], 2, ',', ' ') }}</td>
+                                    <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-warn)">{{ ($r['mutuelle_patronale_inconnue'] ?? false) ? __('ui.result.not_provided') : number_format($r['mutuelle_patronale'], 2, ',', ' ') }}</td>
                                 </tr>
                                 @endif
 
-
-                                @if($r['rc_part_employeur'] > 0)
+                                @if($r['rc_part_employeur'] > 0 || ($r['rc_part_employeur_inconnu'] ?? false))
                                 <tr class="row-patron">
                                     <td class="px-3 py-2">
                                         {{ __('ui.result.rc_employer') }}
@@ -559,7 +549,25 @@
                                     </td>
                                     <td class="text-end px-3 py-2 text-muted">—</td>
                                     <td class="text-end px-3 py-2 text-muted">—</td>
-                                    <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-warn)">{{ number_format($r['rc_part_employeur'], 2, ',', ' ') }}</td>
+                                    <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-warn)">{{ ($r['rc_part_employeur_inconnu'] ?? false) ? __('ui.result.not_provided') : number_format($r['rc_part_employeur'], 2, ',', ' ') }}</td>
+                                </tr>
+                                @endif
+
+                                @if(($r['assurance_at'] ?? 0) > 0 || ($r['assurance_at_inconnue'] ?? false))
+                                <tr class="row-patron">
+                                    <td class="px-3 py-2">{{ __('ui.result.assurance_at_line') }}</td>
+                                    <td class="text-end px-3 py-2 text-muted">{{ ($r['assurance_at_inconnue'] ?? false) ? '—' : number_format($r['sbi'], 2, ',', ' ') }}</td>
+                                    <td class="text-end px-3 py-2 text-muted">{{ ($r['assurance_at_inconnue'] ?? false) ? '—' : rtrim(rtrim(number_format(($r['assurance_at_taux'] ?? 0) * 100, 2, ',', ' '), '0'), ',').'%' }}</td>
+                                    <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-warn)">{{ ($r['assurance_at_inconnue'] ?? false) ? __('ui.result.not_provided') : number_format($r['assurance_at'], 2, ',', ' ') }}</td>
+                                </tr>
+                                @endif
+
+                                @if(($r['assurance_rc_pro'] ?? 0) > 0 || ($r['assurance_rc_pro_inconnue'] ?? false))
+                                <tr class="row-patron">
+                                    <td class="px-3 py-2">{{ __('ui.result.assurance_rc_pro_line') }}</td>
+                                    <td class="text-end px-3 py-2 text-muted">—</td>
+                                    <td class="text-end px-3 py-2 text-muted">—</td>
+                                    <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-warn)">{{ ($r['assurance_rc_pro_inconnue'] ?? false) ? __('ui.result.not_provided') : number_format($r['assurance_rc_pro'], 2, ',', ' ') }}</td>
                                 </tr>
                                 @endif
                                 {{-- COÛT TOTAL EMPLOYEUR --}}
@@ -687,14 +695,20 @@
                             <tr><td class="text-muted">AMO patronale ({{ number_format(config('payroll.amo.taux_patronal') * 100, 2, ',', '.') }}%)</td><td class="fw-semibold text-end" style="color:var(--s-warn)">+ {{ $madMonth($r['cout_amo_patronal']) }}</td></tr>
                             <tr><td class="text-muted">All. familiales ({{ number_format(config('payroll.allocations_familiales.taux_patronal') * 100, 2, ',', '.') }}%)</td><td class="fw-semibold text-end" style="color:var(--s-warn)">+ {{ $madMonth($r['cout_af_patronal']) }}</td></tr>
                             <tr><td class="text-muted">TFP ({{ number_format(config('payroll.taxe_formation.taux_patronal') * 100, 2, ',', '.') }}%)</td><td class="fw-semibold text-end" style="color:var(--s-warn)">+ {{ $madMonth($r['cout_tfp_patronal']) }}</td></tr>
-                            @if($r['cotisation_cimr_patronale'] > 0)
-                            <tr><td class="text-muted">CIMR employeur</td><td class="fw-semibold text-end" style="color:var(--s-warn)">+ {{ $madMonth($r['cotisation_cimr_patronale']) }}</td></tr>
+                            @if($r['cotisation_cimr_patronale'] > 0 || ($r['cimr_taux_employeur_inconnu'] ?? false))
+                            <tr><td class="text-muted">CIMR employeur</td><td class="fw-semibold text-end" style="color:var(--s-warn)">{{ ($r['cimr_taux_employeur_inconnu'] ?? false) ? __('ui.result.not_provided') : '+ '.$madMonth($r['cotisation_cimr_patronale']) }}</td></tr>
                             @endif
-                            @if($r['mutuelle_patronale'] > 0)
-                            <tr><td class="text-muted">Mutuelle employeur</td><td class="fw-semibold text-end" style="color:var(--s-warn)">+ {{ $madMonth($r['mutuelle_patronale']) }}</td></tr>
+                            @if($r['mutuelle_patronale'] > 0 || ($r['mutuelle_patronale_inconnue'] ?? false))
+                            <tr><td class="text-muted">Mutuelle employeur</td><td class="fw-semibold text-end" style="color:var(--s-warn)">{{ ($r['mutuelle_patronale_inconnue'] ?? false) ? __('ui.result.not_provided') : '+ '.$madMonth($r['mutuelle_patronale']) }}</td></tr>
                             @endif
-                            @if($r['rc_part_employeur'] > 0)
-                            <tr><td class="text-muted">Retraite compl. employeur</td><td class="fw-semibold text-end" style="color:var(--s-warn)">+ {{ $madMonth($r['rc_part_employeur']) }}</td></tr>
+                            @if($r['rc_part_employeur'] > 0 || ($r['rc_part_employeur_inconnu'] ?? false))
+                            <tr><td class="text-muted">Retraite compl. employeur</td><td class="fw-semibold text-end" style="color:var(--s-warn)">{{ ($r['rc_part_employeur_inconnu'] ?? false) ? __('ui.result.not_provided') : '+ '.$madMonth($r['rc_part_employeur']) }}</td></tr>
+                            @endif
+                            @if(($r['assurance_at'] ?? 0) > 0 || ($r['assurance_at_inconnue'] ?? false))
+                            <tr><td class="text-muted">{{ __('ui.result.assurance_at_line') }}</td><td class="fw-semibold text-end" style="color:var(--s-warn)">{{ ($r['assurance_at_inconnue'] ?? false) ? __('ui.result.not_provided') : '+ '.$madMonth($r['assurance_at']) }}</td></tr>
+                            @endif
+                            @if(($r['assurance_rc_pro'] ?? 0) > 0 || ($r['assurance_rc_pro_inconnue'] ?? false))
+                            <tr><td class="text-muted">{{ __('ui.result.assurance_rc_pro_line') }}</td><td class="fw-semibold text-end" style="color:var(--s-warn)">{{ ($r['assurance_rc_pro_inconnue'] ?? false) ? __('ui.result.not_provided') : '+ '.$madMonth($r['assurance_rc_pro']) }}</td></tr>
                             @endif
                             <tr class="table-warning">
                                 <td class="fw-bold">Coût total employeur</td>

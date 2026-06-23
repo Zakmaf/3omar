@@ -521,42 +521,72 @@
                 </details>
 
                 {{-- 4. Indemnites traitees comme exonerees --}}
-                <details class="step-section section-card mb-3" data-step-section {{ old('mutuelle_salarie') || old('mutuelle_patronale') ? 'open' : '' }}>
+                <details class="step-section section-card mb-3" data-step-section {{ old('indemnites') ? 'open' : '' }}>
                     <summary>
-                        <span class="step-label"><i class="bi bi-heart-pulse-fill me-2" style="color:var(--s-tax)"></i>{{ __('ui.calculator.step6_title') }}</span>
+                        <span class="step-label"><i class="bi bi-gift me-2" style="color:var(--s-succ)"></i>{{ __('ui.calculator.step7_title') }}</span>
                         <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
                     </summary>
                     <div class="card-body px-4 py-3">
-
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold small" for="mutuelle_salarie">{{ __('ui.calculator.mutual_employee_label') }}</label>
-                            <div class="input-group">
-                                <input type="number" name="mutuelle_salarie" id="mutuelle_salarie"
-                                       class="form-control @error('mutuelle_salarie') is-invalid @enderror"
-                                       value="{{ old('mutuelle_salarie', 0) }}"
-                                       min="0" step="0.01" placeholder="0">
-                                <span class="input-group-text">{{ __('ui.result.unit_mad_month_label') }}</span>
-                            </div>
-                            <div class="form-text">{{ __('ui.calculator.mutual_employee_help') }}</div>
+                        <div class="d-flex justify-content-end mb-3">
+                        <button type="button" class="btn btn-sm" id="addIndemnite" style="border:1px solid var(--s-succ);color:var(--s-succ)">
+                            <i class="bi bi-plus-circle me-1"></i>{{ __('ui.calculator.add') }}
+                        </button>
                         </div>
-
-                        <div class="mb-1">
-                            <label class="form-label fw-semibold small" for="mutuelle_patronale">{{ __('ui.calculator.mutual_employer_label') }}</label>
-                            <div class="input-group">
-                                <input type="number" name="mutuelle_patronale" id="mutuelle_patronale"
-                                       class="form-control @error('mutuelle_patronale') is-invalid @enderror"
-                                       value="{{ old('mutuelle_patronale', 0) }}"
-                                       min="0" step="0.01" placeholder="0">
-                                <span class="input-group-text">{{ __('ui.result.unit_mad_month_label') }}</span>
+                        <div class="form-text mb-3">{{ __('ui.calculator.allowance_help') }}</div>
+                        <div class="row g-2 mb-3 align-items-end">
+                            <div class="col-7">
+                                <label class="form-label small mb-1 fw-semibold" for="joursTravailles">{{ __('ui.calculator.working_days_label') }}</label>
+                                <input type="number" name="jours_travailles" id="joursTravailles"
+                                       class="form-control form-control-sm @error('jours_travailles') is-invalid @enderror"
+                                       value="{{ old('jours_travailles', config('payroll.jours_travailles_defaut')) }}"
+                                       min="1" max="31" step="1">
                             </div>
-                            <div class="form-text">{{ __('ui.calculator.mutual_employer_help') }}</div>
+                            <div class="col-5">
+                                <div class="form-text mb-1">{{ __('ui.calculator.working_days_help') }}</div>
+                            </div>
                         </div>
-
+                        <div id="indemniteContainer">
+                            @if(old('indemnites'))
+                                @foreach(old('indemnites') as $i => $ind)
+                                <div class="ind-row row g-2 mb-2 align-items-end">
+                                    <div class="col-7">
+                                        <label class="form-label small mb-1" for="indemnites_{{ $i }}_type">{{ __('ui.calculator.allowance_type_label') }}</label>
+                                        <select name="indemnites[{{ $i }}][type]" id="indemnites_{{ $i }}_type" class="form-select form-select-sm ind-type-select">
+                                            @foreach($indemnites_config as $key => $cfg)
+                                            <option value="{{ $key }}" {{ ($ind['type'] ?? '') === $key ? 'selected' : '' }}
+                                                    data-plafond="{{ $cfg['base_salaire'] ? ($cfg['pct'] * 100).'% du SB' : number_format($cfg['montant'], !empty($cfg['par_jour']) ? 2 : 0, ',', ' ').' MAD/'.(!empty($cfg['par_jour']) ? 'jour travaille' : 'mois') }}">
+                                                {{ $cfg['label'] }}
+                                            </option>
+                                            @endforeach
+                                        </select>
+                                        <div class="form-text ind-plafond-hint"></div>
+                                    </div>
+                                    <div class="col-4">
+                                        <label class="form-label small mb-1" for="indemnites_{{ $i }}_montant">{{ __('ui.calculator.allowance_amount_label') }}</label>
+                                        <div class="input-group input-group-sm">
+                                            <input type="number" name="indemnites[{{ $i }}][montant]" id="indemnites_{{ $i }}_montant"
+                                                   class="form-control form-control-sm"
+                                                   value="{{ $ind['montant'] ?? '' }}" min="0" step="0.01">
+                                            <span class="input-group-text">{{ __('ui.result.unit_mad_month_label') }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-1">
+                                        <button type="button" class="btn btn-sm btn-outline-danger remove-row" aria-label="{{ __('ui.calculator.remove_allowance_aria') }}">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                @endforeach
+                            @endif
+                        </div>
+                        <p class="text-muted small mb-0" id="indemnitePlaceholder" {{ old('indemnites') ? 'style=display:none' : '' }}>
+                            <i class="bi bi-info-circle me-1"></i>{{ __('ui.calculator.allowance_placeholder') }}
+                        </p>
                     </div>
                 </details>
 
                 {{-- 5. Avantages CNSS exoneres --}}
-                <details class="step-section section-card mb-3" data-step-section {{ old('prime_scolarite') || old('prime_aid') || old('autres_avantages_cnss') ? 'open' : '' }}>
+                <details class="step-section section-card mb-3" data-step-section {{ old('avantages_cnss') ? 'open' : '' }}>
                     <summary>
                         <span class="step-label"><i class="bi bi-mortarboard me-2" style="color:var(--s-cot)"></i>{{ __('ui.calculator.step8_title') }}</span>
                         <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
@@ -564,39 +594,16 @@
                     <div class="card-body px-4 py-3">
                         <div class="form-text mb-3">{{ __('ui.calculator.cnss_exempt_help') }}</div>
 
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold small" for="prime_scolarite">{{ __('ui.calculator.school_bonus_label') }}</label>
-                            <div class="input-group">
-                                <input type="number" name="prime_scolarite" id="prime_scolarite"
-                                       class="form-control @error('prime_scolarite') is-invalid @enderror"
-                                       value="{{ old('prime_scolarite', 0) }}"
-                                       min="0" step="0.01" placeholder="0">
-                                <span class="input-group-text">{{ __('ui.result.unit_mad_month_label') }}</span>
-                            </div>
-                            <div class="form-text">{{ __('ui.calculator.school_bonus_help') }}</div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold small" for="prime_aid">{{ __('ui.calculator.eid_bonus_label') }}</label>
-                            <div class="input-group">
-                                <input type="number" name="prime_aid" id="prime_aid"
-                                       class="form-control @error('prime_aid') is-invalid @enderror"
-                                       value="{{ old('prime_aid', 0) }}"
-                                       min="0" step="0.01" placeholder="0">
-                                <span class="input-group-text">{{ __('ui.result.unit_mad_month_label') }}</span>
-                            </div>
-                            <div class="form-text">{{ __('ui.calculator.eid_bonus_help') }}</div>
-                        </div>
-
                         <div class="mb-1">
-                            <label class="form-label fw-semibold small" for="autres_avantages_cnss">{{ __('ui.calculator.other_cnss_exempt_label') }}</label>
+                            <label class="form-label fw-semibold small" for="avantages_cnss">{{ __('ui.calculator.cnss_exempt_label') }}</label>
                             <div class="input-group">
-                                <input type="number" name="autres_avantages_cnss" id="autres_avantages_cnss"
-                                       class="form-control @error('autres_avantages_cnss') is-invalid @enderror"
-                                       value="{{ old('autres_avantages_cnss', 0) }}"
+                                <input type="number" name="avantages_cnss" id="avantages_cnss"
+                                       class="form-control @error('avantages_cnss') is-invalid @enderror"
+                                       value="{{ old('avantages_cnss', 0) }}"
                                        min="0" step="0.01" placeholder="0">
                                 <span class="input-group-text">{{ __('ui.result.unit_mad_month_label') }}</span>
                             </div>
+                            <div class="form-text">{{ __('ui.calculator.cnss_exempt_consolidated_help') }}</div>
                         </div>
 
                     </div>
@@ -628,12 +635,17 @@
                             </div>
                             <div class="col-sm-6">
                                 <label class="form-label fw-semibold small" for="cimrTauxEmployeur">{{ __('ui.calculator.cimr_employer_rate') }}</label>
-                                <div class="input-group input-group-sm">
+                                <div class="input-group input-group-sm js-inconnu-wrap" data-inconnu-wrap="cimr_taux_employeur">
                                     <input type="number" name="cimr_taux_employeur" id="cimrTauxEmployeur"
                                            class="form-control @error('cimr_taux_employeur') is-invalid @enderror"
                                            value="{{ old('cimr_taux_employeur', 0) }}"
                                            min="0" max="50" step="0.5" placeholder="0" inputmode="decimal">
                                     <span class="input-group-text">%</span>
+                                </div>
+                                <input type="hidden" name="cimr_taux_employeur_inconnu" id="cimr_taux_employeur_inconnu" value="{{ old('cimr_taux_employeur_inconnu') ? 1 : 0 }}">
+                                <div class="form-check mt-1">
+                                    <input class="form-check-input js-inconnu-toggle" type="checkbox" id="cimr_taux_employeur_toggle" data-inconnu-target="cimr_taux_employeur" {{ old('cimr_taux_employeur_inconnu') ? 'checked' : '' }}>
+                                    <label class="form-check-label small text-muted" for="cimr_taux_employeur_toggle">{{ __('ui.calculator.unknown_value_label') }}</label>
                                 </div>
                                 <div class="form-text">{{ __('ui.calculator.cimr_employer_help') }}</div>
                             </div>
@@ -664,12 +676,17 @@
                                 <label class="form-label fw-semibold small" for="rc_part_employeur">
                                     {{ __('ui.calculator.rc_employer_label') }} <span class="text-muted fw-normal">{{ __('ui.calculator.monthly') }}</span>
                                 </label>
-                                <div class="input-group input-group-sm">
+                                <div class="input-group input-group-sm js-inconnu-wrap" data-inconnu-wrap="rc_part_employeur">
                                     <input type="number" name="rc_part_employeur" id="rc_part_employeur"
                                            class="form-control @error('rc_part_employeur') is-invalid @enderror"
                                            value="{{ old('rc_part_employeur', 0) }}"
                                            min="0" step="0.01" placeholder="0">
                                     <span class="input-group-text">{{ __('ui.result.unit_mad_month_label') }}</span>
+                                </div>
+                                <input type="hidden" name="rc_part_employeur_inconnu" id="rc_part_employeur_inconnu" value="{{ old('rc_part_employeur_inconnu') ? 1 : 0 }}">
+                                <div class="form-check mt-1">
+                                    <input class="form-check-input js-inconnu-toggle" type="checkbox" id="rc_part_employeur_toggle" data-inconnu-target="rc_part_employeur" {{ old('rc_part_employeur_inconnu') ? 'checked' : '' }}>
+                                    <label class="form-check-label small text-muted" for="rc_part_employeur_toggle">{{ __('ui.calculator.unknown_value_label') }}</label>
                                 </div>
                             </div>
                         </div>
@@ -677,8 +694,8 @@
                     </div>
                 </details>
 
-                {{-- 7. Mutuelle sante --}}
-                <details class="step-section section-card mb-3" data-step-section {{ old('mutuelle_salarie') || old('mutuelle_patronale') ? 'open' : '' }}>
+                {{-- 7. Mutuelle sante + Assurances --}}
+                <details class="step-section section-card mb-3" data-step-section {{ old('mutuelle_salarie') || old('mutuelle_patronale') || old('assurance_at_taux') || old('assurance_rc_pro') ? 'open' : '' }}>
                     <summary>
                         <span class="step-label"><i class="bi bi-heart-pulse-fill me-2" style="color:var(--s-tax)"></i>{{ __('ui.calculator.step6_title') }}</span>
                         <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
@@ -697,16 +714,62 @@
                             <div class="form-text">{{ __('ui.calculator.mutual_employee_help') }}</div>
                         </div>
 
-                        <div class="mb-1">
+                        <div class="mb-3">
                             <label class="form-label fw-semibold small" for="mutuelle_patronale">{{ __('ui.calculator.mutual_employer_label') }}</label>
-                            <div class="input-group">
+                            <div class="input-group js-inconnu-wrap" data-inconnu-wrap="mutuelle_patronale">
                                 <input type="number" name="mutuelle_patronale" id="mutuelle_patronale"
                                        class="form-control @error('mutuelle_patronale') is-invalid @enderror"
                                        value="{{ old('mutuelle_patronale', 0) }}"
                                        min="0" step="0.01" placeholder="0">
                                 <span class="input-group-text">{{ __('ui.result.unit_mad_month_label') }}</span>
                             </div>
+                            <input type="hidden" name="mutuelle_patronale_inconnu" id="mutuelle_patronale_inconnu" value="{{ old('mutuelle_patronale_inconnu') ? 1 : 0 }}">
+                            <div class="form-check mt-1">
+                                <input class="form-check-input js-inconnu-toggle" type="checkbox" id="mutuelle_patronale_toggle" data-inconnu-target="mutuelle_patronale" {{ old('mutuelle_patronale_inconnu') ? 'checked' : '' }}>
+                                <label class="form-check-label small text-muted" for="mutuelle_patronale_toggle">{{ __('ui.calculator.unknown_value_label') }}</label>
+                            </div>
                             <div class="form-text">{{ __('ui.calculator.mutual_employer_help') }}</div>
+                        </div>
+
+                        <hr class="my-3">
+
+                        <div class="fw-semibold small mb-2">
+                            <i class="bi bi-shield-shaded me-1" style="color:var(--s-warn)"></i>{{ __('ui.calculator.insurance_section_heading') }}
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <label class="form-label fw-semibold small" for="assurance_at_taux">{{ __('ui.calculator.assurance_at_label') }}</label>
+                                <div class="input-group input-group-sm js-inconnu-wrap" data-inconnu-wrap="assurance_at_taux">
+                                    <input type="number" name="assurance_at_taux" id="assurance_at_taux"
+                                           class="form-control @error('assurance_at_taux') is-invalid @enderror"
+                                           value="{{ old('assurance_at_taux', 0) }}"
+                                           min="0" max="100" step="0.01" placeholder="0" inputmode="decimal">
+                                    <span class="input-group-text">%</span>
+                                </div>
+                                <input type="hidden" name="assurance_at_taux_inconnu" id="assurance_at_taux_inconnu" value="{{ old('assurance_at_taux_inconnu') ? 1 : 0 }}">
+                                <div class="form-check mt-1">
+                                    <input class="form-check-input js-inconnu-toggle" type="checkbox" id="assurance_at_taux_toggle" data-inconnu-target="assurance_at_taux" {{ old('assurance_at_taux_inconnu') ? 'checked' : '' }}>
+                                    <label class="form-check-label small text-muted" for="assurance_at_taux_toggle">{{ __('ui.calculator.unknown_value_label') }}</label>
+                                </div>
+                                <div class="form-text">{{ __('ui.calculator.assurance_at_help') }}</div>
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label fw-semibold small" for="assurance_rc_pro">{{ __('ui.calculator.assurance_rc_pro_label') }}</label>
+                                <div class="input-group input-group-sm js-inconnu-wrap" data-inconnu-wrap="assurance_rc_pro">
+                                    <input type="number" name="assurance_rc_pro" id="assurance_rc_pro"
+                                           class="form-control @error('assurance_rc_pro') is-invalid @enderror"
+                                           value="{{ old('assurance_rc_pro', 0) }}"
+                                           min="0" step="0.01" placeholder="0">
+                                    <span class="input-group-text">{{ __('ui.result.unit_mad_month_label') }}</span>
+                                </div>
+                                <input type="hidden" name="assurance_rc_pro_inconnu" id="assurance_rc_pro_inconnu" value="{{ old('assurance_rc_pro_inconnu') ? 1 : 0 }}">
+                                <div class="form-check mt-1">
+                                    <input class="form-check-input js-inconnu-toggle" type="checkbox" id="assurance_rc_pro_toggle" data-inconnu-target="assurance_rc_pro" {{ old('assurance_rc_pro_inconnu') ? 'checked' : '' }}>
+                                    <label class="form-check-label small text-muted" for="assurance_rc_pro_toggle">{{ __('ui.calculator.unknown_value_label') }}</label>
+                                </div>
+                                <div class="form-text">{{ __('ui.calculator.assurance_rc_pro_help') }}</div>
+                            </div>
                         </div>
 
                     </div>
@@ -747,20 +810,34 @@
                     </div>
                 </details>
 
-                {{-- 9. Autres retenues --}}
-                <details class="step-section section-card mb-3" data-step-section {{ old('autres_retenues') ? 'open' : '' }}>
+                {{-- 9. Retenues --}}
+                <details class="step-section section-card mb-3" data-step-section {{ old('retenues_exonerees_ir') || old('retenues_imposees_ir') ? 'open' : '' }}>
                     <summary>
                         <span class="step-label"><i class="bi bi-dash-circle me-2" style="color:var(--s-neutral)"></i>{{ __('ui.calculator.step9_title') }}</span>
                         <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
                     </summary>
                     <div class="card-body px-4 py-3">
-                        <label class="form-label fw-semibold" for="autres_retenues">{{ __('ui.calculator.other_deductions_label') }}</label>
-                        <div class="input-group">
-                            <input type="number" name="autres_retenues" id="autres_retenues" class="form-control"
-                                   value="{{ old('autres_retenues', 0) }}" min="0" step="0.01" placeholder="0">
-                            <span class="input-group-text">{{ __('ui.result.unit_mad_month_label') }}</span>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small" for="retenues_exonerees_ir">{{ __('ui.calculator.retenues_exonerees_ir_label') }}</label>
+                            <div class="input-group">
+                                <input type="number" name="retenues_exonerees_ir" id="retenues_exonerees_ir" class="form-control @error('retenues_exonerees_ir') is-invalid @enderror"
+                                       value="{{ old('retenues_exonerees_ir', 0) }}" min="0" step="0.01" placeholder="0">
+                                <span class="input-group-text">{{ __('ui.result.unit_mad_month_label') }}</span>
+                            </div>
+                            <div class="form-text">{{ __('ui.calculator.retenues_exonerees_ir_help') }}</div>
                         </div>
-                        <div class="form-text">{{ __('ui.calculator.other_deductions_help') }}</div>
+
+                        <div class="mb-1">
+                            <label class="form-label fw-semibold small" for="retenues_imposees_ir">{{ __('ui.calculator.retenues_imposees_ir_label') }}</label>
+                            <div class="input-group">
+                                <input type="number" name="retenues_imposees_ir" id="retenues_imposees_ir" class="form-control @error('retenues_imposees_ir') is-invalid @enderror"
+                                       value="{{ old('retenues_imposees_ir', 0) }}" min="0" step="0.01" placeholder="0">
+                                <span class="input-group-text">{{ __('ui.result.unit_mad_month_label') }}</span>
+                            </div>
+                            <div class="form-text">{{ __('ui.calculator.retenues_imposees_ir_help') }}</div>
+                        </div>
+
                     </div>
                 </details>
 
@@ -920,10 +997,7 @@ function getStepSummary(index) {
             return count > 0 ? count + ' indemnite' + (count > 1 ? 's' : '') : '';
         }
         case 4: {
-            const s = parseFloat(document.getElementById('prime_scolarite').value) || 0;
-            const a = parseFloat(document.getElementById('prime_aid').value) || 0;
-            const o = parseFloat(document.getElementById('autres_avantages_cnss').value) || 0;
-            const total = s + a + o;
+            const total = parseFloat(document.getElementById('avantages_cnss').value) || 0;
             return total > 0 ? 'Av. CNSS ' + formatMAD(total) : '';
         }
         case 5: {
@@ -935,8 +1009,14 @@ function getStepSummary(index) {
             return parts.join(' + ');
         }
         case 6: {
+            const parts = [];
             const mut = parseFloat(document.getElementById('mutuelle_salarie').value) || 0;
-            return mut > 0 ? 'Mut. ' + formatMAD(mut) : '';
+            if (mut > 0) parts.push('Mut. ' + formatMAD(mut));
+            const at = parseFloat(document.getElementById('assurance_at_taux').value) || 0;
+            if (at > 0) parts.push('AT ' + at + '%');
+            const rc = parseFloat(document.getElementById('assurance_rc_pro').value) || 0;
+            if (rc > 0) parts.push('RC ' + formatMAD(rc));
+            return parts.join(' + ');
         }
         case 7: {
             const parts = [];
@@ -946,7 +1026,9 @@ function getStepSummary(index) {
             return parts.join(' + ');
         }
         case 8: {
-            const val = parseFloat(document.getElementById('autres_retenues').value) || 0;
+            const exo = parseFloat(document.getElementById('retenues_exonerees_ir').value) || 0;
+            const imp = parseFloat(document.getElementById('retenues_imposees_ir').value) || 0;
+            const val = exo + imp;
             return val > 0 ? 'Ret. ' + formatMAD(val) : '';
         }
         default:
@@ -1145,6 +1227,48 @@ document.querySelectorAll('.remove-row').forEach(btn => {
         const row = btn.closest('.hs-row, .ind-row');
         if (row) { row.remove(); updateHsPlaceholder(); updateIndemnitePlaceholder(); updateWizardState(); }
     });
+});
+
+// ---- Toggles « Je ne connais pas cette valeur » ----
+document.querySelectorAll('.js-inconnu-toggle').forEach(toggle => {
+    const target = toggle.dataset.inconnuTarget;
+    const wrap = document.querySelector(`[data-inconnu-wrap="${target}"]`);
+    const hidden = document.getElementById(target + '_inconnu');
+
+    function applyInconnu() {
+        const unknown = toggle.checked;
+        if (wrap) wrap.hidden = unknown;
+        if (hidden) hidden.value = unknown ? 1 : 0;
+        updateWizardState();
+    }
+
+    toggle.addEventListener('change', applyInconnu);
+    applyInconnu();
+});
+
+// ---- Validation cote client avant soumission ----
+const payrollForm = document.getElementById('payrollForm');
+payrollForm.addEventListener('submit', (e) => {
+    const selectedMode = document.querySelector('input[name="mode"]:checked')?.value || MODE_GROSS_TO_NET;
+    const isNetToGross = selectedMode === MODE_NET_TO_GROSS;
+    const requiredInput = isNetToGross ? netCibleInput : salaireBaseInput;
+    const value = parseFloat(requiredInput.value);
+
+    if (!requiredInput.value || isNaN(value) || value <= 0) {
+        e.preventDefault();
+        requiredInput.classList.add('is-invalid');
+        const group = isNetToGross ? netCibleGroup : salaireBaseGroup;
+        if (group) {
+            const section = group.closest('[data-step-section]');
+            if (section) section.open = true;
+        }
+        requiredInput.focus();
+        requiredInput.scrollIntoView({behavior: 'smooth', block: 'center'});
+    }
+});
+
+[salaireBaseInput, netCibleInput].forEach(input => {
+    if (input) input.addEventListener('input', () => input.classList.remove('is-invalid'));
 });
 
 </script>

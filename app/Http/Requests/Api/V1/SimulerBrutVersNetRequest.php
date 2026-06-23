@@ -31,6 +31,11 @@ class SimulerBrutVersNetRequest extends FormRequest
             'rc_part_employeur' => 'nullable|numeric|min:0',
             'mutuelle_salarie' => 'nullable|numeric|min:0',
             'mutuelle_patronale' => 'nullable|numeric|min:0',
+            'assurance_at_taux' => 'nullable|numeric|min:0|max:100',
+            'assurance_rc_pro' => 'nullable|numeric|min:0',
+            'retenues_exonerees_ir' => 'nullable|numeric|min:0',
+            'retenues_imposees_ir' => 'nullable|numeric|min:0',
+            // Compatibilité ascendante : ancien champ unique de retenues.
             'autres_retenues' => 'nullable|numeric|min:0',
             'jours_travailles' => 'nullable|integer|min:1|max:31',
             'heures_sup' => 'nullable|array|max:10',
@@ -39,9 +44,7 @@ class SimulerBrutVersNetRequest extends FormRequest
             'indemnites' => 'nullable|array|max:10',
             'indemnites.*.type' => ['required_with:indemnites.*.montant', 'distinct', Rule::in(array_keys(config('payroll.indemnites')))],
             'indemnites.*.montant' => 'nullable|numeric|min:0|max:1000000',
-            'prime_scolarite' => 'nullable|numeric|min:0',
-            'prime_aid' => 'nullable|numeric|min:0',
-            'autres_avantages_cnss' => 'nullable|numeric|min:0',
+            'avantages_cnss' => 'nullable|numeric|min:0',
         ];
     }
 

@@ -21,9 +21,11 @@ class ApiCalculatorController extends Controller
             'cimr_taux', 'cimr_taux_employeur',
             'retraite_complementaire_mensuel', 'rc_part_employeur',
             'mutuelle_salarie', 'mutuelle_patronale',
-            'autres_retenues', 'heures_sup', 'indemnites',
+            'assurance_at_taux', 'assurance_rc_pro',
+            'retenues_exonerees_ir', 'retenues_imposees_ir', 'autres_retenues',
+            'heures_sup', 'indemnites',
             'jours_travailles',
-            'prime_scolarite', 'prime_aid', 'autres_avantages_cnss',
+            'avantages_cnss',
         ]);
 
         $result = $this->calculator->calculer($input);
@@ -41,9 +43,11 @@ class ApiCalculatorController extends Controller
             'cimr_taux', 'cimr_taux_employeur',
             'retraite_complementaire_mensuel', 'rc_part_employeur',
             'mutuelle_salarie', 'mutuelle_patronale',
-            'autres_retenues', 'heures_sup', 'indemnites',
+            'assurance_at_taux', 'assurance_rc_pro',
+            'retenues_exonerees_ir', 'retenues_imposees_ir', 'autres_retenues',
+            'heures_sup', 'indemnites',
             'jours_travailles',
-            'prime_scolarite', 'prime_aid', 'autres_avantages_cnss',
+            'avantages_cnss',
         ]);
 
         $result = $this->calculator->resoudreDepuisNet($input);
