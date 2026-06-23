@@ -241,11 +241,11 @@
             ['key' => 'step1_title', 'icon' => 'bi-cash-coin', 'color' => 'var(--s-info)', 'required' => true],
             ['key' => 'step2_title', 'icon' => 'bi-cash-stack', 'color' => 'var(--s-warn)'],
             ['key' => 'step3_title', 'icon' => 'bi-clock-history', 'color' => 'var(--s-info)'],
-            ['key' => 'step4_title', 'icon' => 'bi-piggy-bank', 'color' => 'var(--s-cot)'],
-            ['key' => 'step5_title', 'icon' => 'bi-people-fill', 'color' => 'var(--s-succ)'],
-            ['key' => 'step6_title', 'icon' => 'bi-heart-pulse-fill', 'color' => 'var(--s-tax)'],
             ['key' => 'step7_title', 'icon' => 'bi-gift', 'color' => 'var(--s-succ)'],
             ['key' => 'step8_title', 'icon' => 'bi-mortarboard', 'color' => 'var(--s-cot)'],
+            ['key' => 'step4_title', 'icon' => 'bi-piggy-bank', 'color' => 'var(--s-cot)'],
+            ['key' => 'step6_title', 'icon' => 'bi-heart-pulse-fill', 'color' => 'var(--s-tax)'],
+            ['key' => 'step5_title', 'icon' => 'bi-people-fill', 'color' => 'var(--s-succ)'],
             ['key' => 'step9_title', 'icon' => 'bi-dash-circle', 'color' => 'var(--s-neutral)'],
         ];
     @endphp
@@ -520,7 +520,89 @@
                     </div>
                 </details>
 
-                {{-- 4. CIMR & epargne retraite --}}
+                {{-- 4. Indemnites traitees comme exonerees --}}
+                <details class="step-section section-card mb-3" data-step-section {{ old('mutuelle_salarie') || old('mutuelle_patronale') ? 'open' : '' }}>
+                    <summary>
+                        <span class="step-label"><i class="bi bi-heart-pulse-fill me-2" style="color:var(--s-tax)"></i>{{ __('ui.calculator.step6_title') }}</span>
+                        <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
+                    </summary>
+                    <div class="card-body px-4 py-3">
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small" for="mutuelle_salarie">{{ __('ui.calculator.mutual_employee_label') }}</label>
+                            <div class="input-group">
+                                <input type="number" name="mutuelle_salarie" id="mutuelle_salarie"
+                                       class="form-control @error('mutuelle_salarie') is-invalid @enderror"
+                                       value="{{ old('mutuelle_salarie', 0) }}"
+                                       min="0" step="0.01" placeholder="0">
+                                <span class="input-group-text">{{ __('ui.result.unit_mad_month_label') }}</span>
+                            </div>
+                            <div class="form-text">{{ __('ui.calculator.mutual_employee_help') }}</div>
+                        </div>
+
+                        <div class="mb-1">
+                            <label class="form-label fw-semibold small" for="mutuelle_patronale">{{ __('ui.calculator.mutual_employer_label') }}</label>
+                            <div class="input-group">
+                                <input type="number" name="mutuelle_patronale" id="mutuelle_patronale"
+                                       class="form-control @error('mutuelle_patronale') is-invalid @enderror"
+                                       value="{{ old('mutuelle_patronale', 0) }}"
+                                       min="0" step="0.01" placeholder="0">
+                                <span class="input-group-text">{{ __('ui.result.unit_mad_month_label') }}</span>
+                            </div>
+                            <div class="form-text">{{ __('ui.calculator.mutual_employer_help') }}</div>
+                        </div>
+
+                    </div>
+                </details>
+
+                {{-- 5. Avantages CNSS exoneres --}}
+                <details class="step-section section-card mb-3" data-step-section {{ old('prime_scolarite') || old('prime_aid') || old('autres_avantages_cnss') ? 'open' : '' }}>
+                    <summary>
+                        <span class="step-label"><i class="bi bi-mortarboard me-2" style="color:var(--s-cot)"></i>{{ __('ui.calculator.step8_title') }}</span>
+                        <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
+                    </summary>
+                    <div class="card-body px-4 py-3">
+                        <div class="form-text mb-3">{{ __('ui.calculator.cnss_exempt_help') }}</div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small" for="prime_scolarite">{{ __('ui.calculator.school_bonus_label') }}</label>
+                            <div class="input-group">
+                                <input type="number" name="prime_scolarite" id="prime_scolarite"
+                                       class="form-control @error('prime_scolarite') is-invalid @enderror"
+                                       value="{{ old('prime_scolarite', 0) }}"
+                                       min="0" step="0.01" placeholder="0">
+                                <span class="input-group-text">{{ __('ui.result.unit_mad_month_label') }}</span>
+                            </div>
+                            <div class="form-text">{{ __('ui.calculator.school_bonus_help') }}</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small" for="prime_aid">{{ __('ui.calculator.eid_bonus_label') }}</label>
+                            <div class="input-group">
+                                <input type="number" name="prime_aid" id="prime_aid"
+                                       class="form-control @error('prime_aid') is-invalid @enderror"
+                                       value="{{ old('prime_aid', 0) }}"
+                                       min="0" step="0.01" placeholder="0">
+                                <span class="input-group-text">{{ __('ui.result.unit_mad_month_label') }}</span>
+                            </div>
+                            <div class="form-text">{{ __('ui.calculator.eid_bonus_help') }}</div>
+                        </div>
+
+                        <div class="mb-1">
+                            <label class="form-label fw-semibold small" for="autres_avantages_cnss">{{ __('ui.calculator.other_cnss_exempt_label') }}</label>
+                            <div class="input-group">
+                                <input type="number" name="autres_avantages_cnss" id="autres_avantages_cnss"
+                                       class="form-control @error('autres_avantages_cnss') is-invalid @enderror"
+                                       value="{{ old('autres_avantages_cnss', 0) }}"
+                                       min="0" step="0.01" placeholder="0">
+                                <span class="input-group-text">{{ __('ui.result.unit_mad_month_label') }}</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </details>
+
+                {{-- 6. CIMR & epargne retraite --}}
                 <details class="step-section section-card mb-3" data-step-section {{ old('cimr_taux') || old('retraite_complementaire_mensuel') ? 'open' : '' }}>
                     <summary>
                         <span class="step-label"><i class="bi bi-piggy-bank me-2" style="color:var(--s-cot)"></i>{{ __('ui.calculator.step4_title') }}</span>
@@ -595,42 +677,7 @@
                     </div>
                 </details>
 
-                {{-- 5. Charges de famille --}}
-                <details class="step-section section-card mb-3" data-step-section {{ old('nb_enfants') || old('conjoint_charge') ? 'open' : '' }}>
-                    <summary>
-                        <span class="step-label"><i class="bi bi-people-fill me-2" style="color:var(--s-succ)"></i>{{ __('ui.calculator.step5_title') }}</span>
-                        <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
-                    </summary>
-                    <div class="card-body px-4 py-3">
-                        @php
-                            $maxPersonnesCharge = (int) floor(config('payroll.charges_famille.plafond') / config('payroll.charges_famille.par_personne'));
-                            $maxEnfantsCharge = max(0, $maxPersonnesCharge);
-                            $conjointChecked = (bool) old('conjoint_charge');
-                            $selectedNbEnfants = min((int) old('nb_enfants', 0), $conjointChecked ? max(0, $maxEnfantsCharge - 1) : $maxEnfantsCharge);
-                        @endphp
-                        <div class="row g-3">
-                            <div class="col-sm-6">
-                                <label class="form-label fw-semibold" for="nb_enfants">{{ __('ui.calculator.children_label') }}</label>
-                                <select name="nb_enfants" id="nb_enfants" class="form-select" data-max-personnes="{{ $maxPersonnesCharge }}">
-                                    @for($i = 0; $i <= $maxEnfantsCharge; $i++)
-                                    <option value="{{ $i }}" {{ $selectedNbEnfants === $i ? 'selected' : '' }}>{{ $i === $maxEnfantsCharge ? $i.' '.__('ui.calculator.children_or_more') : $i }}</option>
-                                    @endfor
-                                </select>
-                            </div>
-                        </div>
-                        <div class="mt-3 p-3 rounded-2" style="background:var(--g-50); border:1px solid var(--g-200)">
-                            <div class="form-check mb-0">
-                                    <input class="form-check-input" type="checkbox" name="conjoint_charge"
-                                           id="conjointCharge" value="1" {{ $conjointChecked ? 'checked' : '' }}>
-                                    <label class="form-check-label fw-semibold" for="conjointCharge">{{ __('ui.calculator.spouse_label') }}</label>
-                                    <div class="form-text">{{ __('ui.calculator.spouse_help') }}</div>
-                            </div>
-                        </div>
-                        <div class="form-text mt-2">{{ number_format(config('payroll.charges_famille.par_personne'), 2, ',', ' ') }} MAD/mois x nombre de personnes, plafond {{ number_format(config('payroll.charges_famille.plafond'), 2, ',', ' ') }} MAD/mois (Art. 74 CGI)</div>
-                    </div>
-                </details>
-
-                {{-- 6. Mutuelle sante --}}
+                {{-- 7. Mutuelle sante --}}
                 <details class="step-section section-card mb-3" data-step-section {{ old('mutuelle_salarie') || old('mutuelle_patronale') ? 'open' : '' }}>
                     <summary>
                         <span class="step-label"><i class="bi bi-heart-pulse-fill me-2" style="color:var(--s-tax)"></i>{{ __('ui.calculator.step6_title') }}</span>
@@ -665,115 +712,38 @@
                     </div>
                 </details>
 
-                {{-- 7. Indemnites traitees comme exonerees --}}
-                <details class="step-section section-card mb-3" data-step-section {{ old('indemnites') ? 'open' : '' }}>
+                {{-- 8. Charges de famille --}}
+                <details class="step-section section-card mb-3" data-step-section {{ old('nb_enfants') || old('conjoint_charge') ? 'open' : '' }}>
                     <summary>
-                        <span class="step-label"><i class="bi bi-gift me-2" style="color:var(--s-succ)"></i>{{ __('ui.calculator.step7_title') }}</span>
+                        <span class="step-label"><i class="bi bi-people-fill me-2" style="color:var(--s-succ)"></i>{{ __('ui.calculator.step5_title') }}</span>
                         <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
                     </summary>
                     <div class="card-body px-4 py-3">
-                        <div class="d-flex justify-content-end mb-3">
-                        <button type="button" class="btn btn-sm" id="addIndemnite" style="border:1px solid var(--s-succ);color:var(--s-succ)">
-                            <i class="bi bi-plus-circle me-1"></i>{{ __('ui.calculator.add') }}
-                        </button>
-                        </div>
-                        <div class="form-text mb-3">{{ __('ui.calculator.allowance_help') }}</div>
-                        <div class="row g-2 mb-3 align-items-end">
-                            <div class="col-7">
-                                <label class="form-label small mb-1 fw-semibold" for="joursTravailles">{{ __('ui.calculator.working_days_label') }}</label>
-                                <input type="number" name="jours_travailles" id="joursTravailles"
-                                       class="form-control form-control-sm @error('jours_travailles') is-invalid @enderror"
-                                       value="{{ old('jours_travailles', config('payroll.jours_travailles_defaut')) }}"
-                                       min="1" max="31" step="1">
-                            </div>
-                            <div class="col-5">
-                                <div class="form-text mb-1">{{ __('ui.calculator.working_days_help') }}</div>
+                        @php
+                            $maxPersonnesCharge = (int) floor(config('payroll.charges_famille.plafond') / config('payroll.charges_famille.par_personne'));
+                            $maxEnfantsCharge = max(0, $maxPersonnesCharge);
+                            $conjointChecked = (bool) old('conjoint_charge');
+                            $selectedNbEnfants = min((int) old('nb_enfants', 0), $conjointChecked ? max(0, $maxEnfantsCharge - 1) : $maxEnfantsCharge);
+                        @endphp
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <label class="form-label fw-semibold" for="nb_enfants">{{ __('ui.calculator.children_label') }}</label>
+                                <select name="nb_enfants" id="nb_enfants" class="form-select" data-max-personnes="{{ $maxPersonnesCharge }}">
+                                    @for($i = 0; $i <= $maxEnfantsCharge; $i++)
+                                    <option value="{{ $i }}" {{ $selectedNbEnfants === $i ? 'selected' : '' }}>{{ $i === $maxEnfantsCharge ? $i.' '.__('ui.calculator.children_or_more') : $i }}</option>
+                                    @endfor
+                                </select>
                             </div>
                         </div>
-                        <div id="indemniteContainer">
-                            @if(old('indemnites'))
-                                @foreach(old('indemnites') as $i => $ind)
-                                <div class="ind-row row g-2 mb-2 align-items-end">
-                                    <div class="col-7">
-                                        <label class="form-label small mb-1" for="indemnites_{{ $i }}_type">{{ __('ui.calculator.allowance_type_label') }}</label>
-                                        <select name="indemnites[{{ $i }}][type]" id="indemnites_{{ $i }}_type" class="form-select form-select-sm ind-type-select">
-                                            @foreach($indemnites_config as $key => $cfg)
-                                            <option value="{{ $key }}" {{ ($ind['type'] ?? '') === $key ? 'selected' : '' }}
-                                                    data-plafond="{{ $cfg['base_salaire'] ? ($cfg['pct'] * 100).'% du SB' : number_format($cfg['montant'], !empty($cfg['par_jour']) ? 2 : 0, ',', ' ').' MAD/'.(!empty($cfg['par_jour']) ? 'jour travaille' : 'mois') }}">
-                                                {{ $cfg['label'] }}
-                                            </option>
-                                            @endforeach
-                                        </select>
-                                        <div class="form-text ind-plafond-hint"></div>
-                                    </div>
-                                    <div class="col-4">
-                                        <label class="form-label small mb-1" for="indemnites_{{ $i }}_montant">{{ __('ui.calculator.allowance_amount_label') }}</label>
-                                        <div class="input-group input-group-sm">
-                                            <input type="number" name="indemnites[{{ $i }}][montant]" id="indemnites_{{ $i }}_montant"
-                                                   class="form-control form-control-sm"
-                                                   value="{{ $ind['montant'] ?? '' }}" min="0" step="0.01">
-                                            <span class="input-group-text">{{ __('ui.result.unit_mad_month_label') }}</span>
-                                        </div>
-                                    </div>
-                                    <div class="col-1">
-                                        <button type="button" class="btn btn-sm btn-outline-danger remove-row" aria-label="{{ __('ui.calculator.remove_allowance_aria') }}">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                @endforeach
-                            @endif
-                        </div>
-                        <p class="text-muted small mb-0" id="indemnitePlaceholder" {{ old('indemnites') ? 'style=display:none' : '' }}>
-                            <i class="bi bi-info-circle me-1"></i>{{ __('ui.calculator.allowance_placeholder') }}
-                        </p>
-                    </div>
-                </details>
-
-                {{-- 8. Avantages CNSS exoneres --}}
-                <details class="step-section section-card mb-3" data-step-section {{ old('prime_scolarite') || old('prime_aid') || old('autres_avantages_cnss') ? 'open' : '' }}>
-                    <summary>
-                        <span class="step-label"><i class="bi bi-mortarboard me-2" style="color:var(--s-cot)"></i>{{ __('ui.calculator.step8_title') }}</span>
-                        <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
-                    </summary>
-                    <div class="card-body px-4 py-3">
-                        <div class="form-text mb-3">{{ __('ui.calculator.cnss_exempt_help') }}</div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold small" for="prime_scolarite">{{ __('ui.calculator.school_bonus_label') }}</label>
-                            <div class="input-group">
-                                <input type="number" name="prime_scolarite" id="prime_scolarite"
-                                       class="form-control @error('prime_scolarite') is-invalid @enderror"
-                                       value="{{ old('prime_scolarite', 0) }}"
-                                       min="0" step="0.01" placeholder="0">
-                                <span class="input-group-text">{{ __('ui.result.unit_mad_month_label') }}</span>
-                            </div>
-                            <div class="form-text">{{ __('ui.calculator.school_bonus_help') }}</div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold small" for="prime_aid">{{ __('ui.calculator.eid_bonus_label') }}</label>
-                            <div class="input-group">
-                                <input type="number" name="prime_aid" id="prime_aid"
-                                       class="form-control @error('prime_aid') is-invalid @enderror"
-                                       value="{{ old('prime_aid', 0) }}"
-                                       min="0" step="0.01" placeholder="0">
-                                <span class="input-group-text">{{ __('ui.result.unit_mad_month_label') }}</span>
-                            </div>
-                            <div class="form-text">{{ __('ui.calculator.eid_bonus_help') }}</div>
-                        </div>
-
-                        <div class="mb-1">
-                            <label class="form-label fw-semibold small" for="autres_avantages_cnss">{{ __('ui.calculator.other_cnss_exempt_label') }}</label>
-                            <div class="input-group">
-                                <input type="number" name="autres_avantages_cnss" id="autres_avantages_cnss"
-                                       class="form-control @error('autres_avantages_cnss') is-invalid @enderror"
-                                       value="{{ old('autres_avantages_cnss', 0) }}"
-                                       min="0" step="0.01" placeholder="0">
-                                <span class="input-group-text">{{ __('ui.result.unit_mad_month_label') }}</span>
+                        <div class="mt-3 p-3 rounded-2" style="background:var(--g-50); border:1px solid var(--g-200)">
+                            <div class="form-check mb-0">
+                                    <input class="form-check-input" type="checkbox" name="conjoint_charge"
+                                           id="conjointCharge" value="1" {{ $conjointChecked ? 'checked' : '' }}>
+                                    <label class="form-check-label fw-semibold" for="conjointCharge">{{ __('ui.calculator.spouse_label') }}</label>
+                                    <div class="form-text">{{ __('ui.calculator.spouse_help') }}</div>
                             </div>
                         </div>
-
+                        <div class="form-text mt-2">{{ number_format(config('payroll.charges_famille.par_personne'), 2, ',', ' ') }} MAD/mois x nombre de personnes, plafond {{ number_format(config('payroll.charges_famille.plafond'), 2, ',', ' ') }} MAD/mois (Art. 74 CGI)</div>
                     </div>
                 </details>
 
@@ -945,6 +915,18 @@ function getStepSummary(index) {
             return count > 0 ? count + ' ligne' + (count > 1 ? 's' : '') + ' HS' : '';
         }
         case 3: {
+            const rows = section.querySelectorAll('#indemniteContainer .ind-row');
+            const count = rows.length;
+            return count > 0 ? count + ' indemnite' + (count > 1 ? 's' : '') : '';
+        }
+        case 4: {
+            const s = parseFloat(document.getElementById('prime_scolarite').value) || 0;
+            const a = parseFloat(document.getElementById('prime_aid').value) || 0;
+            const o = parseFloat(document.getElementById('autres_avantages_cnss').value) || 0;
+            const total = s + a + o;
+            return total > 0 ? 'Av. CNSS ' + formatMAD(total) : '';
+        }
+        case 5: {
             const parts = [];
             const taux = parseFloat(document.getElementById('cimrTaux').value) || 0;
             if (taux > 0) parts.push('CIMR ' + taux + '%');
@@ -952,28 +934,16 @@ function getStepSummary(index) {
             if (rc > 0) parts.push('RC ' + formatMAD(rc));
             return parts.join(' + ');
         }
-        case 4: {
+        case 6: {
+            const mut = parseFloat(document.getElementById('mutuelle_salarie').value) || 0;
+            return mut > 0 ? 'Mut. ' + formatMAD(mut) : '';
+        }
+        case 7: {
             const parts = [];
             const nb = parseInt(document.getElementById('nb_enfants').value) || 0;
             if (nb > 0) parts.push(nb + ' enf.');
             if (document.getElementById('conjointCharge').checked) parts.push('conjoint');
             return parts.join(' + ');
-        }
-        case 5: {
-            const mut = parseFloat(document.getElementById('mutuelle_salarie').value) || 0;
-            return mut > 0 ? 'Mut. ' + formatMAD(mut) : '';
-        }
-        case 6: {
-            const rows = section.querySelectorAll('#indemniteContainer .ind-row');
-            const count = rows.length;
-            return count > 0 ? count + ' indemnite' + (count > 1 ? 's' : '') : '';
-        }
-        case 7: {
-            const s = parseFloat(document.getElementById('prime_scolarite').value) || 0;
-            const a = parseFloat(document.getElementById('prime_aid').value) || 0;
-            const o = parseFloat(document.getElementById('autres_avantages_cnss').value) || 0;
-            const total = s + a + o;
-            return total > 0 ? 'Av. CNSS ' + formatMAD(total) : '';
         }
         case 8: {
             const val = parseFloat(document.getElementById('autres_retenues').value) || 0;
