@@ -19,8 +19,9 @@ docker run -d \
 | `APP_KEY` | Oui | Clé de chiffrement des sessions et cookies. Générer avec `php artisan key:generate --show`. Une clé raw base64 sans préfixe (`openssl rand -base64 32`) est aussi acceptée — le préfixe `base64:` est ajouté automatiquement au démarrage. |
 | `APP_URL` | Recommandé | URL publique complète, ex : `https://3omar.ma`. Utilisée pour la génération des URL absolues et la cohérence des cookies. |
 | `APP_DEBUG` | Non | `false` par défaut. Mettre à `true` uniquement pour déboguer — affiche les erreurs en clair. |
-| `ADSENSE_ENABLED` | Non | `false` par défaut. Mettre à `true` pour activer Google AdSense (nécessite les trois variables ci-dessous). |
+| `ADSENSE_ENABLED` | Non | `false` par défaut. Mettre à `true` pour activer Google AdSense (necessite les variables ci-dessous). |
 | `ADSENSE_CLIENT` | Si AdSense | Identifiant client AdSense (`ca-pub-xxx`). |
+| `ADSENSE_PUBLISHER_ID` | Si AdSense | Identifiant editeur pour le fichier `ads.txt` (`pub-xxx`). |
 | `ADSENSE_SLOT_HEADER` | Si AdSense | ID du slot publicitaire du header. |
 | `ADSENSE_SLOT_FOOTER` | Si AdSense | ID du slot publicitaire du footer. |
 
@@ -29,12 +30,12 @@ docker run -d \
 | Tag | Usage recommandé |
 |-----|-----------------|
 | `latest` | Dernière version stable — mise à jour automatique |
-| `v1` | Majeure 1.x.x — suit les mises à jour mineures et correctifs |
-| `v1.3` | Mineure 1.3.x — correctifs uniquement |
-| `v1.4.0` | Version exacte — reproductible, recommandé pour la production |
+| `v2` | Majeure 2.x.x — suit les mises à jour mineures et correctifs |
+| `v2.2` | Mineure 2.2.x — correctifs uniquement |
+| `v2.2.0` | Version exacte — reproductible, recommandé pour la production |
 
 ```bash
-docker pull ghcr.io/zakmaf/3omar:v1.4.0
+docker pull ghcr.io/zakmaf/3omar:v2.2.0
 ```
 
 ## Reverse proxy (Traefik, Nginx…)
