@@ -14,7 +14,7 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
-    'version' => env('APP_VERSION', 'V2.0.0'),
+    'version' => env('APP_VERSION', 'V2.1.0'),
 
     'timezone' => 'Africa/Casablanca',
 
