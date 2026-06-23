@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\SimulerBrutVersNetRequest;
 use App\Http\Requests\Api\V1\SimulerNetVersBrutRequest;
+use App\Http\Requests\PayrollValidation;
 use App\Services\PayrollCalculatorService;
 use Illuminate\Http\JsonResponse;
 
@@ -14,19 +15,7 @@ class ApiCalculatorController extends Controller
 
     public function simulerBrutVersNet(SimulerBrutVersNetRequest $request): JsonResponse
     {
-        $input = $request->only([
-            'salaire_base', 'nb_annees_anciennete',
-            'prime_bilan', 'prime_rendement', 'autres_primes',
-            'type_frais_pro', 'nb_enfants', 'conjoint_charge',
-            'cimr_taux', 'cimr_taux_employeur',
-            'retraite_complementaire_mensuel', 'rc_part_employeur',
-            'mutuelle_salarie', 'mutuelle_patronale',
-            'assurance_at_taux', 'assurance_rc_pro',
-            'retenues_exonerees_ir', 'retenues_imposees_ir', 'autres_retenues',
-            'heures_sup', 'indemnites',
-            'jours_travailles',
-            'avantages_cnss',
-        ]);
+        $input = $request->only(PayrollValidation::apiFields('gross_to_net'));
 
         $result = $this->calculator->calculer($input);
         $result['mode'] = 'gross_to_net';
@@ -36,19 +25,7 @@ class ApiCalculatorController extends Controller
 
     public function simulerNetVersBrut(SimulerNetVersBrutRequest $request): JsonResponse
     {
-        $input = $request->only([
-            'net_cible', 'nb_annees_anciennete',
-            'prime_bilan', 'prime_rendement', 'autres_primes',
-            'type_frais_pro', 'nb_enfants', 'conjoint_charge',
-            'cimr_taux', 'cimr_taux_employeur',
-            'retraite_complementaire_mensuel', 'rc_part_employeur',
-            'mutuelle_salarie', 'mutuelle_patronale',
-            'assurance_at_taux', 'assurance_rc_pro',
-            'retenues_exonerees_ir', 'retenues_imposees_ir', 'autres_retenues',
-            'heures_sup', 'indemnites',
-            'jours_travailles',
-            'avantages_cnss',
-        ]);
+        $input = $request->only(PayrollValidation::apiFields('net_to_gross'));
 
         $result = $this->calculator->resoudreDepuisNet($input);
 
