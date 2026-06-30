@@ -35,7 +35,7 @@ docker run -d \
 | `v2.2.1` | Version exacte — reproductible, recommandé pour la production |
 
 ```bash
-docker pull ghcr.io/zakmaf/3omar:v2.2.1
+docker pull ghcr.io/zakmaf/3omar:v2.2.2
 ```
 
 ## Reverse proxy (Traefik, Nginx…)
