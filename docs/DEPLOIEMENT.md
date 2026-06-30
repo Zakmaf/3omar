@@ -32,7 +32,7 @@ docker run -d \
 | `latest` | Dernière version stable — mise à jour automatique |
 | `v2` | Majeure 2.x.x — suit les mises à jour mineures et correctifs |
 | `v2.2` | Mineure 2.2.x — correctifs uniquement |
-| `v2.2.1` | Version exacte — reproductible, recommandé pour la production |
+| `v2.2.2` | Version exacte — reproductible, recommandé pour la production |
 
 ```bash
 docker pull ghcr.io/zakmaf/3omar:v2.2.2
