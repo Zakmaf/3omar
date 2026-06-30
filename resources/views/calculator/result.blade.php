@@ -86,6 +86,14 @@
         $madMonth = fn ($amount) => number_format($amount, 2, ',', ' ').__('ui.result.unit_mad_month');
         $madYear = fn ($amount) => number_format($amount, 2, ',', ' ').__('ui.result.unit_mad_year');
         $signedMadMonth = fn ($amount) => ($amount >= 0 ? '+ ' : '- ').$madMonth(abs($amount));
+        $chartLabels = [
+            'net' => __('ui.result.chart_net'),
+            'cnss' => __('ui.result.chart_cnss', ['rate' => number_format(config('payroll.cnss.taux') * 100, 2, ',', '.')]),
+            'amo' => __('ui.result.chart_amo', ['rate' => number_format(config('payroll.amo.taux') * 100, 2, ',', '.')]),
+            'cimr' => __('ui.result.chart_cimr'),
+            'ir' => __('ui.result.chart_ir'),
+            'retenues' => __('ui.result.chart_deductions'),
+        ];
     @endphp
 
     <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
@@ -624,8 +632,32 @@
                     <i class="bi bi-pie-chart-fill me-2" style="color:var(--s-info)"></i>{{ __('ui.result.chart_title') }}
                 </div>
                 <div class="card-body text-center py-3">
-                    <canvas id="payrollChart" style="max-height:260px"></canvas>
-                    <div class="mt-3" id="chartLegend"></div>
+                    <p class="small text-muted mb-3" id="payrollChartHelp">{{ __('ui.result.chart_a11y_help') }}</p>
+                    <canvas id="payrollChart" style="max-height:260px" aria-hidden="true"></canvas>
+                    <div class="mt-3 no-print" id="chartLegend" aria-hidden="true"></div>
+                    <div class="table-responsive mt-3" aria-describedby="payrollChartHelp">
+                        <table class="table table-sm align-middle mb-0">
+                            <caption class="visually-hidden">{{ __('ui.result.chart_table_caption') }}</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col" class="text-start">{{ __('ui.result.chart_col_category') }}</th>
+                                    <th scope="col" class="text-end">{{ __('ui.result.chart_col_amount') }}</th>
+                                    <th scope="col" class="text-end">{{ __('ui.result.chart_col_share') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($r['repartition'] as $key => $part)
+                                    @if(($part['montant'] ?? 0) > 0)
+                                        <tr>
+                                            <th scope="row" class="fw-semibold">{{ $chartLabels[$key] ?? __('ui.result.chart_deductions') }}</th>
+                                            <td class="text-end">{{ $madMonth($part['montant']) }}</td>
+                                            <td class="text-end">{{ number_format($part['pct'], 1, ',', ' ') }}%</td>
+                                        </tr>
+                                    @endif
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -733,14 +765,7 @@
 const repartition = @json($r['repartition']);
 const intlLocale = @json(config('app.supported_locales.'.app()->getLocale().'.intl'));
 
-const labels = {
-    net:      'Net à payer',
-    cnss:     'CNSS ({{ number_format(config('payroll.cnss.taux') * 100, 2, ',', '.') }}%)',
-    amo:      'AMO ({{ number_format(config('payroll.amo.taux') * 100, 2, ',', '.') }}%)',
-    cimr:     'CIMR',
-    ir:       'IR retenu',
-    retenues: 'Autres retenues',
-};
+const labels = @json($chartLabels);
 
 const activeKeys = Object.keys(repartition).filter(k => repartition[k].montant > 0);
 const data       = activeKeys.map(k => repartition[k].montant);

@@ -267,6 +267,11 @@ return [
         'chart_cimr' => 'CIMR',
         'chart_ir' => 'IR retenu',
         'chart_deductions' => 'Autres retenues',
+        'chart_a11y_help' => 'Le tableau ci-dessous reprend les mêmes données que le graphique, par catégorie, montant et pourcentage.',
+        'chart_table_caption' => 'Répartition détaillée du salaire brut par catégorie',
+        'chart_col_category' => 'Catégorie',
+        'chart_col_amount' => 'Montant mensuel',
+        'chart_col_share' => 'Part du brut',
     ],
     'documentation' => [
         'eyebrow' => 'Comprendre les paramètres',

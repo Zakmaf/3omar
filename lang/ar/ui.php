@@ -274,6 +274,11 @@ return [
         'chart_cimr' => 'CIMR',
         'chart_ir' => 'الضريبة المقتطعة',
         'chart_deductions' => 'اقتطاعات أخرى',
+        'chart_a11y_help' => 'يعيد الجدول أدناه عرض نفس بيانات الرسم حسب الفئة والمبلغ والنسبة.',
+        'chart_table_caption' => 'تفصيل الأجر الإجمالي حسب الفئة',
+        'chart_col_category' => 'الفئة',
+        'chart_col_amount' => 'المبلغ الشهري',
+        'chart_col_share' => 'النسبة من الإجمالي',
     ],
     'documentation' => [
         'eyebrow' => 'فهم المعايير',

@@ -267,6 +267,11 @@ return [
         'chart_cimr' => 'CIMR',
         'chart_ir' => 'IR retenido',
         'chart_deductions' => 'Otras retenciones',
+        'chart_a11y_help' => 'La tabla siguiente repite los mismos datos del gráfico, por categoría, importe y porcentaje.',
+        'chart_table_caption' => 'Desglose detallado del salario bruto por categoría',
+        'chart_col_category' => 'Categoría',
+        'chart_col_amount' => 'Importe mensual',
+        'chart_col_share' => 'Parte del bruto',
     ],
     'documentation' => [
         'eyebrow' => 'Entender los parámetros',
