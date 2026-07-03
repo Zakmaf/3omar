@@ -104,14 +104,22 @@
         </div>
         <div class="d-flex flex-column flex-sm-row gap-2 no-print">
             <a href="{{ route('calculator.index') }}" class="btn text-white fw-semibold" style="background:var(--g-500)">
-                <i class="bi bi-arrow-left me-1"></i>{{ __('ui.result.edit') }}
+                <i class="bi bi-arrow-left me-1" aria-hidden="true"></i>{{ __('ui.result.edit') }}
             </a>
-            <button onclick="window.print()" class="btn fw-semibold" style="border:1px solid var(--ink-3);color:var(--ink-2)">
-                <i class="bi bi-printer me-1"></i>{{ __('ui.result.print') }}
+            <button type="button" onclick="window.print()" class="btn fw-semibold" style="border:1px solid var(--ink-3);color:var(--ink-2)">
+                <i class="bi bi-printer me-1" aria-hidden="true"></i>{{ __('ui.result.print') }}
             </button>
         </div>
     </div>
-    <p class="small mb-4" style="color:var(--ink-3)"><i class="bi bi-shield-check me-1"></i>{{ __('ui.footer.privacy') }}</p>
+
+    {{-- Privacy trust banner --}}
+    <div class="d-flex align-items-center gap-2 rounded-3 px-3 py-2 mb-4 no-print" style="background:var(--s-succ-bg);border:1px solid var(--hairline)">
+        <i class="bi bi-shield-check-fill flex-shrink-0" style="color:var(--s-succ)" aria-hidden="true"></i>
+        <p class="small mb-0" style="color:var(--ink-2)">
+            {{ __('ui.result.trust_banner_text') }}
+            <a href="{{ route('trust') }}" class="ms-1" style="color:var(--s-succ)">{{ __('ui.result.trust_banner_link') }}</a>
+        </p>
+    </div>
 
     @if(($r['mode'] ?? 'gross_to_net') === 'net_to_gross')
     <div class="section-card p-3 p-md-4 mb-4" style="background:var(--s-info-bg)">
@@ -153,6 +161,93 @@
             @endforeach
         </ul>
     </div>
+    @endif
+
+    {{-- Verdict / Diagnostic cards --}}
+    @php
+        $totalDeductions = $r['total_sociales'] + $r['ir_net'];
+        $effectiveRate = $r['salaire_brut_total'] > 0 ? round($totalDeductions / $r['salaire_brut_total'] * 100, 1) : 0;
+        $netRatio = $r['salaire_brut_total'] > 0 ? round($r['salaire_net'] / $r['salaire_brut_total'] * 100, 1) : 0;
+        $employerOverhead = $r['salaire_brut_total'] > 0 ? round(($r['cout_total_employeur'] - $r['salaire_brut_total']) / $r['salaire_brut_total'] * 100, 1) : 0;
+    @endphp
+    <section class="result-section" aria-labelledby="result-verdict-title">
+        <div class="mb-3">
+            <div class="eyebrow mb-1">{{ __('ui.result.verdict_title') }}</div>
+        </div>
+        <div class="row g-3 mb-4">
+            <div class="col-sm-4">
+                <div class="section-card p-3 text-center h-100" style="border-top:3px solid var(--s-tax)">
+                    <div class="small text-uppercase fw-semibold mb-1" style="color:var(--ink-3)">{{ __('ui.result.verdict_effective_rate') }}</div>
+                    <div class="fs-2 fw-bold" style="color:var(--s-tax);font-family:var(--f-display)">{{ $effectiveRate }}%</div>
+                    <div class="small mt-1" style="color:var(--ink-3)">{{ __('ui.result.verdict_effective_rate_help') }}</div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="section-card p-3 text-center h-100" style="border-top:3px solid var(--s-succ)">
+                    <div class="small text-uppercase fw-semibold mb-1" style="color:var(--ink-3)">{{ __('ui.result.verdict_net_ratio') }}</div>
+                    <div class="fs-2 fw-bold" style="color:var(--s-succ);font-family:var(--f-display)">{{ $netRatio }}%</div>
+                    <div class="small mt-1" style="color:var(--ink-3)">{{ $madMonth($r['salaire_net']) }}</div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="section-card p-3 text-center h-100" style="border-top:3px solid var(--s-warn)">
+                    <div class="small text-uppercase fw-semibold mb-1" style="color:var(--ink-3)">{{ __('ui.result.verdict_employer_overhead') }}</div>
+                    <div class="fs-2 fw-bold" style="color:var(--s-warn);font-family:var(--f-display)">+{{ $employerOverhead }}%</div>
+                    <div class="small mt-1" style="color:var(--ink-3)">{{ __('ui.result.verdict_employer_overhead_help') }}</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- Key takeaways --}}
+    @php
+        $marginalRate = round($r['tranche_ir']['taux'] * 100);
+        $cnssPlafond = config('payroll.cnss.plafond');
+        $takeaways = [];
+
+        if ($r['ir_net'] <= 0) {
+            $takeaways[] = ['icon' => 'bi-check-circle-fill', 'color' => 'var(--s-succ)',
+                'text' => __('ui.result.takeaway_no_ir')];
+        } elseif ($marginalRate >= 30) {
+            $takeaways[] = ['icon' => 'bi-percent', 'color' => 'var(--s-warn)',
+                'text' => __('ui.result.takeaway_high_marginal_ir', ['rate' => $marginalRate])];
+        }
+
+        if ($r['sbi'] >= $cnssPlafond) {
+            $takeaways[] = ['icon' => 'bi-shield-check', 'color' => 'var(--s-info)',
+                'text' => __('ui.result.takeaway_cnss_capped', ['amount' => number_format(round($cnssPlafond * config('payroll.cnss.taux'), 2), 2, ',', ' ')])];
+        }
+
+        if (($r['cimr_taux'] ?? 0) == 0 && $marginalRate >= 20 && count($takeaways) < 3) {
+            $takeaways[] = ['icon' => 'bi-piggy-bank', 'color' => 'var(--s-cot)',
+                'text' => __('ui.result.takeaway_no_cimr', ['rate' => $marginalRate])];
+        }
+
+        $hasUnknown = ($r['cimr_taux_employeur_inconnu'] ?? false)
+            || ($r['mutuelle_patronale_inconnue'] ?? false)
+            || ($r['assurance_at_inconnue'] ?? false)
+            || ($r['rc_part_employeur_inconnu'] ?? false);
+        if ($hasUnknown && count($takeaways) < 3) {
+            $takeaways[] = ['icon' => 'bi-exclamation-triangle', 'color' => 'var(--s-warn)',
+                'text' => __('ui.result.takeaway_cost_underestimated')];
+        }
+    @endphp
+    @if (!empty($takeaways))
+    <section class="result-section" aria-labelledby="result-takeaways-title">
+        <div class="mb-3">
+            <div class="eyebrow mb-1" id="result-takeaways-title">{{ __('ui.result.takeaways_title') }}</div>
+        </div>
+        <div class="row g-3">
+            @foreach ($takeaways as $t)
+            <div class="col-md-6 col-xl-4">
+                <div class="d-flex gap-3 p-3 rounded-3 h-100" style="background:var(--paper);border:1px solid var(--hairline);box-shadow:var(--shadow-1)">
+                    <i class="bi {{ $t['icon'] }} fs-5 flex-shrink-0 mt-1" style="color:{{ $t['color'] }}" aria-hidden="true"></i>
+                    <p class="small mb-0" style="color:var(--ink-2)">{{ $t['text'] }}</p>
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </section>
     @endif
 
     <section class="result-section" aria-labelledby="result-summary-title">
@@ -229,7 +324,7 @@
     <div class="row g-4 align-items-start">
 
         {{-- Tableau détaillé --}}
-        <section class="col-12 order-2" aria-labelledby="result-detail-title">
+        <section class="col-12 col-xl-7 order-2 order-xl-1" aria-labelledby="result-detail-title">
             <div class="eyebrow mb-1">{{ __('ui.result.detail_eyebrow') }}</div>
             <h2 class="h4 result-section-title mb-3" id="result-detail-title">{{ __('ui.result.detail_title') }}</h2>
             <details class="section-card overflow-hidden" id="calculationDetails">
@@ -596,7 +691,7 @@
         </section>
 
         {{-- Graphique + Récap --}}
-        <section class="col-12 order-1" aria-labelledby="result-explanation-title">
+        <section class="col-12 col-xl-5 order-1 order-xl-2" aria-labelledby="result-explanation-title">
             <div class="eyebrow mb-1">{{ __('ui.result.explanation_eyebrow') }}</div>
             <h2 class="h4 result-section-title mb-3" id="result-explanation-title">{{ __('ui.result.explanation_title') }}</h2>
 
@@ -757,6 +852,44 @@
         </section>
 
     </div>
+
+    {{-- Next actions CTA section --}}
+    <section class="mt-5 no-print" aria-labelledby="next-actions-title">
+        <h2 id="next-actions-title" class="h5 fw-bold mb-3">{{ __('ui.result.next_actions_title') }}</h2>
+        <div class="row g-3">
+            <div class="col-sm-6 col-lg-3">
+                <a href="{{ route('calculator.index') }}" class="section-card d-flex align-items-center gap-3 p-3 text-decoration-none" style="color:var(--ink)">
+                    <i class="bi bi-arrow-repeat fs-4 flex-shrink-0" style="color:var(--g-500)" aria-hidden="true"></i>
+                    <span class="small fw-semibold">{{ __('ui.result.action_simulate_again') }}</span>
+                </a>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <a href="{{ route('documentation') }}" class="section-card d-flex align-items-center gap-3 p-3 text-decoration-none" style="color:var(--ink)">
+                    <i class="bi bi-journal-text fs-4 flex-shrink-0" style="color:var(--s-info)" aria-hidden="true"></i>
+                    <span class="small fw-semibold">{{ __('ui.result.action_see_rules') }}</span>
+                </a>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <a href="{{ route('trust') }}" class="section-card d-flex align-items-center gap-3 p-3 text-decoration-none" style="color:var(--ink)">
+                    <i class="bi bi-shield-check fs-4 flex-shrink-0" style="color:var(--s-succ)" aria-hidden="true"></i>
+                    <span class="small fw-semibold">{{ __('ui.result.action_trust') }}</span>
+                </a>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <a href="{{ route('api.documentation') }}" class="section-card d-flex align-items-center gap-3 p-3 text-decoration-none" style="color:var(--ink)">
+                    <i class="bi bi-braces fs-4 flex-shrink-0" style="color:var(--s-cot)" aria-hidden="true"></i>
+                    <span class="small fw-semibold">{{ __('ui.result.action_api') }}</span>
+                </a>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <button type="button" onclick="window.print()" class="section-card d-flex align-items-center gap-3 p-3 w-100 border-0 text-start" style="color:var(--ink);background:var(--paper);cursor:pointer">
+                    <i class="bi bi-printer fs-4 flex-shrink-0" style="color:var(--ink-3)" aria-hidden="true"></i>
+                    <span class="small fw-semibold">{{ __('ui.result.action_print') }}</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
 </div>
 @endsection
 
