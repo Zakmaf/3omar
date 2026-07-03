@@ -258,6 +258,49 @@
         </div>
     </div>
 
+    {{-- Pre-simulation confidence panel --}}
+    <div class="row g-3 mb-4 no-print">
+        <div class="col-sm-6 col-lg-3">
+            <div class="d-flex align-items-start gap-2 p-3 h-100 rounded-3" style="background:var(--s-succ-bg);border:1px solid var(--g-200)">
+                <i class="bi bi-calculator flex-shrink-0 mt-1" style="color:var(--s-succ)" aria-hidden="true"></i>
+                <div>
+                    <div class="small fw-semibold mb-1">{{ __('ui.home.coverage_title') }}</div>
+                    <div class="small" style="color:var(--ink-2)">CNSS, AMO, IR, frais pro, indemnités, coût employeur</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="d-flex align-items-start gap-2 p-3 h-100 rounded-3" style="background:var(--s-info-bg);border:1px solid var(--g-200)">
+                <i class="bi bi-shield-check flex-shrink-0 mt-1" style="color:var(--s-info)" aria-hidden="true"></i>
+                <div>
+                    <div class="small fw-semibold mb-1">{{ __('ui.footer.privacy') }}</div>
+                    <div class="small" style="color:var(--ink-2)">{{ __('ui.footer.privacy_detail') }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="d-flex align-items-start gap-2 p-3 h-100 rounded-3" style="background:var(--s-warn-bg);border:1px solid var(--g-200)">
+                <i class="bi bi-exclamation-triangle flex-shrink-0 mt-1" style="color:var(--s-warn)" aria-hidden="true"></i>
+                <div>
+                    <div class="small fw-semibold mb-1">{{ __('ui.trust.limits_title') }}</div>
+                    <div class="small" style="color:var(--ink-2)">
+                        {{ __('ui.home.free') }}
+                        <a href="{{ route('trust') }}" class="d-inline ms-1" style="color:var(--s-warn)">{{ __('ui.home.trust_link') }}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="d-flex align-items-start gap-2 p-3 h-100 rounded-3" style="background:var(--g-50);border:1px solid var(--g-200)">
+                <i class="bi bi-clock flex-shrink-0 mt-1" style="color:var(--g-600)" aria-hidden="true"></i>
+                <div>
+                    <div class="small fw-semibold mb-1">{{ __('ui.calculator.eyebrow') }}</div>
+                    <div class="small" style="color:var(--ink-2)">{{ __('ui.calculator.simple_text') }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     @if ($errors->any())
     <div class="alert alert-danger border-0 shadow-sm mb-4" role="alert" tabindex="-1" id="formErrors">
         <i class="bi bi-exclamation-triangle-fill me-2"></i><strong>{{ __('ui.calculator.errors') }}</strong>

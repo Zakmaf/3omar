@@ -8,6 +8,23 @@
 
 3omar reste une simulation de bulletin de paie pedagogique. Pour un bulletin de paie officiel ou une situation particuliere, consultez votre employeur ou un professionnel.
 
+## V3 (en cours - branche feature/v3-product-upgrade)
+
+Les changements ci-dessous sont en cours de validation sur la branche `feature/v3-product-upgrade` et ne constituent pas encore une release officielle.
+
+### Nouveautes V3
+
+- **Page Fiabilite** (`/fiabilite`) : confidentialite, limites, open source, matrice de fiabilite des regles avec source, date de verification et niveau de confiance pour chaque taux.
+- **Positionnement par persona sur la page d'accueil** : cartes dediees aux salaries, RH/paie, developpeurs/integrateurs et decideurs/employeurs, chacune avec un CTA contextuel.
+- **Panneau de confiance avant simulation** : resume de ce que le calculateur va produire, engagement de confidentialite, lien vers les limites, avant de saisir le formulaire.
+- **Diagnostic actionnable sur la page de resultat** : cartes de ratios (taux effectif global, ratio net/brut, surcout patronal), bandeau de confidentialite, section "Et maintenant ?" avec CTAs vers une nouvelle simulation, la page de fiabilite et la documentation.
+- **Lien Fiabilite dans la navigation et le pied de page** : accessible depuis chaque page.
+- **CTA contextuel enrichi** : navigation coherente entre accueil, calculateur, resultat, documentation, API et page de fiabilite.
+- **Coherence dark mode** : tous les nouveaux elements respectent les tokens CSS existants.
+- **Points cles dynamiques sur le resultat** : apres les cartes de diagnostic, une section "Points cles" affiche des insights contextuels (IR non prelevé, plafond CNSS atteint, suggestion CIMR, valeurs employeur manquantes).
+- **Action Imprimer dans les etapes suivantes** : le resultat propose directement l'impression en plus des liens vers le simulateur, la documentation, la fiabilite et l'API.
+- **Couverture de tests** : 9 nouveaux tests de fumee (trust page, personas, bandeau, panneau preview, verdict, CTAs, takeaways, IR nul, impression).
+
 ## Fonctionnalites
 
 - **Brut → Net** : CNSS, AMO, CIMR, IR progressif, frais professionnels, charges de famille, retraite complementaire, prime d'anciennete, heures supplementaires, indemnites exonerees.
@@ -17,6 +34,7 @@
 - **Mode sombre** : detection automatique de la preference systeme, toggle dans la navbar, persistance du choix.
 - Cout total employeur, detail complet des retenues, affichage des references reglementaires.
 - Interface disponible en francais, anglais, arabe (RTL) et espagnol.
+- **Fiabilite** : page `/fiabilite` documentant chaque regle avec source et niveau de confiance.
 
 La feuille de route est geree dans les [issues GitHub](https://github.com/Zakmaf/3omar/issues).
 
