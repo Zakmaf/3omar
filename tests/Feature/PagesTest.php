@@ -193,6 +193,24 @@ class PagesTest extends TestCase
             ->assertSee('Dahir 1-72-184')
             ->assertSee('Art. 73 CGI, LF 50-25');
     }
+    public function test_trust_page_renders_supported_locales(): void
+    {
+        $this->withSession(['locale' => 'en'])->get('/fiabilite')
+            ->assertOk()
+            ->assertSee('Reliability, limits and privacy')
+            ->assertSee('Employee CNSS')
+            ->assertDontSee('CNSS salarié');
+
+        $this->withSession(['locale' => 'es'])->get('/fiabilite')
+            ->assertOk()
+            ->assertSee('Fiabilidad, límites y privacidad')
+            ->assertSee('CNSS empleado');
+
+        $this->withSession(['locale' => 'ar'])->get('/fiabilite')
+            ->assertOk()
+            ->assertSee('الموثوقية والحدود والخصوصية')
+            ->assertSee('CNSS حصة الأجير');
+    }
 
     public function test_trust_page_links_back_to_calculator_and_documentation(): void
     {

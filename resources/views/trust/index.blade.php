@@ -85,7 +85,7 @@
                     <li class="mb-2">{{ $limit }}</li>
                     @endforeach
                 </ul>
-                <div class="mt-4 p-3 rounded-3" style="background:var(--s-warn-bg);border:1px solid var(--s-warn);border-opacity:.3">
+                <div class="mt-4 p-3 rounded-3" style="background:var(--s-warn-bg);border:1px solid color-mix(in srgb, var(--s-warn) 30%, transparent)">
                     <p class="mb-0 small"><i class="bi bi-exclamation-triangle-fill me-2" style="color:var(--s-warn)"></i>{{ __('ui.trust.limits_disclaimer') }}</p>
                 </div>
             </section>
@@ -135,9 +135,9 @@
                                 </td>
                                 <td class="px-3 py-2 text-center">
                                     @if($row['couverture'] === 'full')
-                                        <i class="bi bi-circle-fill" style="color:var(--s-succ);font-size:.55rem" title="{{ __('ui.trust.coverage_full') }}" aria-label="{{ __('ui.trust.coverage_full') }}"></i>
+                                        <i class="bi bi-circle-fill" style="color:var(--s-succ);font-size:.55rem" title="{{ __('ui.trust.coverage_full') }}" role="img" aria-label="{{ __('ui.trust.coverage_full') }}"></i>
                                     @else
-                                        <i class="bi bi-circle-half" style="color:var(--s-warn);font-size:.55rem" title="{{ __('ui.trust.coverage_partial') }}" aria-label="{{ __('ui.trust.coverage_partial') }}"></i>
+                                        <i class="bi bi-circle-half" style="color:var(--s-warn);font-size:.55rem" title="{{ __('ui.trust.coverage_partial') }}" role="img" aria-label="{{ __('ui.trust.coverage_partial') }}"></i>
                                     @endif
                                 </td>
                             </tr>
@@ -156,7 +156,7 @@
         </div>
 
         {{-- Sidebar --}}
-        <div class="col-lg-4">
+        <div class="col-lg-4 d-none d-lg-block">
 
             {{-- Quick nav --}}
             <div class="section-card p-4 mb-4 position-sticky" style="top:1.5rem">

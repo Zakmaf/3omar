@@ -106,7 +106,7 @@
             <a href="{{ route('calculator.index') }}" class="btn text-white fw-semibold" style="background:var(--g-500)">
                 <i class="bi bi-arrow-left me-1" aria-hidden="true"></i>{{ __('ui.result.edit') }}
             </a>
-            <button onclick="window.print()" class="btn fw-semibold" style="border:1px solid var(--ink-3);color:var(--ink-2)">
+            <button type="button" onclick="window.print()" class="btn fw-semibold" style="border:1px solid var(--ink-3);color:var(--ink-2)">
                 <i class="bi bi-printer me-1" aria-hidden="true"></i>{{ __('ui.result.print') }}
             </button>
         </div>
@@ -882,7 +882,7 @@
                 </a>
             </div>
             <div class="col-sm-6 col-lg-3">
-                <button onclick="window.print()" class="section-card d-flex align-items-center gap-3 p-3 w-100 border-0 text-start" style="color:var(--ink);background:var(--paper);cursor:pointer">
+                <button type="button" onclick="window.print()" class="section-card d-flex align-items-center gap-3 p-3 w-100 border-0 text-start" style="color:var(--ink);background:var(--paper);cursor:pointer">
                     <i class="bi bi-printer fs-4 flex-shrink-0" style="color:var(--ink-3)" aria-hidden="true"></i>
                     <span class="small fw-semibold">{{ __('ui.result.action_print') }}</span>
                 </button>

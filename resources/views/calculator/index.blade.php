@@ -265,7 +265,7 @@
                 <i class="bi bi-calculator flex-shrink-0 mt-1" style="color:var(--s-succ)" aria-hidden="true"></i>
                 <div>
                     <div class="small fw-semibold mb-1">{{ __('ui.home.coverage_title') }}</div>
-                    <div class="small" style="color:var(--ink-2)">CNSS, AMO, IR, frais pro, indemnités, coût employeur</div>
+                    <div class="small" style="color:var(--ink-2)">{{ __('ui.calculator.coverage_items') }}</div>
                 </div>
             </div>
         </div>
