@@ -466,10 +466,14 @@
                                 <tr class="row-cotis">
                                     <td class="px-3 py-2">
                                         {{ __('ui.result.amo_employee') }}
+                                        @if($r['amo_taux_salarie_personnalise'])
+                                        <span class="badge text-bg-warning-subtle text-warning-emphasis badge-legal ms-1">{{ __('ui.result.amo_custom_rate_badge') }}</span>
+                                        @else
                                         <span class="badge text-bg-light badge-legal ms-1">Loi 65-00</span>
+                                        @endif
                                     </td>
                                     <td class="text-end px-3 py-2 text-muted">{{ number_format($r['assiette_sociale'], 2, ',', ' ') }}</td>
-                                    <td class="text-end px-3 py-2 text-muted">{{ number_format(config('payroll.amo.taux') * 100, 2, ',', '.') }}%</td>
+                                    <td class="text-end px-3 py-2 text-muted">{{ number_format($r['amo_taux_salarie'] * 100, 2, ',', '.') }}%</td>
                                     <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-cot)">− {{ number_format($r['cotisation_amo'], 2, ',', ' ') }}</td>
                                 </tr>
 

@@ -45,6 +45,23 @@ Les primes de scolarité, des Aïd et autres avantages configurés dans `config(
 
 Le champ `rc_part_employeur` permet de distinguer la part employeur de la cotisation bancassurance. Ce montant est ajouté au `total_patronal` sans affecter le net salarié ni l'assiette IR.
 
+## Taux AMO salarié personnalisé (option avancée, V3.2)
+
+Par défaut, `cotisation_amo = assiette_sociale × config('payroll.amo.taux')` (2,26 %, Loi n° 65-00) : ce comportement légal ne change jamais implicitement.
+
+Deux champs optionnels permettent de surcharger explicitement ce taux, pour reproduire un bulletin de paie réel dont le taux AMO salarié observé diffère du taux légal :
+
+| Champ | Type | Effet |
+|-------|------|-------|
+| `amo_taux_salarie_personnalise` | booléen, `false` par défaut | Active la dérogation. Si absent ou `false`, le taux légal s'applique et `amo_taux_salarie` est ignoré. |
+| `amo_taux_salarie` | pourcentage (0–100), `0` par défaut | Taux effectivement appliqué à l'assiette sociale quand la dérogation est active (peut être `0`). |
+
+Quand la dérogation est active, un avertissement est systématiquement ajouté à `avertissements`, rappelant le taux légal standard et invitant à vérifier la pratique de l'employeur avec son service RH.
+
+Cette option ne modifie **que** la part salariale : la part patronale (`cout_amo_patronal`) continue d'utiliser le taux légal `config('payroll.amo.taux_patronal')`, cette dérogation étant réservée au constat d'un écart côté salarié et non à une hypothèse sur la pratique de l'employeur.
+
+Origine : écart constaté entre 3omar et un bulletin de paie réel (AMO salariale nulle) — voir issue #128, dont la question réglementaire de fond reste ouverte, et issue #137 pour le suivi d'implémentation de cette option.
+
 ## Solver net → brut (V1.1)
 
 ### Principe
@@ -104,3 +121,4 @@ Avant un usage opérationnel, faire confirmer :
 - L'éligibilité CNSS et IR de chaque type d'indemnité et avantage.
 - Les règles d'assiette et de déductibilité CIMR et bancassurance.
 - Les assiettes exactes des contributions patronales.
+- La légitimité d'une AMO salariale nulle ou variable observée sur un bulletin de paie réel (issue #128).

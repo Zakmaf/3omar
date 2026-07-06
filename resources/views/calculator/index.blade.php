@@ -776,6 +776,32 @@
 
                         <hr class="my-3">
 
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input js-amo-override-toggle" type="checkbox" id="amoTauxSalariePersonnaliseToggle"
+                                       name="amo_taux_salarie_personnalise" value="1"
+                                       data-amo-override-target="amo_taux_salarie_wrap"
+                                       {{ old('amo_taux_salarie_personnalise') ? 'checked' : '' }}>
+                                <label class="form-check-label small fw-semibold" for="amoTauxSalariePersonnaliseToggle">{{ __('ui.calculator.amo_override_toggle_label') }}</label>
+                            </div>
+                            <div class="form-text">{{ __('ui.calculator.amo_override_help') }}</div>
+                            <div id="amo_taux_salarie_wrap" class="mt-2" {{ old('amo_taux_salarie_personnalise') ? '' : 'hidden' }}>
+                                <div class="alert alert-warning small py-2 px-3 mb-2" role="alert">
+                                    <i class="bi bi-exclamation-triangle me-1" aria-hidden="true"></i>{{ __('ui.calculator.amo_override_warning') }}
+                                </div>
+                                <label class="form-label fw-semibold small" for="amo_taux_salarie">{{ __('ui.calculator.amo_override_rate_label') }}</label>
+                                <div class="input-group input-group-sm" style="max-width: 200px;">
+                                    <input type="number" name="amo_taux_salarie" id="amo_taux_salarie"
+                                           class="form-control @error('amo_taux_salarie') is-invalid @enderror"
+                                           value="{{ old('amo_taux_salarie', 0) }}"
+                                           min="0" max="100" step="0.01" placeholder="0" inputmode="decimal">
+                                    <span class="input-group-text">%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-3">
+
                         <div class="fw-semibold small mb-2">
                             <i class="bi bi-shield-shaded me-1" style="color:var(--s-warn)" aria-hidden="true"></i>{{ __('ui.calculator.insurance_section_heading') }}
                         </div>
@@ -1293,6 +1319,18 @@ document.querySelectorAll('.js-inconnu-toggle').forEach(toggle => {
 
     toggle.addEventListener('change', applyInconnu);
     applyInconnu();
+});
+
+// ---- Toggle « Personnaliser le taux AMO salarié » (option avancée) ----
+document.querySelectorAll('.js-amo-override-toggle').forEach(toggle => {
+    const wrap = document.getElementById(toggle.dataset.amoOverrideTarget);
+
+    function applyAmoOverride() {
+        if (wrap) wrap.hidden = ! toggle.checked;
+    }
+
+    toggle.addEventListener('change', applyAmoOverride);
+    applyAmoOverride();
 });
 
 // ---- Validation cote client avant soumission ----

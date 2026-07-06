@@ -230,6 +230,15 @@ class PayrollCalculatorService
         $mutuelleSalarie = (float) ($input['mutuelle_salarie'] ?? 0);
         $retraiteComplementaireMensuel = (float) ($input['retraite_complementaire_mensuel'] ?? 0);
 
+        // Option avancée et dérogatoire : le taux légal AMO salarié (Loi 65-00) reste
+        // la valeur par défaut. Un utilisateur peut le personnaliser explicitement
+        // pour reproduire un bulletin de paie réel (voir issue #128 et #137).
+        $amoTauxSalarieLegal = config('payroll.amo.taux');
+        $amoTauxSalariePersonnalise = ! empty($input['amo_taux_salarie_personnalise']);
+        $amoTauxSalarie = $amoTauxSalariePersonnalise
+            ? max(0.0, ((float) ($input['amo_taux_salarie'] ?? 0)) / 100)
+            : $amoTauxSalarieLegal;
+
         // Champs patronaux pouvant être « inconnus » (null) plutôt que 0.
         // Un drapeau _inconnu = 1 (ou une valeur null explicite) signifie « non renseigné ».
         $coutEmployeurPartiel = false;
@@ -372,7 +381,7 @@ class PayrollCalculatorService
         // =====================================================================
         // ÉTAPE 3 — AMO salarié (Loi n° 65-00)
         // =====================================================================
-        $cotisationAMO = $this->r2($assietteSociale * config('payroll.amo.taux'));
+        $cotisationAMO = $this->r2($assietteSociale * $amoTauxSalarie);
 
         // =====================================================================
         // ÉTAPE 4 — CIMR (Art. 28-III CGI)
@@ -479,6 +488,12 @@ class PayrollCalculatorService
         // =====================================================================
         // Avertissements réglementaires
         // =====================================================================
+        if ($amoTauxSalariePersonnalise) {
+            $pctSaisi = round($amoTauxSalarie * 100, 2);
+            $pctLegal = round($amoTauxSalarieLegal * 100, 2);
+            $avertissements[] = "AMO salarié personnalisé : taux de {$pctSaisi}% appliqué au lieu du taux légal standard de {$pctLegal}% (Loi n° 65-00). Cette option dérogatoire est réservée à la reproduction d'un bulletin de paie réel : vérifiez ce point avec votre service RH avant toute décision financière (suivi réglementaire : issue #128).";
+        }
+
         $smig = config('payroll.smig.mensuel');
         if ($salaireBase < $smig && $salaireBase > 0) {
             $smigFmt = number_format($smig, 2, ',', ' ');
@@ -553,6 +568,9 @@ class PayrollCalculatorService
             'assiette_cnss' => $assietteCNSS,
             'cotisation_cnss' => $cotisationCNSS,
             'cotisation_amo' => $cotisationAMO,
+            'amo_taux_salarie' => $amoTauxSalarie,
+            'amo_taux_salarie_legal' => $amoTauxSalarieLegal,
+            'amo_taux_salarie_personnalise' => $amoTauxSalariePersonnalise,
             'cimr_taux' => $cimrTaux,
             'cimr_taux_employeur' => $cimrTauxEmployeur,
             'cotisation_cimr' => $cotisationCIMR,
