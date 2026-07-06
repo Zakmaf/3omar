@@ -6,9 +6,9 @@ Ce document décrit le comportement réellement implémenté. `config/payroll.ph
 
 1. Le **SBI** (salaire brut imposable) additionne salaire de base, primes imposables, ancienneté, heures supplémentaires, excédents d'indemnités dépassant leur plafond exonéré et avantages CNSS exonérés (imposables IR mais exclus de l'assiette CNSS/AMO).
 2. **CNSS et AMO** sont calculées sur l'**assiette sociale** (SBI hors avantages CNSS exonérés). La **CIMR** peut être à la charge du salarié, de l'employeur ou partagée ; seule la part salarié est déduite du SNC.
-3. Le **RNI** (revenu net imposable) déduit les cotisations sociales et les frais professionnels du SBI.
+3. Le **RNI** (revenu net imposable) déduit les cotisations sociales, la mutuelle salariale, les frais professionnels et les retenues pré-fiscales du SBI.
 4. L'**IR** est calculé sur le RNI annualisé, puis diminué des charges de famille.
-5. Le **net à payer** ajoute les parts d'indemnités traitées comme exonérées et retire les retenues salariales (mutuelle, autres retenues).
+5. Le **net à payer** ajoute les parts d'indemnités traitées comme exonérées et retire les retenues salariales post-fiscales. La mutuelle salariale est affichée dans les retenues du net et réduit aussi l'assiette IR, sans être agrégée aux cotisations sociales CNSS/AMO/CIMR.
 6. Le **coût total employeur** additionne le salaire brut total versé (indemnités comprises) et les charges patronales (CNSS, AMO, AF, TFP, mutuelle patronale, CIMR part employeur, retraite complémentaire part employeur).
 
 ## Hypothèses explicites
@@ -18,6 +18,7 @@ Ce document décrit le comportement réellement implémenté. `config/payroll.ph
 - Les indemnités configurées sont traitées comme exonérées dans leurs plafonds. Leur éligibilité CNSS et IR réelle dépend de la nature, des justificatifs et de la situation contractuelle.
 - Les déclarations d'une même indemnité sont agrégées avant application d'un plafond unique.
 - Les frais professionnels utilisent le SBI et le plafond mensuel configuré.
+- La mutuelle salariale est traitée comme une cotisation salariale pré-fiscale pour le calcul de l'IR, puis retirée du net à payer.
 - L'avertissement SMIG compare le SMIG mensuel au **salaire de base** saisi, pas au SBI total.
 
 ## CIMR — Répartition employeur/salarié (V1.2)
