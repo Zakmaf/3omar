@@ -68,6 +68,10 @@
                        class="btn fw-semibold" style="border:1px solid var(--hairline-strong);color:var(--ink)">
                         <i class="bi bi-file-text me-2" aria-hidden="true"></i>{{ __('ui.trust.oss_license_cta') }}
                     </a>
+                    <a href="https://github.com/Zakmaf/3omar/blob/main/SECURITY.md" target="_blank" rel="noopener"
+                       class="btn fw-semibold" style="border:1px solid var(--hairline-strong);color:var(--ink)">
+                        <i class="bi bi-shield-lock me-2" aria-hidden="true"></i>{{ __('ui.trust.oss_security_cta') }}
+                    </a>
                 </div>
             </section>
 
@@ -78,6 +82,7 @@
                     <div>
                         <h2 class="h4 fw-bold mb-1" id="trust-limits-title">{{ __('ui.trust.limits_title') }}</h2>
                         <p class="mb-0" style="color:var(--ink-2)">{{ __('ui.trust.limits_intro') }}</p>
+                        <p class="mb-0 mt-2 fw-semibold" style="color:var(--ink)">{{ __('ui.trust.official_payslip_notice') }}</p>
                     </div>
                 </div>
                 <ul class="mb-0 mt-3" style="color:var(--ink-2)">
@@ -87,6 +92,12 @@
                 </ul>
                 <div class="mt-4 p-3 rounded-3" style="background:var(--s-warn-bg);border:1px solid color-mix(in srgb, var(--s-warn) 30%, transparent)">
                     <p class="mb-0 small"><i class="bi bi-exclamation-triangle-fill me-2" style="color:var(--s-warn)" aria-hidden="true"></i>{{ __('ui.trust.limits_disclaimer') }}</p>
+                </div>
+                <div class="mt-3">
+                    <a href="https://github.com/Zakmaf/3omar/issues/new" target="_blank" rel="noopener"
+                       class="small fw-semibold text-decoration-none" style="color:var(--g-600)">
+                        <i class="bi bi-bug me-1" aria-hidden="true"></i>{{ __('ui.trust.report_error_cta') }}
+                    </a>
                 </div>
             </section>
 
@@ -206,6 +217,11 @@
                     <li class="mb-2">
                         <a href="https://github.com/Zakmaf/3omar" target="_blank" rel="noopener" style="color:var(--g-600);text-decoration:none">
                             <i class="bi bi-github me-2" aria-hidden="true"></i>{{ __('ui.footer.source') }}
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="https://github.com/Zakmaf/3omar/blob/main/SECURITY.md" target="_blank" rel="noopener" style="color:var(--g-600);text-decoration:none">
+                            <i class="bi bi-shield-lock me-2" aria-hidden="true"></i>{{ __('ui.trust.oss_security_cta') }}
                         </a>
                     </li>
                     <li class="mb-0">
