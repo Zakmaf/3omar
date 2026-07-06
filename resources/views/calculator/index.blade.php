@@ -253,7 +253,7 @@
     <div class="row mb-4">
         <div class="col">
             <div class="eyebrow mb-2">{{ __('ui.calculator.eyebrow') }}</div>
-            <h1 class="h2 fw-bold mb-2"><i class="bi bi-calculator me-2" style="color:var(--g-500)"></i>{{ __('ui.calculator.title') }}</h1>
+            <h1 class="h2 fw-bold mb-2"><i class="bi bi-calculator me-2" style="color:var(--g-500)" aria-hidden="true"></i>{{ __('ui.calculator.title') }}</h1>
             <p class="page-intro mb-0" style="color:var(--ink-2)">{{ __('ui.calculator.intro') }}</p>
         </div>
     </div>
@@ -303,7 +303,7 @@
 
     @if ($errors->any())
     <div class="alert alert-danger border-0 shadow-sm mb-4" role="alert" tabindex="-1" id="formErrors">
-        <i class="bi bi-exclamation-triangle-fill me-2"></i><strong>{{ __('ui.calculator.errors') }}</strong>
+        <i class="bi bi-exclamation-triangle-fill me-2" aria-hidden="true"></i><strong>{{ __('ui.calculator.errors') }}</strong>
         <ul class="mb-0 mt-1">
             @foreach ($errors->all() as $error)
             <li>{{ $error }}</li>
@@ -314,7 +314,7 @@
 
     @if (session('calculator_notice'))
     <div class="alert alert-info border-0 shadow-sm mb-4" role="status">
-        <i class="bi bi-info-circle-fill me-2"></i>{{ __(session('calculator_notice')) }}
+        <i class="bi bi-info-circle-fill me-2" aria-hidden="true"></i>{{ __(session('calculator_notice')) }}
     </div>
     @endif
 
@@ -329,18 +329,18 @@
                     <div class="small mt-2" style="color:var(--ink-3)">{{ __('ui.calculator.submit_hint') }}</div>
                 </div>
                 <button type="submit" class="btn btn-lg text-white fw-bold px-4" style="background:var(--g-500); font-family:var(--f-body)">
-                    <i class="bi bi-calculator-fill me-2"></i>{{ __('ui.calculator.submit') }}
+                    <i class="bi bi-calculator-fill me-2" aria-hidden="true"></i>{{ __('ui.calculator.submit') }}
                 </button>
             </div>
             <div class="btn-group" role="group" aria-label="{{ __('ui.calculator.mode_label') }}">
                 <input type="radio" class="btn-check" name="mode" id="modeGrossToNet" value="gross_to_net" autocomplete="off" {{ $mode === 'gross_to_net' ? 'checked' : '' }}>
                 <label class="btn fw-semibold" for="modeGrossToNet" style="border:1px solid var(--g-500);color:var(--g-600)">
-                    <i class="bi bi-arrow-down-circle me-1"></i>{{ __('ui.calculator.mode_gross_to_net') }}
+                    <i class="bi bi-arrow-down-circle me-1" aria-hidden="true"></i>{{ __('ui.calculator.mode_gross_to_net') }}
                 </label>
 
                 <input type="radio" class="btn-check" name="mode" id="modeNetToGross" value="net_to_gross" autocomplete="off" {{ $mode === 'net_to_gross' ? 'checked' : '' }}>
                 <label class="btn fw-semibold" for="modeNetToGross" style="border:1px solid var(--g-500);color:var(--g-600)">
-                    <i class="bi bi-arrow-up-circle me-1"></i>{{ __('ui.calculator.mode_net_to_gross') }}
+                    <i class="bi bi-arrow-up-circle me-1" aria-hidden="true"></i>{{ __('ui.calculator.mode_net_to_gross') }}
                 </label>
             </div>
         </div>
@@ -359,7 +359,7 @@
             </nav>
         </div>
 
-        <p class="text-muted small mb-3"><i class="bi bi-signpost-split me-1"></i>{{ __('ui.calculator.step_skip') }} : cliquez sur une rubrique dans la barre de navigation.</p>
+        <p class="text-muted small mb-3"><i class="bi bi-signpost-split me-1" aria-hidden="true"></i>{{ __('ui.calculator.step_skip') }} : cliquez sur une rubrique dans la barre de navigation.</p>
 
         {{-- Two-column wizard layout --}}
         <div class="row g-4">
@@ -368,7 +368,7 @@
                 <nav class="wizard-sidebar section-card p-3" aria-label="{{ __('ui.calculator.wizard_nav_aria') }}">
                     {{-- Mode badge --}}
                     <div class="wizard-mode-badge mb-3" id="wizardModeBadge">
-                        <i class="bi bi-arrow-down-circle"></i>
+                        <i class="bi bi-arrow-down-circle" aria-hidden="true"></i>
                         <span id="wizardModeLabel">{{ $mode === 'net_to_gross' ? __('ui.calculator.wizard_mode_net') : __('ui.calculator.wizard_mode_gross') }}</span>
                     </div>
 
@@ -390,7 +390,7 @@
                     {{-- Sidebar submit --}}
                     <div class="mt-3 pt-3" style="border-top:1px solid var(--hairline)">
                         <button type="submit" class="btn btn-sm text-white fw-bold w-100" style="background:var(--g-500); font-family:var(--f-body)">
-                            <i class="bi bi-calculator-fill me-1"></i>{{ __('ui.calculator.submit') }}
+                            <i class="bi bi-calculator-fill me-1" aria-hidden="true"></i>{{ __('ui.calculator.submit') }}
                         </button>
                     </div>
                 </nav>
@@ -403,7 +403,7 @@
                 {{-- 1. Remuneration de base --}}
                 <details class="step-section section-card mb-3" id="step-remuneration" open data-step-section>
                     <summary>
-                        <span class="step-label"><i class="bi bi-cash-coin me-2" style="color:var(--s-info)"></i>{{ __('ui.calculator.step1_title') }}</span>
+                        <span class="step-label"><i class="bi bi-cash-coin me-2" style="color:var(--s-info)" aria-hidden="true"></i>{{ __('ui.calculator.step1_title') }}</span>
                         <span class="step-pill">{{ __('ui.calculator.step_required') }}</span>
                     </summary>
                     <div class="card-body px-4 py-3">
@@ -450,7 +450,7 @@
                 {{-- 2. Primes et anciennete --}}
                 <details class="step-section section-card mb-3" id="step-primes" data-step-section {{ old('nb_annees_anciennete') || old('prime_bilan') || old('prime_rendement') || old('autres_primes') ? 'open' : '' }}>
                     <summary>
-                        <span class="step-label"><i class="bi bi-cash-stack me-2" style="color:var(--s-warn)"></i>{{ __('ui.calculator.step2_title') }}</span>
+                        <span class="step-label"><i class="bi bi-cash-stack me-2" style="color:var(--s-warn)" aria-hidden="true"></i>{{ __('ui.calculator.step2_title') }}</span>
                         <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
                     </summary>
                     <div class="card-body px-4 py-3">
@@ -479,7 +479,7 @@
                         {{-- Anciennete --}}
                         <div class="p-3 rounded-2 mb-3" style="background:var(--s-warn-bg); border:1px solid rgba(217,119,6,0.2);">
                             <div class="fw-semibold small mb-2">
-                                <i class="bi bi-hourglass-split me-1" style="color:var(--s-warn)"></i>{{ __('ui.calculator.seniority_heading') }}
+                                <i class="bi bi-hourglass-split me-1" style="color:var(--s-warn)" aria-hidden="true"></i>{{ __('ui.calculator.seniority_heading') }}
                             </div>
                             <div class="row g-2 align-items-end">
                                 <div class="col-7">
@@ -520,13 +520,13 @@
                 {{-- 3. Heures supplementaires --}}
                 <details class="step-section section-card mb-3" id="step-heures-sup" data-step-section {{ old('heures_sup') ? 'open' : '' }}>
                     <summary>
-                        <span class="step-label"><i class="bi bi-clock-history me-2" style="color:var(--s-info)"></i>{{ __('ui.calculator.step3_title') }}</span>
+                        <span class="step-label"><i class="bi bi-clock-history me-2" style="color:var(--s-info)" aria-hidden="true"></i>{{ __('ui.calculator.step3_title') }}</span>
                         <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
                     </summary>
                     <div class="card-body px-4 py-3">
                         <div class="d-flex justify-content-end mb-3">
                         <button type="button" class="btn btn-sm" id="addHS" style="border:1px solid var(--s-info);color:var(--s-info)">
-                            <i class="bi bi-plus-circle me-1"></i>{{ __('ui.calculator.add') }}
+                            <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>{{ __('ui.calculator.add') }}
                         </button>
                         </div>
                         <div class="form-text mb-3">{{ __('ui.calculator.overtime_help') }}</div>
@@ -550,7 +550,7 @@
                                     </div>
                                     <div class="col-1">
                                         <button type="button" class="btn btn-sm btn-outline-danger remove-row" title="{{ __('ui.calculator.remove') }}" aria-label="{{ __('ui.calculator.remove_overtime_aria') }}">
-                                            <i class="bi bi-trash"></i>
+                                            <i class="bi bi-trash" aria-hidden="true"></i>
                                         </button>
                                     </div>
                                 </div>
@@ -558,7 +558,7 @@
                             @endif
                         </div>
                         <p class="text-muted small mb-0" id="hsPlaceholder" {{ old('heures_sup') ? 'style=display:none' : '' }}>
-                            <i class="bi bi-info-circle me-1"></i>{{ __('ui.calculator.overtime_placeholder') }}
+                            <i class="bi bi-info-circle me-1" aria-hidden="true"></i>{{ __('ui.calculator.overtime_placeholder') }}
                         </p>
                     </div>
                 </details>
@@ -566,13 +566,13 @@
                 {{-- 4. Indemnites traitees comme exonerees --}}
                 <details class="step-section section-card mb-3" id="step-indemnites" data-step-section {{ old('indemnites') ? 'open' : '' }}>
                     <summary>
-                        <span class="step-label"><i class="bi bi-gift me-2" style="color:var(--s-succ)"></i>{{ __('ui.calculator.step7_title') }}</span>
+                        <span class="step-label"><i class="bi bi-gift me-2" style="color:var(--s-succ)" aria-hidden="true"></i>{{ __('ui.calculator.step7_title') }}</span>
                         <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
                     </summary>
                     <div class="card-body px-4 py-3">
                         <div class="d-flex justify-content-end mb-3">
                         <button type="button" class="btn btn-sm" id="addIndemnite" style="border:1px solid var(--s-succ);color:var(--s-succ)">
-                            <i class="bi bi-plus-circle me-1"></i>{{ __('ui.calculator.add') }}
+                            <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>{{ __('ui.calculator.add') }}
                         </button>
                         </div>
                         <div class="form-text mb-3">{{ __('ui.calculator.allowance_help') }}</div>
@@ -615,7 +615,7 @@
                                     </div>
                                     <div class="col-1">
                                         <button type="button" class="btn btn-sm btn-outline-danger remove-row" aria-label="{{ __('ui.calculator.remove_allowance_aria') }}">
-                                            <i class="bi bi-trash"></i>
+                                            <i class="bi bi-trash" aria-hidden="true"></i>
                                         </button>
                                     </div>
                                 </div>
@@ -623,7 +623,7 @@
                             @endif
                         </div>
                         <p class="text-muted small mb-0" id="indemnitePlaceholder" {{ old('indemnites') ? 'style=display:none' : '' }}>
-                            <i class="bi bi-info-circle me-1"></i>{{ __('ui.calculator.allowance_placeholder') }}
+                            <i class="bi bi-info-circle me-1" aria-hidden="true"></i>{{ __('ui.calculator.allowance_placeholder') }}
                         </p>
                     </div>
                 </details>
@@ -631,7 +631,7 @@
                 {{-- 5. Avantages CNSS exoneres --}}
                 <details class="step-section section-card mb-3" id="step-avantages-cnss" data-step-section {{ old('avantages_cnss') ? 'open' : '' }}>
                     <summary>
-                        <span class="step-label"><i class="bi bi-mortarboard me-2" style="color:var(--s-cot)"></i>{{ __('ui.calculator.step8_title') }}</span>
+                        <span class="step-label"><i class="bi bi-mortarboard me-2" style="color:var(--s-cot)" aria-hidden="true"></i>{{ __('ui.calculator.step8_title') }}</span>
                         <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
                     </summary>
                     <div class="card-body px-4 py-3">
@@ -655,13 +655,13 @@
                 {{-- 6. CIMR & epargne retraite --}}
                 <details class="step-section section-card mb-3" id="step-cimr" data-step-section {{ old('cimr_taux') || old('retraite_complementaire_mensuel') ? 'open' : '' }}>
                     <summary>
-                        <span class="step-label"><i class="bi bi-piggy-bank me-2" style="color:var(--s-cot)"></i>{{ __('ui.calculator.step4_title') }}</span>
+                        <span class="step-label"><i class="bi bi-piggy-bank me-2" style="color:var(--s-cot)" aria-hidden="true"></i>{{ __('ui.calculator.step4_title') }}</span>
                         <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
                     </summary>
                     <div class="card-body px-4 py-3">
 
                         <div class="fw-semibold small mb-2">
-                            <i class="bi bi-bank me-1" style="color:var(--s-cot)"></i>{{ __('ui.calculator.cimr_section_heading') }}
+                            <i class="bi bi-bank me-1" style="color:var(--s-cot)" aria-hidden="true"></i>{{ __('ui.calculator.cimr_section_heading') }}
                         </div>
 
                         <div class="row g-3 mb-3">
@@ -697,7 +697,7 @@
                         <hr class="my-3">
 
                         <div class="fw-semibold small mb-1">
-                            <i class="bi bi-shield-check me-1" style="color:var(--s-info)"></i>{{ __('ui.calculator.rc_section_heading') }}
+                            <i class="bi bi-shield-check me-1" style="color:var(--s-info)" aria-hidden="true"></i>{{ __('ui.calculator.rc_section_heading') }}
                         </div>
                         <div class="form-text mb-3">{{ __('ui.calculator.rc_section_help') }}</div>
 
@@ -740,7 +740,7 @@
                 {{-- 7. Mutuelle sante + Assurances --}}
                 <details class="step-section section-card mb-3" id="step-mutuelle" data-step-section {{ old('mutuelle_salarie') || old('mutuelle_patronale') || old('assurance_at_taux') || old('assurance_rc_pro') ? 'open' : '' }}>
                     <summary>
-                        <span class="step-label"><i class="bi bi-heart-pulse-fill me-2" style="color:var(--s-tax)"></i>{{ __('ui.calculator.step6_title') }}</span>
+                        <span class="step-label"><i class="bi bi-heart-pulse-fill me-2" style="color:var(--s-tax)" aria-hidden="true"></i>{{ __('ui.calculator.step6_title') }}</span>
                         <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
                     </summary>
                     <div class="card-body px-4 py-3">
@@ -777,7 +777,7 @@
                         <hr class="my-3">
 
                         <div class="fw-semibold small mb-2">
-                            <i class="bi bi-shield-shaded me-1" style="color:var(--s-warn)"></i>{{ __('ui.calculator.insurance_section_heading') }}
+                            <i class="bi bi-shield-shaded me-1" style="color:var(--s-warn)" aria-hidden="true"></i>{{ __('ui.calculator.insurance_section_heading') }}
                         </div>
 
                         <div class="row g-3">
@@ -821,7 +821,7 @@
                 {{-- 8. Charges de famille --}}
                 <details class="step-section section-card mb-3" id="step-charges-famille" data-step-section {{ old('nb_enfants') || old('conjoint_charge') ? 'open' : '' }}>
                     <summary>
-                        <span class="step-label"><i class="bi bi-people-fill me-2" style="color:var(--s-succ)"></i>{{ __('ui.calculator.step5_title') }}</span>
+                        <span class="step-label"><i class="bi bi-people-fill me-2" style="color:var(--s-succ)" aria-hidden="true"></i>{{ __('ui.calculator.step5_title') }}</span>
                         <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
                     </summary>
                     <div class="card-body px-4 py-3">
@@ -856,7 +856,7 @@
                 {{-- 9. Retenues --}}
                 <details class="step-section section-card mb-3" id="step-retenues" data-step-section {{ old('retenues_exonerees_ir') || old('retenues_imposees_ir') ? 'open' : '' }}>
                     <summary>
-                        <span class="step-label"><i class="bi bi-dash-circle me-2" style="color:var(--s-neutral)"></i>{{ __('ui.calculator.step9_title') }}</span>
+                        <span class="step-label"><i class="bi bi-dash-circle me-2" style="color:var(--s-neutral)" aria-hidden="true"></i>{{ __('ui.calculator.step9_title') }}</span>
                         <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
                     </summary>
                     <div class="card-body px-4 py-3">
@@ -893,10 +893,10 @@
             <div class="col d-flex flex-column flex-sm-row justify-content-center gap-2 action-bar p-3">
                 <button type="submit" class="btn btn-lg px-5 text-white fw-bold"
                         style="background:var(--g-500); min-width:240px; font-family:var(--f-body)">
-                    <i class="bi bi-calculator-fill me-2"></i>{{ __('ui.calculator.submit') }}
+                    <i class="bi bi-calculator-fill me-2" aria-hidden="true"></i>{{ __('ui.calculator.submit') }}
                 </button>
                 <a href="{{ route('calculator.index') }}" class="btn btn-lg px-4" style="border:1px solid var(--ink-3);color:var(--ink-2);font-family:var(--f-body)">
-                    <i class="bi bi-arrow-counterclockwise me-1"></i>{{ __('ui.calculator.reset') }}
+                    <i class="bi bi-arrow-counterclockwise me-1" aria-hidden="true"></i>{{ __('ui.calculator.reset') }}
                 </a>
             </div>
         </div>
@@ -1184,7 +1184,7 @@ document.getElementById('addHS').addEventListener('click', () => {
             <input type="number" name="heures_sup[${i}][nb_heures]" id="heures_sup_${i}_nb_heures" class="form-control form-control-sm" value="" min="0" step="0.5" placeholder="0">
         </div>
         <div class="col-1">
-            <button type="button" class="btn btn-sm btn-outline-danger remove-row" title="${TRANS_REMOVE}" aria-label="${TRANS_REMOVE_OVERTIME}"><i class="bi bi-trash"></i></button>
+            <button type="button" class="btn btn-sm btn-outline-danger remove-row" title="${TRANS_REMOVE}" aria-label="${TRANS_REMOVE_OVERTIME}"><i class="bi bi-trash" aria-hidden="true"></i></button>
         </div>`;
     document.getElementById('hsContainer').appendChild(row);
     document.getElementById('hsPlaceholder').style.display = 'none';
@@ -1237,7 +1237,7 @@ function createIndRow(i, selectedType) {
             </div>
         </div>
         <div class="col-1">
-            <button type="button" class="btn btn-sm btn-outline-danger remove-row" aria-label="${TRANS_REMOVE_ALLOWANCE}"><i class="bi bi-trash"></i></button>
+            <button type="button" class="btn btn-sm btn-outline-danger remove-row" aria-label="${TRANS_REMOVE_ALLOWANCE}"><i class="bi bi-trash" aria-hidden="true"></i></button>
         </div>`;
     const sel = row.querySelector('.ind-type-select');
     const hint = row.querySelector('.ind-plafond-hint');

@@ -221,6 +221,18 @@ class PagesTest extends TestCase
         $this->assertStringContainsString(route('documentation'), $html);
     }
 
+    public function test_trust_page_explains_data_handling_and_links_security_and_error_reporting(): void
+    {
+        $response = $this->get('/fiabilite')->assertOk()
+            ->assertSee("n'est jamais journalisée")
+            ->assertSee('pas votre bulletin de paie officiel')
+            ->assertSee('Signalez-la sur GitHub');
+
+        $html = $response->getContent();
+        $this->assertStringContainsString('SECURITY.md', $html);
+        $this->assertStringContainsString('github.com/Zakmaf/3omar/issues', $html);
+    }
+
     public function test_home_page_shows_persona_cards(): void
     {
         $this->get('/')->assertOk()
@@ -351,5 +363,42 @@ class PagesTest extends TestCase
             ->post('/calculateur/calculer', ['type_frais_pro' => 'commun'])
             ->assertRedirect('/calculateur')
             ->assertSessionHasErrors(['salaire_base' => 'The base salary is required.']);
+    }
+
+    /**
+     * @dataProvider provideIconGlyphPages
+     */
+    public function test_bootstrap_icon_glyphs_are_hidden_from_assistive_tech(string $method, string $uri, array $payload = []): void
+    {
+        $response = $method === 'GET'
+            ? $this->get($uri)
+            : $this->post($uri, $payload);
+
+        $html = $response->assertOk()->getContent();
+
+        preg_match_all('/<i\s+class="bi\b[^"]*"[^>]*>/', $html, $matches);
+        $this->assertNotEmpty($matches[0], "Aucune icone bi- trouvee sur {$uri}, le test n'est plus pertinent");
+
+        foreach ($matches[0] as $tag) {
+            $isDecorativelyHidden = str_contains($tag, 'aria-hidden="true"');
+            $isMeaningfullyLabeled = str_contains($tag, 'role="img"') && str_contains($tag, 'aria-label=');
+
+            $this->assertTrue(
+                $isDecorativelyHidden || $isMeaningfullyLabeled,
+                "Icone sans aria-hidden ni role=img/aria-label sur {$uri} : {$tag}"
+            );
+        }
+    }
+
+    public static function provideIconGlyphPages(): array
+    {
+        return [
+            'accueil' => ['GET', '/'],
+            'calculateur' => ['GET', '/calculateur'],
+            'documentation' => ['GET', '/documentation'],
+            'api-documentation' => ['GET', '/api-documentation'],
+            'fiabilite' => ['GET', '/fiabilite'],
+            'resultat' => ['POST', '/calculateur/calculer', ['salaire_base' => 5000, 'type_frais_pro' => 'commun']],
+        ];
     }
 }
