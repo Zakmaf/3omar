@@ -182,6 +182,110 @@ class PagesTest extends TestCase
         $this->withSession(['locale' => 'es'])->get('/')->assertOk()->assertSee('Simular mi nómina');
     }
 
+    public function test_trust_page_is_available_and_shows_reliability_matrix(): void
+    {
+        $this->get('/fiabilite')
+            ->assertOk()
+            ->assertSee('Fiabilité, limites et confidentialité')
+            ->assertSee('Confidentialité absolue')
+            ->assertSee('CNSS salarié')
+            ->assertSee('IR - Barème progressif')
+            ->assertSee('Dahir 1-72-184')
+            ->assertSee('Art. 73 CGI, LF 50-25');
+    }
+    public function test_trust_page_renders_supported_locales(): void
+    {
+        $this->withSession(['locale' => 'en'])->get('/fiabilite')
+            ->assertOk()
+            ->assertSee('Reliability, limits and privacy')
+            ->assertSee('Employee CNSS')
+            ->assertDontSee('CNSS salarié');
+
+        $this->withSession(['locale' => 'es'])->get('/fiabilite')
+            ->assertOk()
+            ->assertSee('Fiabilidad, límites y privacidad')
+            ->assertSee('CNSS empleado');
+
+        $this->withSession(['locale' => 'ar'])->get('/fiabilite')
+            ->assertOk()
+            ->assertSee('الموثوقية والحدود والخصوصية')
+            ->assertSee('CNSS حصة الأجير');
+    }
+
+    public function test_trust_page_links_back_to_calculator_and_documentation(): void
+    {
+        $response = $this->get('/fiabilite')->assertOk();
+        $html = $response->getContent();
+        $this->assertStringContainsString(route('calculator.index'), $html);
+        $this->assertStringContainsString(route('documentation'), $html);
+    }
+
+    public function test_home_page_shows_persona_cards(): void
+    {
+        $this->get('/')->assertOk()
+            ->assertSee('Pour qui ?')
+            ->assertSee('Salarié')
+            ->assertSee('RH / Paie')
+            ->assertSee('Développeur / Intégrateur')
+            ->assertSee('Employeur / Décideur');
+    }
+
+    public function test_home_page_links_to_trust_page(): void
+    {
+        $response = $this->get('/')->assertOk();
+        $this->assertStringContainsString(route('trust'), $response->getContent());
+    }
+
+    public function test_result_page_shows_trust_banner_and_verdict_cards(): void
+    {
+        $this->post('/calculateur/calculer', [
+            'salaire_base' => 8000,
+            'type_frais_pro' => 'commun',
+        ])->assertOk()
+            ->assertSee('Aucune donnée personnelle n\'est stockée')
+            ->assertSee('Diagnostic')
+            ->assertSee('Net / Brut')
+            ->assertSee('Que faire ensuite ?')
+            ->assertSee('Fiabilité et limites du simulateur');
+    }
+
+    public function test_calculator_page_shows_pre_simulation_panel(): void
+    {
+        $this->get('/calculateur')->assertOk()
+            ->assertSee('Ce que couvre 3omar')
+            ->assertSee('Aucune donnée personnelle')
+            ->assertSee('Confidentialité, limites et open source');
+    }
+
+    public function test_result_page_shows_key_takeaways_for_high_salary(): void
+    {
+        $this->post('/calculateur/calculer', [
+            'salaire_base' => 25000,
+            'type_frais_pro' => 'commun',
+        ])->assertOk()
+            ->assertSee('Points clés')
+            ->assertSee('Taux marginal IR');
+    }
+
+    public function test_result_page_shows_no_ir_takeaway_for_very_low_salary(): void
+    {
+        $this->post('/calculateur/calculer', [
+            'salaire_base' => 2500,
+            'type_frais_pro' => 'commun',
+        ])->assertOk()
+            ->assertSee('Points clés')
+            ->assertSee('Aucun IR');
+    }
+
+    public function test_result_page_next_actions_includes_print(): void
+    {
+        $this->post('/calculateur/calculer', [
+            'salaire_base' => 5000,
+            'type_frais_pro' => 'commun',
+        ])->assertOk()
+            ->assertSee('Imprimer / Exporter');
+    }
+
     public function test_unknown_locale_is_rejected(): void
     {
         $this->get('/lang/de')->assertNotFound();

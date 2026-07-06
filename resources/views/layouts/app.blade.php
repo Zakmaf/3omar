@@ -524,7 +524,14 @@
                     <a class="nav-link {{ request()->routeIs('api.documentation') ? 'active fw-semibold' : '' }}"
                        @if(request()->routeIs('api.documentation')) aria-current="page" @endif
                        href="{{ route('api.documentation') }}">
-                        <i class="bi bi-braces me-1"></i>{{ __('ui.nav.api') }}
+                        <i class="bi bi-braces me-1" aria-hidden="true"></i>{{ __('ui.nav.api') }}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('trust') ? 'active fw-semibold' : '' }}"
+                       @if(request()->routeIs('trust')) aria-current="page" @endif
+                       href="{{ route('trust') }}">
+                        <i class="bi bi-shield-check me-1" aria-hidden="true"></i>{{ __('ui.trust.nav_label') }}
                     </a>
                 </li>
                 <li class="nav-item mt-2 mt-lg-0">
@@ -620,7 +627,12 @@
                     </li>
                     <li class="mb-2">
                         <a href="https://github.com/Zakmaf/3omar/issues" target="_blank" rel="noopener">
-                            <i class="bi bi-bug me-1"></i>{{ __('ui.footer.report') }}
+                            <i class="bi bi-bug me-1" aria-hidden="true"></i>{{ __('ui.footer.report') }}
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="{{ route('trust') }}">
+                            <i class="bi bi-shield-check me-1" aria-hidden="true"></i>{{ __('ui.trust.nav_label') }}
                         </a>
                     </li>
                 </ul>

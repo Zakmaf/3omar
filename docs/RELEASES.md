@@ -1,5 +1,18 @@
 # Releases
 
+## v2.2.2 - 2026-06-30
+
+### Accessibilité
+
+- Ajout d'une alternative tabulaire accessible au graphique de répartition du salaire brut sur la page résultat.
+- Les libellés du graphique utilisent désormais les traductions existantes au lieu de chaînes codées en dur.
+- Ajout des libellés de l'alternative accessible en français, anglais, espagnol et arabe.
+
+### Vérification
+
+- `./vendor/bin/phpunit --filter ResultPageTest`
+- `./vendor/bin/phpunit`
+
 ## v1.4.0 - 2026-06-21
 
 ### Nouveautés

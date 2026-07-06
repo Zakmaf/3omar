@@ -36,6 +36,14 @@ class ResultPageTest extends TestCase
             ->assertSee('Détail bulletin')
             ->assertSee('Toutes les lignes du calcul')
             ->assertSee('Base / Assiette (MAD/mois)')
-            ->assertSee('Voir le détail complet du calcul');
+            ->assertSee('Voir le détail complet du calcul')
+            ->assertSee('Répartition du salaire brut')
+            ->assertSee('Le tableau ci-dessous reprend les mêmes données que le graphique')
+            ->assertSee('Répartition détaillée du salaire brut par catégorie')
+            ->assertSee('Catégorie')
+            ->assertSee('Montant mensuel')
+            ->assertSee('Part du brut')
+            ->assertSee('Net à payer')
+            ->assertSee('IR retenu');
     }
 }
