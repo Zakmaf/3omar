@@ -324,6 +324,14 @@ return [
         'takeaway_cnss_capped' => 'Techo del CNSS alcanzado. La cotización del empleado queda fija en :amount MAD/mes independientemente del bruto adicional.',
         'takeaway_no_cimr' => 'Sin CIMR declarado. Una cotización CIMR reduce el IRPF al tipo marginal del :rate% y mejora la jubilación.',
         'takeaway_cost_underestimated' => 'Algunos valores del empleador no se han introducido. El coste total del empleador probablemente está subestimado.',
+        'formula_cta_sbi' => 'Modificar el salario base',
+        'formula_cta_cotisations' => 'Ver la regla CNSS/AMO utilizada',
+        'formula_cta_ir' => 'Ver la regla del IRPF utilizada',
+        'formula_cta_employer' => 'Ver las cargas patronales',
+        'takeaway_cta_ir_schedule' => 'Ver el baremo del IRPF',
+        'takeaway_cta_cimr' => 'Simular una cotización CIMR',
+        'takeaway_cta_cnss_rule' => 'Ver la regla del CNSS',
+        'takeaway_cta_employer_values' => 'Completar los valores del empleador',
     ],
     'documentation' => [
         'eyebrow' => 'Entender los parámetros',
@@ -439,6 +447,7 @@ return [
         'ref_smig_desc' => 'SMIG 2026',
         'ref_ldf' => 'Ley de Finanzas 50-25',
         'ref_ldf_desc' => 'CGI 2026, ejercicio fiscal',
+        'use_in_simulation' => 'Usar en una simulación',
     ],
     'api' => [
         'eyebrow' => 'API REST publica',

@@ -401,7 +401,7 @@
                 <div class="simulator-flow">
 
                 {{-- 1. Remuneration de base --}}
-                <details class="step-section section-card mb-3" open data-step-section>
+                <details class="step-section section-card mb-3" id="step-remuneration" open data-step-section>
                     <summary>
                         <span class="step-label"><i class="bi bi-cash-coin me-2" style="color:var(--s-info)" aria-hidden="true"></i>{{ __('ui.calculator.step1_title') }}</span>
                         <span class="step-pill">{{ __('ui.calculator.step_required') }}</span>
@@ -448,7 +448,7 @@
                 </details>
 
                 {{-- 2. Primes et anciennete --}}
-                <details class="step-section section-card mb-3" data-step-section {{ old('nb_annees_anciennete') || old('prime_bilan') || old('prime_rendement') || old('autres_primes') ? 'open' : '' }}>
+                <details class="step-section section-card mb-3" id="step-primes" data-step-section {{ old('nb_annees_anciennete') || old('prime_bilan') || old('prime_rendement') || old('autres_primes') ? 'open' : '' }}>
                     <summary>
                         <span class="step-label"><i class="bi bi-cash-stack me-2" style="color:var(--s-warn)" aria-hidden="true"></i>{{ __('ui.calculator.step2_title') }}</span>
                         <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
@@ -518,7 +518,7 @@
                 </details>
 
                 {{-- 3. Heures supplementaires --}}
-                <details class="step-section section-card mb-3" data-step-section {{ old('heures_sup') ? 'open' : '' }}>
+                <details class="step-section section-card mb-3" id="step-heures-sup" data-step-section {{ old('heures_sup') ? 'open' : '' }}>
                     <summary>
                         <span class="step-label"><i class="bi bi-clock-history me-2" style="color:var(--s-info)" aria-hidden="true"></i>{{ __('ui.calculator.step3_title') }}</span>
                         <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
@@ -564,7 +564,7 @@
                 </details>
 
                 {{-- 4. Indemnites traitees comme exonerees --}}
-                <details class="step-section section-card mb-3" data-step-section {{ old('indemnites') ? 'open' : '' }}>
+                <details class="step-section section-card mb-3" id="step-indemnites" data-step-section {{ old('indemnites') ? 'open' : '' }}>
                     <summary>
                         <span class="step-label"><i class="bi bi-gift me-2" style="color:var(--s-succ)" aria-hidden="true"></i>{{ __('ui.calculator.step7_title') }}</span>
                         <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
@@ -629,7 +629,7 @@
                 </details>
 
                 {{-- 5. Avantages CNSS exoneres --}}
-                <details class="step-section section-card mb-3" data-step-section {{ old('avantages_cnss') ? 'open' : '' }}>
+                <details class="step-section section-card mb-3" id="step-avantages-cnss" data-step-section {{ old('avantages_cnss') ? 'open' : '' }}>
                     <summary>
                         <span class="step-label"><i class="bi bi-mortarboard me-2" style="color:var(--s-cot)" aria-hidden="true"></i>{{ __('ui.calculator.step8_title') }}</span>
                         <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
@@ -653,7 +653,7 @@
                 </details>
 
                 {{-- 6. CIMR & epargne retraite --}}
-                <details class="step-section section-card mb-3" data-step-section {{ old('cimr_taux') || old('retraite_complementaire_mensuel') ? 'open' : '' }}>
+                <details class="step-section section-card mb-3" id="step-cimr" data-step-section {{ old('cimr_taux') || old('retraite_complementaire_mensuel') ? 'open' : '' }}>
                     <summary>
                         <span class="step-label"><i class="bi bi-piggy-bank me-2" style="color:var(--s-cot)" aria-hidden="true"></i>{{ __('ui.calculator.step4_title') }}</span>
                         <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
@@ -738,7 +738,7 @@
                 </details>
 
                 {{-- 7. Mutuelle sante + Assurances --}}
-                <details class="step-section section-card mb-3" data-step-section {{ old('mutuelle_salarie') || old('mutuelle_patronale') || old('assurance_at_taux') || old('assurance_rc_pro') ? 'open' : '' }}>
+                <details class="step-section section-card mb-3" id="step-mutuelle" data-step-section {{ old('mutuelle_salarie') || old('mutuelle_patronale') || old('assurance_at_taux') || old('assurance_rc_pro') ? 'open' : '' }}>
                     <summary>
                         <span class="step-label"><i class="bi bi-heart-pulse-fill me-2" style="color:var(--s-tax)" aria-hidden="true"></i>{{ __('ui.calculator.step6_title') }}</span>
                         <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
@@ -819,7 +819,7 @@
                 </details>
 
                 {{-- 8. Charges de famille --}}
-                <details class="step-section section-card mb-3" data-step-section {{ old('nb_enfants') || old('conjoint_charge') ? 'open' : '' }}>
+                <details class="step-section section-card mb-3" id="step-charges-famille" data-step-section {{ old('nb_enfants') || old('conjoint_charge') ? 'open' : '' }}>
                     <summary>
                         <span class="step-label"><i class="bi bi-people-fill me-2" style="color:var(--s-succ)" aria-hidden="true"></i>{{ __('ui.calculator.step5_title') }}</span>
                         <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
@@ -854,7 +854,7 @@
                 </details>
 
                 {{-- 9. Retenues --}}
-                <details class="step-section section-card mb-3" data-step-section {{ old('retenues_exonerees_ir') || old('retenues_imposees_ir') ? 'open' : '' }}>
+                <details class="step-section section-card mb-3" id="step-retenues" data-step-section {{ old('retenues_exonerees_ir') || old('retenues_imposees_ir') ? 'open' : '' }}>
                     <summary>
                         <span class="step-label"><i class="bi bi-dash-circle me-2" style="color:var(--s-neutral)" aria-hidden="true"></i>{{ __('ui.calculator.step9_title') }}</span>
                         <span class="step-pill">{{ __('ui.calculator.step_optional') }}</span>
@@ -1151,6 +1151,12 @@ document.getElementById('payrollForm').addEventListener('change', () => {
 
 // Initialize wizard state
 updateWizardState();
+
+// Lien profond depuis la documentation ou le resultat (#step-xxx) : ouvre l'etape ciblee
+const hashStepIndex = stepSections.findIndex(section => section.id === window.location.hash.replace('#', ''));
+if (hashStepIndex !== -1) {
+    navigateToStep(hashStepIndex);
+}
 
 const formErrors = document.getElementById('formErrors');
 if (formErrors) formErrors.focus();

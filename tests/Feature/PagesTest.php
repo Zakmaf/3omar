@@ -299,6 +299,58 @@ class PagesTest extends TestCase
             ->assertSee('Imprimer / Exporter');
     }
 
+    public function test_calculator_step_sections_expose_deep_link_anchors(): void
+    {
+        $response = $this->get('/calculateur')->assertOk();
+        $html = $response->getContent();
+
+        foreach ([
+            'step-remuneration', 'step-primes', 'step-heures-sup', 'step-indemnites',
+            'step-avantages-cnss', 'step-cimr', 'step-mutuelle', 'step-charges-famille', 'step-retenues',
+        ] as $anchor) {
+            $this->assertStringContainsString('id="'.$anchor.'"', $html);
+        }
+    }
+
+    public function test_documentation_cards_link_back_to_calculator_steps(): void
+    {
+        $response = $this->get('/documentation')->assertOk();
+        $html = $response->getContent();
+
+        $this->assertStringContainsString(route('calculator.index').'#step-remuneration', $html);
+        $this->assertStringContainsString(route('calculator.index').'#step-cimr', $html);
+        $this->assertStringContainsString(route('calculator.index').'#step-primes', $html);
+        $this->assertStringContainsString(route('calculator.index').'#step-indemnites', $html);
+        $this->assertStringContainsString(route('calculator.index').'#step-heures-sup', $html);
+        $this->assertGreaterThanOrEqual(10, substr_count($html, 'Utiliser dans une simulation'));
+    }
+
+    public function test_result_page_formula_cards_link_to_documentation_and_calculator_rules(): void
+    {
+        $response = $this->post('/calculateur/calculer', [
+            'salaire_base' => 10000,
+            'type_frais_pro' => 'commun',
+        ])->assertOk();
+        $html = $response->getContent();
+
+        $this->assertStringContainsString(route('calculator.index').'#step-remuneration', $html);
+        $this->assertStringContainsString(route('documentation').'#cotisations', $html);
+        $this->assertStringContainsString(route('documentation').'#impot', $html);
+        $this->assertStringContainsString(route('documentation').'#charges-patronales', $html);
+    }
+
+    public function test_result_page_takeaways_include_contextual_cta_links(): void
+    {
+        $response = $this->post('/calculateur/calculer', [
+            'salaire_base' => 25000,
+            'type_frais_pro' => 'commun',
+        ])->assertOk();
+        $html = $response->getContent();
+
+        $this->assertStringContainsString(route('calculator.index').'#step-cimr', $html);
+        $this->assertStringContainsString('Simuler une cotisation CIMR', $html);
+    }
+
     public function test_unknown_locale_is_rejected(): void
     {
         $this->get('/lang/de')->assertNotFound();
