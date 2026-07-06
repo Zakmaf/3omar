@@ -8,7 +8,7 @@
     <div class="row mb-4">
         <div class="col">
             <div class="eyebrow mb-2">{{ __('ui.documentation.eyebrow') }}</div>
-            <h1 class="h2 fw-bold mb-1"><i class="bi bi-journal-text me-2" style="color:var(--g-500)"></i>{{ __('ui.documentation.title') }}</h1>
+            <h1 class="h2 fw-bold mb-1"><i class="bi bi-journal-text me-2" style="color:var(--g-500)" aria-hidden="true"></i>{{ __('ui.documentation.title') }}</h1>
             <p style="color:var(--ink-2)">
                 {{ __('ui.documentation.intro') }}
                 <span class="badge rounded-pill ms-1 px-2 py-1" style="background:var(--g-50);color:var(--g-700);border:1px solid var(--g-200)">{{ __('ui.documentation.badge') }}</span>
@@ -33,7 +33,7 @@
             {{-- ============================================================ --}}
             <div class="card section-card mb-4" id="cotisations">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
-                    <span class="badge rounded-circle p-2" style="background:var(--s-info)"><i class="bi bi-building"></i></span>
+                    <span class="badge rounded-circle p-2" style="background:var(--s-info)"><i class="bi bi-building" aria-hidden="true"></i></span>
                     <span>{{ __('ui.documentation.cnss_title') }}</span>
                 </div>
                 <div class="card-body px-4 py-3">
@@ -61,7 +61,7 @@
                         </tbody>
                     </table>
                     <div class="alert alert-info py-2 small mb-0">
-                        <i class="bi bi-info-circle me-1"></i>
+                        <i class="bi bi-info-circle me-1" aria-hidden="true"></i>
                         {{ __('ui.documentation.cnss_ceiling_note', ['ceiling' => number_format($payroll['cnss']['plafond'], 0, ',', ' '), 'max' => number_format($payroll['cnss']['plafond'] * $payroll['cnss']['taux'], 2, ',', ' ')]) }}
                     </div>
                 </div>
@@ -72,7 +72,7 @@
             {{-- ============================================================ --}}
             <div class="card section-card mb-4">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
-                    <span class="badge rounded-circle p-2" style="background:var(--s-cot)"><i class="bi bi-heart-pulse"></i></span>
+                    <span class="badge rounded-circle p-2" style="background:var(--s-cot)"><i class="bi bi-heart-pulse" aria-hidden="true"></i></span>
                     <span>{{ __('ui.documentation.amo_title') }}</span>
                 </div>
                 <div class="card-body px-4 py-3">
@@ -101,7 +101,7 @@
             {{-- ============================================================ --}}
             <div class="card section-card mb-4">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
-                    <span class="badge rounded-circle p-2" style="background:var(--s-warn)"><i class="bi bi-building-up"></i></span>
+                    <span class="badge rounded-circle p-2" style="background:var(--s-warn)"><i class="bi bi-building-up" aria-hidden="true"></i></span>
                     <span>{{ __('ui.documentation.employer_charges_title') }}</span>
                 </div>
                 <div class="card-body px-4 py-3">
@@ -132,7 +132,7 @@
             {{-- ============================================================ --}}
             <div class="card section-card mb-4">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
-                    <span class="badge rounded-circle p-2" style="background:var(--s-succ)"><i class="bi bi-piggy-bank"></i></span>
+                    <span class="badge rounded-circle p-2" style="background:var(--s-succ)"><i class="bi bi-piggy-bank" aria-hidden="true"></i></span>
                     <span>{{ __('ui.documentation.cimr_title') }}</span>
                 </div>
                 <div class="card-body px-4 py-3">
@@ -152,7 +152,7 @@
             {{-- ============================================================ --}}
             <div class="card section-card mb-4" id="impot">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
-                    <span class="badge rounded-circle p-2" style="background:var(--s-tax)"><i class="bi bi-percent"></i></span>
+                    <span class="badge rounded-circle p-2" style="background:var(--s-tax)"><i class="bi bi-percent" aria-hidden="true"></i></span>
                     <span>{{ __('ui.documentation.ir_schedule_title', ['year' => 2026]) }}</span>
                 </div>
                 <div class="card-body px-4 py-3">
@@ -196,7 +196,7 @@
             {{-- ============================================================ --}}
             <div class="card section-card mb-4">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
-                    <span class="badge rounded-circle p-2" style="background:var(--s-warn)"><i class="bi bi-briefcase"></i></span>
+                    <span class="badge rounded-circle p-2" style="background:var(--s-warn)"><i class="bi bi-briefcase" aria-hidden="true"></i></span>
                     <span>{{ __('ui.documentation.pro_fees_title') }}</span>
                 </div>
                 <div class="card-body px-4 py-3">
@@ -236,7 +236,7 @@
             {{-- ============================================================ --}}
             <div class="card section-card mb-4" id="remuneration">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
-                    <span class="badge rounded-circle p-2" style="background:var(--s-info)"><i class="bi bi-hourglass-split"></i></span>
+                    <span class="badge rounded-circle p-2" style="background:var(--s-info)"><i class="bi bi-hourglass-split" aria-hidden="true"></i></span>
                     <span>{{ __('ui.documentation.seniority_title') }}</span>
                 </div>
                 <div class="card-body px-4 py-3">
@@ -274,7 +274,7 @@
             {{-- ============================================================ --}}
             <div class="card section-card mb-4">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
-                    <span class="badge rounded-circle p-2" style="background:var(--s-info)"><i class="bi bi-bank"></i></span>
+                    <span class="badge rounded-circle p-2" style="background:var(--s-info)"><i class="bi bi-bank" aria-hidden="true"></i></span>
                     <span>{{ __('ui.documentation.rc_title') }} · {{ $payroll['retraite_complementaire']['article'] }}</span>
                 </div>
                 <div class="card-body px-4 py-3">
@@ -299,7 +299,7 @@
                         </tbody>
                     </table>
                     <div class="alert alert-info py-2 small mb-0">
-                        <i class="bi bi-info-circle me-1"></i>
+                        <i class="bi bi-info-circle me-1" aria-hidden="true"></i>
                         {{ __('ui.documentation.rc_note', ['pct' => round($payroll['retraite_complementaire']['deduction_ir_max_pct'] * 100)]) }}
                     </div>
                 </div>
@@ -310,7 +310,7 @@
             {{-- ============================================================ --}}
             <div class="card section-card mb-4" id="indemnites">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
-                    <span class="badge rounded-circle p-2" style="background:var(--s-succ)"><i class="bi bi-gift"></i></span>
+                    <span class="badge rounded-circle p-2" style="background:var(--s-succ)"><i class="bi bi-gift" aria-hidden="true"></i></span>
                     <span>{{ __('ui.documentation.allowances_title') }}</span>
                 </div>
                 <div class="card-body px-4 py-3">
@@ -344,7 +344,7 @@
             {{-- ============================================================ --}}
             <div class="card section-card mb-4">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
-                    <span class="badge rounded-circle p-2" style="background:var(--s-info)"><i class="bi bi-clock-history"></i></span>
+                    <span class="badge rounded-circle p-2" style="background:var(--s-info)"><i class="bi bi-clock-history" aria-hidden="true"></i></span>
                     <span>{{ __('ui.documentation.smig_title', ['year' => 2026]) }}</span>
                 </div>
                 <div class="card-body px-4 py-3">
@@ -383,7 +383,7 @@
 
             <div class="card section-card mb-4">
                 <div class="card-header px-4 py-3">
-                    <i class="bi bi-link-45deg me-2" style="color:var(--g-500)"></i>{{ __('ui.documentation.sidebar_references') }}
+                    <i class="bi bi-link-45deg me-2" style="color:var(--g-500)" aria-hidden="true"></i>{{ __('ui.documentation.sidebar_references') }}
                 </div>
                 <div class="card-body px-4 py-3">
                     <ul class="list-unstyled mb-0">

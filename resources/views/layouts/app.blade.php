@@ -503,21 +503,21 @@
                     <a class="nav-link {{ request()->routeIs('home') ? 'active fw-semibold' : '' }}"
                        @if(request()->routeIs('home')) aria-current="page" @endif
                        href="{{ route('home') }}">
-                        <i class="bi bi-house me-1"></i>{{ __('ui.nav.home') }}
+                        <i class="bi bi-house me-1" aria-hidden="true"></i>{{ __('ui.nav.home') }}
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('calculator.*') ? 'active fw-semibold' : '' }}"
                        @if(request()->routeIs('calculator.*')) aria-current="page" @endif
                        href="{{ route('calculator.index') }}">
-                        <i class="bi bi-calculator me-1"></i>{{ __('ui.nav.calculator') }}
+                        <i class="bi bi-calculator me-1" aria-hidden="true"></i>{{ __('ui.nav.calculator') }}
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('documentation') ? 'active fw-semibold' : '' }}"
                        @if(request()->routeIs('documentation')) aria-current="page" @endif
                        href="{{ route('documentation') }}">
-                        <i class="bi bi-journal-text me-1"></i>{{ __('ui.nav.documentation') }}
+                        <i class="bi bi-journal-text me-1" aria-hidden="true"></i>{{ __('ui.nav.documentation') }}
                     </a>
                 </li>
                 <li class="nav-item">
@@ -537,7 +537,7 @@
                 <li class="nav-item mt-2 mt-lg-0">
                     <div class="language-switcher" aria-label="{{ __('ui.nav.language') }}">
                         <span class="language-switcher-label" aria-hidden="true">
-                            <i class="bi bi-translate"></i>
+                            <i class="bi bi-translate" aria-hidden="true"></i>
                         </span>
                         @foreach($supportedLocales as $locale => $localeConfig)
                         <a class="language-switcher-link {{ $locale === $currentLocale ? 'active' : '' }}"
@@ -556,7 +556,7 @@
                     <button type="button" class="btn btn-sm border-0 p-2" id="themeToggle"
                             aria-label="{{ __('ui.theme_toggle_aria') }}"
                             style="color:var(--ink-2);min-height:38px;min-width:38px">
-                        <i class="bi bi-sun-fill" id="themeIcon"></i>
+                        <i class="bi bi-sun-fill" id="themeIcon" aria-hidden="true"></i>
                     </button>
                 </li>
             </ul>
@@ -590,11 +590,11 @@
                     {{ __('ui.footer.tagline') }}
                 </p>
                 <p class="small mb-1 footer-brand-text">
-                    <i class="bi bi-person-circle me-1"></i>
+                    <i class="bi bi-person-circle me-1" aria-hidden="true"></i>
                     <strong>Zakaria Maftah</strong>
                 </p>
                 <p class="small mb-0">
-                    <i class="bi bi-envelope me-1"></i>
+                    <i class="bi bi-envelope me-1" aria-hidden="true"></i>
                     <a href="mailto:support@3omar.ma">support@3omar.ma</a>
                 </p>
             </div>
@@ -602,27 +602,27 @@
             {{-- Colonne 2 : Navigation --}}
             <div class="col-md-4">
                 <h6 class="fw-semibold mb-3" style="font-family:var(--f-display)">
-                    <i class="bi bi-signpost-split me-1"></i>{{ __('ui.footer.navigation') }}
+                    <i class="bi bi-signpost-split me-1" aria-hidden="true"></i>{{ __('ui.footer.navigation') }}
                 </h6>
                 <ul class="list-unstyled small mb-0">
                     <li class="mb-2">
                         <a href="{{ route('calculator.index') }}">
-                            <i class="bi bi-calculator me-1"></i>{{ __('ui.footer.simulate') }}
+                            <i class="bi bi-calculator me-1" aria-hidden="true"></i>{{ __('ui.footer.simulate') }}
                         </a>
                     </li>
                     <li class="mb-2">
                         <a href="{{ route('documentation') }}">
-                            <i class="bi bi-journal-text me-1"></i>{{ __('ui.footer.rules') }}
+                            <i class="bi bi-journal-text me-1" aria-hidden="true"></i>{{ __('ui.footer.rules') }}
                         </a>
                     </li>
                     <li class="mb-2">
                         <a href="{{ route('api.documentation') }}">
-                            <i class="bi bi-braces me-1"></i>{{ __('ui.footer.api') }}
+                            <i class="bi bi-braces me-1" aria-hidden="true"></i>{{ __('ui.footer.api') }}
                         </a>
                     </li>
                     <li class="mb-2">
                         <a href="https://github.com/Zakmaf/3omar" target="_blank" rel="noopener">
-                            <i class="bi bi-github me-1"></i>{{ __('ui.footer.source') }}
+                            <i class="bi bi-github me-1" aria-hidden="true"></i>{{ __('ui.footer.source') }}
                         </a>
                     </li>
                     <li class="mb-2">
@@ -641,14 +641,14 @@
             {{-- Colonne 3 : Disclaimer --}}
             <div class="col-md-4">
                 <h6 class="fw-semibold mb-3" style="font-family:var(--f-display);color:var(--s-warn)">
-                    <i class="bi bi-exclamation-triangle me-1"></i>{{ __('ui.footer.warning') }}
+                    <i class="bi bi-exclamation-triangle me-1" aria-hidden="true"></i>{{ __('ui.footer.warning') }}
                 </h6>
                 <p class="footer-body-text small mb-2">
                     {{ __('ui.footer.warning_text') }}
                     {{ __('ui.footer.consult') }}
                 </p>
                 <p class="footer-body-text small mb-0">
-                    <i class="bi bi-shield-check me-1" style="color:var(--g-300)"></i>
+                    <i class="bi bi-shield-check me-1" style="color:var(--g-300)" aria-hidden="true"></i>
                     <strong>{{ __('ui.footer.privacy') }}</strong>
                     {{ __('ui.footer.privacy_detail') }}
                 </p>
