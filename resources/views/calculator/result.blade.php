@@ -154,7 +154,7 @@
     {{-- Avertissements --}}
     @if(!empty($r['avertissements']))
     <div class="alert alert-warning border-0 shadow-sm mb-4">
-        <h6 class="fw-bold mb-2"><i class="bi bi-exclamation-triangle-fill me-2"></i>{{ __('ui.result.warnings_title') }}</h6>
+        <h6 class="fw-bold mb-2"><i class="bi bi-exclamation-triangle-fill me-2" aria-hidden="true"></i>{{ __('ui.result.warnings_title') }}</h6>
         <ul class="mb-0">
             @foreach($r['avertissements'] as $w)
             <li>{{ $w }}</li>
@@ -329,7 +329,7 @@
             <h2 class="h4 result-section-title mb-3" id="result-detail-title">{{ __('ui.result.detail_title') }}</h2>
             <details class="section-card overflow-hidden" id="calculationDetails">
                 <summary class="px-4 py-3 fw-semibold" style="font-family:var(--f-display)">
-                    <i class="bi bi-table me-2" style="color:var(--s-succ)"></i>{{ __('ui.result.details') }}
+                    <i class="bi bi-table me-2" style="color:var(--s-succ)" aria-hidden="true"></i>{{ __('ui.result.details') }}
                 </summary>
             <div class="card section-card">
                 <div class="card-body p-0">
@@ -577,7 +577,7 @@
                                 {{-- NET --}}
                                 <tr class="row-net">
                                     <td class="px-3 py-3" colspan="3">
-                                        <i class="bi bi-check-circle-fill me-1" style="color:var(--s-succ)"></i>{{ __('ui.result.net_to_pay') }}
+                                        <i class="bi bi-check-circle-fill me-1" style="color:var(--s-succ)" aria-hidden="true"></i>{{ __('ui.result.net_to_pay') }}
                                     </td>
                                     <td class="text-end px-3 py-3 fs-5">{{ $madMonth($r['salaire_net']) }}</td>
                                 </tr>
@@ -585,7 +585,7 @@
                                 {{-- COTISATIONS PATRONALES --}}
                                 <tr class="table-light">
                                     <td class="px-3 py-2 fw-semibold text-muted small" colspan="4">
-                                        <i class="bi bi-building-up me-1" style="color:var(--s-warn)"></i>{{ __('ui.result.employer_contributions_heading') }}
+                                        <i class="bi bi-building-up me-1" style="color:var(--s-warn)" aria-hidden="true"></i>{{ __('ui.result.employer_contributions_heading') }}
                                     </td>
                                 </tr>
 
@@ -676,7 +676,7 @@
                                 {{-- COÛT TOTAL EMPLOYEUR --}}
                                 <tr class="row-employer">
                                     <td class="px-3 py-3" colspan="3">
-                                        <i class="bi bi-building-up me-1" style="color:var(--s-warn)"></i>{{ __('ui.result.total_employer_cost_label') }}
+                                        <i class="bi bi-building-up me-1" style="color:var(--s-warn)" aria-hidden="true"></i>{{ __('ui.result.total_employer_cost_label') }}
                                         <small class="text-muted fw-normal ms-2">{{ __('ui.result.total_employer_cost_sub') }}</small>
                                     </td>
                                     <td class="text-end px-3 py-3 fs-5" style="color:var(--r-500)">{{ $madMonth($r['cout_total_employeur']) }}</td>
@@ -724,7 +724,7 @@
             {{-- Donut --}}
             <div class="card section-card mb-4">
                 <div class="card-header px-4 py-3">
-                    <i class="bi bi-pie-chart-fill me-2" style="color:var(--s-info)"></i>{{ __('ui.result.chart_title') }}
+                    <i class="bi bi-pie-chart-fill me-2" style="color:var(--s-info)" aria-hidden="true"></i>{{ __('ui.result.chart_title') }}
                 </div>
                 <div class="card-body text-center py-3">
                     <p class="small text-muted mb-3" id="payrollChartHelp">{{ __('ui.result.chart_a11y_help') }}</p>
@@ -759,7 +759,7 @@
             {{-- Récap IR --}}
             <div class="card section-card mb-4">
                 <div class="card-header px-4 py-3">
-                    <i class="bi bi-percent me-2" style="color:var(--s-tax)"></i>{{ __('ui.result.ir_bracket_title') }}
+                    <i class="bi bi-percent me-2" style="color:var(--s-tax)" aria-hidden="true"></i>{{ __('ui.result.ir_bracket_title') }}
                 </div>
                 <div class="card-body px-4 py-3">
                     <table class="table table-sm mb-0">
@@ -812,7 +812,7 @@
             {{-- Récap employeur --}}
             <div class="card section-card mb-4" style="border-left:3px solid var(--s-warn)">
                 <div class="card-header px-4 py-3">
-                    <i class="bi bi-building-up me-2" style="color:var(--s-warn)"></i>{{ __('ui.result.employer_detail_title') }}
+                    <i class="bi bi-building-up me-2" style="color:var(--s-warn)" aria-hidden="true"></i>{{ __('ui.result.employer_detail_title') }}
                 </div>
                 <div class="card-body px-4 py-3">
                     <table class="table table-sm mb-0">
