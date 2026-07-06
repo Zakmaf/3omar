@@ -220,6 +220,18 @@ class PagesTest extends TestCase
         $this->assertStringContainsString(route('documentation'), $html);
     }
 
+    public function test_trust_page_explains_data_handling_and_links_security_and_error_reporting(): void
+    {
+        $response = $this->get('/fiabilite')->assertOk()
+            ->assertSee("n'est jamais journalisée")
+            ->assertSee('pas votre bulletin de paie officiel')
+            ->assertSee('Signalez-la sur GitHub');
+
+        $html = $response->getContent();
+        $this->assertStringContainsString('SECURITY.md', $html);
+        $this->assertStringContainsString('github.com/Zakmaf/3omar/issues', $html);
+    }
+
     public function test_home_page_shows_persona_cards(): void
     {
         $this->get('/')->assertOk()
