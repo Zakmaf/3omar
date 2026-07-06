@@ -6,6 +6,8 @@ L'API REST v1 permet d'integrer le simulateur de salaire net marocain dans des a
 
 Specification OpenAPI disponible : `/api/docs/openapi.json`
 
+Documentation interactive avec essai en direct : page `/api-documentation` de l'application.
+
 ## Authentification
 
 Aucune authentification requise. L'API est publique.
@@ -104,10 +106,12 @@ Verification de l'etat du service.
 ```json
 {
   "status": "ok",
-  "version": "V1.5.0",
+  "version": "v3.0.1",
   "timestamp": "2026-06-22T12:00:00+00:00"
 }
 ```
+
+Le champ `version` reflete toujours la version de l'application actuellement deployee (`config('app.version')`), pas une valeur figee.
 
 ## Parametres optionnels des simulations
 

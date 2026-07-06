@@ -79,10 +79,57 @@
                         </table>
                     </details>
 
-                    <h3 class="h6 fw-bold mt-3 mb-2">{{ __('ui.api.example_request') }}</h3>
-                    <pre class="p-3 rounded" style="background:var(--g-50);font-family:var(--f-mono);font-size:.8rem"><code>curl -X POST {{ url('/api/v1/simuler/brut-vers-net') }} \
+                    <div class="d-flex justify-content-between align-items-center mt-3 mb-2">
+                        <h3 class="h6 fw-bold mb-0">{{ __('ui.api.example_request') }}</h3>
+                        <button type="button" class="btn btn-sm py-0 px-2 api-copy-btn" data-copy-target="curl-brut-vers-net" data-copied-label="{{ __('ui.api.copy_done') }}" style="border:1px solid var(--hairline-strong);font-size:.75rem">
+                            <i class="bi bi-clipboard me-1" aria-hidden="true"></i>{{ __('ui.api.copy_button') }}
+                        </button>
+                    </div>
+                    <pre id="curl-brut-vers-net" class="p-3 rounded" style="background:var(--g-50);font-family:var(--f-mono);font-size:.8rem"><code>curl -X POST {{ url('/api/v1/simuler/brut-vers-net') }} \
   -H "Content-Type: application/json" \
   -d '{!! json_encode($endpoints['/simuler/brut-vers-net']['post']['requestBody']['content']['application/json']['example'] ?? new stdClass, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) !!}'</code></pre>
+
+                    <div class="d-flex justify-content-between align-items-center mt-3 mb-2">
+                        <h3 class="h6 fw-bold mb-0">{{ __('ui.api.js_example') }}</h3>
+                        <button type="button" class="btn btn-sm py-0 px-2 api-copy-btn" data-copy-target="js-brut-vers-net" data-copied-label="{{ __('ui.api.copy_done') }}" style="border:1px solid var(--hairline-strong);font-size:.75rem">
+                            <i class="bi bi-clipboard me-1" aria-hidden="true"></i>{{ __('ui.api.copy_button') }}
+                        </button>
+                    </div>
+                    <pre id="js-brut-vers-net" class="p-3 rounded" style="background:var(--g-50);font-family:var(--f-mono);font-size:.8rem"><code>fetch("{{ url('/api/v1/simuler/brut-vers-net') }}", {
+  method: "POST",
+  headers: {"Content-Type": "application/json"},
+  body: JSON.stringify({!! json_encode($endpoints['/simuler/brut-vers-net']['post']['requestBody']['content']['application/json']['example'] ?? new stdClass, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) !!})
+}).then(r => r.json()).then(console.log);</code></pre>
+
+                    <h3 class="h6 fw-bold mt-3 mb-2">{{ __('ui.api.full_response_example') }}</h3>
+                    <pre class="p-3 rounded mb-0" style="background:var(--g-50);font-family:var(--f-mono);font-size:.8rem"><code>{!! json_encode([
+    'mode' => 'gross_to_net',
+    'sbi' => 10000,
+    'salaire_net' => 8234.56,
+    'ir_net' => 1012.33,
+    'cotisation_cnss' => 268.80,
+    'cotisation_amo' => 226.00,
+    'frais_pro' => 2500.00,
+    'rni' => 7005.20,
+    'repartition' => ['...' => '...'],
+    'avertissements' => [],
+], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) !!}</code></pre>
+
+                    <details class="mt-3">
+                        <summary class="fw-semibold mb-2" style="color:var(--g-600)"><i class="bi bi-play-circle me-1" aria-hidden="true"></i>{{ __('ui.api.try_it') }}</summary>
+                        <p class="text-muted small mt-2 mb-2">{{ __('ui.api.try_it_desc') }}</p>
+                        <form class="api-try-form" data-api-url="{{ url('/api/v1/simuler/brut-vers-net') }}" data-api-method="POST" data-error-label="{{ __('ui.api.try_it_error') }}">
+                            <label class="form-label small fw-semibold" for="try-body-brut-vers-net">{{ __('ui.api.try_it_body_label') }}</label>
+                            <textarea id="try-body-brut-vers-net" class="form-control form-control-sm mb-2 api-try-body" rows="8" style="font-family:var(--f-mono);font-size:.8rem" spellcheck="false">{{ json_encode($endpoints['/simuler/brut-vers-net']['post']['requestBody']['content']['application/json']['example'] ?? new stdClass, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</textarea>
+                            <button type="submit" class="btn btn-sm text-white api-try-submit" data-sending-label="{{ __('ui.api.try_it_sending') }}" style="background:var(--g-500)">
+                                <i class="bi bi-send me-1" aria-hidden="true"></i>{{ __('ui.api.try_it_send') }}
+                            </button>
+                            <div class="mt-2 d-none api-try-result-wrap">
+                                <div class="small fw-semibold mb-1">{{ __('ui.api.try_it_response_label') }} <span class="api-try-status"></span></div>
+                                <pre class="p-3 rounded mb-0 api-try-output" style="background:var(--g-50);font-family:var(--f-mono);font-size:.8rem;max-height:320px;overflow:auto"><code></code></pre>
+                            </div>
+                        </form>
+                    </details>
                 </div>
             </div>
 
@@ -109,13 +156,33 @@
                         <p class="text-muted small mt-2">{{ __('ui.api.same_optional') }}</p>
                     </details>
 
-                    <h3 class="h6 fw-bold mt-3 mb-2">{{ __('ui.api.example_request') }}</h3>
-                    <pre class="p-3 rounded" style="background:var(--g-50);font-family:var(--f-mono);font-size:.8rem"><code>curl -X POST {{ url('/api/v1/simuler/net-vers-brut') }} \
+                    <div class="d-flex justify-content-between align-items-center mt-3 mb-2">
+                        <h3 class="h6 fw-bold mb-0">{{ __('ui.api.example_request') }}</h3>
+                        <button type="button" class="btn btn-sm py-0 px-2 api-copy-btn" data-copy-target="curl-net-vers-brut" data-copied-label="{{ __('ui.api.copy_done') }}" style="border:1px solid var(--hairline-strong);font-size:.75rem">
+                            <i class="bi bi-clipboard me-1" aria-hidden="true"></i>{{ __('ui.api.copy_button') }}
+                        </button>
+                    </div>
+                    <pre id="curl-net-vers-brut" class="p-3 rounded" style="background:var(--g-50);font-family:var(--f-mono);font-size:.8rem"><code>curl -X POST {{ url('/api/v1/simuler/net-vers-brut') }} \
   -H "Content-Type: application/json" \
   -d '{!! json_encode($endpoints['/simuler/net-vers-brut']['post']['requestBody']['content']['application/json']['example'] ?? new stdClass, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) !!}'</code></pre>
 
-                    <h3 class="h6 fw-bold mt-3 mb-2">{{ __('ui.api.response_extra') }}</h3>
-                    <pre class="p-3 rounded" style="background:var(--g-50);font-family:var(--f-mono);font-size:.8rem"><code>{!! json_encode([
+                    <div class="d-flex justify-content-between align-items-center mt-3 mb-2">
+                        <h3 class="h6 fw-bold mb-0">{{ __('ui.api.js_example') }}</h3>
+                        <button type="button" class="btn btn-sm py-0 px-2 api-copy-btn" data-copy-target="js-net-vers-brut" data-copied-label="{{ __('ui.api.copy_done') }}" style="border:1px solid var(--hairline-strong);font-size:.75rem">
+                            <i class="bi bi-clipboard me-1" aria-hidden="true"></i>{{ __('ui.api.copy_button') }}
+                        </button>
+                    </div>
+                    <pre id="js-net-vers-brut" class="p-3 rounded" style="background:var(--g-50);font-family:var(--f-mono);font-size:.8rem"><code>fetch("{{ url('/api/v1/simuler/net-vers-brut') }}", {
+  method: "POST",
+  headers: {"Content-Type": "application/json"},
+  body: JSON.stringify({!! json_encode($endpoints['/simuler/net-vers-brut']['post']['requestBody']['content']['application/json']['example'] ?? new stdClass, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) !!})
+}).then(r => r.json()).then(console.log);</code></pre>
+
+                    <h3 class="h6 fw-bold mt-3 mb-2">{{ __('ui.api.full_response_example') }}</h3>
+                    <pre class="p-3 rounded mb-0" style="background:var(--g-50);font-family:var(--f-mono);font-size:.8rem"><code>{!! json_encode([
+    'mode' => 'net_to_gross',
+    'sbi' => 9723.45,
+    'salaire_net' => 8000.00,
     'resolution_net' => [
         'net_cible' => 8000.00,
         'net_obtenu' => 8000.00,
@@ -123,7 +190,24 @@
         'iterations' => 25,
         'converge' => true,
     ],
+    'avertissements' => [],
 ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) !!}</code></pre>
+
+                    <details class="mt-3">
+                        <summary class="fw-semibold mb-2" style="color:var(--g-600)"><i class="bi bi-play-circle me-1" aria-hidden="true"></i>{{ __('ui.api.try_it') }}</summary>
+                        <p class="text-muted small mt-2 mb-2">{{ __('ui.api.try_it_desc') }}</p>
+                        <form class="api-try-form" data-api-url="{{ url('/api/v1/simuler/net-vers-brut') }}" data-api-method="POST" data-error-label="{{ __('ui.api.try_it_error') }}">
+                            <label class="form-label small fw-semibold" for="try-body-net-vers-brut">{{ __('ui.api.try_it_body_label') }}</label>
+                            <textarea id="try-body-net-vers-brut" class="form-control form-control-sm mb-2 api-try-body" rows="6" style="font-family:var(--f-mono);font-size:.8rem" spellcheck="false">{{ json_encode($endpoints['/simuler/net-vers-brut']['post']['requestBody']['content']['application/json']['example'] ?? new stdClass, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</textarea>
+                            <button type="submit" class="btn btn-sm text-white api-try-submit" data-sending-label="{{ __('ui.api.try_it_sending') }}" style="background:var(--g-500)">
+                                <i class="bi bi-send me-1" aria-hidden="true"></i>{{ __('ui.api.try_it_send') }}
+                            </button>
+                            <div class="mt-2 d-none api-try-result-wrap">
+                                <div class="small fw-semibold mb-1">{{ __('ui.api.try_it_response_label') }} <span class="api-try-status"></span></div>
+                                <pre class="p-3 rounded mb-0 api-try-output" style="background:var(--g-50);font-family:var(--f-mono);font-size:.8rem;max-height:320px;overflow:auto"><code></code></pre>
+                            </div>
+                        </form>
+                    </details>
                 </div>
             </div>
 
@@ -136,7 +220,21 @@
                 <div class="card-body px-4 py-3">
                     <p class="mb-3">{{ __('ui.api.parametres_desc') }}</p>
                     <h3 class="h6 fw-bold mb-2">{{ __('ui.api.example_request') }}</h3>
-                    <pre class="p-3 rounded mb-0" style="background:var(--g-50);font-family:var(--f-mono);font-size:.8rem"><code>curl {{ url('/api/v1/parametres') }}</code></pre>
+                    <pre id="curl-parametres" class="p-3 rounded" style="background:var(--g-50);font-family:var(--f-mono);font-size:.8rem"><code>curl {{ url('/api/v1/parametres') }}</code></pre>
+
+                    <details class="mt-3">
+                        <summary class="fw-semibold mb-2" style="color:var(--g-600)"><i class="bi bi-play-circle me-1" aria-hidden="true"></i>{{ __('ui.api.try_it') }}</summary>
+                        <p class="text-muted small mt-2 mb-2">{{ __('ui.api.try_it_desc') }}</p>
+                        <form class="api-try-form" data-api-url="{{ url('/api/v1/parametres') }}" data-api-method="GET" data-error-label="{{ __('ui.api.try_it_error') }}">
+                            <button type="submit" class="btn btn-sm text-white api-try-submit" data-sending-label="{{ __('ui.api.try_it_sending') }}" style="background:var(--g-500)">
+                                <i class="bi bi-send me-1" aria-hidden="true"></i>{{ __('ui.api.try_it_send') }}
+                            </button>
+                            <div class="mt-2 d-none api-try-result-wrap">
+                                <div class="small fw-semibold mb-1">{{ __('ui.api.try_it_response_label') }} <span class="api-try-status"></span></div>
+                                <pre class="p-3 rounded mb-0 api-try-output" style="background:var(--g-50);font-family:var(--f-mono);font-size:.8rem;max-height:320px;overflow:auto"><code></code></pre>
+                            </div>
+                        </form>
+                    </details>
                 </div>
             </div>
 
@@ -150,6 +248,21 @@
                     <p class="mb-3">{{ __('ui.api.health_desc') }}</p>
                     <h3 class="h6 fw-bold mb-2">{{ __('ui.api.example_response') }}</h3>
                     <pre class="p-3 rounded mb-0" style="background:var(--g-50);font-family:var(--f-mono);font-size:.8rem"><code>{!! json_encode($endpoints['/health']['get']['responses']['200']['content']['application/json']['example'] ?? new stdClass, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) !!}</code></pre>
+                    <p class="text-muted small mt-2 mb-0">{{ __('ui.api.health_version_note') }}</p>
+
+                    <details class="mt-3">
+                        <summary class="fw-semibold mb-2" style="color:var(--g-600)"><i class="bi bi-play-circle me-1" aria-hidden="true"></i>{{ __('ui.api.try_it') }}</summary>
+                        <p class="text-muted small mt-2 mb-2">{{ __('ui.api.try_it_desc') }}</p>
+                        <form class="api-try-form" data-api-url="{{ url('/api/v1/health') }}" data-api-method="GET" data-error-label="{{ __('ui.api.try_it_error') }}">
+                            <button type="submit" class="btn btn-sm text-white api-try-submit" data-sending-label="{{ __('ui.api.try_it_sending') }}" style="background:var(--g-500)">
+                                <i class="bi bi-send me-1" aria-hidden="true"></i>{{ __('ui.api.try_it_send') }}
+                            </button>
+                            <div class="mt-2 d-none api-try-result-wrap">
+                                <div class="small fw-semibold mb-1">{{ __('ui.api.try_it_response_label') }} <span class="api-try-status"></span></div>
+                                <pre class="p-3 rounded mb-0 api-try-output" style="background:var(--g-50);font-family:var(--f-mono);font-size:.8rem;max-height:320px;overflow:auto"><code></code></pre>
+                            </div>
+                        </form>
+                    </details>
                 </div>
             </div>
 
@@ -199,8 +312,11 @@
             <div class="section-card p-4 mb-4">
                 <h2 class="h6 fw-bold mb-3"><i class="bi bi-file-earmark-code me-1" style="color:var(--g-500)" aria-hidden="true"></i>{{ __('ui.api.openapi_spec') }}</h2>
                 <p class="small mb-2" style="color:var(--ink-2)">{{ __('ui.api.openapi_desc') }}</p>
-                <a href="{{ asset('api/docs/openapi.json') }}" class="btn btn-sm w-100" style="border:1px solid var(--g-500);color:var(--g-500)" target="_blank" rel="noopener">
+                <a href="{{ asset('api/docs/openapi.json') }}" class="btn btn-sm w-100 mb-2" style="border:1px solid var(--g-500);color:var(--g-500)" target="_blank" rel="noopener">
                     <i class="bi bi-download me-1" aria-hidden="true"></i>openapi.json
+                </a>
+                <a href="https://github.com/Zakmaf/3omar/blob/main/docs/API.md" class="btn btn-sm w-100" style="border:1px solid var(--hairline-strong)" target="_blank" rel="noopener">
+                    <i class="bi bi-file-earmark-text me-1" aria-hidden="true"></i>{{ __('ui.api.markdown_reference') }}
                 </a>
             </div>
 
@@ -216,3 +332,69 @@
 
 </div>
 @endsection
+
+@push('scripts')
+<script>
+document.querySelectorAll('.api-copy-btn').forEach(btn => {
+    const source = document.getElementById(btn.dataset.copyTarget);
+    if (!source) return;
+    const defaultHtml = btn.innerHTML;
+
+    btn.addEventListener('click', () => {
+        navigator.clipboard.writeText(source.innerText).then(() => {
+            btn.innerHTML = '<i class="bi bi-check2 me-1" aria-hidden="true"></i>' + btn.dataset.copiedLabel;
+            setTimeout(() => { btn.innerHTML = defaultHtml; }, 1500);
+        });
+    });
+});
+
+document.querySelectorAll('.api-try-form').forEach(form => {
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const url = form.dataset.apiUrl;
+        const method = form.dataset.apiMethod;
+        const errorLabel = form.dataset.errorLabel;
+        const bodyField = form.querySelector('.api-try-body');
+        const submitBtn = form.querySelector('.api-try-submit');
+        const resultWrap = form.querySelector('.api-try-result-wrap');
+        const output = form.querySelector('.api-try-output code');
+        const statusEl = form.querySelector('.api-try-status');
+        const defaultHtml = submitBtn.innerHTML;
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = submitBtn.dataset.sendingLabel;
+        resultWrap.classList.remove('d-none');
+        statusEl.textContent = '';
+        statusEl.style.color = '';
+        output.textContent = '...';
+
+        try {
+            const options = { method, headers: { Accept: 'application/json' } };
+            if (bodyField) {
+                options.headers['Content-Type'] = 'application/json';
+                options.body = bodyField.value;
+            }
+
+            const response = await fetch(url, options);
+            const text = await response.text();
+
+            statusEl.textContent = response.status + ' ' + response.statusText;
+            statusEl.style.color = response.ok ? 'var(--s-succ)' : 'var(--s-tax)';
+
+            try {
+                output.textContent = JSON.stringify(JSON.parse(text), null, 2);
+            } catch {
+                output.textContent = text;
+            }
+        } catch (err) {
+            statusEl.textContent = '';
+            output.textContent = errorLabel;
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = defaultHtml;
+        }
+    });
+});
+</script>
+@endpush
