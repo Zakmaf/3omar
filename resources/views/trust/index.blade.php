@@ -70,7 +70,7 @@
                     </a>
                     <a href="https://github.com/Zakmaf/3omar/blob/main/SECURITY.md" target="_blank" rel="noopener"
                        class="btn fw-semibold" style="border:1px solid var(--hairline-strong);color:var(--ink)">
-                        <i class="bi bi-shield-lock me-2"></i>{{ __('ui.trust.oss_security_cta') }}
+                        <i class="bi bi-shield-lock me-2" aria-hidden="true"></i>{{ __('ui.trust.oss_security_cta') }}
                     </a>
                 </div>
             </section>
