@@ -1,5 +1,34 @@
 # Releases
 
+## v3.1.0 - 2026-07-06
+
+### Nouveautés
+
+- Documentation API enrichie avec schémas de requête et réponse, exemples complets, exemples JavaScript, boutons de copie et panneaux d'essai interactif pour les endpoints publics #118
+- Appels à l'action contextuels entre calculateur, résultat et documentation pour relancer une simulation, comprendre les règles ou vérifier les limites du simulateur #119
+- Page Fiabilité complétée avec le flux de données saisi, la distinction entre simulation pédagogique et bulletin officiel, le lien de sécurité et un signalement d'erreur de calcul visible sur mobile #121
+
+### Améliorations
+
+- Icônes Bootstrap décoratives masquées aux lecteurs d'écran dans les vues principales, avec conservation des icônes porteuses de sens via libellés accessibles #120
+- Endpoint `/api/v1/health` et exemples OpenAPI alignés sur la version applicative affichée, pour éviter la dérive de version dans la documentation développeur #118
+- Tests de rendu étendus pour les CTA, la documentation API, la page Fiabilité, les icônes accessibles et les quatre locales FR, EN, ES, AR #118 #119 #120 #121
+
+### Correctifs
+
+- Mutuelle salariale traitée comme retenue pré-fiscale dans l'assiette IR lorsque saisie, ce qui aligne le calcul sur le simulateur Excel BP av2026 pour ce cas confirmé #126
+- Documentation de calcul mise à jour pour préciser le traitement fiscal de la mutuelle salariale #126
+
+### Migration
+
+Aucune action requise. Mise à jour transparente depuis v3.0.1.
+
+```bash
+docker pull ghcr.io/zakmaf/3omar:v3.1.0
+```
+
+---
+
 ## v3.0.1 - 2026-07-06
 
 ### Nouveautés
