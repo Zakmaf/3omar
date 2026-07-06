@@ -8,20 +8,20 @@
     <div class="row mb-4">
         <div class="col">
             <div class="eyebrow mb-2">{{ __('ui.api.eyebrow') }}</div>
-            <h1 class="h2 fw-bold mb-1"><i class="bi bi-braces me-2" style="color:var(--g-500)"></i>{{ __('ui.api.title') }}</h1>
+            <h1 class="h2 fw-bold mb-1"><i class="bi bi-braces me-2" style="color:var(--g-500)" aria-hidden="true"></i>{{ __('ui.api.title') }}</h1>
             <p style="color:var(--ink-2)">
                 {{ __('ui.api.intro') }}
                 <span class="badge rounded-pill ms-1 px-2 py-1" style="background:var(--g-50);color:var(--g-700);border:1px solid var(--g-200)">v1</span>
             </p>
             <div class="d-flex flex-wrap gap-2 mb-3">
                 <span class="badge rounded-pill px-3 py-2" style="background:var(--s-info-bg);color:var(--s-info)">
-                    <i class="bi bi-unlock me-1"></i>{{ __('ui.api.no_auth') }}
+                    <i class="bi bi-unlock me-1" aria-hidden="true"></i>{{ __('ui.api.no_auth') }}
                 </span>
                 <span class="badge rounded-pill px-3 py-2" style="background:var(--s-succ-bg);color:var(--s-succ)">
-                    <i class="bi bi-globe me-1"></i>{{ __('ui.api.cors') }}
+                    <i class="bi bi-globe me-1" aria-hidden="true"></i>{{ __('ui.api.cors') }}
                 </span>
                 <span class="badge rounded-pill px-3 py-2" style="background:var(--s-warn-bg);color:var(--s-warn)">
-                    <i class="bi bi-speedometer me-1"></i>{{ __('ui.api.rate_limit') }}
+                    <i class="bi bi-speedometer me-1" aria-hidden="true"></i>{{ __('ui.api.rate_limit') }}
                 </span>
             </div>
             <nav class="d-flex flex-wrap gap-2" aria-label="{{ __('ui.api.quick_nav') }}">
@@ -39,7 +39,7 @@
 
             {{-- Base URL --}}
             <div class="section-card p-4 mb-4">
-                <h2 class="h6 fw-bold mb-2"><i class="bi bi-link-45deg me-1" style="color:var(--s-info)"></i>{{ __('ui.api.base_url') }}</h2>
+                <h2 class="h6 fw-bold mb-2"><i class="bi bi-link-45deg me-1" style="color:var(--s-info)" aria-hidden="true"></i>{{ __('ui.api.base_url') }}</h2>
                 <pre class="mb-0 p-3 rounded" style="background:var(--g-50);font-family:var(--f-mono);font-size:.85rem"><code>{{ url('/api/v1') }}</code></pre>
             </div>
 
@@ -156,7 +156,7 @@
             {{-- Errors --}}
             <div class="card section-card mb-4" id="errors">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
-                    <span class="badge rounded-circle p-2" style="background:var(--s-tax)"><i class="bi bi-exclamation-triangle"></i></span>
+                    <span class="badge rounded-circle p-2" style="background:var(--s-tax)"><i class="bi bi-exclamation-triangle" aria-hidden="true"></i></span>
                     <span>{{ __('ui.api.errors_title') }}</span>
                 </div>
                 <div class="card-body px-4 py-3">
@@ -186,7 +186,7 @@
         {{-- Sidebar --}}
         <div class="col-lg-4">
             <div class="section-card p-4 mb-4">
-                <h2 class="h6 fw-bold mb-3"><i class="bi bi-info-circle me-1" style="color:var(--s-info)"></i>{{ __('ui.api.sidebar_info') }}</h2>
+                <h2 class="h6 fw-bold mb-3"><i class="bi bi-info-circle me-1" style="color:var(--s-info)" aria-hidden="true"></i>{{ __('ui.api.sidebar_info') }}</h2>
                 <ul class="list-unstyled small mb-0">
                     <li class="mb-2"><strong>{{ __('ui.api.format') }} :</strong> JSON</li>
                     <li class="mb-2"><strong>{{ __('ui.api.auth') }} :</strong> {{ __('ui.api.none') }}</li>
@@ -197,15 +197,15 @@
             </div>
 
             <div class="section-card p-4 mb-4">
-                <h2 class="h6 fw-bold mb-3"><i class="bi bi-file-earmark-code me-1" style="color:var(--g-500)"></i>{{ __('ui.api.openapi_spec') }}</h2>
+                <h2 class="h6 fw-bold mb-3"><i class="bi bi-file-earmark-code me-1" style="color:var(--g-500)" aria-hidden="true"></i>{{ __('ui.api.openapi_spec') }}</h2>
                 <p class="small mb-2" style="color:var(--ink-2)">{{ __('ui.api.openapi_desc') }}</p>
                 <a href="{{ asset('api/docs/openapi.json') }}" class="btn btn-sm w-100" style="border:1px solid var(--g-500);color:var(--g-500)" target="_blank" rel="noopener">
-                    <i class="bi bi-download me-1"></i>openapi.json
+                    <i class="bi bi-download me-1" aria-hidden="true"></i>openapi.json
                 </a>
             </div>
 
             <div class="section-card p-4">
-                <h2 class="h6 fw-bold mb-3"><i class="bi bi-shield-check me-1" style="color:var(--s-warn)"></i>{{ __('ui.api.sidebar_limits') }}</h2>
+                <h2 class="h6 fw-bold mb-3"><i class="bi bi-shield-check me-1" style="color:var(--s-warn)" aria-hidden="true"></i>{{ __('ui.api.sidebar_limits') }}</h2>
                 <div class="small" style="color:var(--ink-2)">
                     <p class="mb-2">{{ __('ui.api.limit_simulation') }}</p>
                     <p class="mb-0">{{ __('ui.api.limit_get') }}</p>

@@ -22,7 +22,7 @@
             {{-- Privacy section --}}
             <section class="section-card p-4 p-lg-5 mb-4" aria-labelledby="trust-privacy-title">
                 <div class="d-flex align-items-start gap-3 mb-3">
-                    <span style="font-size:2rem;line-height:1" aria-hidden="true"><i class="bi bi-shield-check" style="color:var(--s-succ)"></i></span>
+                    <span style="font-size:2rem;line-height:1" aria-hidden="true"><i class="bi bi-shield-check" style="color:var(--s-succ)" aria-hidden="true"></i></span>
                     <div>
                         <h2 class="h4 fw-bold mb-1" id="trust-privacy-title">{{ __('ui.trust.privacy_title') }}</h2>
                         <p class="mb-0" style="color:var(--ink-2)">{{ __('ui.trust.privacy_intro') }}</p>
@@ -32,7 +32,7 @@
                     @foreach (__('ui.trust.privacy_points') as $point)
                     <div class="col-sm-6">
                         <div class="d-flex gap-2">
-                            <i class="bi bi-check-circle-fill flex-shrink-0 mt-1" style="color:var(--s-succ)"></i>
+                            <i class="bi bi-check-circle-fill flex-shrink-0 mt-1" style="color:var(--s-succ)" aria-hidden="true"></i>
                             <span>{{ $point }}</span>
                         </div>
                     </div>
@@ -43,7 +43,7 @@
             {{-- Open Source section --}}
             <section class="section-card p-4 p-lg-5 mb-4" aria-labelledby="trust-oss-title">
                 <div class="d-flex align-items-start gap-3 mb-3">
-                    <span style="font-size:2rem;line-height:1" aria-hidden="true"><i class="bi bi-github" style="color:var(--ink)"></i></span>
+                    <span style="font-size:2rem;line-height:1" aria-hidden="true"><i class="bi bi-github" style="color:var(--ink)" aria-hidden="true"></i></span>
                     <div>
                         <h2 class="h4 fw-bold mb-1" id="trust-oss-title">{{ __('ui.trust.oss_title') }}</h2>
                         <p class="mb-0" style="color:var(--ink-2)">{{ __('ui.trust.oss_intro') }}</p>
@@ -53,7 +53,7 @@
                     @foreach (__('ui.trust.oss_points') as $point)
                     <div class="col-sm-6">
                         <div class="d-flex gap-2">
-                            <i class="bi bi-check-circle-fill flex-shrink-0 mt-1" style="color:var(--s-succ)"></i>
+                            <i class="bi bi-check-circle-fill flex-shrink-0 mt-1" style="color:var(--s-succ)" aria-hidden="true"></i>
                             <span>{{ $point }}</span>
                         </div>
                     </div>
@@ -62,11 +62,11 @@
                 <div class="mt-4 d-flex flex-wrap gap-3">
                     <a href="https://github.com/Zakmaf/3omar" target="_blank" rel="noopener"
                        class="btn fw-semibold" style="border:1px solid var(--hairline-strong);color:var(--ink)">
-                        <i class="bi bi-github me-2"></i>{{ __('ui.trust.oss_github_cta') }}
+                        <i class="bi bi-github me-2" aria-hidden="true"></i>{{ __('ui.trust.oss_github_cta') }}
                     </a>
                     <a href="https://github.com/Zakmaf/3omar/blob/main/LICENSE" target="_blank" rel="noopener"
                        class="btn fw-semibold" style="border:1px solid var(--hairline-strong);color:var(--ink)">
-                        <i class="bi bi-file-text me-2"></i>{{ __('ui.trust.oss_license_cta') }}
+                        <i class="bi bi-file-text me-2" aria-hidden="true"></i>{{ __('ui.trust.oss_license_cta') }}
                     </a>
                 </div>
             </section>
@@ -74,7 +74,7 @@
             {{-- Limitations section --}}
             <section class="section-card p-4 p-lg-5 mb-4" aria-labelledby="trust-limits-title">
                 <div class="d-flex align-items-start gap-3 mb-3">
-                    <span style="font-size:2rem;line-height:1" aria-hidden="true"><i class="bi bi-exclamation-triangle" style="color:var(--s-warn)"></i></span>
+                    <span style="font-size:2rem;line-height:1" aria-hidden="true"><i class="bi bi-exclamation-triangle" style="color:var(--s-warn)" aria-hidden="true"></i></span>
                     <div>
                         <h2 class="h4 fw-bold mb-1" id="trust-limits-title">{{ __('ui.trust.limits_title') }}</h2>
                         <p class="mb-0" style="color:var(--ink-2)">{{ __('ui.trust.limits_intro') }}</p>
@@ -86,7 +86,7 @@
                     @endforeach
                 </ul>
                 <div class="mt-4 p-3 rounded-3" style="background:var(--s-warn-bg);border:1px solid color-mix(in srgb, var(--s-warn) 30%, transparent)">
-                    <p class="mb-0 small"><i class="bi bi-exclamation-triangle-fill me-2" style="color:var(--s-warn)"></i>{{ __('ui.trust.limits_disclaimer') }}</p>
+                    <p class="mb-0 small"><i class="bi bi-exclamation-triangle-fill me-2" style="color:var(--s-warn)" aria-hidden="true"></i>{{ __('ui.trust.limits_disclaimer') }}</p>
                 </div>
             </section>
 
@@ -146,10 +146,10 @@
                     </table>
                 </div>
                 <div class="p-4 small" style="color:var(--ink-3)">
-                    <span class="me-4"><i class="bi bi-circle-fill me-1" style="color:var(--s-succ);font-size:.55rem"></i>{{ __('ui.trust.coverage_full') }}</span>
-                    <span class="me-4"><i class="bi bi-circle-half me-1" style="color:var(--s-warn);font-size:.55rem"></i>{{ __('ui.trust.coverage_partial') }}</span>
-                    <span class="me-4"><i class="bi bi-check-circle-fill me-1" style="color:var(--s-succ)"></i>{{ __('ui.trust.confidence_high') }}</span>
-                    <span><i class="bi bi-dash-circle-fill me-1" style="color:var(--s-warn)"></i>{{ __('ui.trust.confidence_medium') }}</span>
+                    <span class="me-4"><i class="bi bi-circle-fill me-1" style="color:var(--s-succ);font-size:.55rem" aria-hidden="true"></i>{{ __('ui.trust.coverage_full') }}</span>
+                    <span class="me-4"><i class="bi bi-circle-half me-1" style="color:var(--s-warn);font-size:.55rem" aria-hidden="true"></i>{{ __('ui.trust.coverage_partial') }}</span>
+                    <span class="me-4"><i class="bi bi-check-circle-fill me-1" style="color:var(--s-succ)" aria-hidden="true"></i>{{ __('ui.trust.confidence_high') }}</span>
+                    <span><i class="bi bi-dash-circle-fill me-1" style="color:var(--s-warn)" aria-hidden="true"></i>{{ __('ui.trust.confidence_medium') }}</span>
                 </div>
             </section>
 
@@ -164,22 +164,22 @@
                 <ul class="list-unstyled small mb-4">
                     <li class="mb-2">
                         <a href="#trust-privacy-title" style="color:var(--g-600);text-decoration:none">
-                            <i class="bi bi-shield-check me-2"></i>{{ __('ui.trust.privacy_title') }}
+                            <i class="bi bi-shield-check me-2" aria-hidden="true"></i>{{ __('ui.trust.privacy_title') }}
                         </a>
                     </li>
                     <li class="mb-2">
                         <a href="#trust-oss-title" style="color:var(--g-600);text-decoration:none">
-                            <i class="bi bi-github me-2"></i>{{ __('ui.trust.oss_title') }}
+                            <i class="bi bi-github me-2" aria-hidden="true"></i>{{ __('ui.trust.oss_title') }}
                         </a>
                     </li>
                     <li class="mb-2">
                         <a href="#trust-limits-title" style="color:var(--g-600);text-decoration:none">
-                            <i class="bi bi-exclamation-triangle me-2"></i>{{ __('ui.trust.limits_title') }}
+                            <i class="bi bi-exclamation-triangle me-2" aria-hidden="true"></i>{{ __('ui.trust.limits_title') }}
                         </a>
                     </li>
                     <li class="mb-2">
                         <a href="#trust-matrix-title" style="color:var(--g-600);text-decoration:none">
-                            <i class="bi bi-table me-2"></i>{{ __('ui.trust.matrix_title') }}
+                            <i class="bi bi-table me-2" aria-hidden="true"></i>{{ __('ui.trust.matrix_title') }}
                         </a>
                     </li>
                 </ul>
@@ -190,27 +190,27 @@
                 <ul class="list-unstyled small mb-0">
                     <li class="mb-2">
                         <a href="{{ route('calculator.index') }}" style="color:var(--g-600);text-decoration:none">
-                            <i class="bi bi-calculator me-2"></i>{{ __('ui.nav.calculator') }}
+                            <i class="bi bi-calculator me-2" aria-hidden="true"></i>{{ __('ui.nav.calculator') }}
                         </a>
                     </li>
                     <li class="mb-2">
                         <a href="{{ route('documentation') }}" style="color:var(--g-600);text-decoration:none">
-                            <i class="bi bi-journal-text me-2"></i>{{ __('ui.nav.documentation') }}
+                            <i class="bi bi-journal-text me-2" aria-hidden="true"></i>{{ __('ui.nav.documentation') }}
                         </a>
                     </li>
                     <li class="mb-2">
                         <a href="{{ route('api.documentation') }}" style="color:var(--g-600);text-decoration:none">
-                            <i class="bi bi-braces me-2"></i>{{ __('ui.nav.api') }}
+                            <i class="bi bi-braces me-2" aria-hidden="true"></i>{{ __('ui.nav.api') }}
                         </a>
                     </li>
                     <li class="mb-2">
                         <a href="https://github.com/Zakmaf/3omar" target="_blank" rel="noopener" style="color:var(--g-600);text-decoration:none">
-                            <i class="bi bi-github me-2"></i>{{ __('ui.footer.source') }}
+                            <i class="bi bi-github me-2" aria-hidden="true"></i>{{ __('ui.footer.source') }}
                         </a>
                     </li>
                     <li class="mb-0">
                         <a href="https://github.com/Zakmaf/3omar/issues" target="_blank" rel="noopener" style="color:var(--g-600);text-decoration:none">
-                            <i class="bi bi-bug me-2"></i>{{ __('ui.footer.report') }}
+                            <i class="bi bi-bug me-2" aria-hidden="true"></i>{{ __('ui.footer.report') }}
                         </a>
                     </li>
                 </ul>
@@ -225,10 +225,10 @@
         <p class="mb-4" style="color:var(--ink-3)">{{ __('ui.trust.cta_text') }}</p>
         <div class="d-flex flex-wrap gap-3 justify-content-center">
             <a href="{{ route('calculator.index') }}" class="btn btn-lg px-5 text-white fw-semibold" style="background:var(--g-500)">
-                <i class="bi bi-calculator me-2"></i>{{ __('ui.home.simulate') }}
+                <i class="bi bi-calculator me-2" aria-hidden="true"></i>{{ __('ui.home.simulate') }}
             </a>
             <a href="{{ route('documentation') }}" class="btn btn-lg px-4 fw-semibold" style="color:var(--g-500);border:1px solid var(--g-500)">
-                <i class="bi bi-journal-text me-2"></i>{{ __('ui.home.rules') }}
+                <i class="bi bi-journal-text me-2" aria-hidden="true"></i>{{ __('ui.home.rules') }}
             </a>
         </div>
     </section>
