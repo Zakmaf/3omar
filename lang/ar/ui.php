@@ -331,6 +331,14 @@ return [
         'takeaway_cnss_capped' => 'بلغ سقف CNSS. اشتراك الأجير ثابت عند :amount درهم/شهر بصرف النظر عن الراتب الإجمالي.',
         'takeaway_no_cimr' => 'لم يُصرَّح بـ CIMR. الاشتراك يُقلص الضريبة بالمعدل الهامشي :rate% ويُحسّن التقاعد.',
         'takeaway_cost_underestimated' => 'بعض قيم المشغل غير مُدخلة. قد تكون التكلفة الإجمالية للمشغل مُقدَّرة بأقل من الواقع.',
+        'formula_cta_sbi' => 'تعديل الراتب الأساسي',
+        'formula_cta_cotisations' => 'الاطلاع على قاعدة CNSS/AMO المستخدمة',
+        'formula_cta_ir' => 'الاطلاع على قاعدة الضريبة على الدخل المستخدمة',
+        'formula_cta_employer' => 'الاطلاع على التكاليف الباترونالية',
+        'takeaway_cta_ir_schedule' => 'الاطلاع على سلم الضريبة على الدخل',
+        'takeaway_cta_cimr' => 'محاكاة اشتراك CIMR',
+        'takeaway_cta_cnss_rule' => 'الاطلاع على قاعدة CNSS',
+        'takeaway_cta_employer_values' => 'استكمال قيم المشغل',
     ],
     'documentation' => [
         'eyebrow' => 'فهم المعايير',
@@ -446,6 +454,7 @@ return [
         'ref_smig_desc' => 'الحد الأدنى للأجور 2026',
         'ref_ldf' => 'قانون المالية 50-25',
         'ref_ldf_desc' => 'CGI 2026، السنة المالية',
+        'use_in_simulation' => 'استخدامها في محاكاة',
     ],
     'api' => [
         'eyebrow' => 'واجهة برمجة REST عامة',
