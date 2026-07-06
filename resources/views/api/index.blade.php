@@ -82,7 +82,7 @@
                     <div class="d-flex justify-content-between align-items-center mt-3 mb-2">
                         <h3 class="h6 fw-bold mb-0">{{ __('ui.api.example_request') }}</h3>
                         <button type="button" class="btn btn-sm py-0 px-2 api-copy-btn" data-copy-target="curl-brut-vers-net" data-copied-label="{{ __('ui.api.copy_done') }}" style="border:1px solid var(--hairline-strong);font-size:.75rem">
-                            <i class="bi bi-clipboard me-1"></i>{{ __('ui.api.copy_button') }}
+                            <i class="bi bi-clipboard me-1" aria-hidden="true"></i>{{ __('ui.api.copy_button') }}
                         </button>
                     </div>
                     <pre id="curl-brut-vers-net" class="p-3 rounded" style="background:var(--g-50);font-family:var(--f-mono);font-size:.8rem"><code>curl -X POST {{ url('/api/v1/simuler/brut-vers-net') }} \
@@ -92,7 +92,7 @@
                     <div class="d-flex justify-content-between align-items-center mt-3 mb-2">
                         <h3 class="h6 fw-bold mb-0">{{ __('ui.api.js_example') }}</h3>
                         <button type="button" class="btn btn-sm py-0 px-2 api-copy-btn" data-copy-target="js-brut-vers-net" data-copied-label="{{ __('ui.api.copy_done') }}" style="border:1px solid var(--hairline-strong);font-size:.75rem">
-                            <i class="bi bi-clipboard me-1"></i>{{ __('ui.api.copy_button') }}
+                            <i class="bi bi-clipboard me-1" aria-hidden="true"></i>{{ __('ui.api.copy_button') }}
                         </button>
                     </div>
                     <pre id="js-brut-vers-net" class="p-3 rounded" style="background:var(--g-50);font-family:var(--f-mono);font-size:.8rem"><code>fetch("{{ url('/api/v1/simuler/brut-vers-net') }}", {
@@ -116,13 +116,13 @@
 ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) !!}</code></pre>
 
                     <details class="mt-3">
-                        <summary class="fw-semibold mb-2" style="color:var(--g-600)"><i class="bi bi-play-circle me-1"></i>{{ __('ui.api.try_it') }}</summary>
+                        <summary class="fw-semibold mb-2" style="color:var(--g-600)"><i class="bi bi-play-circle me-1" aria-hidden="true"></i>{{ __('ui.api.try_it') }}</summary>
                         <p class="text-muted small mt-2 mb-2">{{ __('ui.api.try_it_desc') }}</p>
                         <form class="api-try-form" data-api-url="{{ url('/api/v1/simuler/brut-vers-net') }}" data-api-method="POST" data-error-label="{{ __('ui.api.try_it_error') }}">
                             <label class="form-label small fw-semibold" for="try-body-brut-vers-net">{{ __('ui.api.try_it_body_label') }}</label>
                             <textarea id="try-body-brut-vers-net" class="form-control form-control-sm mb-2 api-try-body" rows="8" style="font-family:var(--f-mono);font-size:.8rem" spellcheck="false">{{ json_encode($endpoints['/simuler/brut-vers-net']['post']['requestBody']['content']['application/json']['example'] ?? new stdClass, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</textarea>
                             <button type="submit" class="btn btn-sm text-white api-try-submit" data-sending-label="{{ __('ui.api.try_it_sending') }}" style="background:var(--g-500)">
-                                <i class="bi bi-send me-1"></i>{{ __('ui.api.try_it_send') }}
+                                <i class="bi bi-send me-1" aria-hidden="true"></i>{{ __('ui.api.try_it_send') }}
                             </button>
                             <div class="mt-2 d-none api-try-result-wrap">
                                 <div class="small fw-semibold mb-1">{{ __('ui.api.try_it_response_label') }} <span class="api-try-status"></span></div>
@@ -159,7 +159,7 @@
                     <div class="d-flex justify-content-between align-items-center mt-3 mb-2">
                         <h3 class="h6 fw-bold mb-0">{{ __('ui.api.example_request') }}</h3>
                         <button type="button" class="btn btn-sm py-0 px-2 api-copy-btn" data-copy-target="curl-net-vers-brut" data-copied-label="{{ __('ui.api.copy_done') }}" style="border:1px solid var(--hairline-strong);font-size:.75rem">
-                            <i class="bi bi-clipboard me-1"></i>{{ __('ui.api.copy_button') }}
+                            <i class="bi bi-clipboard me-1" aria-hidden="true"></i>{{ __('ui.api.copy_button') }}
                         </button>
                     </div>
                     <pre id="curl-net-vers-brut" class="p-3 rounded" style="background:var(--g-50);font-family:var(--f-mono);font-size:.8rem"><code>curl -X POST {{ url('/api/v1/simuler/net-vers-brut') }} \
@@ -169,7 +169,7 @@
                     <div class="d-flex justify-content-between align-items-center mt-3 mb-2">
                         <h3 class="h6 fw-bold mb-0">{{ __('ui.api.js_example') }}</h3>
                         <button type="button" class="btn btn-sm py-0 px-2 api-copy-btn" data-copy-target="js-net-vers-brut" data-copied-label="{{ __('ui.api.copy_done') }}" style="border:1px solid var(--hairline-strong);font-size:.75rem">
-                            <i class="bi bi-clipboard me-1"></i>{{ __('ui.api.copy_button') }}
+                            <i class="bi bi-clipboard me-1" aria-hidden="true"></i>{{ __('ui.api.copy_button') }}
                         </button>
                     </div>
                     <pre id="js-net-vers-brut" class="p-3 rounded" style="background:var(--g-50);font-family:var(--f-mono);font-size:.8rem"><code>fetch("{{ url('/api/v1/simuler/net-vers-brut') }}", {
@@ -194,13 +194,13 @@
 ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) !!}</code></pre>
 
                     <details class="mt-3">
-                        <summary class="fw-semibold mb-2" style="color:var(--g-600)"><i class="bi bi-play-circle me-1"></i>{{ __('ui.api.try_it') }}</summary>
+                        <summary class="fw-semibold mb-2" style="color:var(--g-600)"><i class="bi bi-play-circle me-1" aria-hidden="true"></i>{{ __('ui.api.try_it') }}</summary>
                         <p class="text-muted small mt-2 mb-2">{{ __('ui.api.try_it_desc') }}</p>
                         <form class="api-try-form" data-api-url="{{ url('/api/v1/simuler/net-vers-brut') }}" data-api-method="POST" data-error-label="{{ __('ui.api.try_it_error') }}">
                             <label class="form-label small fw-semibold" for="try-body-net-vers-brut">{{ __('ui.api.try_it_body_label') }}</label>
                             <textarea id="try-body-net-vers-brut" class="form-control form-control-sm mb-2 api-try-body" rows="6" style="font-family:var(--f-mono);font-size:.8rem" spellcheck="false">{{ json_encode($endpoints['/simuler/net-vers-brut']['post']['requestBody']['content']['application/json']['example'] ?? new stdClass, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</textarea>
                             <button type="submit" class="btn btn-sm text-white api-try-submit" data-sending-label="{{ __('ui.api.try_it_sending') }}" style="background:var(--g-500)">
-                                <i class="bi bi-send me-1"></i>{{ __('ui.api.try_it_send') }}
+                                <i class="bi bi-send me-1" aria-hidden="true"></i>{{ __('ui.api.try_it_send') }}
                             </button>
                             <div class="mt-2 d-none api-try-result-wrap">
                                 <div class="small fw-semibold mb-1">{{ __('ui.api.try_it_response_label') }} <span class="api-try-status"></span></div>
@@ -223,11 +223,11 @@
                     <pre id="curl-parametres" class="p-3 rounded" style="background:var(--g-50);font-family:var(--f-mono);font-size:.8rem"><code>curl {{ url('/api/v1/parametres') }}</code></pre>
 
                     <details class="mt-3">
-                        <summary class="fw-semibold mb-2" style="color:var(--g-600)"><i class="bi bi-play-circle me-1"></i>{{ __('ui.api.try_it') }}</summary>
+                        <summary class="fw-semibold mb-2" style="color:var(--g-600)"><i class="bi bi-play-circle me-1" aria-hidden="true"></i>{{ __('ui.api.try_it') }}</summary>
                         <p class="text-muted small mt-2 mb-2">{{ __('ui.api.try_it_desc') }}</p>
                         <form class="api-try-form" data-api-url="{{ url('/api/v1/parametres') }}" data-api-method="GET" data-error-label="{{ __('ui.api.try_it_error') }}">
                             <button type="submit" class="btn btn-sm text-white api-try-submit" data-sending-label="{{ __('ui.api.try_it_sending') }}" style="background:var(--g-500)">
-                                <i class="bi bi-send me-1"></i>{{ __('ui.api.try_it_send') }}
+                                <i class="bi bi-send me-1" aria-hidden="true"></i>{{ __('ui.api.try_it_send') }}
                             </button>
                             <div class="mt-2 d-none api-try-result-wrap">
                                 <div class="small fw-semibold mb-1">{{ __('ui.api.try_it_response_label') }} <span class="api-try-status"></span></div>
@@ -251,11 +251,11 @@
                     <p class="text-muted small mt-2 mb-0">{{ __('ui.api.health_version_note') }}</p>
 
                     <details class="mt-3">
-                        <summary class="fw-semibold mb-2" style="color:var(--g-600)"><i class="bi bi-play-circle me-1"></i>{{ __('ui.api.try_it') }}</summary>
+                        <summary class="fw-semibold mb-2" style="color:var(--g-600)"><i class="bi bi-play-circle me-1" aria-hidden="true"></i>{{ __('ui.api.try_it') }}</summary>
                         <p class="text-muted small mt-2 mb-2">{{ __('ui.api.try_it_desc') }}</p>
                         <form class="api-try-form" data-api-url="{{ url('/api/v1/health') }}" data-api-method="GET" data-error-label="{{ __('ui.api.try_it_error') }}">
                             <button type="submit" class="btn btn-sm text-white api-try-submit" data-sending-label="{{ __('ui.api.try_it_sending') }}" style="background:var(--g-500)">
-                                <i class="bi bi-send me-1"></i>{{ __('ui.api.try_it_send') }}
+                                <i class="bi bi-send me-1" aria-hidden="true"></i>{{ __('ui.api.try_it_send') }}
                             </button>
                             <div class="mt-2 d-none api-try-result-wrap">
                                 <div class="small fw-semibold mb-1">{{ __('ui.api.try_it_response_label') }} <span class="api-try-status"></span></div>
@@ -342,7 +342,7 @@ document.querySelectorAll('.api-copy-btn').forEach(btn => {
 
     btn.addEventListener('click', () => {
         navigator.clipboard.writeText(source.innerText).then(() => {
-            btn.innerHTML = '<i class="bi bi-check2 me-1"></i>' + btn.dataset.copiedLabel;
+            btn.innerHTML = '<i class="bi bi-check2 me-1" aria-hidden="true"></i>' + btn.dataset.copiedLabel;
             setTimeout(() => { btn.innerHTML = defaultHtml; }, 1500);
         });
     });
