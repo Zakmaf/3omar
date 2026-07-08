@@ -154,7 +154,7 @@
     {{-- Avertissements --}}
     @if(!empty($r['avertissements']))
     <div class="alert alert-warning border-0 shadow-sm mb-4">
-        <h6 class="fw-bold mb-2"><i class="bi bi-exclamation-triangle-fill me-2"></i>{{ __('ui.result.warnings_title') }}</h6>
+        <h6 class="fw-bold mb-2"><i class="bi bi-exclamation-triangle-fill me-2" aria-hidden="true"></i>{{ __('ui.result.warnings_title') }}</h6>
         <ul class="mb-0">
             @foreach($r['avertissements'] as $w)
             <li>{{ $w }}</li>
@@ -207,20 +207,24 @@
 
         if ($r['ir_net'] <= 0) {
             $takeaways[] = ['icon' => 'bi-check-circle-fill', 'color' => 'var(--s-succ)',
-                'text' => __('ui.result.takeaway_no_ir')];
+                'text' => __('ui.result.takeaway_no_ir'),
+                'cta_label' => __('ui.result.takeaway_cta_ir_schedule'), 'cta_href' => route('documentation').'#impot'];
         } elseif ($marginalRate >= 30) {
             $takeaways[] = ['icon' => 'bi-percent', 'color' => 'var(--s-warn)',
-                'text' => __('ui.result.takeaway_high_marginal_ir', ['rate' => $marginalRate])];
+                'text' => __('ui.result.takeaway_high_marginal_ir', ['rate' => $marginalRate]),
+                'cta_label' => __('ui.result.takeaway_cta_cimr'), 'cta_href' => route('calculator.index').'#step-cimr'];
         }
 
         if ($r['sbi'] >= $cnssPlafond) {
             $takeaways[] = ['icon' => 'bi-shield-check', 'color' => 'var(--s-info)',
-                'text' => __('ui.result.takeaway_cnss_capped', ['amount' => number_format(round($cnssPlafond * config('payroll.cnss.taux'), 2), 2, ',', ' ')])];
+                'text' => __('ui.result.takeaway_cnss_capped', ['amount' => number_format(round($cnssPlafond * config('payroll.cnss.taux'), 2), 2, ',', ' ')]),
+                'cta_label' => __('ui.result.takeaway_cta_cnss_rule'), 'cta_href' => route('documentation').'#cotisations'];
         }
 
         if (($r['cimr_taux'] ?? 0) == 0 && $marginalRate >= 20 && count($takeaways) < 3) {
             $takeaways[] = ['icon' => 'bi-piggy-bank', 'color' => 'var(--s-cot)',
-                'text' => __('ui.result.takeaway_no_cimr', ['rate' => $marginalRate])];
+                'text' => __('ui.result.takeaway_no_cimr', ['rate' => $marginalRate]),
+                'cta_label' => __('ui.result.takeaway_cta_cimr'), 'cta_href' => route('calculator.index').'#step-cimr'];
         }
 
         $hasUnknown = ($r['cimr_taux_employeur_inconnu'] ?? false)
@@ -229,7 +233,8 @@
             || ($r['rc_part_employeur_inconnu'] ?? false);
         if ($hasUnknown && count($takeaways) < 3) {
             $takeaways[] = ['icon' => 'bi-exclamation-triangle', 'color' => 'var(--s-warn)',
-                'text' => __('ui.result.takeaway_cost_underestimated')];
+                'text' => __('ui.result.takeaway_cost_underestimated'),
+                'cta_label' => __('ui.result.takeaway_cta_employer_values'), 'cta_href' => route('calculator.index').'#step-mutuelle'];
         }
     @endphp
     @if (!empty($takeaways))
@@ -240,9 +245,14 @@
         <div class="row g-3">
             @foreach ($takeaways as $t)
             <div class="col-md-6 col-xl-4">
-                <div class="d-flex gap-3 p-3 rounded-3 h-100" style="background:var(--paper);border:1px solid var(--hairline);box-shadow:var(--shadow-1)">
-                    <i class="bi {{ $t['icon'] }} fs-5 flex-shrink-0 mt-1" style="color:{{ $t['color'] }}" aria-hidden="true"></i>
-                    <p class="small mb-0" style="color:var(--ink-2)">{{ $t['text'] }}</p>
+                <div class="d-flex flex-column gap-2 p-3 rounded-3 h-100" style="background:var(--paper);border:1px solid var(--hairline);box-shadow:var(--shadow-1)">
+                    <div class="d-flex gap-3">
+                        <i class="bi {{ $t['icon'] }} fs-5 flex-shrink-0 mt-1" style="color:{{ $t['color'] }}" aria-hidden="true"></i>
+                        <p class="small mb-0" style="color:var(--ink-2)">{{ $t['text'] }}</p>
+                    </div>
+                    <a href="{{ $t['cta_href'] }}" class="small d-inline-flex align-items-center gap-1 ms-4 ps-1 no-print">
+                        <i class="bi bi-arrow-right-short" aria-hidden="true"></i>{{ $t['cta_label'] }}
+                    </a>
                 </div>
             </div>
             @endforeach
@@ -296,16 +306,25 @@
                     <div class="small text-uppercase fw-semibold mb-1" style="color:var(--ink-3)">{{ __('ui.result.taxable_gross_salary') }}</div>
                     <div class="fw-bold" style="color:var(--s-info)">{{ $madMonth($r['sbi']) }}</div>
                     <div class="small text-muted mt-1">{{ __('ui.result.monthly_taxable_base') }}</div>
+                    <a href="{{ route('calculator.index') }}#step-remuneration" class="small d-inline-flex align-items-center gap-1 mt-1 no-print">
+                        <i class="bi bi-pencil-square" aria-hidden="true"></i>{{ __('ui.result.formula_cta_sbi') }}
+                    </a>
                 </div>
                 <div class="result-formula-item">
                     <span class="result-formula-symbol mb-2">−</span>
                     <div class="small text-uppercase fw-semibold mb-1" style="color:var(--ink-3)">{{ __('ui.result.employee_contributions') }}</div>
                     <div class="fw-bold" style="color:var(--s-cot)">{{ $madMonth($r['total_sociales']) }}</div>
+                    <a href="{{ route('documentation') }}#cotisations" class="small d-inline-flex align-items-center gap-1 mt-1 no-print">
+                        <i class="bi bi-info-circle" aria-hidden="true"></i>{{ __('ui.result.formula_cta_cotisations') }}
+                    </a>
                 </div>
                 <div class="result-formula-item">
                     <span class="result-formula-symbol mb-2">−</span>
                     <div class="small text-uppercase fw-semibold mb-1" style="color:var(--ink-3)">{{ __('ui.result.income_tax') }}</div>
                     <div class="fw-bold" style="color:var(--s-tax)">{{ $madMonth($r['ir_net']) }}</div>
+                    <a href="{{ route('documentation') }}#impot" class="small d-inline-flex align-items-center gap-1 mt-1 no-print">
+                        <i class="bi bi-info-circle" aria-hidden="true"></i>{{ __('ui.result.formula_cta_ir') }}
+                    </a>
                 </div>
                 <div class="result-formula-item">
                     <span class="result-formula-symbol mb-2">=</span>
@@ -316,6 +335,9 @@
                     <div class="small text-uppercase fw-semibold mb-1" style="color:var(--ink-3)">{{ __('ui.result.employer_contributions') }}</div>
                     <div class="fw-bold" style="color:var(--s-warn)">{{ $signedMadMonth($r['total_patronal']) }}</div>
                     <div class="small text-muted mt-1">{{ __('ui.result.employer_formula_hint') }}</div>
+                    <a href="{{ route('documentation') }}#charges-patronales" class="small d-inline-flex align-items-center gap-1 mt-1 no-print">
+                        <i class="bi bi-info-circle" aria-hidden="true"></i>{{ __('ui.result.formula_cta_employer') }}
+                    </a>
                 </div>
             </div>
         </div>
@@ -329,7 +351,7 @@
             <h2 class="h4 result-section-title mb-3" id="result-detail-title">{{ __('ui.result.detail_title') }}</h2>
             <details class="section-card overflow-hidden" id="calculationDetails">
                 <summary class="px-4 py-3 fw-semibold" style="font-family:var(--f-display)">
-                    <i class="bi bi-table me-2" style="color:var(--s-succ)"></i>{{ __('ui.result.details') }}
+                    <i class="bi bi-table me-2" style="color:var(--s-succ)" aria-hidden="true"></i>{{ __('ui.result.details') }}
                 </summary>
             <div class="card section-card">
                 <div class="card-body p-0">
@@ -577,7 +599,7 @@
                                 {{-- NET --}}
                                 <tr class="row-net">
                                     <td class="px-3 py-3" colspan="3">
-                                        <i class="bi bi-check-circle-fill me-1" style="color:var(--s-succ)"></i>{{ __('ui.result.net_to_pay') }}
+                                        <i class="bi bi-check-circle-fill me-1" style="color:var(--s-succ)" aria-hidden="true"></i>{{ __('ui.result.net_to_pay') }}
                                     </td>
                                     <td class="text-end px-3 py-3 fs-5">{{ $madMonth($r['salaire_net']) }}</td>
                                 </tr>
@@ -585,7 +607,7 @@
                                 {{-- COTISATIONS PATRONALES --}}
                                 <tr class="table-light">
                                     <td class="px-3 py-2 fw-semibold text-muted small" colspan="4">
-                                        <i class="bi bi-building-up me-1" style="color:var(--s-warn)"></i>{{ __('ui.result.employer_contributions_heading') }}
+                                        <i class="bi bi-building-up me-1" style="color:var(--s-warn)" aria-hidden="true"></i>{{ __('ui.result.employer_contributions_heading') }}
                                     </td>
                                 </tr>
 
@@ -676,7 +698,7 @@
                                 {{-- COÛT TOTAL EMPLOYEUR --}}
                                 <tr class="row-employer">
                                     <td class="px-3 py-3" colspan="3">
-                                        <i class="bi bi-building-up me-1" style="color:var(--s-warn)"></i>{{ __('ui.result.total_employer_cost_label') }}
+                                        <i class="bi bi-building-up me-1" style="color:var(--s-warn)" aria-hidden="true"></i>{{ __('ui.result.total_employer_cost_label') }}
                                         <small class="text-muted fw-normal ms-2">{{ __('ui.result.total_employer_cost_sub') }}</small>
                                     </td>
                                     <td class="text-end px-3 py-3 fs-5" style="color:var(--r-500)">{{ $madMonth($r['cout_total_employeur']) }}</td>
@@ -724,7 +746,7 @@
             {{-- Donut --}}
             <div class="card section-card mb-4">
                 <div class="card-header px-4 py-3">
-                    <i class="bi bi-pie-chart-fill me-2" style="color:var(--s-info)"></i>{{ __('ui.result.chart_title') }}
+                    <i class="bi bi-pie-chart-fill me-2" style="color:var(--s-info)" aria-hidden="true"></i>{{ __('ui.result.chart_title') }}
                 </div>
                 <div class="card-body text-center py-3">
                     <p class="small text-muted mb-3" id="payrollChartHelp">{{ __('ui.result.chart_a11y_help') }}</p>
@@ -759,7 +781,7 @@
             {{-- Récap IR --}}
             <div class="card section-card mb-4">
                 <div class="card-header px-4 py-3">
-                    <i class="bi bi-percent me-2" style="color:var(--s-tax)"></i>{{ __('ui.result.ir_bracket_title') }}
+                    <i class="bi bi-percent me-2" style="color:var(--s-tax)" aria-hidden="true"></i>{{ __('ui.result.ir_bracket_title') }}
                 </div>
                 <div class="card-body px-4 py-3">
                     <table class="table table-sm mb-0">
@@ -812,7 +834,7 @@
             {{-- Récap employeur --}}
             <div class="card section-card mb-4" style="border-left:3px solid var(--s-warn)">
                 <div class="card-header px-4 py-3">
-                    <i class="bi bi-building-up me-2" style="color:var(--s-warn)"></i>{{ __('ui.result.employer_detail_title') }}
+                    <i class="bi bi-building-up me-2" style="color:var(--s-warn)" aria-hidden="true"></i>{{ __('ui.result.employer_detail_title') }}
                 </div>
                 <div class="card-body px-4 py-3">
                     <table class="table table-sm mb-0">

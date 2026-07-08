@@ -95,6 +95,21 @@ class GoldenPayrollTest extends TestCase
         $this->assertNotEmpty($r['avertissements']);
     }
 
+    public function test_mutuelle_salarie_reduit_l_assiette_ir_avant_le_bareme(): void
+    {
+        $r = $this->calculator->calculer([
+            'salaire_base' => 12000,
+            'type_frais_pro' => 'commun',
+            'mutuelle_salarie' => 300,
+        ]);
+
+        $this->assertSame(300.0, $r['mutuelle_salarie']);
+        $this->assertSame(300.0, $r['total_retenues']);
+        $this->assertSame(8243.33, $r['rni']);
+        $this->assertSame(973.0, $r['ir_net']);
+        $this->assertSame(10187.0, $r['salaire_net']);
+    }
+
     public function test_mutuelle_et_retraite_complementaire(): void
     {
         $r = $this->calculator->calculer([
@@ -108,8 +123,8 @@ class GoldenPayrollTest extends TestCase
 
         $this->assertSame(7200.0, $r['rc_deduite']);
         $this->assertSame(300.0, $r['total_retenues']);
-        $this->assertSame(883.0, $r['ir_net']);
-        $this->assertSame(10277.0, $r['salaire_net']);
+        $this->assertSame(793.0, $r['ir_net']);
+        $this->assertSame(10367.0, $r['salaire_net']);
         $this->assertSame(14892.0, $r['cout_total_employeur']);
     }
 

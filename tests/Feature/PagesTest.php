@@ -193,6 +193,7 @@ class PagesTest extends TestCase
             ->assertSee('Dahir 1-72-184')
             ->assertSee('Art. 73 CGI, LF 50-25');
     }
+
     public function test_trust_page_renders_supported_locales(): void
     {
         $this->withSession(['locale' => 'en'])->get('/fiabilite')
@@ -218,6 +219,18 @@ class PagesTest extends TestCase
         $html = $response->getContent();
         $this->assertStringContainsString(route('calculator.index'), $html);
         $this->assertStringContainsString(route('documentation'), $html);
+    }
+
+    public function test_trust_page_explains_data_handling_and_links_security_and_error_reporting(): void
+    {
+        $response = $this->get('/fiabilite')->assertOk()
+            ->assertSee("n'est jamais journalisée")
+            ->assertSee('pas votre bulletin de paie officiel')
+            ->assertSee('Signalez-la sur GitHub');
+
+        $html = $response->getContent();
+        $this->assertStringContainsString('SECURITY.md', $html);
+        $this->assertStringContainsString('github.com/Zakmaf/3omar/issues', $html);
     }
 
     public function test_home_page_shows_persona_cards(): void
@@ -286,6 +299,58 @@ class PagesTest extends TestCase
             ->assertSee('Imprimer / Exporter');
     }
 
+    public function test_calculator_step_sections_expose_deep_link_anchors(): void
+    {
+        $response = $this->get('/calculateur')->assertOk();
+        $html = $response->getContent();
+
+        foreach ([
+            'step-remuneration', 'step-primes', 'step-heures-sup', 'step-indemnites',
+            'step-avantages-cnss', 'step-cimr', 'step-mutuelle', 'step-charges-famille', 'step-retenues',
+        ] as $anchor) {
+            $this->assertStringContainsString('id="'.$anchor.'"', $html);
+        }
+    }
+
+    public function test_documentation_cards_link_back_to_calculator_steps(): void
+    {
+        $response = $this->get('/documentation')->assertOk();
+        $html = $response->getContent();
+
+        $this->assertStringContainsString(route('calculator.index').'#step-remuneration', $html);
+        $this->assertStringContainsString(route('calculator.index').'#step-cimr', $html);
+        $this->assertStringContainsString(route('calculator.index').'#step-primes', $html);
+        $this->assertStringContainsString(route('calculator.index').'#step-indemnites', $html);
+        $this->assertStringContainsString(route('calculator.index').'#step-heures-sup', $html);
+        $this->assertGreaterThanOrEqual(10, substr_count($html, 'Utiliser dans une simulation'));
+    }
+
+    public function test_result_page_formula_cards_link_to_documentation_and_calculator_rules(): void
+    {
+        $response = $this->post('/calculateur/calculer', [
+            'salaire_base' => 10000,
+            'type_frais_pro' => 'commun',
+        ])->assertOk();
+        $html = $response->getContent();
+
+        $this->assertStringContainsString(route('calculator.index').'#step-remuneration', $html);
+        $this->assertStringContainsString(route('documentation').'#cotisations', $html);
+        $this->assertStringContainsString(route('documentation').'#impot', $html);
+        $this->assertStringContainsString(route('documentation').'#charges-patronales', $html);
+    }
+
+    public function test_result_page_takeaways_include_contextual_cta_links(): void
+    {
+        $response = $this->post('/calculateur/calculer', [
+            'salaire_base' => 25000,
+            'type_frais_pro' => 'commun',
+        ])->assertOk();
+        $html = $response->getContent();
+
+        $this->assertStringContainsString(route('calculator.index').'#step-cimr', $html);
+        $this->assertStringContainsString('Simuler une cotisation CIMR', $html);
+    }
+
     public function test_unknown_locale_is_rejected(): void
     {
         $this->get('/lang/de')->assertNotFound();
@@ -298,5 +363,42 @@ class PagesTest extends TestCase
             ->post('/calculateur/calculer', ['type_frais_pro' => 'commun'])
             ->assertRedirect('/calculateur')
             ->assertSessionHasErrors(['salaire_base' => 'The base salary is required.']);
+    }
+
+    /**
+     * @dataProvider provideIconGlyphPages
+     */
+    public function test_bootstrap_icon_glyphs_are_hidden_from_assistive_tech(string $method, string $uri, array $payload = []): void
+    {
+        $response = $method === 'GET'
+            ? $this->get($uri)
+            : $this->post($uri, $payload);
+
+        $html = $response->assertOk()->getContent();
+
+        preg_match_all('/<i\s+class="bi\b[^"]*"[^>]*>/', $html, $matches);
+        $this->assertNotEmpty($matches[0], "Aucune icone bi- trouvee sur {$uri}, le test n'est plus pertinent");
+
+        foreach ($matches[0] as $tag) {
+            $isDecorativelyHidden = str_contains($tag, 'aria-hidden="true"');
+            $isMeaningfullyLabeled = str_contains($tag, 'role="img"') && str_contains($tag, 'aria-label=');
+
+            $this->assertTrue(
+                $isDecorativelyHidden || $isMeaningfullyLabeled,
+                "Icone sans aria-hidden ni role=img/aria-label sur {$uri} : {$tag}"
+            );
+        }
+    }
+
+    public static function provideIconGlyphPages(): array
+    {
+        return [
+            'accueil' => ['GET', '/'],
+            'calculateur' => ['GET', '/calculateur'],
+            'documentation' => ['GET', '/documentation'],
+            'api-documentation' => ['GET', '/api-documentation'],
+            'fiabilite' => ['GET', '/fiabilite'],
+            'resultat' => ['POST', '/calculateur/calculer', ['salaire_base' => 5000, 'type_frais_pro' => 'commun']],
+        ];
     }
 }

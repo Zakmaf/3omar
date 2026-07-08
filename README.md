@@ -8,11 +8,7 @@
 
 3omar reste une simulation de bulletin de paie pedagogique. Pour un bulletin de paie officiel ou une situation particuliere, consultez votre employeur ou un professionnel.
 
-## V3 (en cours - branche feature/v3-product-upgrade)
-
-Les changements ci-dessous sont en cours de validation sur la branche `feature/v3-product-upgrade` et ne constituent pas encore une release officielle.
-
-### Nouveautes V3
+## Nouveautes v3.0.0
 
 - **Page Fiabilite** (`/fiabilite`) : confidentialite, limites, open source, matrice de fiabilite des regles avec source, date de verification et niveau de confiance pour chaque taux.
 - **Positionnement par persona sur la page d'accueil** : cartes dediees aux salaries, RH/paie, developpeurs/integrateurs et decideurs/employeurs, chacune avec un CTA contextuel.

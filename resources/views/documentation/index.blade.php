@@ -4,11 +4,19 @@
 
 @section('content')
 <div class="container">
+    @php
+        $simCta = function (?string $anchor = null) {
+            $url = route('calculator.index').($anchor ? '#'.$anchor : '');
+
+            return '<a href="'.$url.'" class="small d-inline-flex align-items-center gap-1 mt-3">'
+                .'<i class="bi bi-play-circle" aria-hidden="true"></i>'.__('ui.documentation.use_in_simulation').'</a>';
+        };
+    @endphp
 
     <div class="row mb-4">
         <div class="col">
             <div class="eyebrow mb-2">{{ __('ui.documentation.eyebrow') }}</div>
-            <h1 class="h2 fw-bold mb-1"><i class="bi bi-journal-text me-2" style="color:var(--g-500)"></i>{{ __('ui.documentation.title') }}</h1>
+            <h1 class="h2 fw-bold mb-1"><i class="bi bi-journal-text me-2" style="color:var(--g-500)" aria-hidden="true"></i>{{ __('ui.documentation.title') }}</h1>
             <p style="color:var(--ink-2)">
                 {{ __('ui.documentation.intro') }}
                 <span class="badge rounded-pill ms-1 px-2 py-1" style="background:var(--g-50);color:var(--g-700);border:1px solid var(--g-200)">{{ __('ui.documentation.badge') }}</span>
@@ -33,7 +41,7 @@
             {{-- ============================================================ --}}
             <div class="card section-card mb-4" id="cotisations">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
-                    <span class="badge rounded-circle p-2" style="background:var(--s-info)"><i class="bi bi-building"></i></span>
+                    <span class="badge rounded-circle p-2" style="background:var(--s-info)"><i class="bi bi-building" aria-hidden="true"></i></span>
                     <span>{{ __('ui.documentation.cnss_title') }}</span>
                 </div>
                 <div class="card-body px-4 py-3">
@@ -61,18 +69,19 @@
                         </tbody>
                     </table>
                     <div class="alert alert-info py-2 small mb-0">
-                        <i class="bi bi-info-circle me-1"></i>
+                        <i class="bi bi-info-circle me-1" aria-hidden="true"></i>
                         {{ __('ui.documentation.cnss_ceiling_note', ['ceiling' => number_format($payroll['cnss']['plafond'], 0, ',', ' '), 'max' => number_format($payroll['cnss']['plafond'] * $payroll['cnss']['taux'], 2, ',', ' ')]) }}
                     </div>
+                    {!! $simCta('step-remuneration') !!}
                 </div>
             </div>
 
             {{-- ============================================================ --}}
             {{-- AMO                                                           --}}
             {{-- ============================================================ --}}
-            <div class="card section-card mb-4">
+            <div class="card section-card mb-4" id="amo">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
-                    <span class="badge rounded-circle p-2" style="background:var(--s-cot)"><i class="bi bi-heart-pulse"></i></span>
+                    <span class="badge rounded-circle p-2" style="background:var(--s-cot)"><i class="bi bi-heart-pulse" aria-hidden="true"></i></span>
                     <span>{{ __('ui.documentation.amo_title') }}</span>
                 </div>
                 <div class="card-body px-4 py-3">
@@ -93,15 +102,16 @@
                             </tr>
                         </tbody>
                     </table>
+                    {!! $simCta('step-remuneration') !!}
                 </div>
             </div>
 
             {{-- ============================================================ --}}
             {{-- CHARGES PATRONALES SUPPLÉMENTAIRES                            --}}
             {{-- ============================================================ --}}
-            <div class="card section-card mb-4">
+            <div class="card section-card mb-4" id="charges-patronales">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
-                    <span class="badge rounded-circle p-2" style="background:var(--s-warn)"><i class="bi bi-building-up"></i></span>
+                    <span class="badge rounded-circle p-2" style="background:var(--s-warn)"><i class="bi bi-building-up" aria-hidden="true"></i></span>
                     <span>{{ __('ui.documentation.employer_charges_title') }}</span>
                 </div>
                 <div class="card-body px-4 py-3">
@@ -124,15 +134,16 @@
                     <div class="alert alert-secondary py-2 small mb-0">
                         <strong>{{ __('ui.documentation.total_employer_formula') }}</strong> {{ __('ui.documentation.total_employer_formula_detail', ['cnss' => number_format($payroll['cnss']['taux_patronal'] * 100, 2, ',', '.'), 'amo' => number_format($payroll['amo']['taux_patronal'] * 100, 2, ',', '.'), 'af' => number_format($payroll['allocations_familiales']['taux_patronal'] * 100, 2, ',', '.'), 'tfp' => number_format($payroll['taxe_formation']['taux_patronal'] * 100, 2, ',', '.')]) }}
                     </div>
+                    {!! $simCta() !!}
                 </div>
             </div>
 
             {{-- ============================================================ --}}
             {{-- CIMR                                                          --}}
             {{-- ============================================================ --}}
-            <div class="card section-card mb-4">
+            <div class="card section-card mb-4" id="cimr">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
-                    <span class="badge rounded-circle p-2" style="background:var(--s-succ)"><i class="bi bi-piggy-bank"></i></span>
+                    <span class="badge rounded-circle p-2" style="background:var(--s-succ)"><i class="bi bi-piggy-bank" aria-hidden="true"></i></span>
                     <span>{{ __('ui.documentation.cimr_title') }}</span>
                 </div>
                 <div class="card-body px-4 py-3">
@@ -144,6 +155,7 @@
                             <tr><td>{{ __('ui.documentation.ir_deductibility') }}</td><td class="fw-bold" style="color:var(--s-succ)">100%</td><td class="text-muted">{{ __('ui.documentation.fully_deducted') }}</td></tr>
                         </tbody>
                     </table>
+                    {!! $simCta('step-cimr') !!}
                 </div>
             </div>
 
@@ -152,7 +164,7 @@
             {{-- ============================================================ --}}
             <div class="card section-card mb-4" id="impot">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
-                    <span class="badge rounded-circle p-2" style="background:var(--s-tax)"><i class="bi bi-percent"></i></span>
+                    <span class="badge rounded-circle p-2" style="background:var(--s-tax)"><i class="bi bi-percent" aria-hidden="true"></i></span>
                     <span>{{ __('ui.documentation.ir_schedule_title', ['year' => 2026]) }}</span>
                 </div>
                 <div class="card-body px-4 py-3">
@@ -188,6 +200,7 @@
                     <div class="alert alert-secondary py-2 small mb-0">
                         {{ __('ui.documentation.ir_config_note') }}
                     </div>
+                    {!! $simCta('step-remuneration') !!}
                 </div>
             </div>
 
@@ -196,7 +209,7 @@
             {{-- ============================================================ --}}
             <div class="card section-card mb-4">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
-                    <span class="badge rounded-circle p-2" style="background:var(--s-warn)"><i class="bi bi-briefcase"></i></span>
+                    <span class="badge rounded-circle p-2" style="background:var(--s-warn)"><i class="bi bi-briefcase" aria-hidden="true"></i></span>
                     <span>{{ __('ui.documentation.pro_fees_title') }}</span>
                 </div>
                 <div class="card-body px-4 py-3">
@@ -228,6 +241,7 @@
                             </tr>
                         </tbody>
                     </table>
+                    {!! $simCta('step-remuneration') !!}
                 </div>
             </div>
 
@@ -236,7 +250,7 @@
             {{-- ============================================================ --}}
             <div class="card section-card mb-4" id="remuneration">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
-                    <span class="badge rounded-circle p-2" style="background:var(--s-info)"><i class="bi bi-hourglass-split"></i></span>
+                    <span class="badge rounded-circle p-2" style="background:var(--s-info)"><i class="bi bi-hourglass-split" aria-hidden="true"></i></span>
                     <span>{{ __('ui.documentation.seniority_title') }}</span>
                 </div>
                 <div class="card-body px-4 py-3">
@@ -266,6 +280,7 @@
                             @endforeach
                         </tbody>
                     </table>
+                    {!! $simCta('step-primes') !!}
                 </div>
             </div>
 
@@ -274,7 +289,7 @@
             {{-- ============================================================ --}}
             <div class="card section-card mb-4">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
-                    <span class="badge rounded-circle p-2" style="background:var(--s-info)"><i class="bi bi-bank"></i></span>
+                    <span class="badge rounded-circle p-2" style="background:var(--s-info)"><i class="bi bi-bank" aria-hidden="true"></i></span>
                     <span>{{ __('ui.documentation.rc_title') }} · {{ $payroll['retraite_complementaire']['article'] }}</span>
                 </div>
                 <div class="card-body px-4 py-3">
@@ -299,9 +314,10 @@
                         </tbody>
                     </table>
                     <div class="alert alert-info py-2 small mb-0">
-                        <i class="bi bi-info-circle me-1"></i>
+                        <i class="bi bi-info-circle me-1" aria-hidden="true"></i>
                         {{ __('ui.documentation.rc_note', ['pct' => round($payroll['retraite_complementaire']['deduction_ir_max_pct'] * 100)]) }}
                     </div>
+                    {!! $simCta('step-cimr') !!}
                 </div>
             </div>
 
@@ -310,7 +326,7 @@
             {{-- ============================================================ --}}
             <div class="card section-card mb-4" id="indemnites">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
-                    <span class="badge rounded-circle p-2" style="background:var(--s-succ)"><i class="bi bi-gift"></i></span>
+                    <span class="badge rounded-circle p-2" style="background:var(--s-succ)"><i class="bi bi-gift" aria-hidden="true"></i></span>
                     <span>{{ __('ui.documentation.allowances_title') }}</span>
                 </div>
                 <div class="card-body px-4 py-3">
@@ -336,6 +352,7 @@
                             @endforeach
                         </tbody>
                     </table>
+                    {!! $simCta('step-indemnites') !!}
                 </div>
             </div>
 
@@ -344,7 +361,7 @@
             {{-- ============================================================ --}}
             <div class="card section-card mb-4">
                 <div class="card-header px-4 py-3 d-flex align-items-center gap-2">
-                    <span class="badge rounded-circle p-2" style="background:var(--s-info)"><i class="bi bi-clock-history"></i></span>
+                    <span class="badge rounded-circle p-2" style="background:var(--s-info)"><i class="bi bi-clock-history" aria-hidden="true"></i></span>
                     <span>{{ __('ui.documentation.smig_title', ['year' => 2026]) }}</span>
                 </div>
                 <div class="card-body px-4 py-3">
@@ -371,6 +388,7 @@
                         </tbody>
                     </table>
                     <div class="form-text">{{ __('ui.documentation.hourly_rate_formula', ['hours' => $payroll['smig']['heures_legales']]) }}</div>
+                    {!! $simCta('step-heures-sup') !!}
                 </div>
             </div>
 
@@ -383,7 +401,7 @@
 
             <div class="card section-card mb-4">
                 <div class="card-header px-4 py-3">
-                    <i class="bi bi-link-45deg me-2" style="color:var(--g-500)"></i>{{ __('ui.documentation.sidebar_references') }}
+                    <i class="bi bi-link-45deg me-2" style="color:var(--g-500)" aria-hidden="true"></i>{{ __('ui.documentation.sidebar_references') }}
                 </div>
                 <div class="card-body px-4 py-3">
                     <ul class="list-unstyled mb-0">

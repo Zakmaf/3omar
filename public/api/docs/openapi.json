@@ -200,7 +200,7 @@
                 },
                 "example": {
                   "status": "ok",
-                  "version": "V1.5.0",
+                  "version": "v3.0.1",
                   "timestamp": "2026-06-22T12:00:00+00:00"
                 }
               }
@@ -354,7 +354,7 @@
         "required": ["status", "version", "timestamp"],
         "properties": {
           "status": { "type": "string", "example": "ok" },
-          "version": { "type": "string", "example": "V1.5.0" },
+          "version": { "type": "string", "example": "v3.0.1", "description": "Version de l'application actuellement deployee" },
           "timestamp": { "type": "string", "format": "date-time" }
         }
       },
