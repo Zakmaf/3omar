@@ -127,6 +127,8 @@ Le champ `version` reflete toujours la version de l'application actuellement dep
 | `cimr_taux` | number | Taux CIMR en pourcentage |
 | `cimr_repartition` | string | `salarie`, `employeur` ou `partage` |
 | `cimr_taux_employeur` | number | Taux CIMR employeur (si partage) |
+| `amo_taux_salarie_personnalise` | boolean | Active un taux AMO salarie personnalise (derogatoire, `false` par defaut : le taux legal 2,26 % s'applique) |
+| `amo_taux_salarie` | number (0-100) | Taux AMO salarie applique quand `amo_taux_salarie_personnalise` est actif (peut etre `0`). Ignore sinon. Genere un avertissement dans `avertissements` quand actif ; n'affecte pas la part patronale AMO. Voir `docs/CALCUL.md` et issue #128 pour le contexte reglementaire. |
 | `retraite_complementaire_mensuel` | number | Retraite complementaire (MAD) |
 | `rc_part_employeur` | number | Part employeur retraite complementaire (MAD) |
 | `mutuelle_salarie` | number | Cotisation mutuelle salarie (MAD) |

@@ -36,6 +36,62 @@ class GoldenPayrollTest extends TestCase
         $this->assertEmpty($r['avertissements']);
     }
 
+    public function test_amo_taux_legal_reste_applique_par_defaut(): void
+    {
+        $r = $this->calculator->calculer([
+            'salaire_base' => 3422.72,
+            'type_frais_pro' => 'commun',
+        ]);
+
+        $this->assertFalse($r['amo_taux_salarie_personnalise']);
+        $this->assertSame(0.0226, $r['amo_taux_salarie']);
+        $this->assertSame(77.35, $r['cotisation_amo']);
+        $this->assertEmpty($r['avertissements']);
+    }
+
+    public function test_amo_salarie_personnalise_permet_de_reproduire_un_bulletin_reel(): void
+    {
+        $r = $this->calculator->calculer([
+            'salaire_base' => 3422.72,
+            'type_frais_pro' => 'commun',
+            'amo_taux_salarie_personnalise' => true,
+            'amo_taux_salarie' => 0,
+        ]);
+
+        $this->assertTrue($r['amo_taux_salarie_personnalise']);
+        $this->assertSame(0.0, $r['amo_taux_salarie']);
+        $this->assertSame(0.0, $r['cotisation_amo']);
+        $this->assertSame(153.34, $r['total_sociales']);
+        $this->assertSame(2071.43, $r['rni']);
+        $this->assertSame(0.0, $r['ir_net']);
+        $this->assertSame(3269.38, $r['salaire_net']);
+        // Le cout employeur n'est pas affecte : la part patronale de l'AMO
+        // reste au taux legal, seule la part salariale est derogatoire.
+        $this->assertSame(4144.56, $r['cout_total_employeur']);
+        $this->assertNotEmpty($r['avertissements']);
+        $this->assertStringContainsString('AMO', $r['avertissements'][0]);
+    }
+
+    public function test_amo_salarie_personnalise_avec_un_taux_non_nul(): void
+    {
+        $r = $this->calculator->calculer([
+            'salaire_base' => 3422.72,
+            'type_frais_pro' => 'commun',
+            'amo_taux_salarie_personnalise' => true,
+            'amo_taux_salarie' => 1.5,
+        ]);
+
+        $this->assertTrue($r['amo_taux_salarie_personnalise']);
+        $this->assertSame(0.015, $r['amo_taux_salarie']);
+        $this->assertSame(51.34, $r['cotisation_amo']);
+        $this->assertSame(204.68, $r['total_sociales']);
+        $this->assertSame(2020.09, $r['rni']);
+        $this->assertSame(3218.04, $r['salaire_net']);
+        $this->assertSame(4144.56, $r['cout_total_employeur']);
+        $this->assertNotEmpty($r['avertissements']);
+        $this->assertStringContainsString('AMO', $r['avertissements'][0]);
+    }
+
     public function test_cadre_avec_anciennete_et_famille(): void
     {
         $r = $this->calculator->calculer([
