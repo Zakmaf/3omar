@@ -422,7 +422,7 @@ class PayrollCalculatorService
         // ÉTAPE 7 — RNI mensuel
         // Les retenues exonérées d'IR (pré-fiscales) réduisent le RNI avant le barème.
         // =====================================================================
-        $rni = $this->r2($snc - $fraisPro - $retenuesExonereesIr);
+        $rni = $this->r2($snc - $fraisPro - $retenuesExonereesIr - $mutuelleSalarie);
 
         // =====================================================================
         // ÉTAPE 8 — IR (Art. 73 CGI) avec déduction retraite complémentaire
