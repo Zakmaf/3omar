@@ -318,8 +318,66 @@
     </div>
     @endif
 
+    @if ($share_payload_invalid)
+    <div class="alert alert-warning border-0 shadow-sm mb-4" role="status">
+        <i class="bi bi-exclamation-triangle-fill me-2" aria-hidden="true"></i>{{ __('ui.calculator.share_restore_failed') }}
+    </div>
+    @endif
+
+    @if ($simulation_restored)
+    <div class="alert alert-success border-0 shadow-sm mb-4" role="status">
+        <i class="bi bi-arrow-counterclockwise me-2" aria-hidden="true"></i>{{ __('ui.calculator.share_restored') }}
+    </div>
+    @endif
+
+    @if ($profile_loaded)
+    <div class="alert alert-success border-0 shadow-sm mb-4" role="status">
+        <i class="bi bi-magic me-2" aria-hidden="true"></i>
+        {{ __('ui.calculator.profile_loaded', ['profile' => __('ui.calculator.profiles.'.$profile_loaded.'.label')]) }}
+    </div>
+    @endif
+
+    @if ($comparison_a)
+    <div class="alert alert-info border-0 shadow-sm mb-4" role="status">
+        <i class="bi bi-columns-gap me-2" aria-hidden="true"></i><strong>{{ __('ui.comparison.armed_title') }}</strong>
+        <div class="small mt-1">{{ __('ui.comparison.armed_text') }}</div>
+    </div>
+    @endif
+
+    {{-- Ready-to-use simulation profiles (#51) --}}
+    <section class="section-card p-3 p-md-4 mb-4 no-print" aria-labelledby="profiles-title">
+        <div class="d-flex flex-wrap align-items-baseline justify-content-between gap-2 mb-1">
+            <h2 id="profiles-title" class="h6 fw-bold mb-0">
+                <i class="bi bi-magic me-2" style="color:var(--g-500)" aria-hidden="true"></i>{{ __('ui.calculator.profiles_title') }}
+            </h2>
+        </div>
+        <p class="small mb-3" style="color:var(--ink-2)">{{ __('ui.calculator.profiles_intro') }}</p>
+        <div class="row g-2">
+            @foreach ($profiles as $slug => $profile)
+            <div class="col-6 col-lg-4">
+                <a href="{{ route('calculator.index', ['profil' => $slug]) }}"
+                   class="d-flex align-items-start gap-2 p-3 h-100 rounded-3 text-decoration-none profile-card"
+                   style="border:1px solid {{ $profile_loaded === $slug ? 'var(--g-500)' : 'var(--g-200)' }};background:{{ $profile_loaded === $slug ? 'var(--s-succ-bg)' : 'transparent' }}"
+                   @if ($profile_loaded === $slug) aria-current="true" @endif>
+                    <i class="bi {{ $profile['icon'] }} flex-shrink-0 mt-1" style="color:var(--g-500)" aria-hidden="true"></i>
+                    <span>
+                        <span class="d-block small fw-semibold" style="color:var(--ink-1)">{{ __('ui.calculator.profiles.'.$slug.'.label') }}</span>
+                        <span class="d-block small" style="color:var(--ink-2)">{{ __('ui.calculator.profiles.'.$slug.'.text') }}</span>
+                    </span>
+                </a>
+            </div>
+            @endforeach
+        </div>
+        <p class="small mb-0 mt-3" style="color:var(--ink-3)">
+            <i class="bi bi-info-circle me-1" aria-hidden="true"></i>{{ __('ui.calculator.profiles_note') }}
+        </p>
+    </section>
+
     <form method="POST" action="{{ route('calculator.calculer') }}" id="payrollForm">
         @csrf
+        @if ($comparison_a)
+        <input type="hidden" name="comparer_a" value="{{ $comparison_a }}">
+        @endif
 
         <div class="section-card p-3 p-md-4 mb-4 d-flex flex-column gap-3">
             <div class="quick-submit-panel">
