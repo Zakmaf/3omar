@@ -8,6 +8,16 @@
 
 3omar reste une simulation de bulletin de paie pedagogique. Pour un bulletin de paie officiel ou une situation particuliere, consultez votre employeur ou un professionnel.
 
+## Nouveautes v3.3.0
+
+- **Profils de simulation prets a l'emploi** : SMIG, salarie standard, cadre, avec primes, avec CIMR et journaliste. Un clic preremplit le formulaire, tous les champs restent modifiables avant le calcul. #51
+- **Reprise et partage d'une simulation par lien** : le lien reconstruit la totalite des saisies, indemnites et heures supplementaires incluses, sans aucun stockage serveur. Un avertissement rappelle que les montants sont inscrits dans le lien lui-meme. #50
+- **Comparaison de deux scenarios** : ecarts absolus et relatifs sur le net a payer, l'IR, les cotisations et le cout employeur, avec mise en avant du net et du cout employeur. #47
+- **Tableau des entrees modifiees** : sur la comparaison, les lignes qui expliquent les ecarts sont mises en evidence. #47
+- **Comparaison partageable** : les deux scenarios voyagent dans l'URL, ce qui permet de transmettre ou de conserver une comparaison. #47
+- **Golden test de demonstration 2026** : un profil fictif exerce en un seul cas l'anciennete, une prime imposable, une indemnite exoneree, la mutuelle pre-fiscale, la CIMR et les charges de famille. #139
+- **Couverture de tests** : 49 nouveaux tests (profils, encodage des liens, ecarts de comparaison, rendu dans les quatre langues, absence de libelle non traduit).
+
 ## Nouveautes v3.0.0
 
 - **Page Fiabilite** (`/fiabilite`) : confidentialite, limites, open source, matrice de fiabilite des regles avec source, date de verification et niveau de confiance pour chaque taux.
@@ -27,6 +37,9 @@
 - **Net → Brut** : reconstitution du salaire de base a partir d'un net a payer cible, memes hypotheses disponibles que le mode direct.
 - **API REST** : endpoints JSON publics pour integrer la simulation dans des applications tierces (`/api/v1/`).
 - **Parcours guide** : progression visuelle par etapes avec recapitulatif en temps reel des saisies.
+- **Profils prets a l'emploi** : six profils pedagogiques chargeables en un clic, puis librement modifiables.
+- **Reprise et partage par lien** : une simulation ou une comparaison se retrouve et se transmet via son URL, sans stockage serveur.
+- **Comparaison de scenarios** : deux simulations cote a cote avec ecarts absolus et relatifs sur le net, l'IR, les cotisations et le cout employeur.
 - **Mode sombre** : detection automatique de la preference systeme, toggle dans la navbar, persistance du choix.
 - Cout total employeur, detail complet des retenues, affichage des references reglementaires.
 - Interface disponible en francais, anglais, arabe (RTL) et espagnol.

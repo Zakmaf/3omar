@@ -62,15 +62,26 @@ config/payroll.php                          # SINGLE SOURCE OF TRUTH for every 2
 app/Services/PayrollCalculatorService.php    # The entire calculation engine: one method,
                                               # calculer(array $input): array, returning a
                                               # large flat result array consumed by the view.
+app/Services/SimulationCodec.php             # Encodes/decodes a simulation into a URL-safe
+                                              # payload (share + restore). Every decoded
+                                              # payload is re-validated through
+                                              # PayrollValidation before use.
+app/Services/SimulationComparator.php        # Deltas between two result arrays. Reads only
+                                              # amounts already produced by the engine.
+app/Services/SimulationProfileService.php    # Ready-to-use form presets. Regulatory amounts
+                                              # are read from config/payroll.php, never
+                                              # redeclared.
 app/Http/Controllers/
   ├── HomeController            → home view
-  ├── CalculatorController       → GET /calculateur (form), POST /calculateur/calculer
+  ├── CalculatorController       → GET /calculateur (form, accepts ?profil= / ?s= / ?a=),
+  │                                POST /calculateur/calculer, GET /calculateur/comparer
   └── DocumentationController   → /documentation (renders config/payroll.php as a rate table)
 resources/views/
   ├── home.blade.php
   ├── calculator/index.blade.php   # form (Bootstrap), client-side preview JS reads
   │                                 # @json($indemnites_config) / @json($hs_labels)
   ├── calculator/result.blade.php  # full bulletin breakdown + Chart.js donut
+  ├── calculator/comparison.blade.php  # scenario A vs B, deltas and changed inputs
   └── documentation/index.blade.php
 ```
 
@@ -109,6 +120,19 @@ Edit **`config/payroll.php`** only. Both the calculator service and the document
 ## Adding a new indemnité exonérée type
 
 Add an entry to `config('payroll.indemnites')` with `label`, `base_salaire` (bool), and either `montant` (fixed MAD) or `pct` (fraction of `salaire_base`, used when `base_salaire` is true). Set `par_jour => true` when the legal ceiling is per worked day (`montant` then is the daily cap, multiplied by the `jours_travailles` input, default `config('payroll.jours_travailles_defaut')`). The calculator (`plafondIndemnite`), the form (dropdown + JS preview via `@json($indemnites_config)`), and the documentation page all pick it up automatically. No other code changes needed.
+
+## Prefilling the calculator form
+
+The form reads every value through `old()`. Presets (`?profil=`), restored simulations
+(`?s=`) and the comparison flow therefore prefill by injecting into the old-input bag with
+`session()->now('_old_input', $input)`, which lasts for the current request only. Two
+consequences to respect:
+
+- A validation redirect already populates the old input, so the controller skips the
+  prefill when `session()->hasOldInput()` is true. User input always wins.
+- `nb_annees_anciennete` is rendered by a `<select>` that only offers the bracket-start
+  years from `config('payroll.anciennete.tranches')`. Any other value renders as
+  unselected and is silently lost, so prefilled seniority must be a bracket start.
 
 ## Legal references
 
