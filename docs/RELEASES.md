@@ -1,5 +1,67 @@
 # Releases
 
+## v3.3.0 - 2026-07-26
+
+### Nouveautés
+
+- Profils de simulation prêts à l'emploi sur la page calculateur : SMIG, salarié standard, cadre, avec primes, avec CIMR et journaliste. Un clic préremplit le formulaire, tous les champs restent modifiables avant le calcul. #51
+- Reprise et partage d'une simulation par lien : le lien reconstruit la totalité des saisies, y compris les indemnités et les heures supplémentaires, sans qu'aucune donnée ne soit enregistrée sur le serveur. #50
+- Comparaison de deux scénarios de paie : écarts absolus et relatifs sur le net à payer, l'IR, les cotisations et le coût employeur, avec mise en avant du net et du coût employeur. #47
+- Tableau des entrées modifiées sur la page de comparaison : les lignes qui expliquent les écarts sont mises en évidence, et les écarts portés par une entrée avancée sont signalés explicitement. #47
+- Lien de comparaison partageable et rejouable : les deux scénarios voyagent dans l'URL, ce qui permet de transmettre ou de conserver une comparaison. #47
+
+### Améliorations
+
+- Avertissement de confidentialité affiché à côté de chaque lien de partage : les montants saisis sont inscrits dans le lien lui-même et ne doivent être transmis qu'à des personnes autorisées. #50
+- Les avertissements réglementaires des deux scénarios sont regroupés sans doublon sur la page de comparaison. #47
+- Un lien de simulation illisible ou périmé est signalé à l'utilisateur au lieu d'ouvrir un formulaire vide sans explication. #50
+- Les profils prêts à l'emploi lisent le SMIG et le plafond d'indemnité de transport dans la configuration réglementaire, ce qui évite toute duplication des règles. #51
+- 49 nouveaux tests couvrant les profils, l'encodage des liens partagés, les écarts de comparaison, le rendu de la comparaison dans les quatre langues et l'absence de libellé non traduit sur les nouveaux écrans. #47 #50 #51 #139
+- Golden test de démonstration 2026 ajouté : un profil fictif exerce en un seul cas l'ancienneté, une prime imposable, une indemnité exonérée, la mutuelle pré-fiscale, la CIMR et les charges de famille, avec des montants vérifiables à la main. #139
+
+### Correctifs
+
+- Ancienneté des profils calée sur les débuts de tranche définis dans la configuration : une autre valeur était réaffichée à zéro par le sélecteur du formulaire, et la simulation chargée ne correspondait plus au profil annoncé. #51
+- Entrée v3.2.0 absente de `docs/RELEASES.md` ajoutée.
+
+### Sécurité
+
+- Tout lien de simulation ou de comparaison repasse par les règles de validation du formulaire avant d'être utilisé : un lien fabriqué à la main ne peut ni injecter un champ inconnu, ni forcer une catégorie professionnelle ou un type d'indemnité hors liste. #50
+- Longueur des liens et taille après décompression bornées, pour écarter les charges utiles hostiles. #50
+- La comparaison est soumise à la même limitation de débit que le calcul, puisqu'elle exécute le moteur deux fois. #47
+- Les logs d'accès de l'image de production ne journalisent plus la chaîne de requête ni le référent : les montants portés par un lien de simulation ou de comparaison ne peuvent plus se retrouver dans les journaux du serveur. #50
+
+### Migration
+
+Aucune action requise. Mise à jour transparente depuis v3.2.0.
+
+```bash
+docker pull ghcr.io/zakmaf/3omar:v3.3.0
+```
+
+---
+
+## v3.2.0 - 2026-07-08
+
+### Nouveautés
+
+- Option avancée de taux AMO salarié personnalisé : permet de reproduire un bulletin réel dont le taux appliqué diffère du taux légal, avec un avertissement explicite rappelant le caractère dérogatoire de cette saisie. #138
+
+### Mise à jour de la stack
+
+- Passe `laravel/framework` de 13.16.1 à 13.18.1. #125
+- Passe `actions/cache` de la version 5 à la version 6 dans les workflows CI. #110
+
+### Migration
+
+Aucune action requise. Mise à jour transparente depuis v3.1.0.
+
+```bash
+docker pull ghcr.io/zakmaf/3omar:v3.2.0
+```
+
+---
+
 ## v3.1.0 - 2026-07-06
 
 ### Nouveautés

@@ -880,6 +880,38 @@
     </div>
 
     {{-- Next actions CTA section --}}
+    {{-- Resume, share and compare this simulation (#50, #47) --}}
+    @if (! empty($share_payload))
+    @php
+        $shareUrl = route('calculator.index', ['s' => $share_payload]);
+        $compareUrl = route('calculator.index', ['s' => $share_payload, 'a' => $share_payload]);
+    @endphp
+    <section class="section-card p-3 p-md-4 mt-5 no-print" aria-labelledby="share-title">
+        <h2 id="share-title" class="h6 fw-bold mb-1">
+            <i class="bi bi-share me-2" style="color:var(--g-500)" aria-hidden="true"></i>{{ __('ui.result.share_title') }}
+        </h2>
+        <p class="small mb-3" style="color:var(--ink-2)">{{ __('ui.result.share_text') }}</p>
+
+        <label for="shareUrl" class="form-label small fw-semibold">{{ __('ui.result.share_link_label') }}</label>
+        <div class="input-group mb-2">
+            <input type="text" class="form-control form-control-sm" id="shareUrl" value="{{ $shareUrl }}" readonly
+                   aria-describedby="shareUrlHelp" onfocus="this.select()">
+            <button type="button" class="btn btn-sm" id="shareUrlCopy" style="border:1px solid var(--g-500);color:var(--g-500)"
+                    data-copy-target="shareUrl" data-copied-label="{{ __('ui.result.share_copied') }}">
+                <i class="bi bi-clipboard me-1" aria-hidden="true"></i><span>{{ __('ui.result.share_copy') }}</span>
+            </button>
+        </div>
+        <p class="small mb-3" id="shareUrlHelp" style="color:var(--s-warn)">
+            <i class="bi bi-exclamation-triangle me-1" aria-hidden="true"></i>{{ __('ui.result.share_privacy_warning') }}
+        </p>
+
+        <a href="{{ $compareUrl }}" class="btn btn-sm fw-semibold" style="background:var(--g-500);color:#fff">
+            <i class="bi bi-columns-gap me-1" aria-hidden="true"></i>{{ __('ui.result.compare_cta') }}
+        </a>
+        <span class="small d-block mt-2" style="color:var(--ink-3)">{{ __('ui.result.compare_hint') }}</span>
+    </section>
+    @endif
+
     <section class="mt-5 no-print" aria-labelledby="next-actions-title">
         <h2 id="next-actions-title" class="h5 fw-bold mb-3">{{ __('ui.result.next_actions_title') }}</h2>
         <div class="row g-3">
@@ -965,5 +997,28 @@ legend.innerHTML = activeKeys.map((k, i) => {
         <span class="text-muted">${amt} {{ __('ui.result.unit_mad_month_label') }} <strong>(${pct}%)</strong></span>
     </div>`;
 }).join('');
+
+// Copie du lien de reprise/partage de la simulation (#50)
+document.querySelectorAll('[data-copy-target]').forEach(button => {
+    button.addEventListener('click', async () => {
+        const field = document.getElementById(button.dataset.copyTarget);
+        if (!field) return;
+
+        try {
+            await navigator.clipboard.writeText(field.value);
+        } catch {
+            // Navigateur sans accès au presse-papiers : on sélectionne le texte
+            // pour que l'utilisateur puisse copier manuellement.
+            field.focus();
+            field.select();
+            return;
+        }
+
+        const label = button.querySelector('span');
+        const previous = label.textContent;
+        label.textContent = button.dataset.copiedLabel;
+        setTimeout(() => { label.textContent = previous; }, 2000);
+    });
+});
 </script>
 @endpush

@@ -211,4 +211,85 @@ class GoldenPayrollTest extends TestCase
         $this->assertSame(484.37, $r['ir_net']);
         $this->assertSame(9020.83, $r['salaire_net']);
     }
+
+    /**
+     * Golden test de démonstration 2026 (issue #139).
+     *
+     * Profil entièrement fictif et arrondi, construit pour exercer d'un seul coup
+     * l'ancienneté, une prime imposable, une indemnité exonérée, la mutuelle
+     * pré-fiscale, la CIMR et les charges de famille.
+     *
+     * Hypothèses de la fixture :
+     *  - 5 années d'ancienneté, soit la tranche 5 à 11 ans (10%) de
+     *    config('payroll.anciennete.tranches') retenue comme tranche standard ;
+     *  - indemnité de transport déclarée à son plafond d'exonération configuré,
+     *    donc intégralement exonérée et sans excédent réintégré au SBI ;
+     *  - 2 personnes à charge saisies comme 2 enfants, sans conjoint à charge ;
+     *  - aucune heure supplémentaire, aucune retenue autre que la mutuelle.
+     *
+     * Les montants attendus sont vérifiables à la main depuis config/payroll.php :
+     *  ancienneté  10 000 x 10%                        = 1 000,00
+     *  SBI         10 000 + 1 000 + 1 500              = 12 500,00
+     *  CNSS        min(12 500 ; 6 000) x 4,48%         =    268,80
+     *  AMO         12 500 x 2,26%                      =    282,50
+     *  CIMR        12 500 x 6%                         =    750,00
+     *  SNC         12 500 - 1 301,30                   = 11 198,70
+     *  frais pro   12 500 x 25% = 3 125 > plafond      =  2 916,67
+     *  RNI         11 198,70 - 2 916,67 - 250          =  8 032,03
+     *  IR annuel   96 384,36 x 30% - 18 000            = 10 915,31
+     *  IR net      909,61 - (2 x 50)                   =    809,61
+     *  net         12 500 - 268,80 - 282,50 - 750
+     *              - 809,61 + 500 - 250                = 10 639,09
+     */
+    public function test_golden_profil_demonstration_2026(): void
+    {
+        $r = $this->calculator->calculer([
+            'salaire_base' => 10000,
+            'type_frais_pro' => 'commun',
+            'nb_annees_anciennete' => 5,
+            'autres_primes' => 1500,
+            'indemnites' => [['type' => 'transport', 'montant' => 500]],
+            'mutuelle_salarie' => 250,
+            'cimr_taux' => 6,
+            'nb_enfants' => 2,
+        ]);
+
+        // 1. Salaire brut imposable
+        $this->assertSame(0.10, $r['taux_anciennete']);
+        $this->assertSame(1000.0, $r['prime_anciennete']);
+        $this->assertSame(2500.0, $r['total_primes']);
+        $this->assertSame(12500.0, $r['sbi']);
+        $this->assertSame(500.0, $r['total_indemnites']);
+        $this->assertSame(0.0, $r['excedent_indemnites'], "L'indemnité de transport est au plafond : aucun excédent imposable.");
+
+        // 2. Cotisations sociales
+        $this->assertSame(268.8, $r['cotisation_cnss']);
+        $this->assertSame(282.5, $r['cotisation_amo']);
+        $this->assertSame(750.0, $r['cotisation_cimr']);
+        $this->assertSame(1301.3, $r['total_sociales']);
+
+        // 3. Revenu net imposable
+        $this->assertSame(11198.7, $r['snc']);
+        $this->assertSame(2916.67, $r['frais_pro']);
+        $this->assertTrue($r['fp_plafonne']);
+        $this->assertSame(8032.03, $r['rni'], 'La mutuelle salarié est déduite avant le barème IR.');
+        $this->assertSame(96384.36, $r['rni_annuel']);
+
+        // 4. IR mensuel
+        $this->assertSame(10915.31, $r['ir_annuel_brut']);
+        $this->assertSame(909.61, $r['ir_mensuel_brut']);
+        $this->assertSame(2, $r['nb_personnes']);
+        $this->assertSame(100.0, $r['charges_famille']);
+        $this->assertSame(809.61, $r['ir_net']);
+
+        // 5. Salaire net final et coût employeur
+        $this->assertSame(250.0, $r['total_retenues']);
+        $this->assertSame(10639.09, $r['salaire_net']);
+        $this->assertSame(13000.0, $r['salaire_brut_total']);
+        $this->assertSame(2052.55, $r['total_patronal']);
+        $this->assertSame(15052.55, $r['cout_total_employeur']);
+
+        // 6. Aucun avertissement : le profil reste dans toutes les limites légales.
+        $this->assertEmpty($r['avertissements']);
+    }
 }
