@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **3omar** - a pedagogical Moroccan net-salary simulator for private-sector employees, covering the **2026 fiscal year**.
 
-Stack: **Laravel 11/12 selon la branche active (PHP 8.4)** + Blade views, **Bootstrap 5** + Bootstrap Icons (via CDN, no asset build step), **Chart.js 4** (via CDN). No database or user data storage.
+Stack: **Laravel 13 (PHP 8.3 minimum)** + Blade views, **Bootstrap 5** + Bootstrap Icons (via CDN, no asset build step), **Chart.js 4** (via CDN). Les images Docker de développement et de production sont toutes deux basées sur PHP 8.5 (`php:8.5-fpm-alpine`). No database or user data storage.
 
 ---
 

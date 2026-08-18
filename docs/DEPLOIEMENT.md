@@ -2,6 +2,8 @@
 
 L'image de production est un conteneur autonome (PHP-FPM + Nginx + Supervisor) publiée sur GitHub Container Registry à chaque release GitHub depuis `docker/release/Dockerfile`.
 
+> Une release GitHub publiée, une image poussée sur GHCR et une instance de production réellement à jour sont trois états distincts. Voir la section "États de publication" et la checklist pré-release dans [CONTRIBUTING.md](../CONTRIBUTING.md#releases).
+
 ## Démarrage rapide
 
 ```bash

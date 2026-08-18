@@ -63,7 +63,38 @@ Message en français, impératif présent, pas de point final.
 - Toujours créer la release depuis `main` après merge.
 - Mettre à jour la table des tags dans [docs/DEPLOIEMENT.md](docs/DEPLOIEMENT.md) lors d'une nouvelle mineure.
 - **Mettre à jour le numéro de version** dans `config/app.php` (`'version' => env('APP_VERSION', 'VX.Y.Z')`) **avant chaque release**. Ce numéro est affiché dans le footer du site.
-- **Approbation obligatoire** : aucun agent (Claude, Codex, etc.) ne peut exécuter `gh release create` sans l'accord explicite du propriétaire du dépôt. Demander confirmation avant toute publication.
+- **Approbation obligatoire** : aucun agent (Claude, Codex, etc.) ne peut réaliser, sans l'accord explicite et documenté du propriétaire du dépôt, l'une des actions suivantes :
+  - créer ou publier une release GitHub (`gh release create`, ou publication d'un brouillon de release existant) ;
+  - créer ou pousser un tag Git, local ou distant (`git tag vX.Y.Z`, `git push origin vX.Y.Z`) ;
+  - déclencher manuellement le workflow de publication (`workflow_dispatch` sur `.github/workflows/docker-release.yml`, via `gh workflow run` ou l'interface GitHub) ;
+  - déployer ou mettre à jour une instance de production externe (hors du dépôt, hors CI).
+
+  Demander confirmation explicite avant chacune de ces actions, même si un pas précédent a déjà été approuvé.
+
+### États de publication
+
+Une release traverse quatre états distincts. Ne pas confondre "code prêt" et "en production" : chaque état doit être vérifié séparément, jamais supposé à partir du précédent.
+
+1. **Source préparée** : le code est mergé sur `main`, la version est mise à jour dans `config/app.php`, une entrée est ajoutée dans [docs/RELEASES.md](docs/RELEASES.md). Rien n'est publié.
+2. **Release publiée** : une release GitHub existe et est publiée. Ceci déclenche automatiquement le workflow `docker-release.yml`.
+3. **Image GHCR** : l'image a été construite et poussée sur `ghcr.io/zakmaf/3omar` avec les tags `latest` / `vMAJEUR` / `vMAJEUR.MINEUR` / `vMAJEUR.MINEUR.PATCH`. Se vérifie avec `gh run list --workflow=docker-release.yml --limit 1`.
+4. **Production déployée** : une instance externe exécute effectivement l'image publiée. C'est une action séparée, hors du dépôt et hors CI, à confirmer explicitement par le propriétaire ou un opérateur autorisé.
+
+Voir aussi [docs/DEPLOIEMENT.md](docs/DEPLOIEMENT.md) pour le détail du déploiement de l'image publiée.
+
+### Checklist pré-release
+
+Avant de proposer la publication d'une release, vérifier chacun des points suivants avec la commande réelle exécutée et son résultat réel rapporté. Ne jamais déclarer un point vérifié sans l'avoir exécuté :
+
+- [ ] Suite PHPUnit complète verte : `vendor/bin/phpunit`
+- [ ] Laravel Pint sans erreur en mode vérification : `vendor/bin/pint --test`
+- [ ] Image Docker de production construite avec succès : `docker build -f docker/release/Dockerfile .`
+- [ ] Configuration Nginx validée : `nginx -t`
+- [ ] Conteneur démarré et rapporté `(healthy)` par `docker ps` (HEALTHCHECK `/up`, voir [docs/DEPLOIEMENT.md](docs/DEPLOIEMENT.md))
+- [ ] Réponse HTTP 200 sur la page d'accueil
+- [ ] Version exposée par `/api/v1/health` correspond à la version de la release
+- [ ] `docs/RELEASES.md` contient une entrée conforme au format documenté pour la version
+- [ ] Confidentialité des logs vérifiée : les journaux d'accès de l'image de production ne journalisent pas la chaîne de requête ni le référent (les liens de simulation/partage embarquent des données dans l'URL)
 
 ### Rédaction des release notes
 
