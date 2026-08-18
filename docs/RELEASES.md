@@ -31,6 +31,11 @@
 - La comparaison est soumise à la même limitation de débit que le calcul, puisqu'elle exécute le moteur deux fois. #47
 - Les logs d'accès de l'image de production ne journalisent plus la chaîne de requête ni le référent : les montants portés par un lien de simulation ou de comparaison ne peuvent plus se retrouver dans les journaux du serveur. #50
 
+### Mise à jour de la stack
+
+- Passe `laravel/framework` de 13.18.1 à 13.25.0. #148
+- Passe `laravel/pint` de 1.29.3 à 1.30.5. #149
+
 ### Migration
 
 Aucune action requise. Mise à jour transparente depuis v3.2.0.
