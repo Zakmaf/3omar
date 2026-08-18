@@ -1,6 +1,6 @@
 services:
 
-  # ---- PHP-FPM 8.4 — Application Laravel V1.1 ----
+  # ---- PHP-FPM 8.5 - Application Laravel V1.1 ----
   app:
     build:
       context: .

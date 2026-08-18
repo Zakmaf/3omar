@@ -21,14 +21,7 @@ L'application est disponible sur **http://localhost:49173**.
 
 Il n'existe pas d'étape de build frontend : Bootstrap 5, Bootstrap Icons et les polices Google sont chargés par CDN.
 
-### V1.1 en parallèle de la V1.0
-
-Un fichier `docker-compose.v1.1.yml` (port 49174) permet de faire tourner la branche V1.1 sans arrêter l'environnement V1.0 :
-
-```bash
-docker compose -f docker-compose.v1.1.yml up -d --build
-# → http://localhost:49174
-```
+> Le fichier `docker-compose.v1.1.yml` est un vestige de la période de développement parallèle V1.0/V1.1 et n'est plus le workflow courant. Le seul environnement à utiliser aujourd'hui est `docker-compose.yml`, documenté ci-dessus.
 
 ## Commandes courantes
 

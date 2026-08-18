@@ -2,7 +2,7 @@
 
 ## Project Structure & Module Organization
 
-This repository is a stateless Laravel 11 application for calculating Moroccan payroll for fiscal year 2026.
+This repository is a stateless Laravel 13 application (PHP 8.3 minimum, Docker images built on PHP 8.5) for calculating Moroccan payroll for fiscal year 2026.
 
 - `app/Services/PayrollCalculatorService.php`: calculation engine.
 - `app/Http/Controllers/`: request validation and page controllers.
