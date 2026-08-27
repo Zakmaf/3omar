@@ -137,6 +137,37 @@ class SimulationCodecTest extends TestCase
         $this->assertNull($this->codec->decode($payload));
     }
 
+    /**
+     * Un payload qui se décompresse en un flux plus grand que
+     * SimulationCodec::MAX_INFLATED_BYTES doit être refusé (protection contre
+     * les bombes zlib). Le padding est placé dans un champ non transportable :
+     * s'il survivait à la garde de taille, il serait de toute façon écarté par
+     * validated(), et le reste du payload (mode/salaire_base/type_frais_pro)
+     * est par ailleurs valide, pour isoler cette garde des autres refus
+     * possibles (validation, version, format).
+     *
+     * gzinflate() traite son deuxième paramètre comme une taille de tampon
+     * indicative et pas comme une coupure exacte : au voisinage immédiat de
+     * la limite, PHP agrandit le tampon et laisse encore passer quelques
+     * kilo-octets. Le padding vise donc un multiple large de la limite pour
+     * dépasser franchement cette marge interne, tout en restant très
+     * compressible (répétition d'un seul caractère) afin que le payload
+     * encodé reste bien en-deçà de MAX_PAYLOAD_LENGTH.
+     */
+    public function test_un_payload_dont_la_taille_decompressee_depasse_la_limite_est_refuse(): void
+    {
+        $maxInflatedBytes = (new \ReflectionClass(SimulationCodec::class))->getConstant('MAX_INFLATED_BYTES');
+
+        $payload = $this->forgePayload([
+            'mode' => 'gross_to_net',
+            'salaire_base' => 10000,
+            'type_frais_pro' => 'commun',
+            'champ_pirate' => str_repeat('a', $maxInflatedBytes * 3),
+        ]);
+
+        $this->assertNull($this->codec->decode($payload));
+    }
+
     public static function payloadsIllisibles(): array
     {
         return [
