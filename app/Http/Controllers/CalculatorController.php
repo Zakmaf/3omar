@@ -23,6 +23,7 @@ class CalculatorController extends Controller
         $prefill = null;
         $profileLoaded = null;
         $restored = false;
+        $sBranchTaken = false;
 
         // Profil prêt à l'emploi (issue #51) ou simulation reprise depuis une URL
         // partagée (issue #50). Un profil explicite est prioritaire sur un payload.
@@ -34,6 +35,7 @@ class CalculatorController extends Controller
             $profileLoaded = $profilQuery;
             $prefill = $this->profiles->find($profileLoaded)['input'];
         } elseif ($request->filled('s')) {
+            $sBranchTaken = true;
             $prefill = $this->codec->decode($sQuery);
             $restored = $prefill !== null;
         }
@@ -47,17 +49,24 @@ class CalculatorController extends Controller
         // Le formulaire lit ses valeurs via old() : on injecte le préremplissage
         // dans l'ancien input, uniquement pour cette requête (session()->now).
         // Un retour d'erreur de validation reste prioritaire sur le préremplissage.
-        if ($prefill !== null && ! $request->session()->hasOldInput()) {
+        $injected = $prefill !== null && ! $request->session()->hasOldInput();
+
+        if ($injected) {
             $request->session()->now('_old_input', $prefill);
         }
 
+        // $restored reste un signal pur de succès de décodage (utilisé par
+        // share_payload_invalid, indépendant du fait que l'injection ait eu
+        // lieu). Les bannières de préremplissage, elles, ne s'affichent que
+        // si l'injection a effectivement eu lieu (sinon l'ancien input a
+        // gagné et rien n'a réellement été chargé dans le formulaire).
         return view('calculator.index', [
             'indemnites_config' => config('payroll.indemnites'),
             'hs_labels' => config('payroll.heures_sup.labels'),
             'profiles' => $this->profiles->all(),
-            'profile_loaded' => $profileLoaded,
-            'simulation_restored' => $restored,
-            'share_payload_invalid' => $request->filled('s') && ! $restored,
+            'profile_loaded' => $injected ? $profileLoaded : null,
+            'simulation_restored' => $injected && $restored,
+            'share_payload_invalid' => $sBranchTaken && ! $restored,
             'comparison_a' => $comparisonA,
         ]);
     }
