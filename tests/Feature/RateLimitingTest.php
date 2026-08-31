@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Services\SimulationCodec;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Tests\TestCase;
 
@@ -23,6 +24,28 @@ class RateLimitingTest extends TestCase
         }
 
         $this->post('/calculateur/calculer', $payload)->assertStatus(429);
+    }
+
+    /**
+     * La route de comparaison (/calculateur/comparer) partage le même
+     * limiteur nommé "calculer" que le calcul, par IP. On épuise le quota
+     * via le calcul, puis on vérifie que la comparaison est bloquée par le
+     * même compteur, sans lui avoir adressé la moindre requête auparavant.
+     */
+    public function test_comparison_route_shares_the_calculator_rate_limit(): void
+    {
+        $codec = app(SimulationCodec::class);
+        $payload = $codec->encode([
+            'mode' => 'gross_to_net',
+            'salaire_base' => 5000,
+            'type_frais_pro' => 'commun',
+        ]);
+
+        for ($i = 0; $i < 30; $i++) {
+            $this->post('/calculateur/calculer', ['salaire_base' => 5000, 'type_frais_pro' => 'commun'])->assertOk();
+        }
+
+        $this->get('/calculateur/comparer?a='.$payload.'&b='.$payload)->assertStatus(429);
     }
 
     public function test_heures_sup_array_is_bounded(): void
