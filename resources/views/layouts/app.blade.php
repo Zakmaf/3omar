@@ -655,7 +655,7 @@
 
             {{-- Colonne 3 : Disclaimer --}}
             <div class="col-md-4">
-                <h6 class="fw-semibold mb-3" style="font-family:var(--f-display);color:var(--s-warn)">
+                <h6 class="fw-semibold mb-3" style="font-family:var(--f-display);color:#F59E0B">
                     <i class="bi bi-exclamation-triangle me-1" aria-hidden="true"></i>{{ __('ui.footer.warning') }}
                 </h6>
                 <p class="footer-body-text small mb-2">

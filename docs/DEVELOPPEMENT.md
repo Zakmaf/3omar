@@ -36,6 +36,57 @@ docker compose exec app vendor/bin/pint
 docker compose exec app vendor/bin/phpunit
 ```
 
+## Tests navigateur (Playwright + axe)
+
+Les contrats de mise en page et d'accessibilité s'exécutent dans un navigateur réel.
+Il n'y a pas d'étape de build front : `node_modules` sert uniquement à l'outillage de test.
+
+```bash
+# 1. Installer les dépendances PHP de ce dépôt dans un volume dédié
+docker run --rm -v "$PWD":/app -v 3omar_browser_vendor:/app/vendor -w /app \
+  composer:2.7 composer install --no-interaction --ignore-platform-req=php
+
+# 2. Servir le dépôt sur une instance locale dédiée (boucle locale uniquement).
+#    Serveur PHP intégré plutôt que `php artisan serve` : ce dernier ne transmet
+#    pas APP_KEY à ses processus. La clé est jetable et n'est écrite nulle part.
+docker run -d --name 3omar-browser-app --entrypoint php \
+  -v "$PWD":/var/www/html -v 3omar_browser_vendor:/var/www/html/vendor \
+  -w /var/www/html/public -p 127.0.0.1:49222:8000 \
+  -e APP_ENV=local -e APP_KEY="base64:$(head -c32 /dev/urandom | base64)" \
+  -e APP_URL=http://127.0.0.1:49222 -e CACHE_STORE=array -e SESSION_DRIVER=file \
+  -e PHP_CLI_SERVER_WORKERS=4 \
+  3omar-app:latest -S 0.0.0.0:8000 -t /var/www/html/public \
+  /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/resources/server.php
+
+# 3. Installer les dépendances npm épinglées dans un volume dédié
+docker run --rm -v "$PWD":/work -v 3omar_browser_node_modules:/work/node_modules -w /work \
+  mcr.microsoft.com/playwright:v1.61.1-noble npm ci
+
+# 4. Lancer la suite
+./tests/browser/run.sh tests/browser/contracts
+
+# Cibler un seul fichier ou un seul contrat
+./tests/browser/run.sh tests/browser/contracts/result-responsive.spec.js
+./tests/browser/run.sh tests/browser/contracts --grep "zoom 200"
+
+# Régénérer les captures durables de docs/ux/
+./tests/browser/run.sh tests/browser/captures
+
+# Accepter une évolution voulue du squelette de la page
+./tests/browser/run.sh tests/browser/contracts/result-structure.spec.js --update-snapshots
+```
+
+`APP_CONTAINER` et `NODE_MODULES_VOLUME` permettent de cibler un autre conteneur ou un
+autre volume, par exemple pour faire tourner plusieurs worktrees en parallèle.
+
+`tests/browser/run.sh` refuse de démarrer tant qu'il n'a pas vérifié que le conteneur
+applicatif monte bien **ce** dépôt : un contrat de mise en page exécuté contre une autre
+copie du code ne prouve rien. Les versions de Playwright et d'axe sont figées par
+`package-lock.json` et l'image Playwright est épinglée : aucune version n'est téléchargée
+implicitement.
+
+→ Matrice de vérification, captures et principes : [UX.md](UX.md)
+
 ## Architecture
 
 ```

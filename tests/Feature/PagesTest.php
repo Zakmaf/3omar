@@ -59,7 +59,7 @@ class PagesTest extends TestCase
             'type_frais_pro' => 'commun',
         ])->assertOk()
             ->assertSee('Votre bulletin, en clair')
-            ->assertSee('Voir le détail complet du calcul')
+            ->assertSee('Toutes les lignes du calcul')
             ->assertSeeText("Aucune donnée personnelle n'est stockée.");
     }
 
