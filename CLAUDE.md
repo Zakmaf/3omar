@@ -71,11 +71,15 @@ app/Services/SimulationComparator.php        # Deltas between two result arrays.
 app/Services/SimulationProfileService.php    # Ready-to-use form presets. Regulatory amounts
                                               # are read from config/payroll.php, never
                                               # redeclared.
+app/Services/GuideService.php                # Editorial guide pages (/calcul-salaire-net-maroc...).
+                                              # Each example is computed by the engine from a
+                                              # SimulationProfileService preset; texts in ui.guides.
 app/Http/Controllers/
   ├── HomeController            → home view
   ├── CalculatorController       → GET /calculateur (form, accepts ?profil= / ?s= / ?a=),
   │                                POST /calculateur/calculer, GET /calculateur/comparer
-  └── DocumentationController   → /documentation (renders config/payroll.php as a rate table)
+  ├── DocumentationController   → /documentation (renders config/payroll.php as a rate table)
+  └── GuideController           → one root URL per GuideService::GUIDES slug
 resources/views/
   ├── home.blade.php
   ├── calculator/index.blade.php   # form (Bootstrap), client-side preview JS reads

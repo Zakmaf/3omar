@@ -398,6 +398,8 @@ class PagesTest extends TestCase
             'documentation' => ['GET', '/documentation'],
             'api-documentation' => ['GET', '/api-documentation'],
             'fiabilite' => ['GET', '/fiabilite'],
+            'guide-salaire-net' => ['GET', '/calcul-salaire-net-maroc'],
+            'guide-prime-anciennete' => ['GET', '/prime-anciennete-maroc'],
             'resultat' => ['POST', '/calculateur/calculer', ['salaire_base' => 5000, 'type_frais_pro' => 'commun']],
         ];
     }
