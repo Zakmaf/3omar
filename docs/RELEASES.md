@@ -1,5 +1,15 @@
 # Releases
 
+## Non publiée
+
+### Sécurité
+
+- Les limiteurs de débit ne se contournent plus en envoyant un faux en-tête `X-Forwarded-For` : Laravel ne fait plus confiance à n'importe quel proxy, et la liste se règle par la variable `TRUSTED_PROXIES`, vide par défaut. Un client ne peut plus non plus se déclarer en HTTPS par un en-tête. #170
+
+### Migration
+
+- Avec l'image de release, laisser `TRUSTED_PROXIES` vide. Pour une autre topologie, voir `docs/DEPLOIEMENT.md`, section « Adresse réelle et HTTPS ».
+
 ## v3.3.0 - 2026-07-26
 
 ### Nouveautés
