@@ -46,4 +46,23 @@ class ResultPageTest extends TestCase
             ->assertSee('Net à payer')
             ->assertSee('IR retenu');
     }
+
+    public function test_payslip_detail_withholds_retenues_exonerees_ir_from_the_displayed_net(): void
+    {
+        $this->post('/calculateur/calculer', [
+            'salaire_base' => 10000,
+            'type_frais_pro' => 'commun',
+            'retenues_exonerees_ir' => 1000,
+        ])->assertOk()
+            ->assertSeeInOrder([
+                "Retenues exonérées d'IR (déd. avant IR)",
+                '− 1 000,00',
+                'IR net retenu',
+                '− 367,71',
+                "Retenues exonérées d'IR (prélevées sur la paie)",
+                '− 1 000,00',
+                'Net à payer',
+                '8 137,49',
+            ]);
+    }
 }

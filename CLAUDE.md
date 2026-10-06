@@ -98,14 +98,14 @@ resources/views/
 6.  FP   = min(SBI × taux_fp, plafond_fp)                  (Art. 59 I-A CGI, assiette = revenu
                                                             brut imposable ; taux dépend de SBI
                                                             vs seuil, ou statut journaliste/artiste)
-7.  RNI mensuel = SNC − FP
+7.  RNI mensuel = SNC − FP − retenues_exonerees_ir − mutuelle_salarié
 8.  RNI annuel net = (RNI × 12) − retraite_complémentaire déductible (≤ 50% SBI annuel, Art. 28-IV)
     IR annuel brut = barème progressif(RNI annuel net)     (Art. 73 CGI, 6 tranches)
     IR mensuel = IR annuel brut / 12 − charges_famille     (Art. 74 CGI, paramètres dans config/payroll.php)
 9.  Indemnités exonérées : part exonérée = min(déclaré, plafond) par config('payroll.indemnites')
                                                             (Arrêté 1314-25 / BO 7443, plafond
                                                             journalier × jours_travailles si par_jour)
-10. Salaire net = SBI − CNSS − AMO − CIMR − IR_net + indemnités exonérées − (autres_retenues + mutuelle_salarié)
+10. Salaire net = SBI − CNSS − AMO − CIMR − IR_net + indemnités exonérées − total_retenues (retenues_exonerees_ir + retenues_imposees_ir + mutuelle_salarié)
 11. Coût employeur = salaire_brut_total + CNSS_patronal + AMO_patronal + AF_patronal + TFP_patronal + mutuelle_patronale
 ```
 

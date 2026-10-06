@@ -591,6 +591,15 @@
                                 </tr>
                                 @endif
 
+                                @if($r['retenues_exonerees_ir'] > 0)
+                                <tr class="row-retenue">
+                                    <td class="px-3 py-2">{{ __('ui.result.retenues_exonerees_ir_withheld_line') }}</td>
+                                    <td class="text-end px-3 py-2 text-muted">-</td>
+                                    <td class="text-end px-3 py-2 text-muted">-</td>
+                                    <td class="text-end px-3 py-2 fw-semibold" style="color:var(--s-tax)">− {{ number_format($r['retenues_exonerees_ir'], 2, ',', ' ') }}</td>
+                                </tr>
+                                @endif
+
                                 @if($r['retenues_imposees_ir'] > 0)
                                 <tr class="row-retenue">
                                     <td class="px-3 py-2">{{ __('ui.result.other_deductions_line') }}</td>

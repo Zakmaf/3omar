@@ -221,8 +221,8 @@ class PayrollCalculatorService
         $nbEnfants = (int) ($input['nb_enfants'] ?? 0);
         $conjointCharge = ! empty($input['conjoint_charge']);
         $typeFraisPro = $input['type_frais_pro'] ?? 'commun';
-        // Retenues scindées : exonérées d'IR (pré-fiscales, réduisent le RNI)
-        // et imposées à l'IR (post-fiscales, réduisent le net après IR).
+        // Retenues scindées, toutes prélevées sur le net : exonérées d'IR (déduites
+        // aussi du RNI avant le barème) et imposées à l'IR (sans effet sur l'IR).
         // Compatibilité ascendante : l'ancien champ autres_retenues mappe sur retenues_imposees_ir.
         $retenuesExonereesIr = (float) ($input['retenues_exonerees_ir'] ?? 0);
         $retenuesImposeesIr = (float) ($input['retenues_imposees_ir'] ?? $input['autres_retenues'] ?? 0);
@@ -464,9 +464,10 @@ class PayrollCalculatorService
         // =====================================================================
         // ÉTAPE 10 — Net à payer
         // =====================================================================
-        // Net : retenues post-fiscales (imposées IR) + mutuelle salarié.
-        // Les retenues exonérées d'IR n'impactent que l'assiette IR (réduisent déjà le RNI).
-        $totalRetenues = $this->r2($retenuesImposeesIr + $mutuelleSalarie);
+        // Net : toutes les retenues salariales sont prélevées sur la paie (#166).
+        // Les retenues exonérées d'IR et la mutuelle salarié ont en plus réduit le RNI
+        // (étape 7) ; les retenues imposées à l'IR n'agissent que sur le net.
+        $totalRetenues = $this->r2($retenuesExonereesIr + $retenuesImposeesIr + $mutuelleSalarie);
         $salaireNet = $this->r2($sbi - $cotisationCNSS - $cotisationAMO - $cotisationCIMR - $irNet + $totalIndemnites - $totalRetenues);
         $salaireBrutTotal = $this->r2($sbi + $totalIndemnites);
 
