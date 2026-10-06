@@ -3,9 +3,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="{{ __('ui.meta_description') }}">
+    <meta name="description" content="@yield('meta_description', __('ui.meta_description'))">
     <meta property="og:title" content="@yield('title', __('ui.meta_title'))">
-    <meta property="og:description" content="{{ __('ui.meta_social') }}">
+    <meta property="og:description" content="@yield('meta_description', __('ui.meta_social'))">
     <meta property="og:image" content="{{ asset('img/logo_banner_1200x630.png') }}">
     <meta property="og:type" content="website">
     <meta property="og:locale" content="{{ config('app.supported_locales.'.app()->getLocale().'.og') }}">
@@ -13,6 +13,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('img/app_icon_16.png') }}">
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('img/app_icon_180.png') }}">
     <title>@yield('title', __('ui.meta_title'))</title>
+    @stack('head')
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -635,6 +636,20 @@
                             <i class="bi bi-shield-check me-1" aria-hidden="true"></i>{{ __('ui.trust.nav_label') }}
                         </a>
                     </li>
+                </ul>
+
+                @inject('guideService', 'App\Services\GuideService')
+                <h6 class="fw-semibold mb-3 mt-4" style="font-family:var(--f-display)">
+                    <i class="bi bi-book me-1" aria-hidden="true"></i>{{ __('ui.guides.common.footer_heading') }}
+                </h6>
+                <ul class="list-unstyled small mb-0">
+                    @foreach ($guideService->links() as $link)
+                    <li class="mb-2">
+                        <a href="{{ route('guides.'.$link['slug']) }}">
+                            <i class="bi {{ $link['icon'] }} me-1" aria-hidden="true"></i>{{ __('ui.guides.'.$link['key'].'.nav_label') }}
+                        </a>
+                    </li>
+                    @endforeach
                 </ul>
             </div>
 

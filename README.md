@@ -44,6 +44,7 @@
 - Cout total employeur, detail complet des retenues, affichage des references reglementaires.
 - Interface disponible en francais, anglais, arabe (RTL) et espagnol.
 - **Fiabilite** : page `/fiabilite` documentant chaque regle avec source et niveau de confiance.
+- **Guides thematiques** : pages `/calcul-salaire-net-maroc`, `/cout-employeur-maroc`, `/cnss-amo-maroc` et `/prime-anciennete-maroc`, chacune avec un exemple calcule par le moteur et un lien vers le simulateur prerempli. #117
 
 La feuille de route est geree dans les [issues GitHub](https://github.com/Zakmaf/3omar/issues).
 

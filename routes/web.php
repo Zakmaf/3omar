@@ -3,9 +3,11 @@
 use App\Http\Controllers\ApiDocumentationController;
 use App\Http\Controllers\CalculatorController;
 use App\Http\Controllers\DocumentationController;
+use App\Http\Controllers\GuideController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\TrustController;
+use App\Services\GuideService;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -21,6 +23,11 @@ Route::prefix('calculateur')->name('calculator.')->group(function () {
 Route::get('/documentation', [DocumentationController::class, 'index'])->name('documentation');
 Route::get('/api-documentation', [ApiDocumentationController::class, 'index'])->name('api.documentation');
 Route::get('/fiabilite', [TrustController::class, 'index'])->name('trust');
+// Pages éditoriales thématiques (issue #117) : une URL par recherche courante.
+foreach (array_keys(GuideService::GUIDES) as $slug) {
+    Route::get('/'.$slug, [GuideController::class, 'show'])->defaults('slug', $slug)->name('guides.'.$slug);
+}
+
 Route::get('/lang/{locale}', [LocaleController::class, 'update'])->name('locale.update');
 
 Route::get('/ads.txt', fn () => response(
