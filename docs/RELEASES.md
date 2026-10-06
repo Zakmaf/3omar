@@ -1,14 +1,31 @@
 # Releases
 
-## Non publiée
+## v3.3.1 - 2026-10-06
+
+### Correctifs
+
+- Une URL de calculateur ou de comparaison portant un paramètre sous forme de tableau (par exemple `?profil[]=x`) affiche désormais le formulaire au lieu d'une erreur serveur. #152
+- La bannière de profil ou de simulation restaurée n'apparaît plus que si le formulaire a réellement été prérempli, et l'alerte de lien invalide seulement si ce lien a été utilisé. #153
 
 ### Sécurité
 
 - Les limiteurs de débit ne se contournent plus en envoyant un faux en-tête `X-Forwarded-For` : Laravel ne fait plus confiance à n'importe quel proxy, et la liste se règle par la variable `TRUSTED_PROXIES`, vide par défaut. Un client ne peut plus non plus se déclarer en HTTPS par un en-tête. #170
+- Tests de non-régression ajoutés sur la taille maximale d'un lien de simulation après décompression et sur la limitation de débit partagée entre calcul et comparaison. #154
+
+### Mise à jour de la stack
+
+- Passe `laravel/framework` de 13.25.0 à 13.29.0. #163
+- Passe `laravel/pint` de 1.30.5 à 1.32.1. #164
 
 ### Migration
 
-- Avec l'image de release, laisser `TRUSTED_PROXIES` vide. Pour une autre topologie, voir `docs/DEPLOIEMENT.md`, section « Adresse réelle et HTTPS ».
+Aucune action requise avec l'image de release : laisser `TRUSTED_PROXIES` vide. Pour une autre topologie (Laravel directement derrière un proxy, sans le Nginx de l'image), voir `docs/DEPLOIEMENT.md`, section « Adresse réelle et HTTPS ». Derrière un tunnel `cloudflared` passant par Traefik, vérifier que Traefik fait confiance au réseau de `cloudflared`.
+
+```bash
+docker pull ghcr.io/zakmaf/3omar:v3.3.1
+```
+
+---
 
 ## v3.3.0 - 2026-07-26
 
