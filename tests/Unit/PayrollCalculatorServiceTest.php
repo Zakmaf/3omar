@@ -325,7 +325,7 @@ class PayrollCalculatorServiceTest extends TestCase
     // Phase 2 — Retenues scindées, assurances employeur, valeurs « inconnues »
     // =========================================================================
 
-    public function test_retenues_exonerees_ir_reduce_income_tax(): void
+    public function test_retenues_exonerees_ir_reduce_income_tax_and_are_withheld_from_net(): void
     {
         $without = $this->calculator->calculer(['salaire_base' => 15000]);
         $with = $this->calculator->calculer([
@@ -336,8 +336,24 @@ class PayrollCalculatorServiceTest extends TestCase
         // Le RNI diminue, donc l'IR diminue.
         $this->assertLessThan($without['rni'], $with['rni']);
         $this->assertLessThan($without['ir_net'], $with['ir_net']);
-        // Les retenues exonérées d'IR ne sont pas dans le total des retenues du net.
-        $this->assertSame($without['total_retenues'], $with['total_retenues']);
+        // La retenue est prélevée sur la paie (#166) : le net baisse du montant
+        // retenu, atténué de la seule économie d'IR.
+        $this->assertSame($this->round2($without['total_retenues'] + 1000), $with['total_retenues']);
+        $economieIr = $this->round2($without['ir_net'] - $with['ir_net']);
+        $this->assertSame($this->round2($without['salaire_net'] - 1000 + $economieIr), $with['salaire_net']);
+        $this->assertLessThan($without['salaire_net'], $with['salaire_net']);
+    }
+
+    public function test_total_retenues_combines_every_salary_deduction(): void
+    {
+        $r = $this->calculator->calculer([
+            'salaire_base' => 15000,
+            'mutuelle_salarie' => 200,
+            'retenues_exonerees_ir' => 300,
+            'retenues_imposees_ir' => 400,
+        ]);
+
+        $this->assertSame(900.0, $r['total_retenues']);
     }
 
     public function test_retenues_imposees_ir_reduce_net_without_changing_tax(): void

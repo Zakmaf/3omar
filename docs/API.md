@@ -133,7 +133,9 @@ Le champ `version` reflete toujours la version de l'application actuellement dep
 | `rc_part_employeur` | number | Part employeur retraite complementaire (MAD) |
 | `mutuelle_salarie` | number | Cotisation mutuelle salarie (MAD) |
 | `mutuelle_patronale` | number | Cotisation mutuelle patronale (MAD) |
-| `autres_retenues` | number | Autres retenues mensuelles (MAD) |
+| `retenues_exonerees_ir` | number | Retenues exonerees d'IR (MAD) : prelevees sur la paie et deduites du revenu net imposable avant le bareme IR. Incluses dans `total_retenues`, donc retirees de `salaire_net`. |
+| `retenues_imposees_ir` | number | Retenues imposees a l'IR (MAD) : retirees de `salaire_net` sans effet sur l'IR. Incluses dans `total_retenues`. |
+| `autres_retenues` | number | Alias historique de `retenues_imposees_ir` (MAD), utilise si `retenues_imposees_ir` est absent |
 | `jours_travailles` | integer (1-31) | Jours travailles dans le mois |
 | `heures_sup` | array | Heures supplementaires (max 10) |
 | `indemnites` | array | Indemnites exonerees (max 10) |

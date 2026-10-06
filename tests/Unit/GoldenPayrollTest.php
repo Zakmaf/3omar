@@ -166,6 +166,56 @@ class GoldenPayrollTest extends TestCase
         $this->assertSame(10187.0, $r['salaire_net']);
     }
 
+    /**
+     * Scénario synthétique de l'issue #166 : 10 000 MAD de base, 1 000 MAD de
+     * retenues exonérées d'IR. Sans retenue : IR 601,56, net 8 903,64.
+     * Avec retenue : IR 367,71 (économie 233,85) et net 8 903,64 - 1 000 + 233,85.
+     */
+    public function test_retenues_exonerees_ir_deduites_de_l_ir_puis_prelevees_sur_le_net(): void
+    {
+        $sans = $this->calculator->calculer([
+            'salaire_base' => 10000,
+            'type_frais_pro' => 'commun',
+        ]);
+        $r = $this->calculator->calculer([
+            'salaire_base' => 10000,
+            'type_frais_pro' => 'commun',
+            'retenues_exonerees_ir' => 1000,
+        ]);
+
+        $this->assertSame(601.56, $sans['ir_net']);
+        $this->assertSame(0.0, $sans['total_retenues']);
+        $this->assertSame(8903.64, $sans['salaire_net']);
+
+        $this->assertSame(1000.0, $r['retenues_exonerees_ir']);
+        $this->assertSame(367.71, $r['ir_net']);
+        $this->assertSame(1000.0, $r['total_retenues']);
+        $this->assertSame(8137.49, $r['salaire_net']);
+
+        // Chaque ligne du bulletin entre dans le net affiché.
+        $this->assertSame($r['salaire_net'], round(
+            $r['sbi'] - $r['cotisation_cnss'] - $r['cotisation_amo'] - $r['cotisation_cimr']
+            - $r['ir_net'] + $r['total_indemnites']
+            - $r['mutuelle_salarie'] - $r['retenues_imposees_ir'] - $r['retenues_exonerees_ir'],
+            2
+        ));
+    }
+
+    public function test_net_vers_brut_applique_le_meme_traitement_des_retenues_exonerees_ir(): void
+    {
+        $r = $this->calculator->resoudreDepuisNet([
+            'net_cible' => 8137.49,
+            'type_frais_pro' => 'commun',
+            'retenues_exonerees_ir' => 1000,
+        ]);
+
+        $this->assertTrue($r['resolution_net']['converge']);
+        $this->assertEqualsWithDelta(10000, $r['input']['salaire_base'], 0.05);
+        $this->assertSame(367.71, $r['ir_net']);
+        $this->assertSame(1000.0, $r['total_retenues']);
+        $this->assertSame(8137.49, $r['salaire_net']);
+    }
+
     public function test_mutuelle_et_retraite_complementaire(): void
     {
         $r = $this->calculator->calculer([
