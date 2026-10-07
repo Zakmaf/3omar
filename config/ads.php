@@ -1,10 +1,13 @@
 <?php
 
+// Une variable vide (ex. .env.example) équivaut à « non configuré ».
+$publisherId = env('ADSENSE_PUBLISHER_ID') ?: null;
+
 return [
     'enabled' => (bool) env('ADSENSE_ENABLED', false),
-    // Une variable vide (ex. .env.example) équivaut à « non configuré ».
-    'client' => env('ADSENSE_CLIENT') ?: null,
-    'publisher_id' => env('ADSENSE_PUBLISHER_ID') ?: null,
+    'publisher_id' => $publisherId,
+    // L'identifiant client AdSense est l'identifiant éditeur préfixé par « ca- ».
+    'client' => $publisherId ? 'ca-'.$publisherId : null,
 
     'placements' => [
         'header' => [
