@@ -477,6 +477,10 @@
     </script>
 
     @stack('head')
+    @if (app()->environment('production') && config('ads.client'))
+    {{-- Vérification du site par AdSense, indépendante de ADSENSE_ENABLED --}}
+    <meta name="google-adsense-account" content="{{ config('ads.client') }}">
+    @endif
     @if (app()->environment('production') && config('ads.enabled') && config('ads.client'))
     <script async
             src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ config('ads.client') }}"

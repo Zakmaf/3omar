@@ -22,8 +22,7 @@ docker run -d \
 | `APP_URL` | Recommandé | URL publique complète, ex : `https://3omar.ma`. Utilisée pour la génération des URL absolues et la cohérence des cookies. |
 | `APP_DEBUG` | Non | `false` par défaut. Mettre à `true` uniquement pour déboguer — affiche les erreurs en clair. |
 | `ADSENSE_ENABLED` | Non | `false` par défaut. Mettre à `true` pour activer Google AdSense (necessite les variables ci-dessous). |
-| `ADSENSE_CLIENT` | Si AdSense | Identifiant client AdSense (`ca-pub-xxx`). |
-| `ADSENSE_PUBLISHER_ID` | Si AdSense | Identifiant editeur pour le fichier `ads.txt` (`pub-xxx`). |
+| `ADSENSE_PUBLISHER_ID` | Si AdSense | Identifiant editeur AdSense (`pub-xxx`). Sert au fichier `ads.txt`, a la balise meta de verification et au script (client `ca-pub-xxx` derive automatiquement). |
 | `ADSENSE_SLOT_HEADER` | Si AdSense | ID du slot publicitaire du header. |
 | `ADSENSE_SLOT_FOOTER` | Si AdSense | ID du slot publicitaire du footer. |
 
