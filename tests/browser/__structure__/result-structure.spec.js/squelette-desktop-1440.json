@@ -1,0 +1,95 @@
+[
+  {
+    "section": "synthese",
+    "tag": "section",
+    "labelled": true,
+    "headingLevel": 2,
+    "widthShare": 0.9,
+    "tables": 0,
+    "tableShapes": [],
+    "landmarks": [
+      "kpis"
+    ]
+  },
+  {
+    "section": "diagnostic",
+    "tag": "section",
+    "labelled": true,
+    "headingLevel": 2,
+    "widthShare": 0.9,
+    "tables": 0,
+    "tableShapes": [],
+    "landmarks": [
+      "ratios",
+      "takeaways"
+    ]
+  },
+  {
+    "section": "explication",
+    "tag": "section",
+    "labelled": true,
+    "headingLevel": 2,
+    "widthShare": 0.9,
+    "tables": 0,
+    "tableShapes": [],
+    "landmarks": [
+      "flow",
+      "employer-note"
+    ]
+  },
+  {
+    "section": "repartition",
+    "tag": "section",
+    "labelled": true,
+    "headingLevel": 2,
+    "widthShare": 0.9,
+    "tables": 1,
+    "tableShapes": [
+      {
+        "columns": 3,
+        "bodyRows": 6
+      }
+    ],
+    "landmarks": []
+  },
+  {
+    "section": "details",
+    "tag": "section",
+    "labelled": true,
+    "headingLevel": 2,
+    "widthShare": 0.9,
+    "tables": 3,
+    "tableShapes": [
+      {
+        "columns": 4,
+        "bodyRows": 21
+      },
+      {
+        "columns": 4,
+        "bodyRows": 11
+      },
+      {
+        "columns": 2,
+        "bodyRows": 9
+      }
+    ],
+    "landmarks": [
+      "employee-table",
+      "employer-table",
+      "ir-table"
+    ]
+  },
+  {
+    "section": "actions",
+    "tag": "section",
+    "labelled": true,
+    "headingLevel": 2,
+    "widthShare": 0.9,
+    "tables": 0,
+    "tableShapes": [],
+    "landmarks": [
+      "share",
+      "links"
+    ]
+  }
+]

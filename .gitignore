@@ -34,3 +34,7 @@ yarn-error.log
 # Instructions agent IA (locales, non liées au projet)
 /CLAUDE.md
 /AGENTS.md
+
+# Harness navigateur (artefacts locaux)
+/tests/browser/.output
+/tests/browser/.report
