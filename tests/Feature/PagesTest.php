@@ -51,6 +51,15 @@ class PagesTest extends TestCase
             ->assertDontSee('pagead2.googlesyndication.com', false);
     }
 
+    public function test_ads_txt_lists_publisher_id(): void
+    {
+        config()->set('ads.publisher_id', 'pub-test');
+
+        $this->get('/ads.txt')->assertOk()
+            ->assertHeader('Content-Type', 'text/plain; charset=UTF-8')
+            ->assertSeeText('google.com, pub-test, DIRECT, f08c47fec0942fa0');
+    }
+
     public function test_adsense_verification_meta_is_absent_without_client(): void
     {
         $this->app['env'] = 'production';
