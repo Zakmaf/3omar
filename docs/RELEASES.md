@@ -1,5 +1,30 @@
 # Releases
 
+## v3.4.0 - 2026-10-07
+
+### Nouveautés
+
+- Quatre guides thématiques : `/calcul-salaire-net-maroc`, `/cout-employeur-maroc`, `/cnss-amo-maroc` et `/prime-anciennete-maroc`. Chaque guide présente un exemple calculé par le moteur et un lien vers le simulateur prérempli avec les mêmes chiffres, en FR, EN, AR et ES. #117
+
+### Améliorations
+
+- Le site affiche la balise meta `google-adsense-account` dès qu'un identifiant éditeur est configuré, même annonces désactivées, ce qui permet à Google de vérifier le site avant leur activation. #176
+- Une seule variable, `ADSENSE_PUBLISHER_ID`, configure désormais `ads.txt`, la balise de vérification et le script AdSense. #176
+
+### Correctifs
+
+- Les retenues exonérées d'IR sont désormais prélevées sur le net à payer, comme la mutuelle salariale. Elles réduisaient l'IR sans être retirées du net, qui se trouvait surévalué. Exemple pour une base de 10 000 MAD et 1 000 MAD de retenue : net corrigé de 9 137,49 à 8 137,49 MAD. #166
+
+### Migration
+
+`ADSENSE_CLIENT` n'est plus lue. Si AdSense est utilisé, définir `ADSENSE_PUBLISHER_ID` avec l'identifiant éditeur sans le préfixe `ca-` (par exemple `pub-1234567890123456`), sinon les annonces ne s'affichent plus. Les autres déploiements n'ont aucune action à faire.
+
+```bash
+docker pull ghcr.io/zakmaf/3omar:v3.4.0
+```
+
+---
+
 ## v3.3.1 - 2026-10-06
 
 ### Correctifs
