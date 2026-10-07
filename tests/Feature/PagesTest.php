@@ -40,6 +40,26 @@ class PagesTest extends TestCase
         }
     }
 
+    public function test_adsense_verification_meta_is_rendered_in_production_without_ad_script(): void
+    {
+        $this->app['env'] = 'production';
+        config()->set('ads.enabled', false);
+        config()->set('ads.client', 'ca-pub-test');
+
+        $this->get('/')->assertOk()
+            ->assertSee('<meta name="google-adsense-account" content="ca-pub-test">', false)
+            ->assertDontSee('pagead2.googlesyndication.com', false);
+    }
+
+    public function test_adsense_verification_meta_is_absent_without_client(): void
+    {
+        $this->app['env'] = 'production';
+        config()->set('ads.client', null);
+
+        $this->get('/')->assertOk()
+            ->assertDontSee('google-adsense-account', false);
+    }
+
     public function test_language_switcher_is_visible_for_v11(): void
     {
         $this->get('/')->assertOk()
