@@ -1,5 +1,25 @@
 # Releases
 
+## v3.4.1 - 2026-10-25
+
+### Sécurité
+
+- Corrige deux failles critiques de PHP permettant l'exécution de code à distance sans authentification (CVE-2026-109618 et CVE-2026-109619, dites « php2shell »). L'image de v3.4.0 embarquait PHP 8.5.11, vulnérable. #180
+
+### Mise à jour de la stack
+
+- Passe l'image de base de PHP 8.5.11 à PHP 8.5.12, désormais épinglée en version exacte. #180
+
+### Migration
+
+Aucune action de configuration requise. Mettre à jour l'instance au plus vite et redémarrer le conteneur.
+
+```bash
+docker pull ghcr.io/zakmaf/3omar:v3.4.1
+```
+
+---
+
 ## v3.4.0 - 2026-10-07
 
 ### Nouveautés
