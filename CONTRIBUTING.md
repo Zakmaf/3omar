@@ -84,17 +84,30 @@ Voir aussi [docs/DEPLOIEMENT.md](docs/DEPLOIEMENT.md) pour le détail du déploi
 
 ### Checklist pré-release
 
-Avant de proposer la publication d'une release, vérifier chacun des points suivants avec la commande réelle exécutée et son résultat réel rapporté. Ne jamais déclarer un point vérifié sans l'avoir exécuté :
+Les tests de release se font uniquement sur GitHub : CI, workflow de publication et image publiée. Aucun build Docker ni conteneur local n'est requis. Chaque point se vérifie avec la commande réelle exécutée et son résultat réel rapporté. Ne jamais déclarer un point vérifié sans l'avoir exécuté.
 
-- [ ] Suite PHPUnit complète verte : `vendor/bin/phpunit`
-- [ ] Laravel Pint sans erreur en mode vérification : `vendor/bin/pint --test`
-- [ ] Image Docker de production construite avec succès : `docker build -f docker/release/Dockerfile .`
-- [ ] Configuration Nginx validée : `nginx -t`
-- [ ] Conteneur démarré et rapporté `(healthy)` par `docker ps` (HEALTHCHECK `/up`, voir [docs/DEPLOIEMENT.md](docs/DEPLOIEMENT.md))
+Avant publication :
+
+- [ ] CI GitHub verte sur la PR de préparation et sur `main` (suite PHPUnit) : `gh pr checks <numéro>`, `gh run list --branch main --limit 1`
+- [ ] Laravel Pint sans erreur : job CI dédié, à ajouter par #169. En attendant, ce point n'est pas couvert et doit être signalé comme tel
+- [ ] `docs/RELEASES.md` contient une entrée conforme au format documenté pour la version
+
+Après publication, sur GitHub et le registre :
+
+- [ ] Workflow `docker-release.yml` terminé en succès : `gh run list --workflow=docker-release.yml --limit 1`. Il construit l'image de production : un échec ne pousse aucune image
+- [ ] Tags `latest`, `vMAJEUR`, `vMAJEUR.MINEUR` et `vMAJEUR.MINEUR.PATCH` pointant vers le même digest sur `ghcr.io/zakmaf/3omar`
+
+Après déploiement, sur l'instance :
+
 - [ ] Réponse HTTP 200 sur la page d'accueil
 - [ ] Version exposée par `/api/v1/health` correspond à la version de la release
-- [ ] `docs/RELEASES.md` contient une entrée conforme au format documenté pour la version
-- [ ] Confidentialité des logs vérifiée : les journaux d'accès de l'image de production ne journalisent pas la chaîne de requête ni le référent (les liens de simulation/partage embarquent des données dans l'URL)
+- [ ] Confidentialité des logs vérifiée : les journaux d'accès ne journalisent pas la chaîne de requête ni le référent (les liens de simulation/partage embarquent des données dans l'URL)
+
+### Tester avant une release stable
+
+Pour tester une image avant de la publier en stable, publier une pré-release GitHub avec un tag de pré-version, par exemple `v3.5.0-nightly.1` (`gh release create v3.5.0-nightly.1 --prerelease`). Le workflow ne pousse alors que le tag exact : ni `latest`, ni `vMAJEUR`, ni `vMAJEUR.MINEUR`. Les points « après publication » et « après déploiement » se vérifient sur cette image avant la release stable. La création d'une pré-release suit la même règle d'approbation qu'une release.
+
+Ne jamais utiliser `workflow_dispatch` pour tester : un déclenchement manuel pousse le tag `latest`.
 
 ### Rédaction des release notes
 
