@@ -39,6 +39,14 @@ class SecurityHeadersTest extends TestCase
         $this->assertStringContainsString("frame-src 'none'", $csp);
     }
 
+    public function test_docker_php_ini_hides_php_version(): void
+    {
+        $ini = parse_ini_file(base_path('docker/php/php.ini'), true, INI_SCANNER_RAW);
+
+        $this->assertIsArray($ini);
+        $this->assertSame('Off', $ini['PHP']['expose_php'] ?? null);
+    }
+
     public function test_hsts_not_set_on_http(): void
     {
         $response = $this->get('/')->assertOk();
