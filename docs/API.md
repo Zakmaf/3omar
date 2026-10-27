@@ -35,8 +35,8 @@ Calcule le bulletin de paie complet a partir du salaire de base brut.
 {
   "mode": "gross_to_net",
   "sbi": 10000,
-  "salaire_net": 8234.56,
-  "ir_net": 1012.33,
+  "salaire_net": 9053.64,
+  "ir_net": 451.56,
   "cotisation_cnss": 268.80,
   "cotisation_amo": 226.00,
   "frais_pro": 2500.00,
@@ -66,13 +66,13 @@ Recherche le salaire de base brut qui produit le net cible souhaite (resolution 
 ```json
 {
   "mode": "net_to_gross",
-  "sbi": 9723.45,
+  "sbi": 8873.10,
   "salaire_net": 8000.00,
   "resolution_net": {
     "net_cible": 8000.00,
     "net_obtenu": 8000.00,
     "ecart": 0.00,
-    "iterations": 25,
+    "iterations": 21,
     "converge": true
   },
   "avertissements": []
@@ -123,25 +123,25 @@ Le champ `version` reflete toujours la version de l'application actuellement dep
 | `autres_primes` | number | Autres primes imposables (MAD) |
 | `nb_enfants` | integer (0-20) | Nombre d'enfants a charge |
 | `conjoint_charge` | boolean | Conjoint a charge |
-| `cimr_actif` | boolean | Activer la cotisation CIMR |
-| `cimr_taux` | number | Taux CIMR en pourcentage |
-| `cimr_repartition` | string | `salarie`, `employeur` ou `partage` |
-| `cimr_taux_employeur` | number | Taux CIMR employeur (si partage) |
+| `cimr_taux` | number | Taux CIMR salarie en pourcentage |
+| `cimr_taux_employeur` | number | Taux CIMR employeur en pourcentage |
 | `amo_taux_salarie_personnalise` | boolean | Active un taux AMO salarie personnalise (derogatoire, `false` par defaut : le taux legal 2,26 % s'applique) |
 | `amo_taux_salarie` | number (0-100) | Taux AMO salarie applique quand `amo_taux_salarie_personnalise` est actif (peut etre `0`). Ignore sinon. Genere un avertissement dans `avertissements` quand actif ; n'affecte pas la part patronale AMO. Voir `docs/CALCUL.md` et issue #128 pour le contexte reglementaire. |
 | `retraite_complementaire_mensuel` | number | Retraite complementaire (MAD) |
 | `rc_part_employeur` | number | Part employeur retraite complementaire (MAD) |
 | `mutuelle_salarie` | number | Cotisation mutuelle salarie (MAD) |
 | `mutuelle_patronale` | number | Cotisation mutuelle patronale (MAD) |
+| `assurance_at_taux` | number (0-100) | Taux d'assurance accident du travail en pourcentage, a la charge de l'employeur |
+| `assurance_rc_pro` | number | Assurance RC professionnelle mensuelle a la charge de l'employeur (MAD) |
 | `retenues_exonerees_ir` | number | Retenues exonerees d'IR (MAD) : prelevees sur la paie et deduites du revenu net imposable avant le bareme IR. Incluses dans `total_retenues`, donc retirees de `salaire_net`. |
 | `retenues_imposees_ir` | number | Retenues imposees a l'IR (MAD) : retirees de `salaire_net` sans effet sur l'IR. Incluses dans `total_retenues`. |
 | `autres_retenues` | number | Alias historique de `retenues_imposees_ir` (MAD), utilise si `retenues_imposees_ir` est absent |
 | `jours_travailles` | integer (1-31) | Jours travailles dans le mois |
 | `heures_sup` | array | Heures supplementaires (max 10) |
 | `indemnites` | array | Indemnites exonerees (max 10) |
-| `prime_scolarite` | number | Prime de scolarite (MAD) |
-| `prime_aid` | number | Prime des Aid (MAD) |
-| `autres_avantages_cnss` | number | Autres avantages CNSS exoneres (MAD) |
+| `avantages_cnss` | number | Avantages exclus de l'assiette CNSS et AMO mais imposables a l'IR (MAD) |
+
+Tout autre champ est ignore par l'API, sans erreur ni avertissement. Les exemples de requete et de reponse de ce document et de `openapi.json` sont verifies contre le moteur par `tests/Feature/Api/V1/OpenApiContractTest.php`.
 
 ## Limitation de debit (rate limiting)
 

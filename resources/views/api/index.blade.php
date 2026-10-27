@@ -102,18 +102,7 @@
 }).then(r => r.json()).then(console.log);</code></pre>
 
                     <h3 class="h6 fw-bold mt-3 mb-2">{{ __('ui.api.full_response_example') }}</h3>
-                    <pre class="p-3 rounded mb-0" style="background:var(--g-50);font-family:var(--f-mono);font-size:.8rem"><code>{!! json_encode([
-    'mode' => 'gross_to_net',
-    'sbi' => 10000,
-    'salaire_net' => 8234.56,
-    'ir_net' => 1012.33,
-    'cotisation_cnss' => 268.80,
-    'cotisation_amo' => 226.00,
-    'frais_pro' => 2500.00,
-    'rni' => 7005.20,
-    'repartition' => ['...' => '...'],
-    'avertissements' => [],
-], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) !!}</code></pre>
+                    <pre class="p-3 rounded mb-0" style="background:var(--g-50);font-family:var(--f-mono);font-size:.8rem"><code>{!! json_encode($endpoints['/simuler/brut-vers-net']['post']['responses']['200']['content']['application/json']['example'] ?? new stdClass, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) !!}</code></pre>
 
                     <details class="mt-3">
                         <summary class="fw-semibold mb-2" style="color:var(--g-600)"><i class="bi bi-play-circle me-1" aria-hidden="true"></i>{{ __('ui.api.try_it') }}</summary>
@@ -179,19 +168,7 @@
 }).then(r => r.json()).then(console.log);</code></pre>
 
                     <h3 class="h6 fw-bold mt-3 mb-2">{{ __('ui.api.full_response_example') }}</h3>
-                    <pre class="p-3 rounded mb-0" style="background:var(--g-50);font-family:var(--f-mono);font-size:.8rem"><code>{!! json_encode([
-    'mode' => 'net_to_gross',
-    'sbi' => 9723.45,
-    'salaire_net' => 8000.00,
-    'resolution_net' => [
-        'net_cible' => 8000.00,
-        'net_obtenu' => 8000.00,
-        'ecart' => 0.00,
-        'iterations' => 25,
-        'converge' => true,
-    ],
-    'avertissements' => [],
-], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) !!}</code></pre>
+                    <pre class="p-3 rounded mb-0" style="background:var(--g-50);font-family:var(--f-mono);font-size:.8rem"><code>{!! json_encode($endpoints['/simuler/net-vers-brut']['post']['responses']['200']['content']['application/json']['example'] ?? new stdClass, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) !!}</code></pre>
 
                     <details class="mt-3">
                         <summary class="fw-semibold mb-2" style="color:var(--g-600)"><i class="bi bi-play-circle me-1" aria-hidden="true"></i>{{ __('ui.api.try_it') }}</summary>

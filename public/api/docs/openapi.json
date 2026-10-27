@@ -3,7 +3,7 @@
   "info": {
     "title": "3omar - Simulateur de salaire net marocain",
     "description": "API REST du simulateur de paie marocaine pour le secteur prive, exercice 2026.",
-    "version": "1.0.0",
+    "version": "v3.4.1",
     "contact": {
       "name": "3omar",
       "url": "https://github.com/Zakmaf/3omar"
@@ -45,6 +45,18 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SimulationResult"
+                },
+                "example": {
+                  "mode": "gross_to_net",
+                  "sbi": 10000,
+                  "salaire_net": 9053.64,
+                  "ir_net": 451.56,
+                  "cotisation_cnss": 268.80,
+                  "cotisation_amo": 226.00,
+                  "frais_pro": 2500.00,
+                  "rni": 7005.20,
+                  "repartition": { "...": "..." },
+                  "avertissements": []
                 }
               }
             }
@@ -124,6 +136,19 @@
                       }
                     }
                   ]
+                },
+                "example": {
+                  "mode": "net_to_gross",
+                  "sbi": 8873.10,
+                  "salaire_net": 8000.00,
+                  "resolution_net": {
+                    "net_cible": 8000.00,
+                    "net_obtenu": 8000.00,
+                    "ecart": 0.00,
+                    "iterations": 21,
+                    "converge": true
+                  },
+                  "avertissements": []
                 }
               }
             }
@@ -224,15 +249,19 @@
           "autres_primes": { "type": "number", "minimum": 0, "description": "Autres primes imposables mensuelles en MAD" },
           "nb_enfants": { "type": "integer", "minimum": 0, "maximum": 20, "description": "Nombre d'enfants a charge" },
           "conjoint_charge": { "type": "boolean", "description": "Conjoint a charge" },
-          "cimr_actif": { "type": "boolean", "description": "Activer la cotisation CIMR" },
-          "cimr_taux": { "type": "number", "minimum": 0, "description": "Taux CIMR en pourcentage (ex: 6 pour 6%)" },
-          "cimr_repartition": { "type": "string", "enum": ["salarie", "employeur", "partage"], "description": "Repartition de la cotisation CIMR" },
-          "cimr_taux_employeur": { "type": "number", "minimum": 0, "description": "Taux CIMR employeur en pourcentage (si repartition partage)" },
+          "cimr_taux": { "type": "number", "minimum": 0, "description": "Taux CIMR salarie en pourcentage (ex: 6 pour 6%)" },
+          "cimr_taux_employeur": { "type": "number", "minimum": 0, "description": "Taux CIMR employeur en pourcentage" },
+          "amo_taux_salarie_personnalise": { "type": "boolean", "description": "Active un taux AMO salarie personnalise (derogatoire, false par defaut : le taux legal s'applique)" },
+          "amo_taux_salarie": { "type": "number", "minimum": 0, "maximum": 100, "description": "Taux AMO salarie en pourcentage, applique seulement si amo_taux_salarie_personnalise est actif ; genere un avertissement" },
           "retraite_complementaire_mensuel": { "type": "number", "minimum": 0, "description": "Retraite complementaire mensuelle en MAD" },
           "rc_part_employeur": { "type": "number", "minimum": 0, "description": "Part employeur retraite complementaire en MAD" },
           "mutuelle_salarie": { "type": "number", "minimum": 0, "description": "Cotisation mutuelle salarie en MAD" },
           "mutuelle_patronale": { "type": "number", "minimum": 0, "description": "Cotisation mutuelle patronale en MAD" },
-          "autres_retenues": { "type": "number", "minimum": 0, "description": "Autres retenues mensuelles en MAD" },
+          "assurance_at_taux": { "type": "number", "minimum": 0, "maximum": 100, "description": "Taux d'assurance accident du travail en pourcentage, a la charge de l'employeur" },
+          "assurance_rc_pro": { "type": "number", "minimum": 0, "description": "Assurance RC professionnelle mensuelle a la charge de l'employeur, en MAD" },
+          "retenues_exonerees_ir": { "type": "number", "minimum": 0, "description": "Retenues exonerees d'IR en MAD : deduites du revenu net imposable et retirees du net a payer" },
+          "retenues_imposees_ir": { "type": "number", "minimum": 0, "description": "Retenues imposees a l'IR en MAD : retirees du net a payer sans effet sur l'IR" },
+          "autres_retenues": { "type": "number", "minimum": 0, "description": "Alias historique de retenues_imposees_ir en MAD, utilise si retenues_imposees_ir est absent" },
           "jours_travailles": { "type": "integer", "minimum": 1, "maximum": 31, "description": "Nombre de jours travailles dans le mois" },
           "heures_sup": {
             "type": "array",
@@ -258,9 +287,7 @@
             },
             "description": "Indemnites exonerees"
           },
-          "prime_scolarite": { "type": "number", "minimum": 0, "description": "Prime de scolarite en MAD" },
-          "prime_aid": { "type": "number", "minimum": 0, "description": "Prime des Aid en MAD" },
-          "autres_avantages_cnss": { "type": "number", "minimum": 0, "description": "Autres avantages CNSS exoneres en MAD" }
+          "avantages_cnss": { "type": "number", "minimum": 0, "description": "Avantages exclus de l'assiette CNSS et AMO mais imposables a l'IR, en MAD" }
         }
       },
       "NetVersBrutInput": {
@@ -275,14 +302,18 @@
           "autres_primes": { "type": "number", "minimum": 0 },
           "nb_enfants": { "type": "integer", "minimum": 0, "maximum": 20 },
           "conjoint_charge": { "type": "boolean" },
-          "cimr_actif": { "type": "boolean" },
           "cimr_taux": { "type": "number", "minimum": 0 },
-          "cimr_repartition": { "type": "string", "enum": ["salarie", "employeur", "partage"] },
           "cimr_taux_employeur": { "type": "number", "minimum": 0 },
+          "amo_taux_salarie_personnalise": { "type": "boolean" },
+          "amo_taux_salarie": { "type": "number", "minimum": 0, "maximum": 100 },
           "retraite_complementaire_mensuel": { "type": "number", "minimum": 0 },
           "rc_part_employeur": { "type": "number", "minimum": 0 },
           "mutuelle_salarie": { "type": "number", "minimum": 0 },
           "mutuelle_patronale": { "type": "number", "minimum": 0 },
+          "assurance_at_taux": { "type": "number", "minimum": 0, "maximum": 100 },
+          "assurance_rc_pro": { "type": "number", "minimum": 0 },
+          "retenues_exonerees_ir": { "type": "number", "minimum": 0 },
+          "retenues_imposees_ir": { "type": "number", "minimum": 0 },
           "autres_retenues": { "type": "number", "minimum": 0 },
           "jours_travailles": { "type": "integer", "minimum": 1, "maximum": 31 },
           "heures_sup": {
@@ -307,9 +338,7 @@
               }
             }
           },
-          "prime_scolarite": { "type": "number", "minimum": 0 },
-          "prime_aid": { "type": "number", "minimum": 0 },
-          "autres_avantages_cnss": { "type": "number", "minimum": 0 }
+          "avantages_cnss": { "type": "number", "minimum": 0 }
         }
       },
       "SimulationResult": {

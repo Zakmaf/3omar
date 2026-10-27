@@ -175,6 +175,16 @@ class OpenApiContractTest extends TestCase
         $this->assertSame($accepted, $documented, 'Le tableau des parametres optionnels de docs/API.md doit lister exactement les champs acceptes par l\'API.');
     }
 
+    public function test_documentation_page_shows_the_spec_response_examples(): void
+    {
+        $html = $this->get('/api-documentation')->assertOk()->getContent();
+
+        $this->assertStringContainsString('9053.64', $html);
+        $this->assertStringContainsString('8873.1', $html);
+        $this->assertStringNotContainsString('8234.56', $html);
+        $this->assertStringNotContainsString('9723.45', $html);
+    }
+
     private function spec(): array
     {
         return json_decode(file_get_contents(public_path('api/docs/openapi.json')), true, flags: JSON_THROW_ON_ERROR);
