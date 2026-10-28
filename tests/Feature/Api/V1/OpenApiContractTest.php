@@ -132,6 +132,29 @@ class OpenApiContractTest extends TestCase
         $this->assertSame([], $errors, "Exemples de reponse d'openapi.json differents du moteur :\n".implode("\n", $errors));
     }
 
+    public function test_validation_error_examples_reproduce_a_real_422(): void
+    {
+        $actual = $this->postJson('/api/v1/simuler/brut-vers-net', ['type_frais_pro' => 'commun'])
+            ->assertStatus(422)
+            ->json();
+
+        $spec = $this->spec();
+        $this->assertSame(
+            $actual,
+            $spec['paths']['/simuler/brut-vers-net']['post']['responses']['422']['content']['application/json']['example'],
+            "L'exemple 422 d'openapi.json doit etre la reponse reelle a une requete sans salaire_base."
+        );
+        $this->assertSame(
+            $actual['detail'],
+            $spec['components']['schemas']['RFC7807Error']['properties']['detail']['example'],
+            'RFC7807Error.detail doit montrer un message reellement produit.'
+        );
+
+        $blocks = $this->jsonBlocksUnder(file_get_contents(base_path('docs/API.md')), '### Erreur de validation (422)');
+        $this->assertCount(1, $blocks, 'docs/API.md : un exemple 422 attendu.');
+        $this->assertSame($actual, $blocks[0], "L'exemple 422 de docs/API.md doit etre la reponse reelle a une requete sans salaire_base.");
+    }
+
     public function test_api_markdown_examples_reproduce_an_engine_run(): void
     {
         $markdown = file_get_contents(base_path('docs/API.md'));
