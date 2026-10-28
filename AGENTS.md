@@ -21,7 +21,7 @@ Run project commands inside the `paie_maroc_app` container:
 ```bash
 cp .env.example .env
 docker compose up -d --build                 # Build and start the app at localhost:49173
-docker run --rm -v "$PWD":/app -v paie_maroc_vendor:/app/vendor -w /app composer:2.7 composer install
+docker run --rm -v "$PWD":/app -v paie_maroc_vendor:/app/vendor -w /app composer:2 composer install
 docker exec paie_maroc_app php artisan key:generate
 docker exec paie_maroc_app vendor/bin/pint   # Format PHP code
 docker exec paie_maroc_app php artisan config:clear

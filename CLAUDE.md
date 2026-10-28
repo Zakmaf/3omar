@@ -18,7 +18,7 @@ All commands run inside the PHP-FPM container (`paie_maroc_app`).
 # First-time setup
 cp .env.example .env
 docker-compose up -d --build
-docker run --rm -v "$PWD":/app -v paie_maroc_vendor:/app/vendor -w /app composer:2.7 composer install
+docker run --rm -v "$PWD":/app -v paie_maroc_vendor:/app/vendor -w /app composer:2 composer install
 docker exec paie_maroc_app php artisan key:generate
 
 # App available at http://localhost:49173

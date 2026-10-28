@@ -13,7 +13,7 @@ docker compose up -d --build
 docker run --rm \
   -v "$PWD":/app \
   -v paie_maroc_vendor:/app/vendor \
-  -w /app composer:2.7 composer install
+  -w /app composer:2 composer install
 docker compose exec app php artisan key:generate
 ```
 
@@ -44,7 +44,7 @@ Il n'y a pas d'étape de build front : `node_modules` sert uniquement à l'outil
 ```bash
 # 1. Installer les dépendances PHP de ce dépôt dans un volume dédié
 docker run --rm -v "$PWD":/app -v 3omar_browser_vendor:/app/vendor -w /app \
-  composer:2.7 composer install --no-interaction --ignore-platform-req=php
+  composer:2 composer install --no-interaction --ignore-platform-req=php
 
 # 2. Servir le dépôt sur une instance locale dédiée (boucle locale uniquement).
 #    Serveur PHP intégré plutôt que `php artisan serve` : ce dernier ne transmet
