@@ -24,4 +24,4 @@ Types acceptés : feat, fix, docs, chore, test, refactor
 - [ ] Si une valeur réglementaire change → elle vit dans `config/payroll.php` (jamais en dur)
 - [ ] Si l'interface change → clés i18n ajoutées dans les **quatre** langues (fr, en, ar, es)
 - [ ] Documentation correspondante mise à jour dans la **même** PR (voir `CONTRIBUTING.md`)
-- [ ] Item du backlog `README.md` mis à jour si la fonctionnalité y figure
+- [ ] `README.md` touché seulement si la liste des fonctionnalités change (pas de nouveautés par version, voir `CONTRIBUTING.md`)
