@@ -84,17 +84,30 @@ Voir aussi [docs/DEPLOIEMENT.md](docs/DEPLOIEMENT.md) pour le détail du déploi
 
 ### Checklist pré-release
 
-Avant de proposer la publication d'une release, vérifier chacun des points suivants avec la commande réelle exécutée et son résultat réel rapporté. Ne jamais déclarer un point vérifié sans l'avoir exécuté :
+Les tests de release se font uniquement sur GitHub : CI, workflow de publication et image publiée. Aucun build Docker ni conteneur local n'est requis. Chaque point se vérifie avec la commande réelle exécutée et son résultat réel rapporté. Ne jamais déclarer un point vérifié sans l'avoir exécuté.
 
-- [ ] Suite PHPUnit complète verte : `vendor/bin/phpunit`
-- [ ] Laravel Pint sans erreur en mode vérification : `vendor/bin/pint --test`
-- [ ] Image Docker de production construite avec succès : `docker build -f docker/release/Dockerfile .`
-- [ ] Configuration Nginx validée : `nginx -t`
-- [ ] Conteneur démarré et rapporté `(healthy)` par `docker ps` (HEALTHCHECK `/up`, voir [docs/DEPLOIEMENT.md](docs/DEPLOIEMENT.md))
+Avant publication :
+
+- [ ] CI GitHub verte sur la PR de préparation et sur `main` : `gh pr checks <numéro>`, `gh run list --branch main --limit 1`. Les checks du workflow `CI` couvrent la suite PHPUnit sur PHP 8.3 et 8.5, `pint --test`, `composer audit --locked` et le build de l'image release (conteneur `healthy`, `/up` et `/api/v1/health` en HTTP 200)
+- [ ] Laravel Pint sans erreur : check `Laravel Pint` vert
+- [ ] `docs/RELEASES.md` contient une entrée conforme au format documenté pour la version
+
+Après publication, sur GitHub et le registre :
+
+- [ ] Workflow `docker-release.yml` terminé en succès : `gh run list --workflow=docker-release.yml --limit 1`. Il construit l'image de production : un échec ne pousse aucune image
+- [ ] Tags `latest`, `vMAJEUR`, `vMAJEUR.MINEUR` et `vMAJEUR.MINEUR.PATCH` pointant vers le même digest sur `ghcr.io/zakmaf/3omar`
+
+Après déploiement, sur l'instance :
+
 - [ ] Réponse HTTP 200 sur la page d'accueil
 - [ ] Version exposée par `/api/v1/health` correspond à la version de la release
-- [ ] `docs/RELEASES.md` contient une entrée conforme au format documenté pour la version
-- [ ] Confidentialité des logs vérifiée : les journaux d'accès de l'image de production ne journalisent pas la chaîne de requête ni le référent (les liens de simulation/partage embarquent des données dans l'URL)
+- [ ] Confidentialité des logs vérifiée : les journaux d'accès ne journalisent pas la chaîne de requête ni le référent (les liens de simulation/partage embarquent des données dans l'URL)
+
+### Tester avant une release stable
+
+Pour tester une image avant de la publier en stable, publier une pré-release GitHub avec un tag de pré-version, par exemple `v3.5.0-nightly.1` (`gh release create v3.5.0-nightly.1 --prerelease`). Le workflow ne pousse alors que le tag exact : ni `latest`, ni `vMAJEUR`, ni `vMAJEUR.MINEUR`. Les points « après publication » et « après déploiement » se vérifient sur cette image avant la release stable. La création d'une pré-release suit la même règle d'approbation qu'une release.
+
+Ne jamais utiliser `workflow_dispatch` pour tester : un déclenchement manuel pousse le tag `latest`.
 
 ### Rédaction des release notes
 
@@ -187,6 +200,12 @@ Aucune action requise. Mise a jour transparente depuis v1.4.0.
 
 ## Docker et CI
 
+- Le workflow `.github/workflows/ci.yml` tourne sur chaque PR vers `main` et chaque push sur `main`. Il produit les checks suivants :
+  - `Tests PHPUnit (PHP 8.3)` et `Tests PHPUnit (PHP 8.5)` : la suite complète sur la version minimale de `composer.json` et sur celle de l'image de production ;
+  - `Tests PHPUnit` : agrégat, vert seulement si les deux versions sont vertes. C'est le check exigé par le ruleset `protect-main` : ne pas le renommer sans mettre à jour le ruleset ;
+  - `Laravel Pint` : `vendor/bin/pint --test` ;
+  - `Composer audit` : `composer audit --locked` contre les avis de sécurité connus ;
+  - `Build image release` : construit `docker/release/Dockerfile` sans le pousser, démarre le conteneur avec une `APP_KEY` jetable, attend le `HEALTHCHECK` et exige HTTP 200 sur `/up` et `/api/v1/health`.
 - L'image de développement (`docker/php/Dockerfile`) et l'image de production (`docker/release/Dockerfile`) sont indépendantes. Ne pas mélanger leurs configurations.
 - Toute modification de `docker/release/` doit être testée localement (`docker build` + `docker run` + vérification HTTP 200) avant PR.
 - Le workflow `.github/workflows/docker-release.yml` se déclenche uniquement sur release GitHub publiée. Ne pas le modifier sans en comprendre les effets sur GHCR.
