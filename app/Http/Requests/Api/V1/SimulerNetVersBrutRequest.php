@@ -19,6 +19,11 @@ class SimulerNetVersBrutRequest extends FormRequest
         return PayrollValidation::netVersBrutRules();
     }
 
+    public function attributes(): array
+    {
+        return PayrollValidation::apiAttributes($this->rules());
+    }
+
     protected function failedValidation(Validator $validator): void
     {
         $errors = $validator->errors();

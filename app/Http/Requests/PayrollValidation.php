@@ -96,6 +96,21 @@ class PayrollValidation
         ];
     }
 
+    /**
+     * Noms de champs des messages de l'API (#187) : la clé JSON du contrat, index
+     * compris (heures_sup.0.type), plutôt que le libellé lisible du formulaire web.
+     */
+    public static function apiAttributes(array $rules): array
+    {
+        $attributes = [];
+
+        foreach (array_keys($rules) as $field) {
+            $attributes[$field] = str_replace('*', ':index', $field);
+        }
+
+        return $attributes;
+    }
+
     public static function commonFields(): array
     {
         return [

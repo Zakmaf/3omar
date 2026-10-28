@@ -62,7 +62,7 @@
             }
           },
           "422": {
-            "description": "Erreur de validation",
+            "description": "Erreur de validation. Messages toujours en anglais, chaque champ nommé par sa clé JSON (exemple réel : requête sans salaire_base)",
             "content": {
               "application/json": {
                 "schema": {

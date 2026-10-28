@@ -166,6 +166,8 @@ Toutes les erreurs API suivent le format RFC 7807 (Problem Details for HTTP APIs
 
 ### Erreur de validation (422)
 
+Les messages de validation sont toujours en anglais, quel que soit l'en-tête `Accept-Language`, et nomment chaque champ par sa clé JSON (`salaire_base`, `heures_sup.0.type`). L'objet `errors` liste tous les messages par champ ; `detail` reprend le premier. Exemple réel pour une requête sans `salaire_base` :
+
 ```json
 {
   "type": "about:blank",
