@@ -15,8 +15,14 @@ concurrency:
 
 jobs:
   tests:
-    name: Tests PHPUnit
+    name: Tests PHPUnit (PHP ${{ matrix.php }})
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        # 8.3 : version minimale de composer.json. 8.5 : version de l'image de production.
+        php: ['8.3', '8.5']
     steps:
       - name: Récupérer le code
         uses: actions/checkout@v7
@@ -24,7 +30,7 @@ jobs:
       - name: Configurer PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3'
+          php-version: ${{ matrix.php }}
           extensions: mbstring, dom, fileinfo, sqlite3, pdo_sqlite, intl
           coverage: none
           tools: composer:v2
@@ -33,8 +39,8 @@ jobs:
         uses: actions/cache@v6
         with:
           path: vendor
-          key: composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}
-          restore-keys: composer-${{ runner.os }}-
+          key: composer-${{ runner.os }}-php${{ matrix.php }}-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-${{ runner.os }}-php${{ matrix.php }}-
 
       - name: Préparer les dossiers runtime Laravel
         run: mkdir -p bootstrap/cache storage/framework/{cache,sessions,views}
@@ -49,3 +55,115 @@ jobs:
 
       - name: Lancer les tests
         run: vendor/bin/phpunit
+
+  # Nom de check exigé par le ruleset protect-main : il ne passe que si la suite
+  # est verte sur toutes les versions de PHP de la matrice.
+  tests-gate:
+    name: Tests PHPUnit
+    needs: tests
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Vérifier la matrice PHP
+        run: |
+          echo "Résultat de la matrice : ${{ needs.tests.result }}"
+          test "${{ needs.tests.result }}" = "success"
+
+  pint:
+    name: Laravel Pint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v7
+
+      - name: Configurer PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, dom, fileinfo, intl
+          coverage: none
+          tools: composer:v2
+
+      - name: Cache des dépendances Composer
+        uses: actions/cache@v6
+        with:
+          path: vendor
+          key: composer-${{ runner.os }}-php8.3-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-${{ runner.os }}-php8.3-
+
+      - name: Installer les dépendances
+        run: composer install --prefer-dist --no-interaction --no-progress --no-scripts
+
+      - name: Vérifier le formatage
+        run: vendor/bin/pint --test
+
+  audit:
+    name: Composer audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v7
+
+      - name: Configurer PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+          tools: composer:v2
+
+      - name: Auditer composer.lock
+        run: composer audit --locked --no-interaction
+
+  release-image:
+    name: Build image release
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v7
+
+      - name: Construire docker/release/Dockerfile (sans push)
+        run: docker build -f docker/release/Dockerfile -t 3omar-ci:${{ github.sha }} .
+
+      - name: Démarrer le conteneur avec une APP_KEY jetable
+        run: |
+          docker run -d --name 3omar-ci -p 127.0.0.1:8080:80 \
+            -e APP_KEY="base64:$(openssl rand -base64 32)" \
+            3omar-ci:${{ github.sha }}
+
+      - name: Attendre le HEALTHCHECK de l'image
+        run: |
+          for i in $(seq 1 36); do
+            status=$(docker inspect -f '{{.State.Health.Status}}' 3omar-ci)
+            echo "Essai $i : $status"
+            if [ "$status" = "healthy" ]; then
+              exit 0
+            fi
+            if [ "$status" = "unhealthy" ]; then
+              break
+            fi
+            sleep 5
+          done
+          echo "Le conteneur n'est pas devenu healthy dans le délai."
+          docker logs 3omar-ci
+          exit 1
+
+      - name: Vérifier /up et /api/v1/health
+        run: |
+          for path in /up /api/v1/health; do
+            code=$(curl -sS -o /tmp/reponse -w '%{http_code}' --max-time 10 "http://127.0.0.1:8080${path}")
+            echo "${path} : HTTP ${code}"
+            cat /tmp/reponse; echo
+            if [ "$code" != "200" ]; then
+              docker logs 3omar-ci
+              exit 1
+            fi
+          done
+          grep -q '"status":"ok"' /tmp/reponse
+
+      - name: Arrêter le conteneur
+        if: always()
+        run: docker rm -f 3omar-ci || true

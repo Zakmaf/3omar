@@ -88,8 +88,8 @@ Les tests de release se font uniquement sur GitHub : CI, workflow de publication
 
 Avant publication :
 
-- [ ] CI GitHub verte sur la PR de préparation et sur `main` (suite PHPUnit) : `gh pr checks <numéro>`, `gh run list --branch main --limit 1`
-- [ ] Laravel Pint sans erreur : job CI dédié, à ajouter par #169. En attendant, ce point n'est pas couvert et doit être signalé comme tel
+- [ ] CI GitHub verte sur la PR de préparation et sur `main` : `gh pr checks <numéro>`, `gh run list --branch main --limit 1`. Les checks du workflow `CI` couvrent la suite PHPUnit sur PHP 8.3 et 8.5, `pint --test`, `composer audit --locked` et le build de l'image release (conteneur `healthy`, `/up` et `/api/v1/health` en HTTP 200)
+- [ ] Laravel Pint sans erreur : check `Laravel Pint` vert
 - [ ] `docs/RELEASES.md` contient une entrée conforme au format documenté pour la version
 
 Après publication, sur GitHub et le registre :
@@ -200,6 +200,12 @@ Aucune action requise. Mise a jour transparente depuis v1.4.0.
 
 ## Docker et CI
 
+- Le workflow `.github/workflows/ci.yml` tourne sur chaque PR vers `main` et chaque push sur `main`. Il produit les checks suivants :
+  - `Tests PHPUnit (PHP 8.3)` et `Tests PHPUnit (PHP 8.5)` : la suite complète sur la version minimale de `composer.json` et sur celle de l'image de production ;
+  - `Tests PHPUnit` : agrégat, vert seulement si les deux versions sont vertes. C'est le check exigé par le ruleset `protect-main` : ne pas le renommer sans mettre à jour le ruleset ;
+  - `Laravel Pint` : `vendor/bin/pint --test` ;
+  - `Composer audit` : `composer audit --locked` contre les avis de sécurité connus ;
+  - `Build image release` : construit `docker/release/Dockerfile` sans le pousser, démarre le conteneur avec une `APP_KEY` jetable, attend le `HEALTHCHECK` et exige HTTP 200 sur `/up` et `/api/v1/health`.
 - L'image de développement (`docker/php/Dockerfile`) et l'image de production (`docker/release/Dockerfile`) sont indépendantes. Ne pas mélanger leurs configurations.
 - Toute modification de `docker/release/` doit être testée localement (`docker build` + `docker run` + vérification HTTP 200) avant PR.
 - Le workflow `.github/workflows/docker-release.yml` se déclenche uniquement sur release GitHub publiée. Ne pas le modifier sans en comprendre les effets sur GHCR.
