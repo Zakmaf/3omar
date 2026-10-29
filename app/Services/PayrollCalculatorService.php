@@ -527,6 +527,14 @@ class PayrollCalculatorService
             $avertissements[] = "Coût employeur partiel : certaines cotisations patronales n'ont pas été renseignées et sont considérées comme nulles dans le total affiché.";
         }
 
+        // Chaque saisie est bornée (#167), mais leur somme peut encore dépasser la
+        // rémunération : le net négatif est signalé plutôt que servi en silence.
+        if ($salaireNet < 0) {
+            $avertissements[] = __('ui.result.warning_negative_net', [
+                'montant' => number_format($salaireNet, 2, ',', ' '),
+            ]);
+        }
+
         // =====================================================================
         // Données graphique (Chart.js)
         // =====================================================================

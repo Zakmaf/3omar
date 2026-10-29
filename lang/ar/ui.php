@@ -237,6 +237,7 @@ return [
         'resolved_base_salary' => 'الأساس المعاد بناؤه',
         'resolution_gap' => 'الفارق',
         'warnings_title' => 'تنبيهات تنظيمية',
+        'warning_negative_net' => 'صافي الأجر سالب (:montant درهم): الاشتراكات والاقتطاعات المدخلة تتجاوز الأجر. تحقق من المبالغ المدخلة.',
         'detail_col_item' => 'البند',
         'detail_col_base' => 'الأساس / الوعاء (درهم/شهر)',
         'detail_col_rate' => 'النسبة',

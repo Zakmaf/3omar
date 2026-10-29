@@ -246,6 +246,7 @@ return [
         'resolved_base_salary' => 'Base reconstituée',
         'resolution_gap' => 'Écart',
         'warnings_title' => 'Avertissements réglementaires',
+        'warning_negative_net' => 'Net à payer négatif (:montant MAD) : les cotisations et retenues saisies dépassent la rémunération. Vérifiez les montants saisis.',
         'detail_col_item' => 'Poste',
         'detail_col_base' => 'Base / Assiette (MAD/mois)',
         'detail_col_rate' => 'Taux',

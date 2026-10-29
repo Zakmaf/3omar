@@ -22,10 +22,11 @@ Ce document décrit le comportement réellement implémenté. `config/payroll.ph
 - Les retenues exonérées d'IR (`retenues_exonerees_ir`) sont des retenues réellement prélevées sur la paie et déductibles de l'IR : elles réduisent le RNI avant le barème, puis sont retirées du net à payer (décision Product owner, #165 question 3, #166). Le net baisse donc du montant saisi moins l'économie d'IR.
 - Les retenues imposées à l'IR (`retenues_imposees_ir`, alias API `autres_retenues`) sont retirées du net à payer sans effet sur l'IR.
 - L'avertissement SMIG compare le SMIG mensuel au **salaire de base** saisi, pas au SBI total.
+- Un net à payer négatif, possible quand des retenues toutes valides dépassent la rémunération, est servi tel quel avec un avertissement traduit dans `avertissements` (#167).
 
 ## CIMR — Répartition employeur/salarié (V1.2)
 
-Le taux CIMR est librement saisi (pas de plafond technique). Un avertissement signale les taux hors de la fourchette réglementaire 3–10 % (Art. 28-III CGI).
+Le taux CIMR est saisi librement entre 0 et 100 % (borne technique de saisie, #167). Un avertissement signale les taux hors de la fourchette réglementaire 3–10 % (Art. 28-III CGI).
 
 | Répartition | Part salarié | Part employeur |
 |-------------|-------------|----------------|

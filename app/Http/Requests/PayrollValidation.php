@@ -6,28 +6,37 @@ use Illuminate\Validation\Rule;
 
 class PayrollValidation
 {
+    /**
+     * Bornes techniques de saisie (#167), pas des valeurs réglementaires : elles
+     * écartent les entrées absurdes avant le moteur. Taux en pourcentage, montants
+     * mensuels en MAD (même plafond que salaire_base et net_cible).
+     */
+    public const TAUX_MAX = 100;
+
+    public const MONTANT_MAX = 10000000;
+
     public static function commonRules(): array
     {
         return [
             'nb_annees_anciennete' => 'nullable|integer|min:0|max:50',
-            'prime_bilan' => 'nullable|numeric|min:0',
-            'prime_rendement' => 'nullable|numeric|min:0',
-            'autres_primes' => 'nullable|numeric|min:0',
+            'prime_bilan' => 'nullable|numeric|min:0|max:'.self::MONTANT_MAX,
+            'prime_rendement' => 'nullable|numeric|min:0|max:'.self::MONTANT_MAX,
+            'autres_primes' => 'nullable|numeric|min:0|max:'.self::MONTANT_MAX,
             'type_frais_pro' => 'required|in:commun,journaliste,artiste',
             'nb_enfants' => 'nullable|integer|min:0|max:20',
             'conjoint_charge' => 'nullable|boolean',
-            'cimr_taux' => 'nullable|numeric|min:0',
-            'cimr_taux_employeur' => 'nullable|numeric|min:0',
+            'cimr_taux' => 'nullable|numeric|min:0|max:'.self::TAUX_MAX,
+            'cimr_taux_employeur' => 'nullable|numeric|min:0|max:'.self::TAUX_MAX,
             'amo_taux_salarie_personnalise' => 'nullable|boolean',
-            'amo_taux_salarie' => 'nullable|numeric|min:0|max:100',
-            'retraite_complementaire_mensuel' => 'nullable|numeric|min:0',
-            'rc_part_employeur' => 'nullable|numeric|min:0',
-            'mutuelle_salarie' => 'nullable|numeric|min:0',
-            'mutuelle_patronale' => 'nullable|numeric|min:0',
-            'assurance_at_taux' => 'nullable|numeric|min:0|max:100',
-            'assurance_rc_pro' => 'nullable|numeric|min:0',
-            'retenues_exonerees_ir' => 'nullable|numeric|min:0',
-            'retenues_imposees_ir' => 'nullable|numeric|min:0',
+            'amo_taux_salarie' => 'nullable|numeric|min:0|max:'.self::TAUX_MAX,
+            'retraite_complementaire_mensuel' => 'nullable|numeric|min:0|max:'.self::MONTANT_MAX,
+            'rc_part_employeur' => 'nullable|numeric|min:0|max:'.self::MONTANT_MAX,
+            'mutuelle_salarie' => 'nullable|numeric|min:0|max:'.self::MONTANT_MAX,
+            'mutuelle_patronale' => 'nullable|numeric|min:0|max:'.self::MONTANT_MAX,
+            'assurance_at_taux' => 'nullable|numeric|min:0|max:'.self::TAUX_MAX,
+            'assurance_rc_pro' => 'nullable|numeric|min:0|max:'.self::MONTANT_MAX,
+            'retenues_exonerees_ir' => 'nullable|numeric|min:0|max:'.self::MONTANT_MAX,
+            'retenues_imposees_ir' => 'nullable|numeric|min:0|max:'.self::MONTANT_MAX,
             'jours_travailles' => 'nullable|integer|min:1|max:31',
             'heures_sup' => 'nullable|array|max:10',
             'heures_sup.*.type' => 'required_with:heures_sup.*.nb_heures|in:semaine_diurne,semaine_nocturne,repos_diurne,repos_nocturne',
@@ -35,25 +44,25 @@ class PayrollValidation
             'indemnites' => 'nullable|array|max:10',
             'indemnites.*.type' => ['required_with:indemnites.*.montant', 'distinct', Rule::in(array_keys(config('payroll.indemnites')))],
             'indemnites.*.montant' => 'nullable|numeric|min:0|max:1000000',
-            'avantages_cnss' => 'nullable|numeric|min:0',
+            'avantages_cnss' => 'nullable|numeric|min:0|max:'.self::MONTANT_MAX,
         ];
     }
 
     public static function brutVersNetRules(): array
     {
         return array_merge(
-            ['salaire_base' => ['required', 'numeric', 'min:0', 'max:10000000']],
+            ['salaire_base' => ['required', 'numeric', 'min:0', 'max:'.self::MONTANT_MAX]],
             static::commonRules(),
-            ['autres_retenues' => 'nullable|numeric|min:0'],
+            ['autres_retenues' => 'nullable|numeric|min:0|max:'.self::MONTANT_MAX],
         );
     }
 
     public static function netVersBrutRules(): array
     {
         return array_merge(
-            ['net_cible' => ['required', 'numeric', 'min:0.01', 'max:10000000']],
+            ['net_cible' => ['required', 'numeric', 'min:0.01', 'max:'.self::MONTANT_MAX]],
             static::commonRules(),
-            ['autres_retenues' => 'nullable|numeric|min:0'],
+            ['autres_retenues' => 'nullable|numeric|min:0|max:'.self::MONTANT_MAX],
         );
     }
 
@@ -65,12 +74,12 @@ class PayrollValidation
                 'salaire_base' => [
                     Rule::excludeIf($mode !== 'gross_to_net'),
                     Rule::requiredIf($mode === 'gross_to_net'),
-                    'nullable', 'numeric', 'min:0', 'max:10000000',
+                    'nullable', 'numeric', 'min:0', 'max:'.self::MONTANT_MAX,
                 ],
                 'net_cible' => [
                     Rule::excludeIf($mode !== 'net_to_gross'),
                     Rule::requiredIf($mode === 'net_to_gross'),
-                    'nullable', 'numeric', 'min:0.01', 'max:10000000',
+                    'nullable', 'numeric', 'min:0.01', 'max:'.self::MONTANT_MAX,
                 ],
             ],
             static::commonRules(),

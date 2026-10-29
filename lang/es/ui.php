@@ -230,6 +230,7 @@ return [
         'resolved_base_salary' => 'Base reconstruida',
         'resolution_gap' => 'Diferencia',
         'warnings_title' => 'Advertencias reglamentarias',
+        'warning_negative_net' => 'Salario neto negativo (:montant MAD): las cotizaciones y retenciones introducidas superan la remuneración. Compruebe los importes introducidos.',
         'detail_col_item' => 'Concepto',
         'detail_col_base' => 'Base / Asiento (MAD/mes)',
         'detail_col_rate' => 'Tasa',
