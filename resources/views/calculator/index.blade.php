@@ -587,7 +587,7 @@
                             <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>{{ __('ui.calculator.add') }}
                         </button>
                         </div>
-                        <div class="form-text mb-3">{{ __('ui.calculator.overtime_help') }}</div>
+                        <div class="form-text mb-3">{{ __('ui.calculator.overtime_help', ['hours' => config('payroll.smig.heures_legales')]) }}</div>
                         <div id="hsContainer">
                             @if(old('heures_sup'))
                                 @foreach(old('heures_sup') as $i => $hs)
@@ -842,7 +842,7 @@
                                        {{ old('amo_taux_salarie_personnalise') ? 'checked' : '' }}>
                                 <label class="form-check-label small fw-semibold" for="amoTauxSalariePersonnaliseToggle">{{ __('ui.calculator.amo_override_toggle_label') }}</label>
                             </div>
-                            <div class="form-text">{{ __('ui.calculator.amo_override_help') }}</div>
+                            <div class="form-text">{{ __('ui.calculator.amo_override_help', ['rate' => number_format(config('payroll.amo.taux') * 100, 2, in_array(app()->getLocale(), ['en', 'ar'], true) ? '.' : ',', '')]) }}</div>
                             <div id="amo_taux_salarie_wrap" class="mt-2" {{ old('amo_taux_salarie_personnalise') ? '' : 'hidden' }}>
                                 <div class="alert alert-warning small py-2 px-3 mb-2" role="alert">
                                     <i class="bi bi-exclamation-triangle me-1" aria-hidden="true"></i>{{ __('ui.calculator.amo_override_warning') }}
