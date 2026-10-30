@@ -3,7 +3,7 @@
   "info": {
     "title": "3omar - Simulateur de salaire net marocain",
     "description": "API REST du simulateur de paie marocaine pour le secteur prive, exercice 2026.",
-    "version": "v3.4.1",
+    "version": "v3.5.0",
     "contact": {
       "name": "3omar",
       "url": "https://github.com/Zakmaf/3omar"

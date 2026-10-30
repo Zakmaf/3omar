@@ -1,5 +1,49 @@
 # Releases
 
+## v3.5.0 - 2026-10-30
+
+### Nouveautés
+
+- Page résultat refaite pour la lisibilité : un seul ordre de lecture à toutes les largeurs (montants clés, diagnostic, du brut au net, répartition, tableaux détaillés), et des tableaux qui restent lisibles sur mobile, en tablette portrait et en zoom 200 %. #122
+- Le passage du brut au net tient en une seule suite d'étapes qui aboutit au net affiché, indemnités exonérées et retenues comprises. Les étapes pouvaient auparavant ne pas retomber sur le net (13 154,50 - 1 355,36 - 804,74 = 10 994,40 pour un net de 11 794,40). Aucun calcul ne change. #122
+
+### Améliorations
+
+- Les erreurs de saisie s'affichent en clair dans les quatre langues (« Le champ ... ne peut pas dépasser ... ») au lieu de clés techniques comme `validation.max.numeric`. L'API répond toujours en anglais et nomme le champ par sa clé JSON. #187
+- Un avertissement signale désormais un salaire net négatif sur la page résultat et dans la réponse de l'API. #167
+- La spécification OpenAPI et la documentation de l'API correspondent au moteur : cinq champs ignorés retirés, sept champs acceptés ajoutés avec leurs bornes, exemples de réponse exacts. Des tests de parité empêchent toute nouvelle dérive. #168
+- Contrastes conformes AA sur la page résultat et dans le pied de page, graphique sans animation quand le mouvement réduit est demandé. #122
+- Les textes d'aide du calculateur sur le taux AMO et la base horaire suivent la configuration au lieu d'une valeur écrite dans les traductions. Texte affiché inchangé. #200
+- La documentation du calcul décrit la CIMR telle qu'implémentée (deux taux indépendants, salarié et employeur) et liste toutes les charges du coût employeur, assurance accident du travail et RC professionnelle comprises. #201
+
+### Correctifs
+
+- Les taux et montants saisis sont plafonnés (100 % pour les taux, 10 000 000 MAD pour les montants) sur le formulaire, l'API et les liens de partage. Un taux CIMR de 200 % donnait jusqu'ici un net de -10 494,80 MAD sans erreur. #167
+- En arabe, les montants s'affichent dans le bon ordre (« 14 254,50 » pouvait apparaître « 254,50 14 »). #122
+- Les éléments ajoutés à l'en-tête des pages ne sont plus émis deux fois : un seul lien canonique sur les pages guides, Chart.js chargé une seule fois sur la page résultat, plus de CSS en double. #199
+
+### Sécurité
+
+- Passe `symfony/mime` de 7.4.19 à 7.4.22 (CVE-2026-45070, injection d'en-tête e-mail). Exposition faible : 3omar n'envoie aucun e-mail. #196
+- Chaque en-tête de sécurité (`X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`) est envoyé une seule fois, y compris sur l'API et les fichiers statiques, qui n'en recevaient aucun. `X-Frame-Options` passe à `DENY`. La CI vérifie ces en-têtes sur l'image release. #185
+- Ajoute l'intégrité SRI à Chart.js et Bootstrap Icons chargés depuis le CDN. #186
+- Masque la version de PHP : l'en-tête `X-Powered-By` n'est plus envoyé.
+
+### Mise à jour de la stack
+
+- Passe `laravel/framework` de 13.29.0 à 13.37.0.
+- La CI exécute les tests sur PHP 8.3 et 8.5 (301 tests), Laravel Pint, `composer audit` et le build de l'image release avec contrôle de santé du conteneur. #169
+
+### Migration
+
+Aucune action de configuration requise. Les clients de l'API qui envoient un taux supérieur à 100 ou un montant supérieur à 10 000 000 reçoivent désormais une erreur 422 au lieu d'un résultat incohérent.
+
+```bash
+docker pull ghcr.io/zakmaf/3omar:v3.5.0
+```
+
+---
+
 ## v3.4.1 - 2026-10-25
 
 ### Sécurité
