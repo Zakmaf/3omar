@@ -13,7 +13,6 @@
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('img/app_icon_16.png') }}">
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('img/app_icon_180.png') }}">
     <title>@yield('title', __('ui.meta_title'))</title>
-    @stack('head')
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
