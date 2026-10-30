@@ -140,7 +140,7 @@ consequences to respect:
 
 ## Legal references
 
-Every rate/rule in `config/payroll.php` is grouped under a comment naming its declared legal source or simulation assumption. When adding a rule, document whether the reference has been verified, add a boundary test, and update `docs/REGLES_GESTION.md`.
+Every rate/rule in `config/payroll.php` is grouped under a comment naming its declared legal source or simulation assumption. When adding a rule, document whether the reference has been verified, add a boundary test, and update `docs/CALCUL.md`.
 
 ---
 
