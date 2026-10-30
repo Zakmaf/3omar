@@ -5,11 +5,11 @@ Ce document décrit le comportement réellement implémenté. `config/payroll.ph
 ## Séquence brut → net
 
 1. Le **SBI** (salaire brut imposable) additionne salaire de base, primes imposables, ancienneté, heures supplémentaires, excédents d'indemnités dépassant leur plafond exonéré et avantages CNSS exonérés (imposables IR mais exclus de l'assiette CNSS/AMO).
-2. **CNSS et AMO** sont calculées sur l'**assiette sociale** (SBI hors avantages CNSS exonérés). La **CIMR** peut être à la charge du salarié, de l'employeur ou partagée ; seule la part salarié est déduite du SNC.
+2. **CNSS et AMO** sont calculées sur l'**assiette sociale** (SBI hors avantages CNSS exonérés). La **CIMR** comporte une part salarié et une part employeur, chacune selon son propre taux ; seule la part salarié est déduite du SNC.
 3. Le **RNI** (revenu net imposable) déduit les cotisations sociales, la mutuelle salariale, les frais professionnels et les retenues exonérées d'IR (`retenues_exonerees_ir`) du SBI.
 4. L'**IR** est calculé sur le RNI annualisé, puis diminué des charges de famille.
 5. Le **net à payer** ajoute les parts d'indemnités traitées comme exonérées et retire toutes les retenues salariales (`total_retenues`) : retenues exonérées d'IR, retenues imposées à l'IR et mutuelle salariale. La mutuelle salariale et les retenues exonérées d'IR réduisent aussi l'assiette IR, sans être agrégées aux cotisations sociales CNSS/AMO/CIMR.
-6. Le **coût total employeur** additionne le salaire brut total versé (indemnités comprises) et les charges patronales (CNSS, AMO, AF, TFP, mutuelle patronale, CIMR part employeur, retraite complémentaire part employeur).
+6. Le **coût total employeur** additionne le salaire brut total versé (indemnités comprises) et les charges patronales (CNSS, AMO, AF, TFP, mutuelle patronale, CIMR part employeur, retraite complémentaire part employeur, assurance accident du travail `SBI × assurance_at_taux`, assurance RC professionnelle `assurance_rc_pro`).
 
 ## Hypothèses explicites
 
@@ -24,17 +24,16 @@ Ce document décrit le comportement réellement implémenté. `config/payroll.ph
 - L'avertissement SMIG compare le SMIG mensuel au **salaire de base** saisi, pas au SBI total.
 - Un net à payer négatif, possible quand des retenues toutes valides dépassent la rémunération, est servi tel quel avec un avertissement traduit dans `avertissements` (#167).
 
-## CIMR — Répartition employeur/salarié (V1.2)
+## CIMR : part salarié et part employeur (V1.2)
 
-Le taux CIMR est saisi librement entre 0 et 100 % (borne technique de saisie, #167). Un avertissement signale les taux hors de la fourchette réglementaire 3–10 % (Art. 28-III CGI).
+Deux taux indépendants sont saisis, chacun librement entre 0 et 100 % (borne technique de saisie, #167). Il n'existe pas de mode de répartition : chaque part est calculée dès que son taux est positif.
 
-| Répartition | Part salarié | Part employeur |
-|-------------|-------------|----------------|
-| `salarie` | `SBI × taux` (déduit du SNC, déductible IR) | — |
-| `employeur` | — | `SBI × taux` (charge patronale) |
-| `partage` | `SBI × taux_salarié` | `SBI × taux_employeur` |
+| Champ | Montant | Traitement |
+|-------|---------|------------|
+| `cimr_taux` | `SBI × cimr_taux` | Part salarié : déduite du SNC et de l'assiette IR, retirée du net à payer |
+| `cimr_taux_employeur` | `SBI × cimr_taux_employeur` | Part employeur : intégrée au `total_patronal` et au `cout_total_employeur`, sans effet sur le net salarié |
 
-La part employeur est intégrée au `total_patronal` et au `cout_total_employeur` sans impacter le net salarié.
+Un avertissement est émis pour chaque taux qui dépasse `config('payroll.cimr.taux_max')` (actuellement 50 %, Art. 28-III CGI). Aucun avertissement n'est émis sous un plancher : la fourchette réglementaire des taux CIMR reste à valider (#165 question 2, #15).
 
 ## Avantages CNSS exonérés (V1.2)
 
