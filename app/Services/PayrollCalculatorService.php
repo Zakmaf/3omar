@@ -36,6 +36,18 @@ class PayrollCalculatorService
         return round($v, 2);
     }
 
+    /** Montant d'un avertissement, au format de la page résultat : 3 422,72. */
+    private function formaterMontant(float $montant): string
+    {
+        return number_format($montant, 2, ',', ' ');
+    }
+
+    /** Taux d'un avertissement en pourcentage, sans zéros inutiles : 0.0226 donne 2,26. */
+    private function formaterTaux(float $taux): string
+    {
+        return rtrim(rtrim(number_format($taux * 100, 2, ',', ' '), '0'), ',');
+    }
+
     private function calculerIRAnnuelBrut(float $rniAnnuel): array
     {
         if ($rniAnnuel <= 0) {
@@ -99,7 +111,7 @@ class PayrollCalculatorService
                 $borneBasse,
                 $borneBasse,
                 $meilleurEcart <= self::NET_RESOLUTION_PRECISION,
-                'Le net cible est déjà atteint ou dépassé avec un salaire de base nul. Vérifiez les indemnités et retenues fixes saisies.'
+                __('ui.result.warning_net_already_reached')
             );
         }
 
@@ -133,7 +145,7 @@ class PayrollCalculatorService
                 $borneBasse,
                 $borneHaute,
                 false,
-                "Impossible d'encadrer le net cible dans le plafond technique du simulateur."
+                __('ui.result.warning_net_unreachable')
             );
         }
 
@@ -195,7 +207,9 @@ class PayrollCalculatorService
         ];
 
         if (! $converge && $avertissement === null) {
-            $avertissement = "La résolution net vers brut n'a pas atteint la précision cible de ".self::NET_RESOLUTION_PRECISION.' MAD.';
+            $avertissement = __('ui.result.warning_net_not_converged', [
+                'precision' => $this->formaterMontant(self::NET_RESOLUTION_PRECISION),
+            ]);
         }
 
         if ($avertissement !== null) {
@@ -359,8 +373,12 @@ class PayrollCalculatorService
             $excedentIndemnites = $this->r2($excedentIndemnites + $excedent);
 
             if ($excedent > 0) {
-                $label = $cfg['label'];
-                $avertissements[] = "Indemnité « {$label} » : {$montantDeclare} MAD déclarés, plafond légal {$plafond} MAD. Seul le plafond est exonéré ; l'excédent ({$excedent} MAD) est réintégré au salaire brut imposable (Arrêté n° 1314-25).";
+                $avertissements[] = __('ui.result.warning_allowance_excess', [
+                    'label' => $cfg['label'],
+                    'declare' => $this->formaterMontant($montantDeclare),
+                    'plafond' => $this->formaterMontant($plafond),
+                    'excedent' => $this->formaterMontant($excedent),
+                ]);
             }
         }
 
@@ -489,49 +507,63 @@ class PayrollCalculatorService
         // =====================================================================
         // Avertissements réglementaires
         // =====================================================================
+        // Textes dans lang/{fr,en,ar,es}/ui.php (#207) : seuls les paramètres
+        // chiffrés, issus de la configuration, sont injectés ici.
         if ($amoTauxSalariePersonnalise) {
-            $pctSaisi = round($amoTauxSalarie * 100, 2);
-            $pctLegal = round($amoTauxSalarieLegal * 100, 2);
-            $avertissements[] = "AMO salarié personnalisé : taux de {$pctSaisi}% appliqué au lieu du taux légal standard de {$pctLegal}% (Loi n° 65-00). Cette option dérogatoire est réservée à la reproduction d'un bulletin de paie réel : vérifiez ce point avec votre service RH avant toute décision financière (suivi réglementaire : issue #128).";
+            $avertissements[] = __('ui.result.warning_amo_override', [
+                'saisi' => $this->formaterTaux($amoTauxSalarie),
+                'legal' => $this->formaterTaux($amoTauxSalarieLegal),
+            ]);
         }
 
         $smig = config('payroll.smig.mensuel');
         if ($salaireBase < $smig && $salaireBase > 0) {
-            $smigFmt = number_format($smig, 2, ',', ' ');
-            $avertissements[] = "Le salaire de base ({$salaireBase} MAD) est inférieur au SMIG 2026 ({$smigFmt} MAD) — Décret n° 2.25.983.";
+            $avertissements[] = __('ui.result.warning_below_smig', [
+                'salaire' => $this->formaterMontant($salaireBase),
+                'smig' => $this->formaterMontant($smig),
+            ]);
         }
 
         $cimrMax = config('payroll.cimr.taux_max');
         if ($cimrTaux > $cimrMax) {
-            $pct = round($cimrTaux * 100, 2);
-            $avertissements[] = "Le taux CIMR salarie ({$pct}%) depasse le plafond de ".($cimrMax * 100).'% (Art. 28-III CGI).';
+            $avertissements[] = __('ui.result.warning_cimr_employee_cap', [
+                'taux' => $this->formaterTaux($cimrTaux),
+                'plafond' => $this->formaterTaux($cimrMax),
+            ]);
         }
         if ($cimrTauxEmployeur > $cimrMax) {
-            $pct = round($cimrTauxEmployeur * 100, 2);
-            $avertissements[] = "Le taux CIMR employeur ({$pct}%) depasse le plafond de ".($cimrMax * 100).'% (Art. 28-III CGI).';
+            $avertissements[] = __('ui.result.warning_cimr_employer_cap', [
+                'taux' => $this->formaterTaux($cimrTauxEmployeur),
+                'plafond' => $this->formaterTaux($cimrMax),
+            ]);
         }
 
         $maxPersonnes = (int) (config('payroll.charges_famille.plafond') / config('payroll.charges_famille.par_personne'));
         if ($nbPersonnes > $maxPersonnes) {
-            $cap = config('payroll.charges_famille.plafond');
-            $avertissements[] = "Le nombre de personnes à charge ({$nbPersonnes}) dépasse {$maxPersonnes} : déduction plafonnée à {$cap} MAD/mois (Art. 74 CGI).";
+            $avertissements[] = __('ui.result.warning_dependents_cap', [
+                'nombre' => (string) $nbPersonnes,
+                'max' => (string) $maxPersonnes,
+                'plafond' => $this->formaterMontant(config('payroll.charges_famille.plafond')),
+            ]);
         }
 
         if ($rcAnnuel > 0 && $rcAnnuel > $rcPlafond) {
-            $rcDeclareFmt = number_format($rcAnnuel, 2, ',', ' ');
-            $rcPlafondFmt = number_format($rcPlafond, 2, ',', ' ');
-            $avertissements[] = "Retraite complémentaire ({$rcDeclareFmt} MAD/an) : dépasse le plafond de déductibilité ({$rcPlafondFmt} MAD = 50% du SBI annuel). Seul le plafond est déduit (Art. 28-IV CGI).";
+            $avertissements[] = __('ui.result.warning_retirement_cap', [
+                'declare' => $this->formaterMontant($rcAnnuel),
+                'plafond' => $this->formaterMontant($rcPlafond),
+                'taux' => $this->formaterTaux(config('payroll.retraite_complementaire.deduction_ir_max_pct')),
+            ]);
         }
 
         if ($coutEmployeurPartiel) {
-            $avertissements[] = "Coût employeur partiel : certaines cotisations patronales n'ont pas été renseignées et sont considérées comme nulles dans le total affiché.";
+            $avertissements[] = __('ui.result.warning_partial_employer_cost');
         }
 
         // Chaque saisie est bornée (#167), mais leur somme peut encore dépasser la
         // rémunération : le net négatif est signalé plutôt que servi en silence.
         if ($salaireNet < 0) {
             $avertissements[] = __('ui.result.warning_negative_net', [
-                'montant' => number_format($salaireNet, 2, ',', ' '),
+                'montant' => $this->formaterMontant($salaireNet),
             ]);
         }
 
