@@ -463,6 +463,7 @@ return [
         'rc_ceiling_base' => 'Base de calcul du plafond',
         'rc_ceiling_formula' => 'SBI mensuel × :months',
         'rc_example' => 'Exemple (SBI = 8 000 MAD/mois)',
+        'rc_example_formula' => 'Plafond = :base × :months × :pct% = :total MAD/an',
         'rc_note' => "Le simulateur applique une déduction fiscale plafonnée à :pct% du salaire brut annuel. Le versement déclaré n'est pas soustrait du net à payer.",
         'allowances_title' => 'Indemnités traitées comme exonérées par le simulateur',
         'allowances_intro' => "Le simulateur applique les plafonds ci-dessous et réintègre tout excédent au salaire brut imposable. L'éligibilité CNSS et IR doit être confirmée selon la nature et les justificatifs de chaque indemnité.",

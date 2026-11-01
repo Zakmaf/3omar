@@ -379,6 +379,7 @@ return [
         'rc_ceiling_base' => 'Ceiling calculation base',
         'rc_ceiling_formula' => 'Monthly SBI × :months',
         'rc_example' => 'Example (SBI = 8,000 MAD/month)',
+        'rc_example_formula' => 'Ceiling = :base × :months × :pct% = :total MAD/year',
         'rc_note' => 'The simulator applies a tax deduction capped at :pct% of annual gross salary. The declared payment is not deducted from net pay.',
         'allowances_title' => 'Allowances treated as exempt by the simulator',
         'allowances_intro' => 'The simulator applies the ceilings below and reintegrates any excess into taxable gross salary. CNSS and IR eligibility must be confirmed based on the nature and documentation of each allowance.',

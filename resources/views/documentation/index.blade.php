@@ -307,8 +307,12 @@
                             <tr>
                                 <td>{{ __('ui.documentation.rc_example') }}</td>
                                 <td class="text-muted">
-                                    Plafond = 8 000 × {{ $payroll['ir']['nb_mois'] }} × {{ round($payroll['retraite_complementaire']['deduction_ir_max_pct'] * 100) }}%
-                                    = {{ number_format(8000 * $payroll['ir']['nb_mois'] * $payroll['retraite_complementaire']['deduction_ir_max_pct'], 0, ',', ' ') }} MAD/an
+                                    {{ __('ui.documentation.rc_example_formula', [
+                                        'base' => number_format(8000, 0, ',', ' '),
+                                        'months' => $payroll['ir']['nb_mois'],
+                                        'pct' => round($payroll['retraite_complementaire']['deduction_ir_max_pct'] * 100),
+                                        'total' => number_format(8000 * $payroll['ir']['nb_mois'] * $payroll['retraite_complementaire']['deduction_ir_max_pct'], 0, ',', ' '),
+                                    ]) }}
                                 </td>
                             </tr>
                         </tbody>
@@ -369,7 +373,7 @@
                     <table class="table table-sm mb-4">
                         <tbody>
                             <tr><td>{{ __('ui.documentation.smig_hourly', ['year' => 2026]) }}</td><td class="fw-bold">{{ number_format($payroll['smig']['horaire'], 2, ',', ' ') }} MAD/h</td></tr>
-                            <tr><td>{{ __('ui.documentation.smig_monthly', ['hours' => $payroll['smig']['heures_legales']]) }}</td><td class="fw-bold">{{ number_format($payroll['smig']['mensuel'], 2, ',', ' ') }} MAD/mois</td></tr>
+                            <tr><td>{{ __('ui.documentation.smig_monthly', ['hours' => $payroll['smig']['heures_legales']]) }}</td><td class="fw-bold">{{ __('ui.documentation.per_month', ['amount' => number_format($payroll['smig']['mensuel'], 2, ',', ' ')]) }}</td></tr>
                             <tr><td>{{ __('ui.documentation.legal_hours') }}</td><td class="fw-bold">{{ $payroll['smig']['heures_legales'] }} {{ __('ui.documentation.hours_unit') }}</td></tr>
                         </tbody>
                     </table>
