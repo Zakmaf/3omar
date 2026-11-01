@@ -518,12 +518,12 @@
                             $premiereTrancheAnciennete = $ancienneteTranches[0]['min_annees'] ?? 0;
                             $ancienneteOptions = collect([[
                                 'annees' => 0,
-                                'label' => '< '.$premiereTrancheAnciennete.' ans · 0%',
+                                'label' => __('ui.calculator.seniority_option_below', ['years' => $premiereTrancheAnciennete]),
                             ]])->merge(collect($ancienneteTranches)->map(function ($tranche) {
                                 $taux = number_format($tranche['taux'] * 100, 0, ',', ' ');
                                 $label = $tranche['max_annees'] === null
-                                    ? $tranche['min_annees'].' ans et plus · '.$taux.'%'
-                                    : $tranche['min_annees'].' à '.$tranche['max_annees'].' ans · '.$taux.'%';
+                                    ? __('ui.calculator.seniority_option_from', ['min' => $tranche['min_annees'], 'rate' => $taux])
+                                    : __('ui.calculator.seniority_option_range', ['min' => $tranche['min_annees'], 'max' => $tranche['max_annees'], 'rate' => $taux]);
 
                                 return [
                                     'annees' => $tranche['min_annees'],
@@ -933,7 +933,7 @@
                                     <div class="form-text">{{ __('ui.calculator.spouse_help') }}</div>
                             </div>
                         </div>
-                        <div class="form-text mt-2">{{ number_format(config('payroll.charges_famille.par_personne'), 2, ',', ' ') }} MAD/mois x nombre de personnes, plafond {{ number_format(config('payroll.charges_famille.plafond'), 2, ',', ' ') }} MAD/mois (Art. 74 CGI)</div>
+                        <div class="form-text mt-2">{{ __('ui.calculator.family_help', ['amount' => number_format(config('payroll.charges_famille.par_personne'), 2, ',', ' '), 'ceiling' => number_format(config('payroll.charges_famille.plafond'), 2, ',', ' ')]) }}</div>
                     </div>
                 </details>
 
@@ -990,6 +990,23 @@
 @endsection
 
 @push('scripts')
+@php
+    $seuilAnciennete = config('payroll.anciennete.tranches')[0]['min_annees'] ?? 0;
+    $transSeniorityBelow = __('ui.calculator.seniority_below_threshold', ['years' => $seuilAnciennete]);
+    $transSummary = [
+        'seniority' => __('ui.calculator.summary_seniority'),
+        'overtimeOne' => __('ui.calculator.summary_overtime_one'),
+        'overtimeOther' => __('ui.calculator.summary_overtime_other'),
+        'allowancesOne' => __('ui.calculator.summary_allowances_one'),
+        'allowancesOther' => __('ui.calculator.summary_allowances_other'),
+        'cnssBenefits' => __('ui.calculator.summary_cnss_benefits'),
+        'mutual' => __('ui.calculator.summary_mutual'),
+        'childrenOne' => __('ui.calculator.summary_children_one'),
+        'childrenOther' => __('ui.calculator.summary_children_other'),
+        'spouse' => __('ui.calculator.summary_spouse'),
+        'deductions' => __('ui.calculator.summary_deductions'),
+    ];
+@endphp
 <script>
 const INDEMNITES_CONFIG = @json($indemnites_config);
 const HS_LABELS = @json($hs_labels);
@@ -1007,6 +1024,13 @@ const TRANS_OR_MORE = @json(__('ui.calculator.children_or_more'));
 const TRANS_CEILING_SIMULATED = @json(__('ui.calculator.ceiling_simulated'));
 const TRANS_WIZARD_MODE_GROSS = @json(__('ui.calculator.wizard_mode_gross'));
 const TRANS_WIZARD_MODE_NET = @json(__('ui.calculator.wizard_mode_net'));
+const TRANS_SUMMARY = @json($transSummary);
+const TRANS_SENIORITY_BELOW = @json($transSeniorityBelow);
+
+// Remplace les paramètres :name d'une traduction (résumés d'étapes).
+function transReplace(template, params) {
+    return Object.keys(params).reduce((text, name) => text.split(':' + name).join(String(params[name])), template);
+}
 
 const salaireBaseGroup = document.getElementById('salaireBaseGroup');
 const salaireBaseInput = document.getElementById('salaire_base');
@@ -1037,9 +1061,10 @@ updateCalculationMode();
 
 // Tranches d'anciennete (pour apercu cote client)
 const ANCIENNETE_TRANCHES = @json(config('payroll.anciennete.tranches'));
+const SENIORITY_MIN_YEARS = @json($seuilAnciennete);
 
 function getTauxAnciennete(annees) {
-    if (annees < 2) return 0;
+    if (annees < SENIORITY_MIN_YEARS) return 0;
     for (const t of ANCIENNETE_TRANCHES) {
         if (annees >= t.min_annees && (t.max_annees === null || annees <= t.max_annees)) return t.taux * 100;
     }
@@ -1053,7 +1078,7 @@ function updateAnciennete() {
     const montant = salaire * taux / 100;
     const labelEl = document.getElementById('anciennete_taux_label');
     const montantEl = document.getElementById('anciennete_montant_label');
-    labelEl.textContent = taux > 0 ? taux + '%' : '0% (< 2 ans)';
+    labelEl.textContent = taux > 0 ? taux + '%' : TRANS_SENIORITY_BELOW;
     montantEl.textContent = taux > 0 ? '→ ' + montant.toLocaleString(INTL_LOCALE, {minimumFractionDigits:2, maximumFractionDigits:2}) + ' {{ __('ui.result.unit_mad_month_label') }}' : '';
 }
 
@@ -1108,7 +1133,7 @@ function getStepSummary(index) {
             const parts = [];
             const annees = parseInt(document.getElementById('nb_annees_anciennete').value) || 0;
             const taux = getTauxAnciennete(annees);
-            if (taux > 0) parts.push(taux + '% anc.');
+            if (taux > 0) parts.push(transReplace(TRANS_SUMMARY.seniority, {rate: taux}));
             const primes = parseFloat(document.getElementById('autres_primes').value) || 0;
             if (primes > 0) parts.push(formatMAD(primes));
             return parts.join(' + ');
@@ -1116,16 +1141,16 @@ function getStepSummary(index) {
         case 2: {
             const rows = section.querySelectorAll('#hsContainer .hs-row');
             const count = rows.length;
-            return count > 0 ? count + ' ligne' + (count > 1 ? 's' : '') + ' HS' : '';
+            return count > 0 ? transReplace(count > 1 ? TRANS_SUMMARY.overtimeOther : TRANS_SUMMARY.overtimeOne, {count}) : '';
         }
         case 3: {
             const rows = section.querySelectorAll('#indemniteContainer .ind-row');
             const count = rows.length;
-            return count > 0 ? count + ' indemnite' + (count > 1 ? 's' : '') : '';
+            return count > 0 ? transReplace(count > 1 ? TRANS_SUMMARY.allowancesOther : TRANS_SUMMARY.allowancesOne, {count}) : '';
         }
         case 4: {
             const total = parseFloat(document.getElementById('avantages_cnss').value) || 0;
-            return total > 0 ? 'Av. CNSS ' + formatMAD(total) : '';
+            return total > 0 ? transReplace(TRANS_SUMMARY.cnssBenefits, {amount: formatMAD(total)}) : '';
         }
         case 5: {
             const parts = [];
@@ -1138,7 +1163,7 @@ function getStepSummary(index) {
         case 6: {
             const parts = [];
             const mut = parseFloat(document.getElementById('mutuelle_salarie').value) || 0;
-            if (mut > 0) parts.push('Mut. ' + formatMAD(mut));
+            if (mut > 0) parts.push(transReplace(TRANS_SUMMARY.mutual, {amount: formatMAD(mut)}));
             const at = parseFloat(document.getElementById('assurance_at_taux').value) || 0;
             if (at > 0) parts.push('AT ' + at + '%');
             const rc = parseFloat(document.getElementById('assurance_rc_pro').value) || 0;
@@ -1148,15 +1173,15 @@ function getStepSummary(index) {
         case 7: {
             const parts = [];
             const nb = parseInt(document.getElementById('nb_enfants').value) || 0;
-            if (nb > 0) parts.push(nb + ' enf.');
-            if (document.getElementById('conjointCharge').checked) parts.push('conjoint');
+            if (nb > 0) parts.push(transReplace(nb > 1 ? TRANS_SUMMARY.childrenOther : TRANS_SUMMARY.childrenOne, {count: nb}));
+            if (document.getElementById('conjointCharge').checked) parts.push(TRANS_SUMMARY.spouse);
             return parts.join(' + ');
         }
         case 8: {
             const exo = parseFloat(document.getElementById('retenues_exonerees_ir').value) || 0;
             const imp = parseFloat(document.getElementById('retenues_imposees_ir').value) || 0;
             const val = exo + imp;
-            return val > 0 ? 'Ret. ' + formatMAD(val) : '';
+            return val > 0 ? transReplace(TRANS_SUMMARY.deductions, {amount: formatMAD(val)}) : '';
         }
         default:
             return '';
