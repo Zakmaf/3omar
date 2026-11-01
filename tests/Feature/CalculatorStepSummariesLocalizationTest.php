@@ -50,7 +50,7 @@ class CalculatorStepSummariesLocalizationTest extends TestCase
     /**
      * Une valeur telle que @json l'écrit dans le script.
      */
-    private function json(mixed $valeur): string
+    private function litteralJson(mixed $valeur): string
     {
         return json_encode($valeur, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
     }
@@ -77,7 +77,7 @@ class CalculatorStepSummariesLocalizationTest extends TestCase
                 $this->assertNotSame(__("ui.calculator.{$cle}", [], 'fr'), $resumes[$cle], "{$locale} : {$cle}");
             }
 
-            $this->assertStringContainsString('const TRANS_SUMMARY = '.$this->json([
+            $this->assertStringContainsString('const TRANS_SUMMARY = '.$this->litteralJson([
                 'seniority' => $resumes['summary_seniority'],
                 'overtimeOne' => $resumes['summary_overtime_one'],
                 'overtimeOther' => $resumes['summary_overtime_other'],
@@ -101,12 +101,12 @@ class CalculatorStepSummariesLocalizationTest extends TestCase
 
         $html = $this->calculateur('fr');
         $this->assertStringContainsString('const SENIORITY_MIN_YEARS = 3;', $html);
-        $this->assertStringContainsString('const TRANS_SENIORITY_BELOW = '.$this->json('0% (moins de 3 ans)').';', $html);
+        $this->assertStringContainsString('const TRANS_SENIORITY_BELOW = '.$this->litteralJson('0% (moins de 3 ans)').';', $html);
         $this->assertStringContainsString('if (annees < SENIORITY_MIN_YEARS) return 0;', $html);
         $this->assertStringContainsString(e('< 3 ans · 0%'), $html);
 
         $html = $this->calculateur('en');
-        $this->assertStringContainsString('const TRANS_SENIORITY_BELOW = '.$this->json('0% (under 3 years)').';', $html);
+        $this->assertStringContainsString('const TRANS_SENIORITY_BELOW = '.$this->litteralJson('0% (under 3 years)').';', $html);
         $this->assertStringContainsString(e('< 3 years · 0%'), $html);
         $this->assertStringContainsString('3 to 4 years · 5%', $html);
     }
