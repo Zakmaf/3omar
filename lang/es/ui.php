@@ -463,6 +463,7 @@ return [
         'rc_ceiling_base' => 'Base de cálculo del tope',
         'rc_ceiling_formula' => 'SBI mensual × :months',
         'rc_example' => 'Ejemplo (SBI = 8 000 MAD/mes)',
+        'rc_example_formula' => 'Tope = :base × :months × :pct% = :total MAD/año',
         'rc_note' => 'El simulador aplica una deducción fiscal topada al :pct% del salario bruto anual. El pago declarado no se resta del neto a pagar.',
         'allowances_title' => 'Indemnizaciones tratadas como exentas por el simulador',
         'allowances_intro' => 'El simulador aplica los topes indicados y reintegra cualquier excedente al salario bruto imponible. La elegibilidad CNSS e IR debe confirmarse según la naturaleza y los justificantes de cada indemnización.',
