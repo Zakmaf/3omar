@@ -614,7 +614,7 @@
                         <tr class="row-brut">
                             <td class="px-3 py-2">
                                 {{ __('ui.result.seniority_bonus', ['years' => $r['nb_annees_anciennete']]) }}
-                                <span class="badge text-bg-light badge-legal ms-1">Art. 350 CT</span>
+                                <span class="badge text-bg-light badge-legal ms-1">{{ $transNum('ui.result.legal_labor_code', ['article' => '350']) }}</span>
                             </td>
                             <td class="text-end px-3 py-2 result-muted"><span class="num">{{ $fmt($r['input']['salaire_base']) }}</span></td>
                             <td class="text-end px-3 py-2 result-muted"><span class="num">{{ round($r['taux_anciennete'] * 100) }}%</span></td>
@@ -662,7 +662,7 @@
                         <tr class="row-brut">
                             <td class="px-3 py-2">
                                 {{ __('ui.result.excess_allowances') }}
-                                <span class="badge text-bg-light badge-legal ms-1">Arrêté 1314-25</span>
+                                <span class="badge text-bg-light badge-legal ms-1">{{ $transNum('ui.result.legal_order', ['number' => '1314-25']) }}</span>
                             </td>
                             <td class="text-end px-3 py-2 result-muted">-</td>
                             <td class="text-end px-3 py-2 result-muted">-</td>
@@ -688,7 +688,7 @@
                         <tr class="row-cotis">
                             <td class="px-3 py-2">
                                 {{ __('ui.result.cnss_employee') }}
-                                <span class="badge text-bg-light badge-legal ms-1">Dahir 1-72-184</span>
+                                <span class="badge text-bg-light badge-legal ms-1">{{ $transNum('ui.result.legal_dahir', ['number' => '1-72-184']) }}</span>
                                 @if($r['total_avantages_cnss_exoneres'] > 0)
                                 <br><small class="result-muted">{{ __('ui.result.cnss_base_note') }}</small>
                                 @endif
@@ -704,7 +704,7 @@
                                 @if($r['amo_taux_salarie_personnalise'])
                                 <span class="badge text-bg-warning-subtle text-warning-emphasis badge-legal ms-1">{{ __('ui.result.amo_custom_rate_badge') }}</span>
                                 @else
-                                <span class="badge text-bg-light badge-legal ms-1">Loi 65-00</span>
+                                <span class="badge text-bg-light badge-legal ms-1">{{ $transNum('ui.result.legal_law', ['number' => '65-00']) }}</span>
                                 @endif
                             </td>
                             <td class="text-end px-3 py-2 result-muted"><span class="num">{{ $fmt($r['assiette_sociale']) }}</span></td>
@@ -716,7 +716,7 @@
                         <tr class="row-cotis">
                             <td class="px-3 py-2">
                                 {{ __('ui.result.cimr_employee') }}
-                                <span class="badge text-bg-light badge-legal ms-1">Art. 28-III CGI</span>
+                                <span class="badge text-bg-light badge-legal ms-1">{{ $transNum('ui.result.legal_cgi', ['article' => '28-III']) }}</span>
                             </td>
                             <td class="text-end px-3 py-2 result-muted"><span class="num">{{ $fmt($r['sbi']) }}</span></td>
                             <td class="text-end px-3 py-2 result-muted"><span class="num">{{ $trimPct($r['cimr_taux']) }}</span></td>
@@ -734,7 +734,7 @@
                             <td class="px-3 py-2">
                                 {{ __('ui.result.pro_fees') }}
                                 <br><small class="result-muted">{{ $r['desc_fp'] }}{{ $r['fp_plafonne'] ? ' - '.__('ui.result.pro_fees_capped') : '' }}</small>
-                                <span class="badge text-bg-light badge-legal ms-1">Art. 59 CGI</span>
+                                <span class="badge text-bg-light badge-legal ms-1">{{ $transNum('ui.result.legal_cgi', ['article' => '59']) }}</span>
                             </td>
                             <td class="text-end px-3 py-2 result-muted"><span class="num">{{ $fmt($r['sbi']) }}</span></td>
                             <td class="text-end px-3 py-2 result-muted"><span class="num">{{ round($r['taux_fp'] * 100) }}%</span></td>
@@ -746,7 +746,7 @@
                             <td class="px-3 py-2">
                                 {{ __('ui.result.rc_ir_deduction') }}
                                 <br><small class="result-muted"><span class="num">{{ $fmt($r['rc_annuel'], 0) }}</span> {{ __('ui.result.unit_mad_year_label') }}{{ $r['rc_annuel'] > $r['rc_deduite'] ? ' - '.__('ui.result.rc_capped') : '' }}</small>
-                                <span class="badge text-bg-light badge-legal ms-1">Art. 28-IV CGI</span>
+                                <span class="badge text-bg-light badge-legal ms-1">{{ $transNum('ui.result.legal_cgi', ['article' => '28-IV']) }}</span>
                             </td>
                             <td class="text-end px-3 py-2 result-muted">-</td>
                             <td class="text-end px-3 py-2 result-muted">{{ __('ui.result.annual') }}</td>
@@ -773,7 +773,7 @@
                             <td class="px-3 py-2">
                                 {{ __('ui.result.ir_gross') }}
                                 <br><small class="result-muted"><span class="num">{{ $marginalRate }}% × {{ $fmt($r['rni_annuel_net'], 0) }}</span> − <span class="num">{{ $fmt($r['tranche_ir']['deduction'], 0) }}</span> = {{ $money($r['ir_annuel_brut'], 'ui.result.unit_mad_year_label') }}</small>
-                                <span class="badge text-bg-light badge-legal ms-1">Art. 73 CGI</span>
+                                <span class="badge text-bg-light badge-legal ms-1">{{ $transNum('ui.result.legal_cgi', ['article' => '73']) }}</span>
                             </td>
                             <td class="text-end px-3 py-2 result-muted"><span class="num">{{ $fmt($r['rni']) }}</span></td>
                             <td class="text-end px-3 py-2 result-muted"><span class="num">{{ $marginalRate }}%</span></td>
@@ -785,7 +785,7 @@
                             <td class="px-3 py-2">
                                 {{ __('ui.result.family_deduction') }}
                                 <br><small class="result-muted">{{ $transNum('ui.result.family_deduction_detail', ['count' => $r['nb_personnes'], 'amount' => $fmt(config('payroll.charges_famille.par_personne'), 0)]) }}</small>
-                                <span class="badge text-bg-light badge-legal ms-1">Art. 74 CGI</span>
+                                <span class="badge text-bg-light badge-legal ms-1">{{ $transNum('ui.result.legal_cgi', ['article' => '74']) }}</span>
                             </td>
                             <td class="text-end px-3 py-2 result-muted">-</td>
                             <td class="text-end px-3 py-2 result-muted">-</td>
@@ -808,7 +808,7 @@
                                 <span class="badge text-bg-warning ms-1">{{ $transNum('ui.result.capped_at', ['cap' => $fmt($ind['plafond'], 0)]) }}</span>
                                 <br><small class="result-muted">{{ $transNum('ui.result.excess_reintegrated', ['amount' => $fmt($ind['excedent'])]) }}</small>
                                 @endif
-                                <span class="badge text-bg-light badge-legal ms-1">Arrêté 1314-25</span>
+                                <span class="badge text-bg-light badge-legal ms-1">{{ $transNum('ui.result.legal_order', ['number' => '1314-25']) }}</span>
                             </td>
                             <td class="text-end px-3 py-2 result-muted"><span class="num">{{ __('ui.result.ceiling_label') }} {{ $fmt($ind['plafond'], 0) }}</span></td>
                             <td class="text-end px-3 py-2 result-muted">{{ __('ui.result.exempt') }}</td>
@@ -885,7 +885,7 @@
                             <tr class="row-patron">
                                 <td class="px-3 py-2">
                                     {{ __('ui.result.cnss_employer') }}
-                                    <span class="badge text-bg-light badge-legal ms-1">Dahir 1-72-184</span>
+                                    <span class="badge text-bg-light badge-legal ms-1">{{ $transNum('ui.result.legal_dahir', ['number' => '1-72-184']) }}</span>
                                 </td>
                                 <td class="text-end px-3 py-2 result-muted"><span class="num">{{ $fmt($r['assiette_cnss']) }}</span></td>
                                 <td class="text-end px-3 py-2 result-muted"><span class="num">{{ $pct(config('payroll.cnss.taux_patronal')) }}</span></td>
@@ -895,7 +895,7 @@
                             <tr class="row-patron">
                                 <td class="px-3 py-2">
                                     {{ __('ui.result.amo_employer') }}
-                                    <span class="badge text-bg-light badge-legal ms-1">Loi 65-00</span>
+                                    <span class="badge text-bg-light badge-legal ms-1">{{ $transNum('ui.result.legal_law', ['number' => '65-00']) }}</span>
                                 </td>
                                 <td class="text-end px-3 py-2 result-muted"><span class="num">{{ $fmt($r['sbi']) }}</span></td>
                                 <td class="text-end px-3 py-2 result-muted"><span class="num">{{ $pct(config('payroll.amo.taux_patronal')) }}</span></td>
@@ -920,7 +920,7 @@
                             <tr class="row-patron">
                                 <td class="px-3 py-2">
                                     {{ __('ui.result.cimr_employer') }}
-                                    <span class="badge text-bg-light badge-legal ms-1">Art. 28-III CGI</span>
+                                    <span class="badge text-bg-light badge-legal ms-1">{{ $transNum('ui.result.legal_cgi', ['article' => '28-III']) }}</span>
                                 </td>
                                 <td class="text-end px-3 py-2 result-muted"><span class="num">{{ $fmt($r['sbi']) }}</span></td>
                                 <td class="text-end px-3 py-2 result-muted"><span class="num">{{ ($r['cimr_taux_employeur_inconnu'] ?? false) ? '-' : $trimPct($r['cimr_taux_employeur']) }}</span></td>
@@ -941,7 +941,7 @@
                             <tr class="row-patron">
                                 <td class="px-3 py-2">
                                     {{ __('ui.result.rc_employer') }}
-                                    <span class="badge text-bg-light badge-legal ms-1">Art. 28-IV CGI</span>
+                                    <span class="badge text-bg-light badge-legal ms-1">{{ $transNum('ui.result.legal_cgi', ['article' => '28-IV']) }}</span>
                                 </td>
                                 <td class="text-end px-3 py-2 result-muted">-</td>
                                 <td class="text-end px-3 py-2 result-muted">-</td>
