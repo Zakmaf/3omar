@@ -457,7 +457,7 @@
         </div>
 
         @if (!empty($takeaways))
-        <h3 class="eyebrow mb-2" id="result-takeaways-title">{{ __('ui.result.takeaways_title') }}</h3>
+        <h5 class="eyebrow mb-2" id="result-takeaways-title">{{ __('ui.result.takeaways_title') }}</h5>
         <div class="result-wrap" style="--res-basis:18rem" data-result-block="takeaways">
             @foreach ($takeaways as $t)
             <div class="d-flex flex-column gap-2 p-3 rounded-3" style="background:var(--paper);border:1px solid var(--hairline);box-shadow:var(--shadow-1)">
