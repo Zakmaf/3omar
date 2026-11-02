@@ -256,6 +256,8 @@ jobs:
             tests/browser/.output
           retention-days: 7
           if-no-files-found: ignore
+          # .report et .output sont des dossiers cachés, exclus par défaut.
+          include-hidden-files: true
 
       - name: Arrêter le conteneur
         if: always()
