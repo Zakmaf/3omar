@@ -201,7 +201,7 @@ Aucune action requise. Mise a jour transparente depuis v1.4.0.
   - `Tests PHPUnit` : agrégat, vert seulement si les deux versions sont vertes. C'est le check exigé par le ruleset `protect-main` : ne pas le renommer sans mettre à jour le ruleset ;
   - `Laravel Pint` : `vendor/bin/pint --test` ;
   - `Composer audit` : `composer audit --locked` contre les avis de sécurité connus ;
-  - `Build image release` : construit `docker/release/Dockerfile` sans le pousser, démarre le conteneur avec une `APP_KEY` jetable, attend le `HEALTHCHECK` et exige HTTP 200 sur `/up` et `/api/v1/health`.
+  - `Build image release` : construit `docker/release/Dockerfile` sans le pousser, démarre le conteneur avec une `APP_KEY` jetable, attend le `HEALTHCHECK`, exige HTTP 200 sur `/up` et `/api/v1/health`, puis vérifie que `X-Content-Type-Options`, `X-Frame-Options` (valeur `DENY`) et `Referrer-Policy` sont envoyés une seule fois sur `/`, `/api/v1/health` et une image de `public/img/`.
 - L'image de développement (`docker/php/Dockerfile`) et l'image de production (`docker/release/Dockerfile`) sont indépendantes. Ne pas mélanger leurs configurations.
-- Toute modification de `docker/release/` doit être testée localement (`docker build` + `docker run` + vérification HTTP 200) avant PR.
-- Le workflow `.github/workflows/docker-release.yml` se déclenche uniquement sur release GitHub publiée. Ne pas le modifier sans en comprendre les effets sur GHCR.
+- Toute modification de `docker/release/` est vérifiée par le check `Build image release` de sa PR. Un test local (`docker build` + `docker run` + vérification HTTP 200) reste possible, sans être exigé. Si la modification change un comportement que ce job ne vérifie pas encore, ajouter la vérification au job dans la même PR.
+- Le workflow `.github/workflows/docker-release.yml` se déclenche sur release GitHub publiée, ou manuellement par `workflow_dispatch`, soumis à l'approbation décrite dans [Releases](#releases) (un déclenchement manuel pousse le tag `latest`). Ne pas le modifier sans en comprendre les effets sur GHCR.
