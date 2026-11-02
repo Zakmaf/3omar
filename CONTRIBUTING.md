@@ -199,6 +199,7 @@ Aucune action requise. Mise a jour transparente depuis v1.4.0.
 - Le workflow `.github/workflows/ci.yml` tourne sur chaque PR vers `main` et chaque push sur `main`. Il produit les checks suivants :
   - `Tests PHPUnit (PHP 8.3)` et `Tests PHPUnit (PHP 8.5)` : la suite complète sur la version minimale de `composer.json` et sur celle de l'image de production ;
   - `Tests PHPUnit` : agrégat, vert seulement si les deux versions sont vertes. C'est le check exigé par le ruleset `protect-main` : ne pas le renommer sans mettre à jour le ruleset ;
+  - `Tests navigateur` : les contrats Playwright et axe de `tests/browser/contracts` contre le dépôt servi dans un conteneur, avec les étapes de [docs/DEVELOPPEMENT.md](docs/DEVELOPPEMENT.md#tests-navigateur-playwright--axe). Rapport et traces publiés en artefact en cas d'échec ;
   - `Laravel Pint` : `vendor/bin/pint --test` ;
   - `Composer audit` : `composer audit --locked` contre les avis de sécurité connus ;
   - `Build image release` : construit `docker/release/Dockerfile` sans le pousser, démarre le conteneur avec une `APP_KEY` jetable, attend le `HEALTHCHECK` et exige HTTP 200 sur `/up` et `/api/v1/health`.
