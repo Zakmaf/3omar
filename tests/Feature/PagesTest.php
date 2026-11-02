@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class PagesTest extends TestCase
@@ -394,9 +395,7 @@ class PagesTest extends TestCase
             ->assertSessionHasErrors(['salaire_base' => 'The base salary is required.']);
     }
 
-    /**
-     * @dataProvider provideIconGlyphPages
-     */
+    #[DataProvider('provideIconGlyphPages')]
     public function test_bootstrap_icon_glyphs_are_hidden_from_assistive_tech(string $method, string $uri, array $payload = []): void
     {
         $response = $method === 'GET'
