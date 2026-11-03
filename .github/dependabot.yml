@@ -24,6 +24,19 @@ updates:
       - dependencies
       - ci
 
+  # Dépendances npm des tests navigateur (Playwright, axe). Garder la version de
+  # @playwright/test alignée sur l'image Playwright de tests/browser/run.sh et ci.yml.
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+    labels:
+      - dependencies
+
   # Images de base Docker (dev + release)
   - package-ecosystem: docker
     directories:
