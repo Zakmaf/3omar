@@ -13,62 +13,44 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+# Les jobs PHP s'executent dans l'image de developpement (docker/php/Dockerfile),
+# qui embarque la meme version de PHP que l'image de production : la version
+# testee suit le Dockerfile, sans liste a maintenir ici (#229). Les dependances
+# sont installees par l'image composer, comme dans docs/DEVELOPPEMENT.md.
+env:
+  PHP_APP: docker run --rm -v ${{ github.workspace }}:/var/www/html -w /var/www/html --entrypoint php 3omar-app:ci
+  COMPOSER: docker run --rm -v ${{ github.workspace }}:/app -w /app composer:2.10 composer
+
 jobs:
+  # Nom de check exige par le ruleset protect-main : ne pas le renommer sans
+  # mettre a jour le ruleset.
   tests:
-    name: Tests PHPUnit (PHP ${{ matrix.php }})
+    name: Tests PHPUnit
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-    strategy:
-      fail-fast: false
-      matrix:
-        # 8.3 : version minimale de composer.json. 8.5 : version de l'image de production.
-        php: ['8.3', '8.5']
+    timeout-minutes: 15
     steps:
       - name: Récupérer le code
         uses: actions/checkout@v7
 
-      - name: Configurer PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php }}
-          extensions: mbstring, dom, fileinfo, sqlite3, pdo_sqlite, intl
-          coverage: none
-          tools: composer:v2
+      - name: Construire l'image de développement (docker/php/Dockerfile)
+        run: docker build -f docker/php/Dockerfile -t 3omar-app:ci .
 
-      - name: Cache des dépendances Composer
-        uses: actions/cache@v6
-        with:
-          path: vendor
-          key: composer-${{ runner.os }}-php${{ matrix.php }}-${{ hashFiles('composer.lock') }}
-          restore-keys: composer-${{ runner.os }}-php${{ matrix.php }}-
+      - name: Version de PHP testée
+        run: $PHP_APP -v
 
       - name: Préparer les dossiers runtime Laravel
-        run: mkdir -p bootstrap/cache storage/framework/{cache,sessions,views}
+        run: mkdir -p bootstrap/cache storage/framework/{cache/data,sessions,views} storage/logs
 
       - name: Installer les dépendances
-        run: composer install --prefer-dist --no-interaction --no-progress
+        run: $COMPOSER install --prefer-dist --no-interaction --no-progress
 
       - name: Préparer l'environnement
         run: |
           cp .env.example .env
-          php artisan key:generate
+          $PHP_APP artisan key:generate
 
       - name: Lancer les tests
-        run: vendor/bin/phpunit
-
-  # Nom de check exigé par le ruleset protect-main : il ne passe que si la suite
-  # est verte sur toutes les versions de PHP de la matrice.
-  tests-gate:
-    name: Tests PHPUnit
-    needs: tests
-    if: always()
-    runs-on: ubuntu-latest
-    timeout-minutes: 2
-    steps:
-      - name: Vérifier la matrice PHP
-        run: |
-          echo "Résultat de la matrice : ${{ needs.tests.result }}"
-          test "${{ needs.tests.result }}" = "success"
+        run: $PHP_APP vendor/bin/phpunit
 
   pint:
     name: Laravel Pint
@@ -78,26 +60,14 @@ jobs:
       - name: Récupérer le code
         uses: actions/checkout@v7
 
-      - name: Configurer PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.3'
-          extensions: mbstring, dom, fileinfo, intl
-          coverage: none
-          tools: composer:v2
-
-      - name: Cache des dépendances Composer
-        uses: actions/cache@v6
-        with:
-          path: vendor
-          key: composer-${{ runner.os }}-php8.3-${{ hashFiles('composer.lock') }}
-          restore-keys: composer-${{ runner.os }}-php8.3-
+      - name: Construire l'image de développement (docker/php/Dockerfile)
+        run: docker build -f docker/php/Dockerfile -t 3omar-app:ci .
 
       - name: Installer les dépendances
-        run: composer install --prefer-dist --no-interaction --no-progress --no-scripts
+        run: $COMPOSER install --prefer-dist --no-interaction --no-progress --no-scripts
 
       - name: Vérifier le formatage
-        run: vendor/bin/pint --test
+        run: $PHP_APP vendor/bin/pint --test
 
   audit:
     name: Composer audit
@@ -107,15 +77,8 @@ jobs:
       - name: Récupérer le code
         uses: actions/checkout@v7
 
-      - name: Configurer PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.3'
-          coverage: none
-          tools: composer:v2
-
       - name: Auditer composer.lock
-        run: composer audit --locked --no-interaction
+        run: $COMPOSER audit --locked --no-interaction
 
   release-image:
     name: Build image release
