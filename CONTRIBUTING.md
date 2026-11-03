@@ -1,36 +1,33 @@
 # Conventions de contribution
 
-Ces règles s'appliquent à tous les contributeurs : humains, Claude et Codex.
+Ces règles s'appliquent à tous les contributeurs : humains, Claude et Codex. Les règles communes à tous les projets (flux issue, branche, PR, interdits, modèles) sont dans le bloc commun d'[AGENTS.md](AGENTS.md), issu du standard Zakmaf/engineering ; ce fichier ne les contredit pas.
 
 ---
 
 ## Branches
 
-| Préfixe | Usage |
+Format : `<type>/<issue>-<sujet>`, par exemple `fix/214-calculateur-resumes-traduits`.
+
+| Type | Usage |
 |---------|-------|
-| `feat/<sujet>` | Nouvelle fonctionnalité |
-| `fix/<sujet>` | Correction de bug |
-| `docs/<sujet>` | Documentation uniquement |
-| `chore/<sujet>` | Outillage, CI, dépendances |
+| `feat` | Nouvelle fonctionnalité |
+| `fix` | Correction de bug |
+| `docs` | Documentation uniquement |
+| `test` | Tests uniquement |
+| `ci` | Intégration continue |
+| `chore` | Outillage, dépendances |
+| `refactor` | Restructuration sans changement de comportement |
 | `feature/v<X.Y>-<sujet>` | Branche de version mineure (ex: `feature/v1.1-net-to-gross`) |
 
 - Toujours partir de `main` à jour.
 - Une branche = un sujet. Ne pas mélanger fonctionnalité et refactoring.
-- Supprimer la branche après merge.
+- La branche est supprimée après fusion.
 
 ## Collaboration multi-agents
 
-Ces règles sont obligatoires quand plusieurs intervenants travaillent en parallèle sur le dépôt.
+Les règles de coordination (une issue = une branche = un sujet = un writer, jamais de travail sur `main`, préflight, PR en brouillon jusqu'au check `gate` vert, compte rendu avec résultats réels) sont dans [AGENTS.md](AGENTS.md). Spécifique à 3omar :
 
-- `main` reste la branche stable de référence : ne pas y travailler directement.
-- Une issue = une branche = un sujet = un agent.
-- Ne jamais faire travailler deux agents sur la même branche.
-- Ne jamais réutiliser une branche déjà active pour un autre sujet.
-- Toute branche de travail doit référencer un numéro d'issue quand il existe.
-- Avant de commencer, vérifier `git status` et signaler immédiatement tout changement inattendu.
-- Si un autre agent modifie déjà un fichier central (`app/Services/PayrollCalculatorService.php`, `config/payroll.php`, `README.md`, vues principales), ouvrir une branche séparée et éviter le travail concurrent sur le même fichier.
-- Pas de refactor opportuniste hors périmètre du ticket traité.
-- Toute livraison doit annoncer clairement les fichiers touchés et les commandes de vérification exécutées.
+- Si un autre intervenant modifie déjà un fichier central (`app/Services/PayrollCalculatorService.php`, `config/payroll.php`, `README.md`, vues principales du calculateur), attendre ou se coordonner avant de le toucher.
 - Merge rapide des petits sujets terminés pour réduire les conflits de dérive.
 
 ## Commits
@@ -44,17 +41,18 @@ docs(i18n): ajoute les clés V1.1 dans les quatre langues
 chore(ci): met à jour actions/checkout vers v4
 ```
 
-Types acceptés : `feat`, `fix`, `docs`, `chore`, `test`, `refactor`.  
+Types acceptés : `feat`, `fix`, `docs`, `test`, `ci`, `chore`, `refactor`.  
 Message en français, impératif présent, pas de point final.
 
 ## Pull requests
 
 - Titre = message de commit principal (même format).
-- Description : ce qui change, pourquoi, et comment tester.
+- Description : le compte rendu du gabarit de PR (ce qui change, pourquoi, vérifications réelles, risques résiduels).
 - Une PR = un sujet. Pas de PR fourre-tout.
 - Toute PR touchant `app/Services/PayrollCalculatorService.php` doit inclure ou mettre à jour des tests unitaires.
 - Toute PR ajoutant une interface doit ajouter les clés i18n dans les **quatre** langues.
-- Faire merger par l'auteur une fois les checks verts. Pas de merge sans review si la PR modifie le moteur de calcul ou le Dockerfile de production.
+- Une PR d'agent reste en brouillon tant que le check `gate` n'est pas vert.
+- La fusion est réservée au propriétaire du dépôt : le ruleset `protect-main` exige le check `gate` vert et une approbation. Relecture attentive obligatoire si la PR modifie le moteur de calcul ou le Dockerfile de production.
 
 ## Releases
 
@@ -197,11 +195,13 @@ Aucune action requise. Mise a jour transparente depuis v1.4.0.
 ## Docker et CI
 
 - Le workflow `.github/workflows/ci.yml` tourne sur chaque PR vers `main` et chaque push sur `main`. Il produit les checks suivants :
-  - `Tests PHPUnit` : la suite complète, exécutée dans l'image de développement (`docker/php/Dockerfile`), donc sur la version de PHP livrée en production. Une application livrée en image ne teste que la version qu'elle embarque : pas de matrice de versions, `composer.json` déclare cette même version. C'est le check exigé par le ruleset `protect-main` : ne pas le renommer sans mettre à jour le ruleset ;
+  - `Tests PHPUnit` : la suite complète, exécutée dans l'image de développement (`docker/php/Dockerfile`), donc sur la version de PHP livrée en production. Une application livrée en image ne teste que la version qu'elle embarque : pas de matrice de versions, `composer.json` déclare cette même version ;
   - `Tests navigateur` : les contrats Playwright et axe de `tests/browser/contracts` contre le dépôt servi dans un conteneur, avec les étapes de [docs/DEVELOPPEMENT.md](docs/DEVELOPPEMENT.md#tests-navigateur-playwright--axe). Rapport et traces publiés en artefact en cas d'échec ;
   - `Laravel Pint` : `vendor/bin/pint --test` ;
   - `Composer audit` : `composer audit --locked` contre les avis de sécurité connus ;
-  - `Build image release` : construit `docker/release/Dockerfile` sans le pousser, démarre le conteneur avec une `APP_KEY` jetable, attend le `HEALTHCHECK`, exige HTTP 200 sur `/up` et `/api/v1/health`, puis vérifie que `X-Content-Type-Options`, `X-Frame-Options` (valeur `DENY`) et `Referrer-Policy` sont envoyés une seule fois sur `/`, `/api/v1/health` et une image de `public/img/`.
+  - `Build image release` : construit `docker/release/Dockerfile` sans le pousser, démarre le conteneur avec une `APP_KEY` jetable, attend le `HEALTHCHECK`, exige HTTP 200 sur `/up` et `/api/v1/health`, puis vérifie que `X-Content-Type-Options`, `X-Frame-Options` (valeur `DENY`) et `Referrer-Policy` sont envoyés une seule fois sur `/`, `/api/v1/health` et une image de `public/img/` ;
+  - `gate` : agrégat, vert seulement si tous les jobs ci-dessus sont verts. C'est le seul check exigé par le ruleset `protect-main` : tout nouveau job s'ajoute à ses `needs`, sans toucher au ruleset ; ne pas renommer `gate`.
+- Les actions sont épinglées par SHA complet, la version en commentaire ; Dependabot les met à jour. Le jeton des workflows est en lecture seule sauf permission déclarée par le job.
 - L'image de développement (`docker/php/Dockerfile`) et l'image de production (`docker/release/Dockerfile`) sont indépendantes. Ne pas mélanger leurs configurations.
 - Toute modification de `docker/release/` est vérifiée par le check `Build image release` de sa PR. Un test local (`docker build` + `docker run` + vérification HTTP 200) reste possible, sans être exigé. Si la modification change un comportement que ce job ne vérifie pas encore, ajouter la vérification au job dans la même PR.
 - Le workflow `.github/workflows/docker-release.yml` se déclenche sur release GitHub publiée, ou manuellement par `workflow_dispatch`, soumis à l'approbation décrite dans [Releases](#releases) (un déclenchement manuel pousse le tag `latest`). Ne pas le modifier sans en comprendre les effets sur GHCR.

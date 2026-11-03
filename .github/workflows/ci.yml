@@ -30,7 +30,9 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Récupérer le code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Construire l'image de développement (docker/php/Dockerfile)
         run: docker build -f docker/php/Dockerfile -t 3omar-app:ci .
@@ -58,7 +60,9 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Récupérer le code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Construire l'image de développement (docker/php/Dockerfile)
         run: docker build -f docker/php/Dockerfile -t 3omar-app:ci .
@@ -75,7 +79,9 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Récupérer le code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Auditer composer.lock
         run: $COMPOSER audit --locked --no-interaction
@@ -86,7 +92,9 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Récupérer le code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Construire docker/release/Dockerfile (sans push)
         run: docker build -f docker/release/Dockerfile -t 3omar-ci:${{ github.sha }} .
@@ -161,7 +169,9 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Récupérer le code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Préparer les dossiers runtime Laravel
         run: mkdir -p bootstrap/cache storage/framework/{cache/data,sessions,views} storage/logs
@@ -211,7 +221,7 @@ jobs:
 
       - name: Publier le rapport Playwright en cas d'échec
         if: failure()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: rapport-navigateur
           path: |
@@ -225,3 +235,19 @@ jobs:
       - name: Arrêter le conteneur
         if: always()
         run: docker rm -f 3omar-browser-app || true
+
+  # Seul check exige par le ruleset protect-main. Tout nouveau job s'ajoute a
+  # `needs` : la protection de main n'a jamais a changer (standard Zakmaf/engineering).
+  gate:
+    name: gate
+    needs: [tests, pint, audit, release-image, browser]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Tous les jobs sont verts
+        env:
+          RESULTATS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          echo "Résultats : $RESULTATS"
+          for r in $RESULTATS; do test "$r" = "success"; done
