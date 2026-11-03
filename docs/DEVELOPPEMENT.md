@@ -85,6 +85,13 @@ copie du code ne prouve rien. Les versions de Playwright et d'axe sont figées p
 `package-lock.json` et l'image Playwright est épinglée : aucune version n'est téléchargée
 implicitement.
 
+Le job CI `Tests navigateur` (`.github/workflows/ci.yml`) rejoue ces étapes sur chaque PR
+vers `main` et chaque push sur `main`, avec l'image de développement construite et taguée
+`3omar-app:latest` dans le job (`docker/php/Dockerfile`).
+En cas d'échec, le rapport HTML et les traces sont publiés en artefact `rapport-navigateur`.
+Une montée de version de Playwright change ensemble `package.json`, `package-lock.json`,
+l'image de `tests/browser/run.sh`, celle de ce document et celle du job.
+
 → Matrice de vérification, captures et principes : [UX.md](UX.md)
 
 ## Architecture
