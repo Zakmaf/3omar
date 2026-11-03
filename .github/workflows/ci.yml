@@ -188,3 +188,77 @@ jobs:
       - name: Arrêter le conteneur
         if: always()
         run: docker rm -f 3omar-ci || true
+
+  # Contrats navigateur Playwright + axe (tests/browser/contracts), avec les étapes
+  # de docs/DEVELOPPEMENT.md, section "Tests navigateur". Garder l'image Playwright
+  # alignée sur tests/browser/run.sh et sur la version de package-lock.json.
+  browser:
+    name: Tests navigateur
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v7
+
+      - name: Préparer les dossiers runtime Laravel
+        run: mkdir -p bootstrap/cache storage/framework/{cache/data,sessions,views} storage/logs
+
+      - name: Construire l'image de développement (docker/php/Dockerfile)
+        run: docker build -f docker/php/Dockerfile -t 3omar-app:latest .
+
+      - name: Installer les dépendances PHP dans un volume dédié
+        run: |
+          docker run --rm -v "$PWD":/app -v 3omar_browser_vendor:/app/vendor -w /app \
+            composer:2 composer install --no-interaction --no-progress --ignore-platform-req=php
+
+      - name: Servir le dépôt sur 127.0.0.1:49222
+        run: |
+          docker run -d --name 3omar-browser-app --entrypoint php \
+            -v "$PWD":/var/www/html -v 3omar_browser_vendor:/var/www/html/vendor \
+            -w /var/www/html/public -p 127.0.0.1:49222:8000 \
+            -e APP_ENV=local -e APP_KEY="base64:$(openssl rand -base64 32)" \
+            -e APP_URL=http://127.0.0.1:49222 -e CACHE_STORE=array -e SESSION_DRIVER=file \
+            -e PHP_CLI_SERVER_WORKERS=4 \
+            3omar-app:latest -S 0.0.0.0:8000 -t /var/www/html/public \
+            /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/resources/server.php
+          for i in $(seq 1 30); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 5 http://127.0.0.1:49222/calculateur || true)
+            echo "Essai $i : HTTP ${code}"
+            if [ "$code" = "200" ]; then
+              exit 0
+            fi
+            sleep 2
+          done
+          docker logs 3omar-browser-app
+          exit 1
+
+      - name: Installer les dépendances npm épinglées dans un volume dédié
+        run: |
+          docker run --rm -v "$PWD":/work -v 3omar_browser_node_modules:/work/node_modules -w /work \
+            mcr.microsoft.com/playwright:v1.61.1-noble npm ci --no-audit --no-fund
+
+      - name: Lancer les contrats navigateur
+        env:
+          CI: 'true'
+        run: ./tests/browser/run.sh tests/browser/contracts
+
+      - name: Journal du serveur PHP en cas d'échec
+        if: failure()
+        run: docker logs --tail 200 3omar-browser-app || true
+
+      - name: Publier le rapport Playwright en cas d'échec
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: rapport-navigateur
+          path: |
+            tests/browser/.report
+            tests/browser/.output
+          retention-days: 7
+          if-no-files-found: ignore
+          # .report et .output sont des dossiers cachés, exclus par défaut.
+          include-hidden-files: true
+
+      - name: Arrêter le conteneur
+        if: always()
+        run: docker rm -f 3omar-browser-app || true
