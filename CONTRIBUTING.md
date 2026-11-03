@@ -88,7 +88,7 @@ Les tests de release se font uniquement sur GitHub : CI, workflow de publication
 
 Avant publication :
 
-- [ ] CI GitHub verte sur la PR de préparation et sur `main` : `gh pr checks <numéro>`, `gh run list --branch main --limit 1`. Les checks du workflow `CI` couvrent la suite PHPUnit sur PHP 8.3 et 8.5, `pint --test`, `composer audit --locked` et le build de l'image release (conteneur `healthy`, `/up` et `/api/v1/health` en HTTP 200)
+- [ ] CI GitHub verte sur la PR de préparation et sur `main` : `gh pr checks <numéro>`, `gh run list --branch main --limit 1`. Les checks du workflow `CI` couvrent la suite PHPUnit sur la version de PHP des images Docker, `pint --test`, `composer audit --locked` et le build de l'image release (conteneur `healthy`, `/up` et `/api/v1/health` en HTTP 200)
 - [ ] Laravel Pint sans erreur : check `Laravel Pint` vert
 - [ ] `docs/RELEASES.md` contient une entrée conforme au format documenté pour la version
 
@@ -197,8 +197,7 @@ Aucune action requise. Mise a jour transparente depuis v1.4.0.
 ## Docker et CI
 
 - Le workflow `.github/workflows/ci.yml` tourne sur chaque PR vers `main` et chaque push sur `main`. Il produit les checks suivants :
-  - `Tests PHPUnit (PHP 8.3)` et `Tests PHPUnit (PHP 8.5)` : la suite complète sur la version minimale de `composer.json` et sur celle de l'image de production ;
-  - `Tests PHPUnit` : agrégat, vert seulement si les deux versions sont vertes. C'est le check exigé par le ruleset `protect-main` : ne pas le renommer sans mettre à jour le ruleset ;
+  - `Tests PHPUnit` : la suite complète, exécutée dans l'image de développement (`docker/php/Dockerfile`), donc sur la version de PHP livrée en production. Une application livrée en image ne teste que la version qu'elle embarque : pas de matrice de versions, `composer.json` déclare cette même version. C'est le check exigé par le ruleset `protect-main` : ne pas le renommer sans mettre à jour le ruleset ;
   - `Tests navigateur` : les contrats Playwright et axe de `tests/browser/contracts` contre le dépôt servi dans un conteneur, avec les étapes de [docs/DEVELOPPEMENT.md](docs/DEVELOPPEMENT.md#tests-navigateur-playwright--axe). Rapport et traces publiés en artefact en cas d'échec ;
   - `Laravel Pint` : `vendor/bin/pint --test` ;
   - `Composer audit` : `composer audit --locked` contre les avis de sécurité connus ;
