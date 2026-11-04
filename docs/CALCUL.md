@@ -124,5 +124,3 @@ Avant un usage opérationnel, faire confirmer :
 - Les règles d'assiette et de déductibilité CIMR et bancassurance.
 - Les assiettes exactes des contributions patronales.
 - La légitimité d'une AMO salariale nulle ou variable observée sur un bulletin de paie réel (issue #128).
-
-Preuve temporaire — a retirer (#226).
