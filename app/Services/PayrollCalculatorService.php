@@ -321,7 +321,7 @@ class PayrollCalculatorService
             if ($nbH <= 0 || ! isset($majorations[$type])) {
                 continue;
             }
-            $majoPct = $majorations['semaine_diurne']; // preuve temporaire #237, à annuler
+            $majoPct = $majorations[$type];
             $montant = $this->r2($nbH * $tauxHoraire * (1 + $majoPct));
             $detailHS[] = [
                 'type' => $type,
