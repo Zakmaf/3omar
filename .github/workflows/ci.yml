@@ -94,8 +94,18 @@ jobs:
         with:
           persist-credentials: false
 
+      # Version fictive au format des pré-releases : l'étape « Vérifier /up et
+      # /api/v1/health » exige que l'image l'annonce.
       - name: Construire docker/release/Dockerfile (sans push)
-        run: docker build -f docker/release/Dockerfile -t 3omar-ci:${{ github.sha }} .
+        run: docker build -f docker/release/Dockerfile --build-arg APP_VERSION=v0.0.0-dev.1 -t 3omar-ci:${{ github.sha }} .
+
+      - name: Refuser une APP_VERSION hors convention
+        run: |
+          if sortie=$(docker build -f docker/release/Dockerfile --build-arg 'APP_VERSION=v1.2.3-nightly.1' -t 3omar-ci:invalide . 2>&1); then
+            echo "::error::Le build a accepté APP_VERSION=v1.2.3-nightly.1"
+            exit 1
+          fi
+          printf '%s\n' "$sortie" | grep 'APP_VERSION invalide'
 
       - name: Démarrer le conteneur avec une APP_KEY jetable
         run: |
@@ -132,6 +142,7 @@ jobs:
             fi
           done
           grep -q '"status":"ok"' /tmp/reponse
+          grep -q '"version":"v0.0.0-dev.1"' /tmp/reponse
 
       - name: Vérifier les en-têtes de sécurité (une seule fois, X-Frame-Options DENY)
         run: |

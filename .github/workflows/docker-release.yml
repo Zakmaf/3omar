@@ -1,9 +1,11 @@
 name: Publier l'image Docker sur GHCR
 
+# Publication uniquement depuis une release GitHub (standard commun, section 8).
+# Pas de workflow_dispatch : sans contexte de release, la règle `latest`
+# ci-dessous s'évaluerait vraie et pousserait `latest`.
 on:
   release:
     types: [published]
-  workflow_dispatch:
 
 permissions:
   contents: read
@@ -17,6 +19,24 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+
+      # Stable : vX.Y.Z, release non marquée pré-release.
+      # Développement : vX.Y.Z-dev.N, release marquée pré-release.
+      # Tout autre couple tag/drapeau échoue avant de construire quoi que ce soit.
+      - name: Vérifier le tag et le type de release
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+          PRERELEASE: ${{ github.event.release.prerelease }}
+        run: |
+          if [ "$PRERELEASE" = "true" ]; then
+            motif='^v[0-9]+\.[0-9]+\.[0-9]+-dev\.[1-9][0-9]*$'
+          else
+            motif='^v[0-9]+\.[0-9]+\.[0-9]+$'
+          fi
+          if ! printf '%s\n' "$TAG" | grep -Eq "$motif"; then
+            echo "::error::Tag ${TAG} invalide pour une release (pré-release : ${PRERELEASE}). Attendu : vX.Y.Z (stable) ou vX.Y.Z-dev.N (pré-release)."
+            exit 1
+          fi
 
       - name: Authentification GHCR
         uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4.7.0
@@ -32,6 +52,7 @@ jobs:
           images: ghcr.io/${{ github.repository }}
           tags: |
             type=raw,value=latest,enable=${{ !github.event.release.prerelease }}
+            type=raw,value=dev,enable=${{ github.event.release.prerelease }}
             type=semver,pattern=v{{version}}
             type=semver,pattern=v{{major}}.{{minor}}
             type=semver,pattern=v{{major}}
@@ -46,6 +67,8 @@ jobs:
           file: docker/release/Dockerfile
           push: true
           pull: true
+          build-args: |
+            APP_VERSION=${{ github.event.release.tag_name }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha

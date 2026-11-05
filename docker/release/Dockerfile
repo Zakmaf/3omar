@@ -54,6 +54,17 @@ COPY --from=composer-stage /app /var/www/html
 # ---- .env (valeurs de production sûres par défaut) ----
 COPY docker/release/env.production .env
 
+# ---- Version annoncée (pied de page, /api/v1/health) ----
+# Le workflow de publication passe le tag de la release. Sans argument, la valeur
+# par défaut de config/app.php s'applique. Une variable APP_VERSION fournie au
+# démarrage du conteneur reste prioritaire sur le .env.
+ARG APP_VERSION=""
+RUN if [ -n "$APP_VERSION" ]; then \
+        printf '%s\n' "$APP_VERSION" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+(-dev\.[1-9][0-9]*)?$' \
+            || { echo "APP_VERSION invalide : $APP_VERSION" >&2; exit 1; }; \
+        printf '\nAPP_VERSION=%s\n' "$APP_VERSION" >> .env; \
+    fi
+
 # ---- Répertoires Laravel & permissions ----
 RUN mkdir -p bootstrap/cache \
         storage/framework/sessions \
