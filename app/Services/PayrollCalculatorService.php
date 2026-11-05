@@ -418,24 +418,26 @@ class PayrollCalculatorService
         // =====================================================================
         // ÉTAPE 6 — Frais Professionnels (Art. 59 I-A CGI)
         // Assiette = revenu brut imposable (SBI), pas le SNC.
+        // Le moteur expose le régime retenu (regime_fp) ; le texte affiché est
+        // construit par la vue dans la langue active (issue #241).
         // =====================================================================
         if ($typeFraisPro === 'journaliste') {
             $fpConfig = config('payroll.frais_pro.journaliste');
             $tauxFP = $fpConfig['taux'];
             $plafondFP = $fpConfig['plafond'];
-            $descFP = 'Journaliste/correspondant — taux majoré '.($tauxFP * 100).'%';
+            $regimeFP = 'journaliste';
         } elseif ($typeFraisPro === 'artiste') {
             $fpConfig = config('payroll.frais_pro.artiste');
             $tauxFP = $fpConfig['taux'];
             $plafondFP = $fpConfig['plafond'];
-            $descFP = 'Artiste/créateur — taux majoré '.($tauxFP * 100).'%';
+            $regimeFP = 'artiste';
         } else {
             if ($sbi <= config('payroll.frais_pro.seuil_mensuel')) {
                 $fpConfig = config('payroll.frais_pro.commun.bas');
-                $descFP = 'SBI ≤ '.config('payroll.frais_pro.seuil_mensuel').' MAD → taux '.($fpConfig['taux'] * 100).'%';
+                $regimeFP = 'commun_bas';
             } else {
                 $fpConfig = config('payroll.frais_pro.commun.haut');
-                $descFP = 'SBI > '.config('payroll.frais_pro.seuil_mensuel').' MAD → taux '.($fpConfig['taux'] * 100).'%';
+                $regimeFP = 'commun_haut';
             }
             $tauxFP = $fpConfig['taux'];
             $plafondFP = $fpConfig['plafond'];
@@ -641,7 +643,7 @@ class PayrollCalculatorService
             'snc' => $snc,
             'taux_fp' => $tauxFP,
             'plafond_fp' => $plafondFP,
-            'desc_fp' => $descFP,
+            'regime_fp' => $regimeFP,
             'frais_pro' => $fraisPro,
             'fp_plafonne' => $fpPlaf,
             'rni' => $rni,
