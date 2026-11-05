@@ -430,7 +430,7 @@ class PayrollCalculatorService
             $plafondFP = $fpConfig['plafond'];
             $descFP = 'Artiste/créateur — taux majoré '.($tauxFP * 100).'%';
         } else {
-            if ($sbi < config('payroll.frais_pro.seuil_mensuel')) {
+            if ($sbi <= config('payroll.frais_pro.seuil_mensuel')) {
                 $fpConfig = config('payroll.frais_pro.commun.bas');
                 $descFP = 'SBI ≤ '.config('payroll.frais_pro.seuil_mensuel').' MAD → taux '.($fpConfig['taux'] * 100).'%';
             } else {
