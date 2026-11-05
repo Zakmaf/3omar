@@ -141,7 +141,7 @@ return [
     // =========================================================================
     'anciennete' => [
         'tranches' => [
-            ['min_annees' => 2, 'max_annees' => 4, 'taux' => 0.05],
+            ['min_annees' => 2, 'max_annees' => 5, 'taux' => 0.05],
             ['min_annees' => 5, 'max_annees' => 11, 'taux' => 0.10],
             ['min_annees' => 12, 'max_annees' => 19, 'taux' => 0.15],
             ['min_annees' => 20, 'max_annees' => 24, 'taux' => 0.20],
