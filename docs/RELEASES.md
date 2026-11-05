@@ -1,5 +1,50 @@
 # Releases
 
+## v3.6.0 - 2026-11-05
+
+### Nouveautés
+
+- L'API expose le régime de frais professionnels retenu sous forme de donnée, et non plus de phrase : `regime_fp` (`commun_bas`, `commun_haut`, `journaliste` ou `artiste`). Le taux `taux_fp`, déjà renvoyé, est désormais documenté dans la spécification OpenAPI. Chaque client construit le libellé dans sa langue. #241
+
+### Améliorations
+
+- Les liens du sélecteur de langue portent un nom accessible qui contient le texte affiché (« FR Français » au lieu de « Français »), comme le demande WCAG 2.5.3. #248
+
+### Correctifs
+
+- Le détail des frais professionnels du bulletin s'affiche dans la langue choisie, avec le taux et le seuil lus dans la configuration. Il restait en français, avec un tiret cadratin, dans les quatre langues et dans l'API. #241
+- Traduit les avertissements du calcul dans les quatre langues et retire une référence interne du message AMO. Les taux s'affichent avec une virgule (`2,26%`) et le salaire sous le SMIG est formaté (`3 000,00`). #207
+- Traduit les badges de références légales du bulletin détaillé (« Order No. 1314-25 », « Law No. 65-00 », « القرار رقم 1314-25 »), numéros protégés du réordonnancement en arabe. #215
+- Traduit les résumés d'étapes du calculateur, l'aperçu et les tranches d'ancienneté et l'aide des charges de famille. #214
+- Traduit l'exemple de plafond de l'épargne retraite et l'unité du SMIG mensuel de la page documentation. #216
+
+### Sécurité
+
+- Passe `symfony/http-foundation`, `symfony/http-kernel` et `symfony/routing` de 7.4.22 à 7.4.23 : six avis, dont CVE-2026-118514 et CVE-2026-118516, sur le contournement de règles d'accès, les raccourcis de proxys de confiance, la génération d'URL et les en-têtes transférés. Exposition limitée : l'image de production ne fait confiance à aucun proxy. #244
+
+### Mise à jour de la stack
+
+- Passe `laravel/framework` de 13.37.0 à 13.39.0.
+- Passe les outils de test PHPUnit de 11.5.55 à 13.4.5, `@playwright/test` de 1.61.1 à 1.64.1, `axe-core` et `@axe-core/playwright` en 4.14.0. Aucun n'est embarqué dans l'image de production.
+- La CI teste uniquement la version de PHP livrée dans l'image (8.5), échoue sur toute dépréciation PHPUnit, exécute les 55 contrats navigateur Playwright et axe sur chaque PR et refuse les tirets cadratins et les émojis dans les lignes modifiées. Un check agrégé `gate` regroupe tous les jobs. #229 #220 #221 #226
+- Couvre par des tests le montant des heures supplémentaires et ses quatre majorations, les bornes des tranches d'ancienneté, les frais professionnels du statut artiste et la frontière du seuil de 6 500 MAD : 375 tests au total. #237 #239 #238
+- Les règles de contribution et des agents suivent le standard commun du projet : `AGENTS.md` comme fichier de référence et modèle de PR unique. #231
+
+### Migration
+
+Aucune action de configuration requise pour l'image. Pour les clients de l'API :
+
+- les `avertissements` de la réponse sont désormais en anglais, comme les messages d'erreur ; #207
+- le champ non documenté `desc_fp` (phrase en français) disparaît du résultat : utiliser `regime_fp`, `taux_fp` et `fp_plafonne`. #241
+
+Une installation hors Docker demande désormais PHP 8.5, comme les images. #229
+
+```bash
+docker pull ghcr.io/zakmaf/3omar:v3.6.0
+```
+
+---
+
 ## v3.5.0 - 2026-10-30
 
 ### Nouveautés
