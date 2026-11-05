@@ -236,11 +236,32 @@ jobs:
         if: always()
         run: docker rm -f 3omar-browser-app || true
 
+  # Règle rédactionnelle d'AGENTS.md et CONTRIBUTING.md : aucun tiret cadratin
+  # (U+2014) ni emoji dans les lignes ajoutées ou modifiées. Les lignes
+  # existantes non touchées ne sont pas contrôlées (#226).
+  style:
+    name: Style rédactionnel
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Vérifier les lignes ajoutées ou modifiées
+        env:
+          # PR : premier parent du commit de fusion testé, soit la base.
+          # Push sur main : le commit qui précédait le push.
+          BASE: ${{ github.event_name == 'pull_request' && 'HEAD^1' || github.event.before }}
+        run: bash .github/scripts/style-redactionnel.sh "$BASE"
+
   # Seul check exige par le ruleset protect-main. Tout nouveau job s'ajoute a
   # `needs` : la protection de main n'a jamais a changer (standard Zakmaf/engineering).
   gate:
     name: gate
-    needs: [tests, pint, audit, release-image, browser]
+    needs: [tests, pint, audit, release-image, browser, style]
     if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 2
