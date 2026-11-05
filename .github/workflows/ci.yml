@@ -22,8 +22,6 @@ env:
   COMPOSER: docker run --rm -v ${{ github.workspace }}:/app -w /app composer:2.10 composer
 
 jobs:
-  # Nom de check exige par le ruleset protect-main : ne pas le renommer sans
-  # mettre a jour le ruleset.
   tests:
     name: Tests PHPUnit
     runs-on: ubuntu-latest
