@@ -19,7 +19,7 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 APP_CONTAINER="${APP_CONTAINER:-3omar-browser-app}"
 BROWSER_BASE_URL="${BROWSER_BASE_URL:-http://127.0.0.1:49222}"
-PLAYWRIGHT_IMAGE="${PLAYWRIGHT_IMAGE:-mcr.microsoft.com/playwright:v1.61.1-noble}"
+PLAYWRIGHT_IMAGE="${PLAYWRIGHT_IMAGE:-mcr.microsoft.com/playwright:v1.64.1-noble}"
 NODE_MODULES_VOLUME="${NODE_MODULES_VOLUME:-3omar_browser_node_modules}"
 
 fail() { echo "ERREUR: $*" >&2; exit 1; }

@@ -550,9 +550,9 @@
                            lang="{{ $locale }}"
                            hreflang="{{ $locale }}"
                            title="{{ $localeConfig['label'] }}"
-                           aria-label="{{ $localeConfig['label'] }}"
                            @if($locale === $currentLocale) aria-current="true" @endif>
-                            {{ $localeConfig['short'] }}
+                            {{-- Nom accessible = texte visible + nom complet (WCAG 2.5.3, #248) --}}
+                            {{ $localeConfig['short'] }}<span class="visually-hidden"> {{ $localeConfig['label'] }}</span>
                         </a>
                         @endforeach
                     </div>
