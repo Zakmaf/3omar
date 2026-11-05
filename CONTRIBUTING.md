@@ -56,18 +56,21 @@ Message en français, impératif présent, pas de point final.
 
 ## Releases
 
-- Versionnement sémantique : `vMAJEUR.MINEUR.PATCH`.
+- Versionnement sémantique, selon le standard commun (Zakmaf/engineering, section 8). Deux sortes de release seulement :
+  - **stable** `vMAJEUR.MINEUR.PATCH` : release GitHub marquée « Latest » ;
+  - **pré-release de développement** `vX.Y.Z-dev.N` : `X.Y.Z` est la prochaine version prévue, `N` part de 1 et augmente à chaque build (`v3.7.0-dev.1`, `v3.7.0-dev.2`, puis `v3.7.0`). Release GitHub marquée pré-release.
+
+  Aucun autre suffixe (`-rc`, `-beta`, `-nightly`) : le workflow de publication refuse tout autre tag.
 - La release GitHub déclenche automatiquement le build et le push de l'image Docker sur GHCR.
 - Toujours créer la release depuis `main` après merge.
 - Mettre à jour la table des tags dans [docs/DEPLOIEMENT.md](docs/DEPLOIEMENT.md) lors d'une nouvelle mineure.
-- **Mettre à jour le numéro de version** dans `config/app.php` (`'version' => env('APP_VERSION', 'VX.Y.Z')`) **avant chaque release**. Ce numéro est affiché dans le footer du site.
-- **Approbation obligatoire** : aucun agent (Claude, Codex, etc.) ne peut réaliser, sans l'accord explicite et documenté du propriétaire du dépôt, l'une des actions suivantes :
-  - créer ou publier une release GitHub (`gh release create`, ou publication d'un brouillon de release existant) ;
-  - créer ou pousser un tag Git, local ou distant (`git tag vX.Y.Z`, `git push origin vX.Y.Z`) ;
-  - déclencher manuellement le workflow de publication (`workflow_dispatch` sur `.github/workflows/docker-release.yml`, via `gh workflow run` ou l'interface GitHub) ;
-  - déployer ou mettre à jour une instance de production externe (hors du dépôt, hors CI).
+- **Mettre à jour le numéro de version** dans `config/app.php` (`'version' => env('APP_VERSION', 'VX.Y.Z')`) **avant chaque release stable**. L'image publiée annonce de toute façon le tag de sa release (pied de page et `/api/v1/health`) : le workflow le passe au build. La valeur de `config/app.php` sert hors release et au contrat OpenAPI.
+- **Approbation** : aucun agent ne crée ni ne publie de release sans l'accord du propriétaire. Ce qui vaut accord :
+  - **release stable** : l'accord explicite du propriétaire, qui couvre toute la chaîne (PR de préparation, puis publication) ;
+  - **pré-release de développement** : la demande du propriétaire ;
+  - **correctif de sécurité** : la fusion par le propriétaire d'une PR étiquetée `security` (voir plus bas).
 
-  Demander confirmation explicite avant chacune de ces actions, même si un pas précédent a déjà été approuvé.
+  Seul Daemon publie, sous le compte machine `zakmaf-bot` ; les workers (Claude Code, Codex) jamais. Aucun tag poussé à la main (`git tag`, `git push origin vX.Y.Z`) : le tag naît de la release GitHub. Le workflow de publication n'a pas de déclenchement manuel. Le déploiement d'une instance externe reste une action du propriétaire ou de l'opérateur, hors du dépôt et hors CI.
 
 ### États de publication
 
@@ -75,7 +78,7 @@ Une release traverse quatre états distincts. Ne pas confondre "code prêt" et "
 
 1. **Source préparée** : le code est mergé sur `main`, la version est mise à jour dans `config/app.php`, une entrée est ajoutée dans [docs/RELEASES.md](docs/RELEASES.md). Rien n'est publié.
 2. **Release publiée** : une release GitHub existe et est publiée. Ceci déclenche automatiquement le workflow `docker-release.yml`.
-3. **Image GHCR** : l'image a été construite et poussée sur `ghcr.io/zakmaf/3omar` avec les tags `latest` / `vMAJEUR` / `vMAJEUR.MINEUR` / `vMAJEUR.MINEUR.PATCH`. Se vérifie avec `gh run list --workflow=docker-release.yml --limit 1`.
+3. **Image GHCR** : l'image a été construite et poussée sur `ghcr.io/zakmaf/3omar`. Release stable : tags `latest` / `vMAJEUR` / `vMAJEUR.MINEUR` / `vMAJEUR.MINEUR.PATCH`. Pré-release : le tag exact `vX.Y.Z-dev.N` et l'étiquette mobile `dev`, rien d'autre. Se vérifie avec `gh run list --workflow=docker-release.yml --limit 1`.
 4. **Production déployée** : une instance externe exécute effectivement l'image publiée. C'est une action séparée, hors du dépôt et hors CI, à confirmer explicitement par le propriétaire ou un opérateur autorisé.
 
 Voir aussi [docs/DEPLOIEMENT.md](docs/DEPLOIEMENT.md) pour le détail du déploiement de l'image publiée.
@@ -101,11 +104,26 @@ Après déploiement, sur l'instance :
 - [ ] Version exposée par `/api/v1/health` correspond à la version de la release
 - [ ] Confidentialité des logs vérifiée : les journaux d'accès ne journalisent pas la chaîne de requête ni le référent (les liens de simulation/partage embarquent des données dans l'URL)
 
-### Tester avant une release stable
+### Pré-releases de développement
 
-Pour tester une image avant de la publier en stable, publier une pré-release GitHub avec un tag de pré-version, par exemple `v3.5.0-nightly.1` (`gh release create v3.5.0-nightly.1 --prerelease`). Le workflow ne pousse alors que le tag exact : ni `latest`, ni `vMAJEUR`, ni `vMAJEUR.MINEUR`. Les points « après publication » et « après déploiement » se vérifient sur cette image avant la release stable. La création d'une pré-release suit la même règle d'approbation qu'une release.
+Elles servent à tester un état de `main` avant une release stable.
 
-Ne jamais utiliser `workflow_dispatch` pour tester : un déclenchement manuel pousse le tag `latest`.
+- **Cadence** : à la demande du propriétaire uniquement, jamais planifiée ni à chaque fusion, pour que l'image en test ne change pas pendant le test. Daemon en propose une quand `main` a accumulé des changements visibles par l'utilisateur depuis la release précédente (nouveautés, correctifs ; pas la CI ni les dépendances), sans jamais la publier de lui-même.
+- **Publication** : depuis `main`, sur un commit dont `gate` est vert, sans PR de préparation ni entrée dans [docs/RELEASES.md](docs/RELEASES.md) ; notes générées par GitHub :
+
+  ```bash
+  gh release create v3.7.0-dev.1 --target <sha> --prerelease --generate-notes
+  ```
+
+- **Image** : le tag exact et l'étiquette mobile `dev`. Ni `latest`, ni `vMAJEUR`, ni `vMAJEUR.MINEUR` ; la release GitHub n'est jamais « Latest ». Vérifier après publication que `latest`, `vMAJEUR` et `vMAJEUR.MINEUR` gardent le digest de la dernière stable.
+- L'environnement de test et le déploiement des pré-releases relèvent du propriétaire et de l'infrastructure.
+
+### Correctif de sécurité : release immédiate
+
+- Concerne tout correctif d'une vulnérabilité dans ce qui est livré : code de l'application, runtime, image de base, dépendances de production. Une dépendance de développement ou de CI (outil de test, action) ne déclenche pas de release : elle part avec la suivante.
+- La PR porte l'étiquette `security`. Sa fusion vaut accord de release : la PR de préparation est ouverte aussitôt (son approbation reste exigée par `protect-main`), puis la release est publiée dès que `main` est vert, sans nouvelle demande.
+- Version : PATCH, ou MINEUR si `main` contient déjà des nouveautés non publiées. Section `## Sécurité` dans les release notes. Plusieurs correctifs fusionnés le même jour partent dans une seule release.
+- Conséquence : `main` reste publiable à tout moment. On n'y fusionne pas de travail inachevé.
 
 ### Rédaction des release notes
 
@@ -199,10 +217,10 @@ Aucune action requise. Mise a jour transparente depuis v1.4.0.
   - `Tests navigateur` : les contrats Playwright et axe de `tests/browser/contracts` contre le dépôt servi dans un conteneur, avec les étapes de [docs/DEVELOPPEMENT.md](docs/DEVELOPPEMENT.md#tests-navigateur-playwright--axe). Rapport et traces publiés en artefact en cas d'échec ;
   - `Laravel Pint` : `vendor/bin/pint --test` ;
   - `Composer audit` : `composer audit --locked` contre les avis de sécurité connus ;
-  - `Build image release` : construit `docker/release/Dockerfile` sans le pousser, démarre le conteneur avec une `APP_KEY` jetable, attend le `HEALTHCHECK`, exige HTTP 200 sur `/up` et `/api/v1/health`, puis vérifie que `X-Content-Type-Options`, `X-Frame-Options` (valeur `DENY`) et `Referrer-Policy` sont envoyés une seule fois sur `/`, `/api/v1/health` et une image de `public/img/` ;
+  - `Build image release` : construit `docker/release/Dockerfile` sans le pousser avec une version de test (`APP_VERSION=v0.0.0-dev.1`), vérifie qu'une version hors convention fait échouer le build, démarre le conteneur avec une `APP_KEY` jetable, attend le `HEALTHCHECK`, exige HTTP 200 sur `/up` et `/api/v1/health` et que ce dernier annonce la version de test, puis vérifie que `X-Content-Type-Options`, `X-Frame-Options` (valeur `DENY`) et `Referrer-Policy` sont envoyés une seule fois sur `/`, `/api/v1/health` et une image de `public/img/` ;
   - `Style rédactionnel` : échoue si une ligne ajoutée ou modifiée (diff de la PR contre sa base, ou du push contre le commit précédent de `main`) contient un tiret cadratin (U+2014) ou un emoji, et annote le fichier et la ligne. Les lignes existantes non touchées ne sont pas contrôlées : modifier une ligne qui en contient déjà un oblige à le remplacer. Exceptions : `composer.lock`, `package-lock.json` (générés) et, dans `AGENTS.md`, `CLAUDE.md` et `CONTRIBUTING.md`, les lignes qui énoncent la règle. Même vérification en local avant de pousser : `bash .github/scripts/style-redactionnel.sh origin/main` ;
   - `gate` : agrégat, vert seulement si tous les jobs ci-dessus sont verts. C'est le seul check exigé par le ruleset `protect-main` : tout nouveau job s'ajoute à ses `needs`, sans toucher au ruleset ; ne pas renommer `gate`.
 - Les actions sont épinglées par SHA complet, la version en commentaire ; Dependabot les met à jour. Le jeton des workflows est en lecture seule sauf permission déclarée par le job.
 - L'image de développement (`docker/php/Dockerfile`) et l'image de production (`docker/release/Dockerfile`) sont indépendantes. Ne pas mélanger leurs configurations.
 - Toute modification de `docker/release/` est vérifiée par le check `Build image release` de sa PR. Un test local (`docker build` + `docker run` + vérification HTTP 200) reste possible, sans être exigé. Si la modification change un comportement que ce job ne vérifie pas encore, ajouter la vérification au job dans la même PR.
-- Le workflow `.github/workflows/docker-release.yml` se déclenche sur release GitHub publiée, ou manuellement par `workflow_dispatch`, soumis à l'approbation décrite dans [Releases](#releases) (un déclenchement manuel pousse le tag `latest`). Ne pas le modifier sans en comprendre les effets sur GHCR.
+- Le workflow `.github/workflows/docker-release.yml` se déclenche uniquement sur release GitHub publiée, selon l'approbation décrite dans [Releases](#releases). Il vérifie d'abord le couple tag / type de release (`vX.Y.Z` stable, `vX.Y.Z-dev.N` pré-release), puis passe le tag au build (`APP_VERSION`). Pas de `workflow_dispatch` : sans contexte de release, la règle `latest` s'évaluerait vraie. Ne pas le modifier sans en comprendre les effets sur GHCR.
