@@ -60,7 +60,7 @@ docker run -d --name 3omar-browser-app --entrypoint php \
 
 # 3. Installer les dépendances npm épinglées dans un volume dédié
 docker run --rm -v "$PWD":/work -v 3omar_browser_node_modules:/work/node_modules -w /work \
-  mcr.microsoft.com/playwright:v1.61.1-noble npm ci
+  mcr.microsoft.com/playwright:v1.64.1-noble npm ci
 
 # 4. Lancer la suite
 ./tests/browser/run.sh tests/browser/contracts

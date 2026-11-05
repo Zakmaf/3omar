@@ -208,7 +208,7 @@ jobs:
       - name: Installer les dépendances npm épinglées dans un volume dédié
         run: |
           docker run --rm -v "$PWD":/work -v 3omar_browser_node_modules:/work/node_modules -w /work \
-            mcr.microsoft.com/playwright:v1.61.1-noble npm ci --no-audit --no-fund
+            mcr.microsoft.com/playwright:v1.64.1-noble npm ci --no-audit --no-fund
 
       - name: Lancer les contrats navigateur
         env:
