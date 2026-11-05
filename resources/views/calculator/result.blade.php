@@ -730,10 +730,23 @@
                         </tr>
 
                         {{-- FRAIS PRO & RNI --}}
+                        @php
+                            // Régime retenu par le moteur, rendu dans la langue active (issue #241).
+                            $fpRegimeKeys = [
+                                'commun_bas' => 'ui.result.pro_fees_regime_common_low',
+                                'commun_haut' => 'ui.result.pro_fees_regime_common_high',
+                                'journaliste' => 'ui.result.pro_fees_regime_journalist',
+                                'artiste' => 'ui.result.pro_fees_regime_artist',
+                            ];
+                            $fpRegimeDetail = $transNum($fpRegimeKeys[$r['regime_fp']], [
+                                'threshold' => $fmt(config('payroll.frais_pro.seuil_mensuel'), 0),
+                                'rate' => rtrim(rtrim(number_format($r['taux_fp'] * 100, 2, ',', ' '), '0'), ','),
+                            ]);
+                        @endphp
                         <tr class="row-impot">
                             <td class="px-3 py-2">
                                 {{ __('ui.result.pro_fees') }}
-                                <br><small class="result-muted">{{ $r['desc_fp'] }}{{ $r['fp_plafonne'] ? ' - '.__('ui.result.pro_fees_capped') : '' }}</small>
+                                <br><small class="result-muted">{{ $fpRegimeDetail }}{{ $r['fp_plafonne'] ? ' - '.__('ui.result.pro_fees_capped') : '' }}</small>
                                 <span class="badge text-bg-light badge-legal ms-1">{{ $transNum('ui.result.legal_cgi', ['article' => '59']) }}</span>
                             </td>
                             <td class="text-end px-3 py-2 result-muted"><span class="num">{{ $fmt($r['sbi']) }}</span></td>

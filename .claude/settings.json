@@ -1,0 +1,53 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git status *)",
+      "Bash(git log *)",
+      "Bash(git diff *)",
+      "Bash(git show *)",
+      "Bash(git branch)",
+      "Bash(git branch --show-current)",
+      "Bash(git branch -a)",
+      "Bash(git remote -v)",
+      "Bash(git blame *)",
+      "Bash(git ls-files *)",
+      "Bash(gh issue list *)",
+      "Bash(gh issue view *)",
+      "Bash(gh pr list *)",
+      "Bash(gh pr view *)",
+      "Bash(gh pr diff *)",
+      "Bash(gh pr checks *)",
+      "Bash(gh run list *)",
+      "Bash(gh run view *)",
+      "Bash(gh repo view *)"
+    ],
+    "deny": [
+      "Bash(git push --force*)",
+      "Bash(git push -f *)",
+      "Bash(git push * main*)",
+      "Bash(git push origin main*)",
+      "Bash(git push --delete*)",
+      "Bash(git push --tags*)",
+      "Bash(git tag *)",
+      "Bash(git merge *)",
+      "Bash(git rebase *)",
+      "Bash(git reset --hard *)",
+      "Bash(git clean *)",
+      "Bash(git branch -D *)",
+      "Bash(gh pr merge *)",
+      "Bash(gh release *)",
+      "Bash(gh workflow run *)",
+      "Bash(gh repo delete *)",
+      "Bash(gh repo edit *)",
+      "Bash(gh api -X PUT *)",
+      "Bash(gh api -X DELETE *)",
+      "Bash(docker system prune*)",
+      "Bash(docker volume prune*)",
+      "Bash(rm -rf *)",
+      "Read(.env)",
+      "Read(.env.*)",
+      "Read(**/*.pem)",
+      "Read(**/*.key)"
+    ]
+  }
+}

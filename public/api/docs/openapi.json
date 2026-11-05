@@ -353,6 +353,8 @@
           "cotisation_cimr": { "type": "number" },
           "ir_net": { "type": "number", "description": "IR net mensuel" },
           "frais_pro": { "type": "number" },
+          "taux_fp": { "type": "number", "description": "Taux de frais professionnels retenu (fraction, ex. 0.35)" },
+          "regime_fp": { "type": "string", "enum": ["commun_bas", "commun_haut", "journaliste", "artiste"], "description": "Regime de frais professionnels retenu (Art. 59 I-A CGI) : commun sous ou au-dela du seuil mensuel, journaliste ou artiste. Le libelle affiche est construit par le client dans sa langue." },
           "rni": { "type": "number", "description": "Revenu Net Imposable mensuel" },
           "total_indemnites": { "type": "number" },
           "total_sociales": { "type": "number" },

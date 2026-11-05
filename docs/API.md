@@ -145,6 +145,8 @@ Tout autre champ est ignore par l'API, sans erreur ni avertissement. Les exemple
 
 Chaque montant est borne a 10 000 000 MAD et chaque taux a 100 (bornes techniques, pas reglementaires) : une valeur au-dela renvoie un 422 qui nomme le champ. Des valeurs toutes valides peuvent encore donner un `salaire_net` negatif (retenues superieures a la remuneration) : la reponse reste un 200 et `avertissements` le signale.
 
+Le detail des frais professionnels est expose sous forme de donnees, pas de phrase : `regime_fp` (`commun_bas`, `commun_haut`, `journaliste` ou `artiste`), `taux_fp` (fraction, par exemple `0.35`) et `fp_plafonne` (plafond mensuel atteint). Le client construit le libelle dans sa langue.
+
 ## Limitation de debit (rate limiting)
 
 Les endpoints de simulation (`/simuler/brut-vers-net` et `/simuler/net-vers-brut`) sont limites a **60 requetes par minute** par adresse IP.
