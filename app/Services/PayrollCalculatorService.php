@@ -145,7 +145,7 @@ class PayrollCalculatorService
                 $borneBasse,
                 $borneHaute,
                 false,
-                null
+                __('ui.result.warning_net_unreachable')
             );
         }
 
