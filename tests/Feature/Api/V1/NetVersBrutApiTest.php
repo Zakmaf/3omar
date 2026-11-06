@@ -30,6 +30,31 @@ class NetVersBrutApiTest extends TestCase
             ->assertJson(['mode' => 'net_to_gross']);
     }
 
+    /**
+     * Net impossible à atteindre (docs/CALCUL.md, issue #240) : l'API répond 200
+     * avec le meilleur candidat, converge à false et l'avertissement en anglais,
+     * quel que soit l'en-tête Accept-Language.
+     */
+    public function test_unreachable_target_returns_200_with_unconverged_resolution(): void
+    {
+        foreach (['en', 'fr'] as $language) {
+            $response = $this->withHeader('Accept-Language', $language)->postJson('/api/v1/simuler/net-vers-brut', [
+                'net_cible' => 1000,
+                'type_frais_pro' => 'commun',
+                'retenues_imposees_ir' => 10000000,
+            ]);
+
+            $response->assertOk()
+                ->assertJsonPath('mode', 'net_to_gross')
+                ->assertJsonPath('resolution_net.converge', false);
+            $this->assertContains(
+                'The target net pay cannot be bracketed within the technical ceiling of the simulator.',
+                $response->json('avertissements'),
+                $language
+            );
+        }
+    }
+
     public function test_missing_net_cible_returns_422(): void
     {
         $response = $this->postJson('/api/v1/simuler/net-vers-brut', [

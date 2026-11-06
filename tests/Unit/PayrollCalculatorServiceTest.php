@@ -205,6 +205,52 @@ class PayrollCalculatorServiceTest extends TestCase
 
         $this->calculator->resoudreDepuisNet(['net_cible' => 0]);
     }
+
+    /**
+     * Cas limite « net impossible à atteindre » de docs/CALCUL.md (issue #240) :
+     * des retenues imposées au maximum de validation (PayrollValidation::MONTANT_MAX)
+     * gardent le net sous la cible pour toute base explorée, jusqu'au plafond
+     * technique du solver.
+     */
+    private function saisieNetInatteignable(): array
+    {
+        return [
+            'net_cible' => 1000,
+            'type_frais_pro' => 'commun',
+            'retenues_imposees_ir' => 10000000,
+        ];
+    }
+
+    public function test_net_to_gross_resolution_reports_an_unreachable_target(): void
+    {
+        $resolved = $this->calculator->resoudreDepuisNet($this->saisieNetInatteignable());
+        $resolution = $resolved['resolution_net'];
+
+        $this->assertSame('net_to_gross', $resolved['mode']);
+        $this->assertFalse($resolution['converge']);
+        $this->assertSame(1000.0, $resolution['net_cible']);
+        $this->assertLessThan(1000.0, $resolution['net_obtenu']);
+        $this->assertSame(round(abs($resolution['net_obtenu'] - $resolution['net_cible']), 2), $resolution['ecart']);
+        $this->assertGreaterThanOrEqual(10000000.0, $resolution['borne_haute']);
+
+        $avertissement = __('ui.result.warning_net_unreachable');
+        $this->assertCount(1, array_keys($resolved['avertissements'], $avertissement, true));
+        $this->assertNotContains(__('ui.result.warning_net_already_reached'), $resolved['avertissements']);
+    }
+
+    public function test_net_to_gross_unreachable_target_returns_the_closest_explored_candidate(): void
+    {
+        $saisie = $this->saisieNetInatteignable();
+        $resolved = $this->calculator->resoudreDepuisNet($saisie);
+        $aBaseNulle = $this->calculator->calculer(array_merge($saisie, ['salaire_base' => 0]));
+
+        $this->assertLessThan(abs($aBaseNulle['salaire_net'] - 1000), $resolved['resolution_net']['ecart']);
+        $this->assertGreaterThan(0, $resolved['input']['salaire_base']);
+        $this->assertSame($resolved['salaire_net'], $resolved['resolution_net']['net_obtenu']);
+
+        $recalcul = $this->calculator->calculer(array_merge($saisie, ['salaire_base' => $resolved['input']['salaire_base']]));
+        $this->assertSame($recalcul['salaire_net'], $resolved['salaire_net']);
+    }
     // =========================================================================
     // CIMR
     // =========================================================================
