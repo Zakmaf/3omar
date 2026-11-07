@@ -247,7 +247,7 @@ return [
         'employee_contributions' => 'Cotisations salariales',
         'income_tax' => 'Impôt sur le revenu',
         'employer_formula_hint' => "S'ajoutent au brut pour obtenir le coût employeur.",
-        'ir_bracket' => 'Tranche :rate% — Art. 73 CGI',
+        'ir_bracket' => 'Tranche :rate% (Art. 73 CGI)',
         'explanation_eyebrow' => 'Explication pédagogique',
         'explanation_title' => 'Du brut au net, étape par étape',
         'detail_eyebrow' => 'Détail bulletin',
