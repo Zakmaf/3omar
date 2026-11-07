@@ -152,12 +152,6 @@
             color: #fff !important;
             border-color: #21704F;
         }
-        [data-bs-theme="dark"] .btn-success,
-        [data-bs-theme="dark"] .btn-success:hover,
-        [data-bs-theme="dark"] .btn-success:active {
-            background: #21704F;
-            border-color: #21704F;
-        }
         [data-bs-theme="dark"] [style*="background:var(--g-500)"],
         [data-bs-theme="dark"] [style*="background: var(--g-500)"] {
             background: #21704F !important;
@@ -217,9 +211,6 @@
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow-2);
             backdrop-filter: blur(12px);
-        }
-        .advanced-section[hidden] {
-            display: none !important;
         }
         .ad-slot {
             margin-block: 1.5rem;
@@ -329,16 +320,6 @@
             font-weight: 600;
         }
 
-        /* Net amount */
-        .net-amount {
-            font-family: var(--f-display);
-            font-size: 2.8rem;
-            font-weight: 800;
-            color: var(--s-succ);
-            line-height: 1;
-            font-variant-numeric: tabular-nums;
-        }
-
         /* Detail table */
         .detail-table th {
             font-family: var(--f-mono);
@@ -381,18 +362,6 @@
             border-radius: 999px;
             padding: 2px 8px;
             font-weight: 400;
-        }
-
-        /* Buttons */
-        .btn-success,
-        .btn-success:active {
-            background: var(--g-500);
-            border-color: var(--g-500);
-        }
-        .btn-success:hover,
-        .btn-success:focus-visible {
-            background: var(--g-600);
-            border-color: var(--g-600);
         }
 
         /* Alert semantic backgrounds */
@@ -443,7 +412,6 @@
             }
         }
         @media (max-width: 576px) {
-            .net-amount { font-size: 2rem; }
             .mobile-sticky {
                 position: sticky;
                 bottom: .75rem;
