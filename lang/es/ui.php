@@ -231,7 +231,7 @@ return [
         'employee_contributions' => 'Cotizaciones del empleado',
         'income_tax' => 'Impuesto sobre la renta',
         'employer_formula_hint' => 'Se suman al bruto para llegar al coste empleador.',
-        'ir_bracket' => 'Tramo :rate% — Art. 73 CGI',
+        'ir_bracket' => 'Tramo :rate% (Art. 73 CGI)',
         'explanation_eyebrow' => 'Explicación pedagógica',
         'explanation_title' => 'Del bruto al neto, paso a paso',
         'detail_eyebrow' => 'Detalle de nómina',
