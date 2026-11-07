@@ -238,7 +238,7 @@ return [
         'employee_contributions' => 'مساهمات الأجير',
         'income_tax' => 'الضريبة على الدخل',
         'employer_formula_hint' => 'تضاف إلى الإجمالي للوصول إلى كلفة المشغل.',
-        'ir_bracket' => 'الشريحة :rate% — المادة 73 من CGI',
+        'ir_bracket' => 'الشريحة :rate% (المادة 73 من CGI)',
         'explanation_eyebrow' => 'شرح مبسط',
         'explanation_title' => 'من الإجمالي إلى الصافي خطوة بخطوة',
         'detail_eyebrow' => 'تفصيل الكشف',
