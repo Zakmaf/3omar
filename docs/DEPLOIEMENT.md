@@ -52,6 +52,7 @@ Dans l'image de release, c'est le Nginx embarqué qui résout l'adresse réelle 
 
 - Il lit `X-Forwarded-For` uniquement depuis les plages privées `10.0.0.0/8`, `172.16.0.0/12` et `192.168.0.0/16` (`set_real_ip_from` dans `docker/release/nginx.conf`).
 - Il transmet `HTTPS=on` à PHP-FPM seulement si ce même pair privé annonce `X-Forwarded-Proto: https`. Un client public qui envoie cet en-tête n'est pas cru.
+- Il redirige en `301` vers `https://` (même chemin, même chaîne de requête) toute requête dont ce même pair privé annonce `X-Forwarded-Proto: http`, c'est-à-dire une visite en HTTP simple derrière Cloudflare ou Traefik. Sans cet en-tête (accès direct en `http://localhost`, `HEALTHCHECK` de l'image), rien n'est redirigé. Un proxy qui remplacerait `X-Forwarded-Proto` par `http` sur une visite HTTPS ferait boucler la redirection : il doit transmettre le schéma d'origine, comme décrit ci-dessous.
 - PHP-FPM reçoit l'adresse déjà résolue. Laravel n'a donc besoin de faire confiance à aucun proxy : **laisser `TRUSTED_PROXIES` vide**.
 
 `TRUSTED_PROXIES` (liste d'adresses ou de plages CIDR séparées par des virgules) ne sert que si Laravel est placé directement derrière un proxy, sans le Nginx de l'image : pile de développement modifiée, hébergement PHP-FPM tiers. Exemple : `TRUSTED_PROXIES=172.18.0.0/16`. La valeur `*` (faire confiance au pair direct, quel qu'il soit) reste possible mais ne doit être posée que si ce pair ne peut pas être joint autrement. Ne jamais la combiner avec le Nginx de l'image : l'adresse du visiteur deviendrait alors falsifiable.
