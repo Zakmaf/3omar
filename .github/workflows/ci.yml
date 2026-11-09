@@ -165,6 +165,32 @@ jobs:
           done
           exit $echoue
 
+      # Le pair vu par Nginx est la passerelle du réseau Docker (172.16.0.0/12),
+      # donc un proxy de confiance pour docker/release/nginx.conf : il joue ici le
+      # rôle de Cloudflare ou de Traefik devant le conteneur.
+      - name: Vérifier la redirection HTTPS derrière un proxy de confiance
+        run: |
+          echoue=0
+          verifier() {
+            attendu="$1"; shift
+            code=$(curl -sS -o /dev/null -D /tmp/entetes -w '%{http_code}' --max-time 10 \
+              -H 'Host: 3omar.example' "$@" 'http://127.0.0.1:8080/documentation?source=ci')
+            echo "== $* : HTTP ${code}"
+            grep -i '^location:' /tmp/entetes || true
+            if [ "$code" != "$attendu" ]; then
+              echo "::error::$* : HTTP ${code} au lieu de ${attendu}"
+              echoue=1
+            fi
+          }
+          verifier 301 -H 'X-Forwarded-Proto: http'
+          if ! grep -q -i -x 'location: https://3omar.example/documentation?source=ci' <(tr -d '\r' < /tmp/entetes); then
+            echo "::error::X-Forwarded-Proto: http : Location différent de https://3omar.example/documentation?source=ci"
+            echoue=1
+          fi
+          verifier 200 -H 'X-Forwarded-Proto: https'
+          verifier 200
+          exit $echoue
+
       - name: Arrêter le conteneur
         if: always()
         run: docker rm -f 3omar-ci || true
