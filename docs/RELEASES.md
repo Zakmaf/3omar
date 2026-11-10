@@ -1,5 +1,38 @@
 # Releases
 
+## v3.6.1 - 2026-11-10
+
+### Améliorations
+
+- L'image publiée annonce la version de sa release, lue dans le tag (pied de page et `/api/v1/health`), et le build refuse toute version hors des formats `vX.Y.Z` et `vX.Y.Z-dev.N`. #253
+- Des pré-releases de développement `vX.Y.Z-dev.N` peuvent être publiées pour tester `main` avant une stable : leur image porte le tag exact et l'étiquette `dev`, jamais `latest`, `v3` ni `v3.6`. #253
+- Retire seize clés de traduction inutilisées des quatre langues. #256
+- Retire de la mise en page des règles CSS qui ne s'appliquaient à aucun élément. #257
+- Supprime `docker-compose.v1.1.yml`, ancienne pile de développement V1.1 utilisée par aucun script ni document. #258
+
+### Correctifs
+
+- Le libellé de tranche d'IR du bulletin détaillé a la même forme dans les quatre langues, sans tiret cadratin : le taux, puis la référence légale entre parenthèses (« Tranche ...% (Art. 73 CGI) »). L'anglais a changé avec le nettoyage des traductions, le français, l'espagnol et l'arabe ensuite. #256 #261
+
+### Sécurité
+
+- Redirige en `301` vers `https://` (même chemin, même chaîne de requête) toute visite reçue en HTTP simple derrière le proxy de confiance (Cloudflare, Traefik), c'est-à-dire avec `X-Forwarded-Proto: http` venant d'une plage privée. La page et les cookies de session étaient jusqu'ici servis en clair. Un client public ne peut toujours rien imposer par cet en-tête, et un accès HTTP direct sans cet en-tête (`HEALTHCHECK`, `http://localhost`) n'est pas redirigé. La CI vérifie la redirection sur l'image release. #264
+
+### Mise à jour de la stack
+
+- Passe `docker/login-action` de 4.7.0 à 4.8.0 dans le workflow de publication. Rien n'est embarqué dans l'image.
+- Couvre par des tests le cas « net inatteignable » du calcul net vers brut, dans le moteur et dans l'API. #240
+
+### Migration
+
+Aucune action de configuration requise avec un proxy qui transmet le schéma d'origine. Après la mise à jour, une visite en `http://` derrière Cloudflare ou Traefik est redirigée vers `https://`. Un proxy qui enverrait `X-Forwarded-Proto: http` pour une visite reçue en HTTPS ferait boucler la redirection : il doit transmettre le schéma d'origine (voir `docs/DEPLOIEMENT.md`, section « Adresse réelle et HTTPS »). Si Traefik est placé derrière un autre proxy, `forwardedHeaders.trustedIPs` ne doit lister que ce proxy amont réel, pour que Traefik conserve son `X-Forwarded-Proto`. Les clients de l'API doivent appeler directement l'URL en `https://` : certains clients rejouent en GET une requête POST redirigée en `301`. Une variable `APP_VERSION` passée au démarrage du conteneur reste prioritaire sur la version de l'image : la retirer pour que `/api/v1/health` annonce `v3.6.1`. #264 #253
+
+```bash
+docker pull ghcr.io/zakmaf/3omar:v3.6.1
+```
+
+---
+
 ## v3.6.0 - 2026-11-05
 
 ### Nouveautés
