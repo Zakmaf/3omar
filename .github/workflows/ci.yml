@@ -5,12 +5,19 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  # Run quotidien sur main (branche par défaut), à heure creuse UTC : un avis de
+  # sécurité publié après la dernière fusion rend main rouge dans les 24 heures,
+  # sans attendre une PR (#265).
+  schedule:
+    - cron: '17 3 * * *'
 
 permissions:
   contents: read
 
+# Le run planifié a son propre groupe : il n'annule pas un run de push sur main
+# et n'est pas annulé par lui. Les groupes des push et des PR sont inchangés.
 concurrency:
-  group: ci-${{ github.ref }}
+  group: ci-${{ github.event_name == 'schedule' && 'schedule-' || '' }}${{ github.ref }}
   cancel-in-progress: true
 
 # Les jobs PHP s'executent dans l'image de developpement (docker/php/Dockerfile),
@@ -289,7 +296,9 @@ jobs:
         env:
           # PR : premier parent du commit de fusion testé, soit la base.
           # Push sur main : le commit qui précédait le push.
-          BASE: ${{ github.event_name == 'pull_request' && 'HEAD^1' || github.event.before }}
+          # Run planifié : aucun commit nouveau et pas de github.event.before ;
+          # HEAD comme base donne un diff vide, donc un contrôle vide et vert.
+          BASE: ${{ github.event_name == 'pull_request' && 'HEAD^1' || (github.event_name == 'schedule' && 'HEAD' || github.event.before) }}
         run: bash .github/scripts/style-redactionnel.sh "$BASE"
 
   # Seul check exige par le ruleset protect-main. Tout nouveau job s'ajoute a
