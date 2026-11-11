@@ -60,7 +60,7 @@ class PayrollCalculatorService
         $tranche = $baremes[count($baremes) - 1];
 
         foreach ($baremes as $t) {
-            if ($t['max'] === null || $rniAnnuel <= $t['max']) {
+            if ($t['max'] === null || $rniAnnuel < $t['max']) {
                 $tranche = $t;
                 break;
             }
