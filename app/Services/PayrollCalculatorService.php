@@ -474,7 +474,7 @@ class PayrollCalculatorService
         $nbPersonnes = $nbEnfants + ($conjointCharge ? 1 : 0);
         $chargesCalc = $this->r2($nbPersonnes * config('payroll.charges_famille.par_personne'));
         $chargesFamille = $this->r2(min($chargesCalc, config('payroll.charges_famille.plafond')));
-        $irNet = $this->r2(max(0.0, $irMensuelBrut - $chargesFamille));
+        $irNet = $this->r2($irMensuelBrut - $chargesFamille);
 
         // =====================================================================
         // ÉTAPE 9 — Indemnités exonérées : déjà calculées avant le SBI
