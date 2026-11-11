@@ -473,7 +473,7 @@ class PayrollCalculatorService
         // Déduction charges de famille (Art. 74 CGI)
         $nbPersonnes = $nbEnfants + ($conjointCharge ? 1 : 0);
         $chargesCalc = $this->r2($nbPersonnes * config('payroll.charges_famille.par_personne'));
-        $chargesFamille = $chargesCalc;
+        $chargesFamille = $this->r2(min($chargesCalc, config('payroll.charges_famille.plafond')));
         $irNet = $this->r2(max(0.0, $irMensuelBrut - $chargesFamille));
 
         // =====================================================================
