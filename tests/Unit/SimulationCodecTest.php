@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Services\PayrollCalculatorService;
 use App\Services\SimulationCodec;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
@@ -166,6 +167,107 @@ class SimulationCodecTest extends TestCase
         ]);
 
         $this->assertNull($this->codec->decode($payload));
+    }
+
+    /**
+     * Un drapeau « inconnu » doit survivre au lien (issue #274) : sans lui, un
+     * coût employeur partiel redeviendrait complet après rechargement, en
+     * comptant un montant patronal que l'utilisateur a déclaré non connu.
+     * Le montant ou taux patronal saisi est non nul pour que sa neutralisation
+     * soit observable sur le coût.
+     */
+    #[DataProvider('postesPatronauxInconnus')]
+    public function test_un_drapeau_inconnu_survit_au_lien_et_garde_le_cout_partiel(
+        string $champ,
+        int|float $valeur,
+        string $posteSortie,
+        string $drapeauSortie,
+    ): void {
+        $drapeau = $champ.'_inconnu';
+        $saisie = $this->saisiePatronale([$champ => $valeur, $drapeau => '1']);
+
+        $decoded = $this->codec->decode($this->codec->encode($saisie));
+
+        $this->assertNotNull($decoded, "Le lien portant {$drapeau} doit se décoder.");
+        $this->assertArrayHasKey($drapeau, $decoded, "{$drapeau} doit voyager dans le lien.");
+        $this->assertTrue((bool) $decoded[$drapeau], "{$drapeau} doit rester actif après décodage.");
+        $this->assertEquals($valeur, $decoded[$champ], "La valeur saisie de {$champ} doit voyager avec son drapeau.");
+
+        $calculateur = app(PayrollCalculatorService::class);
+        $avant = $calculateur->calculer($saisie);
+        $apres = $calculateur->calculer($decoded);
+        $sansPoste = $calculateur->calculer($this->saisiePatronale());
+
+        $this->assertTrue($avant['cout_employeur_partiel'], "Avant transport, {$drapeau} doit rendre le coût partiel.");
+        $this->assertTrue($apres['cout_employeur_partiel'], "Après transport, {$drapeau} doit garder le coût partiel.");
+        $this->assertTrue($apres[$drapeauSortie], "Le moteur doit exposer {$drapeauSortie} après transport.");
+        $this->assertSame(0.0, $apres[$posteSortie], "Le poste {$posteSortie} doit rester neutralisé après transport.");
+        $this->assertSame($avant['total_patronal'], $apres['total_patronal'], "Le total patronal doit être identique avant et après transport ({$champ}).");
+        $this->assertSame($avant['cout_total_employeur'], $apres['cout_total_employeur'], "Le coût employeur doit être identique avant et après transport ({$champ}).");
+        $this->assertSame($sansPoste['cout_total_employeur'], $apres['cout_total_employeur'], "Le montant patronal inconnu de {$champ} ne doit pas entrer dans le coût.");
+    }
+
+    /**
+     * Cas témoin : le même poste, connu et sans drapeau, contribue au coût
+     * employeur après transport. Il garantit que le cas « inconnu » ci-dessus
+     * teste bien une neutralisation et pas un poste sans effet sur le coût.
+     */
+    #[DataProvider('postesPatronauxInconnus')]
+    public function test_un_poste_patronal_connu_transporte_contribue_au_cout(
+        string $champ,
+        int|float $valeur,
+        string $posteSortie,
+        string $drapeauSortie,
+    ): void {
+        $saisie = $this->saisiePatronale([$champ => $valeur]);
+
+        $decoded = $this->codec->decode($this->codec->encode($saisie));
+
+        $this->assertNotNull($decoded, "Le lien portant {$champ} doit se décoder.");
+        $this->assertArrayNotHasKey($champ.'_inconnu', $decoded, "Aucun drapeau ne doit apparaître pour {$champ} connu.");
+        $this->assertEquals($valeur, $decoded[$champ], "La valeur saisie de {$champ} doit voyager dans le lien.");
+
+        $calculateur = app(PayrollCalculatorService::class);
+        $avant = $calculateur->calculer($saisie);
+        $apres = $calculateur->calculer($decoded);
+        $sansPoste = $calculateur->calculer($this->saisiePatronale());
+
+        $this->assertFalse($apres['cout_employeur_partiel'], "Un {$champ} connu ne doit pas rendre le coût partiel.");
+        $this->assertFalse($apres[$drapeauSortie], "{$drapeauSortie} doit rester faux pour un poste connu.");
+        $this->assertGreaterThan(0.0, $apres[$posteSortie], "Le poste {$posteSortie} connu doit être non nul.");
+        $this->assertSame($avant['cout_total_employeur'], $apres['cout_total_employeur'], "Le coût employeur doit être identique avant et après transport ({$champ}).");
+        $this->assertEqualsWithDelta(
+            $sansPoste['cout_total_employeur'] + $apres[$posteSortie],
+            $apres['cout_total_employeur'],
+            0.005,
+            "Le poste {$posteSortie} connu doit s'ajouter au coût employeur.",
+        );
+    }
+
+    /**
+     * Les cinq postes patronaux qui acceptent un drapeau « inconnu » : champ
+     * d'entrée, valeur saisie non nulle (montant en MAD ou taux en %), puis les
+     * noms de sortie du moteur, qui ne reprennent pas toujours le nom d'entrée.
+     * Les valeurs sont des saisies utilisateur, pas des paramètres réglementaires.
+     */
+    public static function postesPatronauxInconnus(): array
+    {
+        return [
+            'mutuelle patronale' => ['mutuelle_patronale', 300, 'mutuelle_patronale', 'mutuelle_patronale_inconnue'],
+            'retraite complementaire employeur' => ['rc_part_employeur', 400, 'rc_part_employeur', 'rc_part_employeur_inconnu'],
+            'taux CIMR employeur' => ['cimr_taux_employeur', 6, 'cotisation_cimr_patronale', 'cimr_taux_employeur_inconnu'],
+            'taux assurance AT' => ['assurance_at_taux', 2, 'assurance_at', 'assurance_at_inconnue'],
+            'assurance RC pro' => ['assurance_rc_pro', 150, 'assurance_rc_pro', 'assurance_rc_pro_inconnue'],
+        ];
+    }
+
+    private function saisiePatronale(array $complements = []): array
+    {
+        return array_merge([
+            'mode' => 'gross_to_net',
+            'salaire_base' => 10000,
+            'type_frais_pro' => 'commun',
+        ], $complements);
     }
 
     public static function payloadsIllisibles(): array
