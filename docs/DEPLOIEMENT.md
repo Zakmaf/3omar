@@ -33,11 +33,11 @@ docker run -d \
 | `latest` | Dernière version stable - mise à jour automatique |
 | `v3` | Majeure 3.x.x - suit les mises à jour mineures et correctifs |
 | `v3.6` | Mineure 3.6.x - fonctionnalités et correctifs de la série 3.6 |
-| `v3.6.0` | Version exacte - reproductible, recommandé pour la production |
+| `v3.6.1` | Version exacte - reproductible, recommandé pour la production |
 | `dev` | Dernière pré-release de développement (`vX.Y.Z-dev.N`) - pour les tests, jamais pour la production |
 
 ```bash
-docker pull ghcr.io/zakmaf/3omar:v3.6.0
+docker pull ghcr.io/zakmaf/3omar:v3.6.1
 ```
 
 ## Reverse proxy (Traefik, Nginx…)
