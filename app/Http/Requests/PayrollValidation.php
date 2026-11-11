@@ -154,7 +154,6 @@ class PayrollValidation
                 'cimr_taux_employeur_inconnu',
                 'rc_part_employeur_inconnu',
                 'mutuelle_patronale_inconnu',
-                'assurance_at_taux_inconnu',
                 'assurance_rc_pro_inconnu',
             ],
         );
