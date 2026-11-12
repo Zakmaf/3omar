@@ -48,15 +48,33 @@ class PayrollCalculatorService
         return rtrim(rtrim(number_format($taux * 100, 2, ',', ' '), '0'), ',');
     }
 
-    private function calculerIRAnnuelBrut(float $rniAnnuel): array
+    /**
+     * Profil d'exercice fiscal lu dans config('payroll.exercices'), sans jamais
+     * modifier la configuration. Sans exercice explicite, repli déterministe sur
+     * config('payroll.exercice_defaut'). Un exercice absent est refusé.
+     *
+     * @return array<string, mixed>
+     */
+    private function profilExercice(?int $exercice): array
     {
-        if ($rniAnnuel <= 0) {
-            $baremes = config('payroll.ir.baremes');
+        $exercice ??= (int) config('payroll.exercice_defaut');
+        $profil = config("payroll.exercices.{$exercice}");
 
+        if (! is_array($profil)) {
+            throw new \InvalidArgumentException("Exercice fiscal {$exercice} non paramétré.");
+        }
+
+        return $profil;
+    }
+
+    private function calculerIRAnnuelBrut(float $rniAnnuel, ?int $exercice = null): array
+    {
+        $baremes = $this->profilExercice($exercice)['ir_baremes'];
+
+        if ($rniAnnuel <= 0) {
             return ['montant' => 0.0, 'tranche' => $baremes[0]];
         }
 
-        $baremes = config('payroll.ir.baremes');
         $tranche = $baremes[count($baremes) - 1];
 
         foreach ($baremes as $t) {
