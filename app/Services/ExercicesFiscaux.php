@@ -31,7 +31,9 @@ class ExercicesFiscaux
      */
     public function resoudre(mixed $exercice): ?int
     {
-        if ($exercice === null || $exercice === '') {
+        // Une chaîne entièrement blanche vaut absence, comme pour TrimStrings et
+        // la validation Laravel, qui n'applique pas ses règles à cette valeur.
+        if ($exercice === null || (is_string($exercice) && trim($exercice) === '')) {
             return $this->defaut();
         }
 

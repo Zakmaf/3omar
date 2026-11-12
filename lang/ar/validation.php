@@ -65,6 +65,7 @@ return [
         'indemnites.*.type' => 'نوع التعويض (السطر :position)',
         'indemnites.*.montant' => 'مبلغ التعويض (السطر :position)',
         'avantages_cnss' => 'امتيازات CNSS المعفاة',
+        'exercice' => 'السنة المالية',
         'autres_retenues' => 'اقتطاعات أخرى',
         'cimr_taux_employeur_inconnu' => 'نسبة CIMR للمشغل غير معروفة',
         'rc_part_employeur_inconnu' => 'حصة المشغل في التقاعد التكميلي غير معروفة',

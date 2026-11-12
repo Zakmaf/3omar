@@ -65,6 +65,7 @@ return [
         'indemnites.*.type' => "type d'indemnité (ligne :position)",
         'indemnites.*.montant' => "montant de l'indemnité (ligne :position)",
         'avantages_cnss' => 'avantages CNSS exonérés',
+        'exercice' => 'exercice fiscal',
         'autres_retenues' => 'autres retenues',
         'cimr_taux_employeur_inconnu' => 'taux CIMR employeur inconnu',
         'rc_part_employeur_inconnu' => 'part employeur de retraite complémentaire inconnue',
