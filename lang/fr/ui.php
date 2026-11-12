@@ -523,7 +523,7 @@ return [
         'base_url' => 'URL de base',
         'brut_vers_net_desc' => 'Calcule le bulletin de paie complet a partir du salaire de base brut et des parametres optionnels.',
         'net_vers_brut_desc' => 'Recherche par dichotomie le salaire de base brut qui produit le net cible souhaite.',
-        'parametres_desc' => 'Retourne la configuration reglementaire complete du simulateur (taux, plafonds, baremes, indemnites).',
+        'parametres_desc' => 'Retourne la configuration complete du simulateur (taux, plafonds, baremes, indemnites), y compris des exercices en projet non promulgues, signales par leur statut.',
         'health_desc' => "Retourne le statut, la version et l'horodatage du service.",
         'required_fields' => 'Champs obligatoires',
         'optional_fields' => 'Champs optionnels',
@@ -701,6 +701,8 @@ return [
         'net_target_required' => 'Le net à payer cible est obligatoire.', 'net_target_positive' => 'Le net à payer cible doit être positif.',
         'category_invalid' => 'Catégorie professionnelle invalide.', 'cimr_min' => 'Le taux CIMR doit être au minimum :min%.',
         'allowance_distinct' => "Chaque type d'indemnité ne peut être déclaré qu'une fois.",
+        'exercise_unknown' => "L'exercice fiscal :exercice n'est pas pris en charge par le simulateur.",
+        'exercise_not_calculable' => "L'exercice fiscal :exercice n'est pas encore calculable : ses paramètres sont incomplets.",
     ],
     'guides' => [
         'common' => [

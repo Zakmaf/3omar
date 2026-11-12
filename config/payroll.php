@@ -1,8 +1,8 @@
 <?php
 
 // =========================================================================
-// Valeurs partagées entre les clés historiques 2026 (ir.baremes, frais_pro)
-// et le profil d'exercice 2026 (exercices.2026) : une seule définition.
+// Valeurs 2026 des clés historiques ir.baremes et frais_pro, auxquelles le
+// profil d'exercice 2026 (exercices.2026) renvoie par référence.
 // =========================================================================
 
 // Barème IR annuel 2026 : Art. 73 CGI (Loi de Finances 50-25)
@@ -77,8 +77,8 @@ return [
     // =========================================================================
     // Exercices fiscaux (issue #281)
     // `exercice_defaut` : repli déterministe sans exercice explicite (liens et
-    // requêtes historiques). Il ne dépend jamais de la date du jour ; le changer
-    // exige la loi publiée au Bulletin officiel et l'accord du propriétaire.
+    // requêtes historiques). Il reste 2026 définitivement et ne dépend jamais
+    // de la date du jour : un exercice ultérieur se demande explicitement.
     // `statut` : `en_vigueur` ou `projet`. Un projet n'est jamais présenté comme
     // en vigueur : `validation_legale` reste null tant que la loi publiée et ses
     // dates d'effet n'ont pas été vérifiées (#280, #15).
@@ -97,8 +97,11 @@ return [
             'periode' => ['debut' => '2026-01-01', 'fin' => '2026-12-31'],
             'date_effet_projetee' => null,
             'validation_legale' => null,
-            'ir_baremes' => $bareme2026,
-            'frais_pro' => $fraisPro2026,
+            // Références vers les clés historiques archivées (ir.baremes,
+            // frais_pro) : une seule source pour 2026, lue par le moteur comme
+            // par la documentation et l'API.
+            'ir_baremes' => 'ir.baremes',
+            'frais_pro' => 'frais_pro',
         ],
         2027 => [
             'statut' => 'projet',
@@ -220,7 +223,7 @@ return [
     // Frais Professionnels — Art. 59 I-A CGI
     // Déduits de l'assiette IR (non remboursés au salarié)
     // =========================================================================
-    // Valeurs 2026 définies en tête de fichier ($fraisPro2026), partagées avec
+    // Valeurs 2026 définies en tête de fichier ($fraisPro2026), référencées par
     // exercices.2026.frais_pro.
     'frais_pro' => $fraisPro2026,
 
@@ -229,7 +232,7 @@ return [
     // Formule : IR annuel = RNI_annuel × taux − deduction
     // Méthode d'annualisation : RNI mensuel × 12 → IR annuel → ÷ 12
     // =========================================================================
-    // Valeurs 2026 définies en tête de fichier ($bareme2026), partagées avec
+    // Valeurs 2026 définies en tête de fichier ($bareme2026), référencées par
     // exercices.2026.ir_baremes. Clé conservée pour l'API, la documentation et
     // les tests historiques.
     'ir' => [

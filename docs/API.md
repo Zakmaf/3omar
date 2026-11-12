@@ -83,7 +83,7 @@ Recherche le salaire de base brut qui produit le net cible souhaite (resolution 
 
 ### GET /api/v1/parametres
 
-Retourne la configuration reglementaire complete du simulateur (taux CNSS, AMO, bareme IR, plafonds, indemnites, etc.).
+Retourne la configuration complete du simulateur (taux CNSS, AMO, bareme IR, plafonds, indemnites, etc.). Les cles historiques (`year`, `ir`, `frais_pro`...) decrivent l'exercice 2026. La cle `exercices` liste aussi des exercices en projet (PLF n° 60-26 non promulgue, `statut` `projet`, `validation_legale` null) : ce ne sont pas des regles applicables.
 
 **Reponse (200) :**
 
@@ -137,6 +137,7 @@ Le champ `version` reflete toujours la version de l'application actuellement dep
 | `retenues_imposees_ir` | number (0-10000000) | Retenues imposees a l'IR (MAD) : retirees de `salaire_net` sans effet sur l'IR. Incluses dans `total_retenues`. |
 | `autres_retenues` | number (0-10000000) | Alias historique de `retenues_imposees_ir` (MAD), utilise si `retenues_imposees_ir` est absent |
 | `jours_travailles` | integer (1-31) | Jours travailles dans le mois |
+| `exercice` | integer (2026-2031), nullable | Exercice fiscal. Absent ou `null` : 2026, definitivement (liens et requetes historiques). Un exercice declare mais non calculable (projet sans frais professionnels) renvoie un 422 sur `exercice`, jamais un calcul complete par les parametres 2026 |
 | `heures_sup` | array | Heures supplementaires (max 10) |
 | `indemnites` | array | Indemnites exonerees (max 10) |
 | `avantages_cnss` | number (0-10000000) | Avantages exclus de l'assiette CNSS et AMO mais imposables a l'IR (MAD) |

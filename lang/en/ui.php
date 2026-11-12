@@ -441,7 +441,7 @@ return [
         'base_url' => 'Base URL',
         'brut_vers_net_desc' => 'Calculates the full payslip from the gross base salary and optional parameters.',
         'net_vers_brut_desc' => 'Finds the gross base salary that produces the target net pay using bisection.',
-        'parametres_desc' => 'Returns the complete regulatory configuration of the simulator (rates, ceilings, brackets, allowances).',
+        'parametres_desc' => 'Returns the complete configuration of the simulator (rates, ceilings, brackets, allowances), including draft tax years not yet enacted, flagged by their status.',
         'health_desc' => 'Returns the service status, version and timestamp.',
         'required_fields' => 'Required fields',
         'optional_fields' => 'Optional fields',
@@ -608,7 +608,7 @@ return [
             'pro_expenses' => 'Professional category',
         ],
     ],
-    'validation' => ['base_required' => 'The base salary is required.', 'base_positive' => 'The base salary must be positive.', 'net_target_required' => 'The target net pay is required.', 'net_target_positive' => 'The target net pay must be positive.', 'category_invalid' => 'Invalid professional category.', 'cimr_min' => 'The CIMR rate must be at least :min%.', 'allowance_distinct' => 'Each allowance type can only be declared once.'],
+    'validation' => ['base_required' => 'The base salary is required.', 'base_positive' => 'The base salary must be positive.', 'net_target_required' => 'The target net pay is required.', 'net_target_positive' => 'The target net pay must be positive.', 'category_invalid' => 'Invalid professional category.', 'cimr_min' => 'The CIMR rate must be at least :min%.', 'allowance_distinct' => 'Each allowance type can only be declared once.', 'exercise_unknown' => 'Tax year :exercice is not supported by the simulator.', 'exercise_not_calculable' => 'Tax year :exercice cannot be calculated yet: its parameters are incomplete.'],
     'guides' => [
         'common' => [
             'eyebrow' => 'Morocco payroll guide 2026',

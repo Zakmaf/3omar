@@ -507,7 +507,7 @@ return [
         'base_url' => 'URL base',
         'brut_vers_net_desc' => 'Calcula la nomina completa a partir del salario base bruto y los parametros opcionales.',
         'net_vers_brut_desc' => 'Encuentra el salario base bruto que produce el neto objetivo mediante biseccion.',
-        'parametres_desc' => 'Devuelve la configuracion reglamentaria completa del simulador (tasas, topes, tramos, indemnizaciones).',
+        'parametres_desc' => 'Devuelve la configuracion completa del simulador (tasas, topes, tramos, indemnizaciones), incluidos ejercicios en proyecto aun no promulgados, senalados por su estado.',
         'health_desc' => 'Devuelve el estado del servicio, la version y la marca de tiempo.',
         'required_fields' => 'Campos obligatorios',
         'optional_fields' => 'Campos opcionales',
@@ -682,6 +682,8 @@ return [
         'category_invalid' => 'Categoría profesional no válida.',
         'cimr_min' => 'La tasa CIMR debe ser al menos :min%.',
         'allowance_distinct' => 'Cada tipo de indemnización solo puede declararse una vez.',
+        'exercise_unknown' => 'El simulador no admite el ejercicio fiscal :exercice.',
+        'exercise_not_calculable' => 'El ejercicio fiscal :exercice aún no se puede calcular: sus parámetros están incompletos.',
     ],
     'guides' => [
         'common' => [

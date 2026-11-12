@@ -165,7 +165,7 @@
     "/parametres": {
       "get": {
         "summary": "Recuperer les parametres reglementaires",
-        "description": "Retourne la configuration complete du simulateur : taux CNSS, AMO, bareme IR, plafonds, indemnites, etc.",
+        "description": "Retourne la configuration complete du simulateur : taux CNSS, AMO, bareme IR, plafonds, indemnites, etc. Les cles historiques (year, ir, frais_pro...) decrivent 2026. La cle exercices liste aussi des exercices en projet (PLF non promulgue, statut projet, validation_legale null) : ce ne sont pas des regles applicables.",
         "operationId": "getParametres",
         "tags": ["Reference"],
         "responses": {
@@ -263,6 +263,7 @@
           "retenues_imposees_ir": { "type": "number", "minimum": 0, "maximum": 10000000, "description": "Retenues imposees a l'IR en MAD : retirees du net a payer sans effet sur l'IR" },
           "autres_retenues": { "type": "number", "minimum": 0, "maximum": 10000000, "description": "Alias historique de retenues_imposees_ir en MAD, utilise si retenues_imposees_ir est absent" },
           "jours_travailles": { "type": "integer", "minimum": 1, "maximum": 31, "description": "Nombre de jours travailles dans le mois" },
+          "exercice": { "type": "integer", "nullable": true, "minimum": 2026, "maximum": 2031, "description": "Exercice fiscal. Absent ou null : 2026, definitivement. Un exercice declare mais non calculable (projet sans frais professionnels) renvoie un 422 sur ce champ" },
           "heures_sup": {
             "type": "array",
             "maxItems": 10,
@@ -316,6 +317,7 @@
           "retenues_imposees_ir": { "type": "number", "minimum": 0, "maximum": 10000000 },
           "autres_retenues": { "type": "number", "minimum": 0, "maximum": 10000000 },
           "jours_travailles": { "type": "integer", "minimum": 1, "maximum": 31 },
+          "exercice": { "type": "integer", "nullable": true, "minimum": 2026, "maximum": 2031 },
           "heures_sup": {
             "type": "array",
             "maxItems": 10,
