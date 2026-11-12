@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Services\PayrollCalculatorService;
 use App\Services\SimulationCodec;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 /**
@@ -108,6 +109,92 @@ class SimulationSharingTest extends TestCase
         $response->assertSee('value="13500"', false);
         $response->assertSee('value="6"', false);
         $this->assertStringContainsString('value="5" selected', $response->getContent());
+    }
+
+    /**
+     * Reprise HTTP d'un lien portant un drapeau « inconnu » (issue #274) : le
+     * formulaire rendu doit rétablir le champ caché à 1 et la case cochée, faute
+     * de quoi la soumission suivante recalculerait un coût employeur complet.
+     */
+    #[DataProvider('drapeauxPatronauxDuFormulaire')]
+    public function test_le_lien_de_reprise_restaure_le_drapeau_inconnu(string $champ, int $valeur): void
+    {
+        $payload = $this->codec->encode($this->scenario([$champ => $valeur, $champ.'_inconnu' => '1']));
+
+        $html = $this->get('/calculateur?s='.$payload)
+            ->assertOk()
+            ->assertSee('Simulation reprise depuis le lien partagé')
+            ->getContent();
+
+        $cache = $this->baliseInputParId($html, $champ.'_inconnu');
+        $this->assertStringContainsString('type="hidden"', $cache, "Le champ {$champ}_inconnu doit rester caché.");
+        $this->assertStringContainsString('value="1"', $cache, "Le champ caché {$champ}_inconnu doit être restauré à 1.");
+
+        $case = $this->baliseInputParId($html, $champ.'_toggle');
+        $this->assertMatchesRegularExpression('/\schecked\b/', $case, "La case « inconnu » de {$champ} doit être cochée.");
+
+        $saisie = $this->baliseInputParNom($html, $champ);
+        $this->assertStringContainsString('value="'.$valeur.'"', $saisie, "La valeur saisie de {$champ} doit être restaurée.");
+    }
+
+    /**
+     * Témoin : le même poste connu, sans drapeau, laisse le champ caché à 0 et
+     * la case décochée, pour que le test précédent ne passe pas par défaut.
+     */
+    #[DataProvider('drapeauxPatronauxDuFormulaire')]
+    public function test_le_lien_de_reprise_d_un_poste_connu_laisse_le_drapeau_inactif(string $champ, int $valeur): void
+    {
+        $payload = $this->codec->encode($this->scenario([$champ => $valeur]));
+
+        $html = $this->get('/calculateur?s='.$payload)->assertOk()->getContent();
+
+        $cache = $this->baliseInputParId($html, $champ.'_inconnu');
+        $this->assertStringContainsString('value="0"', $cache, "Le champ caché {$champ}_inconnu doit rester à 0.");
+
+        $case = $this->baliseInputParId($html, $champ.'_toggle');
+        $this->assertDoesNotMatchRegularExpression('/\schecked\b/', $case, "La case « inconnu » de {$champ} doit rester décochée.");
+
+        $saisie = $this->baliseInputParNom($html, $champ);
+        $this->assertStringContainsString('value="'.$valeur.'"', $saisie, "La valeur saisie de {$champ} doit être restaurée.");
+    }
+
+    /**
+     * Champ d'entrée patronal et valeur saisie non nulle (montant en MAD ou
+     * taux en %), saisies utilisateur et non paramètres réglementaires.
+     */
+    public static function drapeauxPatronauxDuFormulaire(): array
+    {
+        return [
+            'mutuelle patronale' => ['mutuelle_patronale', 300],
+            'retraite complementaire employeur' => ['rc_part_employeur', 400],
+            'taux CIMR employeur' => ['cimr_taux_employeur', 6],
+            'taux assurance AT' => ['assurance_at_taux', 2],
+            'assurance RC pro' => ['assurance_rc_pro', 150],
+        ];
+    }
+
+    /**
+     * Extrait la seule balise <input> portant cet id, sans renvoyer la page
+     * entière dans le message d'échec.
+     */
+    private function baliseInputParId(string $html, string $id): string
+    {
+        return $this->baliseInputUnique($html, 'id', $id);
+    }
+
+    private function baliseInputParNom(string $html, string $nom): string
+    {
+        return $this->baliseInputUnique($html, 'name', $nom);
+    }
+
+    private function baliseInputUnique(string $html, string $attribut, string $valeur): string
+    {
+        $motif = '/<input\b[^>]*\s'.$attribut.'="'.preg_quote($valeur, '/').'"[^>]*>/';
+        $nombre = preg_match_all($motif, $html, $correspondances);
+
+        $this->assertSame(1, $nombre, "Une seule balise <input {$attribut}=\"{$valeur}\"> est attendue dans le formulaire.");
+
+        return $correspondances[0][0];
     }
 
     public function test_un_lien_de_reprise_illisible_est_signale(): void
