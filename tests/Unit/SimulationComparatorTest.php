@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use App\Services\PayrollCalculatorService;
 use App\Services\SimulationComparator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class SimulationComparatorTest extends TestCase
@@ -128,7 +129,7 @@ class SimulationComparatorTest extends TestCase
         ];
     }
 
-    #[\PHPUnit\Framework\Attributes\DataProvider('exercicesEquivalents')]
+    #[DataProvider('exercicesEquivalents')]
     public function test_l_absence_d_exercice_et_2026_explicite_ne_sont_pas_un_ecart(array $a, array $b): void
     {
         $base = ['salaire_base' => 10000, 'type_frais_pro' => 'commun'];

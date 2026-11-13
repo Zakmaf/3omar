@@ -162,6 +162,22 @@
                     <span class="me-4"><i class="bi bi-check-circle-fill me-1" style="color:var(--s-succ)" aria-hidden="true"></i>{{ __('ui.trust.confidence_high') }}</span>
                     <span><i class="bi bi-dash-circle-fill me-1" style="color:var(--s-warn)" aria-hidden="true"></i>{{ __('ui.trust.confidence_medium') }}</span>
                 </div>
+
+                {{-- Exercices fiscaux déclarés : profil en vigueur et projets datés (#281) --}}
+                <div class="px-4 px-lg-5 pb-4 pb-lg-5" id="trust-fiscal-years">
+                    <h3 class="h6 fw-bold mb-1" style="font-family:var(--f-display)">{{ __('ui.fiscal_year.trust_title') }}</h3>
+                    <p class="small mb-3" style="color:var(--ink-2)">{{ __('ui.fiscal_year.trust_intro') }}</p>
+                    <ul class="list-unstyled row g-2 mb-0">
+                        @foreach ($exercices as $profil)
+                        <li class="col-md-6">
+                            <x-fiscal-provenance :exercice="$profil['exercice']" :reference="$profil['reference']" />
+                            @unless ($profil['calculable'])
+                            <p class="small mb-0 mt-1" style="color:var(--ink-2)">{{ __('ui.fiscal_year.not_calculable_note') }}</p>
+                            @endunless
+                        </li>
+                        @endforeach
+                    </ul>
+                </div>
             </section>
 
         </div>

@@ -492,6 +492,38 @@
                             <div class="form-text" id="salaireBaseHelp">{{ __('ui.calculator.base_salary_help', ['smig' => number_format(config('payroll.smig.mensuel'), 2, ',', ' ')]) }}</div>
                         </div>
 
+                        {{-- Exercice fiscal (#281). Repli 2026 sans saisie. Une valeur renvoyée
+                             que le moteur ne peut pas calculer n'est jamais remplacée en silence par
+                             un autre exercice : aucun choix n'est présélectionné et le champ exige
+                             un choix explicite. --}}
+                        @php
+                            $exerciceAncien = old('exercice');
+                            $exerciceDemande = app(\App\Services\ExercicesFiscaux::class)->resoudre($exerciceAncien);
+                            $exerciceChoisissable = collect($exercices)
+                                ->contains(fn (array $e) => $e['exercice'] === $exerciceDemande && $e['calculable']);
+                        @endphp
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" for="exercice">{{ __('ui.fiscal_year.label') }}</label>
+                            <select name="exercice" id="exercice" required
+                                    class="form-select @error('exercice') is-invalid @enderror @if (! $exerciceChoisissable) is-invalid @endif"
+                                    aria-describedby="exerciceHelp{{ $exerciceChoisissable ? '' : ' exerciceUnsupported' }}">
+                                @unless ($exerciceChoisissable)
+                                <option value="" disabled selected>{{ __('ui.fiscal_year.choose') }}</option>
+                                @endunless
+                                @foreach ($exercices as $e)
+                                <option value="{{ $e['exercice'] }}"
+                                        @if ($exerciceChoisissable && $e['exercice'] === $exerciceDemande) selected @endif
+                                        @unless ($e['calculable']) disabled @endunless>{{ $e['exercice'] }} - {{ __('ui.fiscal_year.status_'.$e['statut']) }}@unless ($e['calculable']) - {{ __('ui.fiscal_year.not_calculable') }}@endunless</option>
+                                @endforeach
+                            </select>
+                            <div class="form-text" id="exerciceHelp">{{ __('ui.fiscal_year.form_help', ['exercice' => $exercice_defaut]) }}</div>
+                            @unless ($exerciceChoisissable)
+                            <div class="invalid-feedback d-block" id="exerciceUnsupported">
+                                @error('exercice'){{ $message }}@else{{ __('ui.fiscal_year.unsupported', ['exercice' => is_scalar($exerciceAncien) ? (string) $exerciceAncien : '']) }}@enderror
+                            </div>
+                            @endunless
+                        </div>
+
                         <div class="mb-2">
                             <label class="form-label fw-semibold" for="type_frais_pro">{{ __('ui.calculator.category_label') }}</label>
                             <select name="type_frais_pro" id="type_frais_pro" class="form-select">
@@ -499,7 +531,8 @@
                                 <option value="journaliste" {{ old('type_frais_pro','commun') === 'journaliste' ? 'selected' : '' }}>{{ __('ui.calculator.category_journalist') }}</option>
                                 <option value="artiste"     {{ old('type_frais_pro','commun') === 'artiste'     ? 'selected' : '' }}>{{ __('ui.calculator.category_artist') }}</option>
                             </select>
-                            <div class="form-text">{{ __('ui.calculator.category_help', ['cap' => number_format(config('payroll.frais_pro.commun.haut.plafond'), 2, ',', ' ')]) }}</div>
+                            {{-- Plafond lu dans le profil de repli et présenté comme tel : un projet n'a pas encore ses propres frais professionnels (#282). --}}
+                            <div class="form-text">{{ __('ui.calculator.category_help', ['cap' => number_format(app(\App\Services\ExercicesFiscaux::class)->parametre($exercice_defaut, 'frais_pro')['commun']['haut']['plafond'], 2, ',', ' ')]) }} ({{ __('ui.fiscal_year.parameters_of', ['exercice' => $exercice_defaut]) }})</div>
                         </div>
 
                     </div>

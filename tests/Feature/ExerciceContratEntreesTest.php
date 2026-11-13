@@ -103,6 +103,23 @@ class ExerciceContratEntreesTest extends TestCase
         $this->assertSame(['exercice'], array_keys($response->json('errors') ?? []));
     }
 
+    /**
+     * postJson réécrirait 2026.0 en entier : le littéral décimal est envoyé tel
+     * quel. Le contrat d'entrée strict, déjà implémenté, exige un entier.
+     */
+    public function test_api_refuse_le_litteral_decimal_2026_0_envoye_en_json_brut(): void
+    {
+        $corps = json_encode(self::BRUT + ['exercice' => 2026.0], JSON_PRESERVE_ZERO_FRACTION | JSON_THROW_ON_ERROR);
+        $this->assertStringContainsString('"exercice":2026.0', $corps, 'Le corps porte bien le littéral décimal.');
+
+        foreach (['/api/v1/simuler/brut-vers-net', '/api/v1/simuler/net-vers-brut'] as $uri) {
+            $response = $this->posterJsonBrut($uri, $corps);
+
+            $response->assertStatus(422);
+            $this->assertArrayHasKey('exercice', $response->json('errors') ?? [], "{$uri} : refus porté par le champ exercice");
+        }
+    }
+
     public function test_web_refuse_un_projet_et_accepte_un_exercice_vide(): void
     {
         $this->from('/calculateur')

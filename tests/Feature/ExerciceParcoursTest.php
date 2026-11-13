@@ -126,6 +126,60 @@ class ExerciceParcoursTest extends TestCase
         } else {
             $this->assertStringNotContainsString($this->reserve($locale), $texte, "{$locale} : pas de réserve pour un exercice en vigueur");
         }
+
+        // Le lien vers le texte source s'ouvre dans un nouvel onglet sans
+        // transmettre l'URL de la page, qui peut porter des payloads de
+        // simulation non chiffrés (comparaison).
+        if (! empty($profil['source']['url'])) {
+            $liens = (new \DOMXPath($bloc->ownerDocument))->query('.//a[@href="'.$profil['source']['url'].'"]', $bloc);
+            $this->assertSame(1, $liens->length, "{$locale} : lien vers le texte source ({$exercice})");
+
+            $lien = $liens->item(0);
+            $rel = preg_split('/\s+/', trim($lien->getAttribute('rel')));
+            $this->assertSame('_blank', $lien->getAttribute('target'), "{$locale} : source ouverte dans un nouvel onglet");
+            $this->assertContains('noopener', $rel, "{$locale} : rel noopener sur la source ({$exercice})");
+            $this->assertContains('noreferrer', $rel, "{$locale} : rel noreferrer sur la source ({$exercice})");
+        }
+    }
+
+    /**
+     * Une balise de composant mal formée n'est pas compilée par Blade et reste
+     * telle quelle dans le HTML : aucune page de provenance ne doit en contenir.
+     */
+    private function assertComposantsCompiles(string $html, string $contexte): void
+    {
+        $this->assertStringNotContainsString('<x-', $html, "{$contexte} : balise de composant Blade non compilée");
+    }
+
+    /**
+     * Retour de validation avec un exercice que le moteur ne peut pas calculer :
+     * année, locale et message attendu (première erreur du champ, traduite).
+     *
+     * @return array<string, array{string, string}>
+     */
+    public static function exercicesRefuses(): array
+    {
+        $cas = [];
+        foreach (self::LOCALES as $locale) {
+            $cas["2027 sans fixture {$locale}"] = ['2027', $locale];
+            $cas["1999 inconnu {$locale}"] = ['1999', $locale];
+        }
+
+        return $cas;
+    }
+
+    private function messageRefusAttendu(string $exercice, string $locale): string
+    {
+        if ($exercice === '1999') {
+            // Première règle en échec : min, avec le nom lisible du champ.
+            return trans('validation.min.numeric', [
+                'attribute' => trans('validation.attributes.exercice', [], $locale),
+                'min' => min(array_keys(config('payroll.exercices'))),
+            ], $locale);
+        }
+
+        // integer, min et max passent : la règle partagée avec le moteur refuse.
+        return trans('ui.validation.exercise_not_calculable', ['exercice' => (int) $exercice], $locale);
     }
 
     /**
@@ -227,6 +281,40 @@ class ExerciceParcoursTest extends TestCase
         $this->assertSame('2027', $this->valeurSelectionnee($this->optionsExercice($html, 'retour de validation')));
     }
 
+    /**
+     * Caractérisation du retour de validation pour un exercice non calculable
+     * (2027 sans fixture) ou inconnu (1999) : le formulaire ne retombe jamais en
+     * silence sur 2026, il présélectionne le choix vide désactivé, garde le
+     * champ obligatoire et affiche le message traduit de l'erreur.
+     */
+    #[DataProvider('exercicesRefuses')]
+    public function test_un_exercice_refuse_renvoye_par_la_validation_n_est_pas_remplace_par_2026(string $exercice, string $locale): void
+    {
+        $html = $this->withSession(['locale' => $locale])
+            ->followingRedirects()
+            ->from('/calculateur')
+            ->post('/calculateur/calculer', self::SCENARIO + ['exercice' => $exercice])
+            ->assertOk()
+            ->getContent();
+
+        $contexte = "{$locale} / {$exercice}";
+        $xpath = $this->xpath($html);
+        $options = $this->optionsExercice($html, $contexte);
+
+        $select = $xpath->query('//select[@name="exercice"]')->item(0);
+        $this->assertTrue($select->hasAttribute('required'), "{$contexte} : champ exercice obligatoire");
+
+        $this->assertArrayHasKey('', $options, "{$contexte} : choix vide proposé");
+        $this->assertSame('', $this->valeurSelectionnee($options), "{$contexte} : choix vide sélectionné, aucune présélection");
+        $this->assertTrue($options['']->hasAttribute('disabled'), "{$contexte} : choix vide désactivé");
+        $this->assertFalse($options['2026']->hasAttribute('selected'), "{$contexte} : aucune sélection silencieuse de 2026");
+
+        $retour = $xpath->query('//*[@id="exerciceUnsupported"]');
+        $this->assertSame(1, $retour->length, "{$contexte} : message d'erreur du champ exercice");
+        $this->assertStringContainsString('exerciceUnsupported', $select->getAttribute('aria-describedby'), "{$contexte} : message relié au champ");
+        $this->assertSame($this->messageRefusAttendu($exercice, $locale), $this->texte($retour->item(0)), "{$contexte} : message explicite traduit");
+    }
+
     // ------------------------------------------------------------------
     // Résultat
     // ------------------------------------------------------------------
@@ -240,6 +328,7 @@ class ExerciceParcoursTest extends TestCase
                 ->assertOk()
                 ->getContent();
 
+            $this->assertComposantsCompiles($html, "{$locale} : résultat");
             $blocs = $this->blocsProvenance($html);
             $this->assertCount(1, $blocs, "{$locale} : un bloc de provenance sur la page résultat");
             $this->assertBlocProvenance($blocs[0], 2026, $locale);
@@ -267,6 +356,7 @@ class ExerciceParcoursTest extends TestCase
             ->assertOk()
             ->getContent();
 
+        $this->assertComposantsCompiles($html, "{$locale} : résultat projet");
         $blocs = $this->blocsProvenance($html);
         $this->assertCount(1, $blocs, "{$locale} : un bloc de provenance");
         $this->assertBlocProvenance($blocs[0], 2027, $locale);
@@ -296,6 +386,7 @@ class ExerciceParcoursTest extends TestCase
         $this->assertStringContainsString(e(trans('ui.comparison.inputs_identical', [], $locale)), $html, "{$locale} : entrées identiques");
         $this->assertStringNotContainsString(e(trans('ui.comparison.inputs_advanced_diff', [], $locale)), $html, "{$locale} : aucun écart caché");
 
+        $this->assertComposantsCompiles($html, "{$locale} : comparaison");
         $blocs = $this->blocsProvenance($html);
         $this->assertCount(2, $blocs, "{$locale} : un bloc de provenance par scénario");
         foreach ($blocs as $bloc) {
@@ -315,6 +406,7 @@ class ExerciceParcoursTest extends TestCase
             ->assertOk()
             ->getContent();
 
+        $this->assertComposantsCompiles($html, "{$locale} : comparaison avec projet");
         $blocs = $this->blocsProvenance($html);
         $this->assertCount(2, $blocs, "{$locale} : un bloc de provenance par scénario");
         $this->assertBlocProvenance($blocs[0], 2026, $locale);
@@ -329,6 +421,7 @@ class ExerciceParcoursTest extends TestCase
     public function test_la_fiabilite_distingue_le_profil_en_vigueur_des_projets_dates(string $locale): void
     {
         $html = $this->withSession(['locale' => $locale])->get('/fiabilite')->assertOk()->getContent();
+        $this->assertComposantsCompiles($html, "{$locale} : Fiabilité");
         $xpath = $this->xpath($html);
 
         foreach (config('payroll.exercices') as $annee => $profil) {

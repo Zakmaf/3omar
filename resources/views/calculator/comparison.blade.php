@@ -70,6 +70,8 @@
         $overtime = fn (array $r) => array_sum(array_column($r['detail_hs'] ?? [], 'montant'));
 
         $inputRows = [
+            // Exercice appliqué par le moteur (#281) : absent et 2026 explicite s'affichent à l'identique.
+            ['label' => 'fiscal_year', 'a' => $a['exercice'], 'b' => $b['exercice'], 'format' => 'year'],
             ['label' => 'base_salary', 'a' => $inputRow($a, 'salaire_base'), 'b' => $inputRow($b, 'salaire_base'), 'format' => 'mad'],
             ['label' => 'net_target', 'a' => $inputRow($a, 'net_cible'), 'b' => $inputRow($b, 'net_cible'), 'format' => 'mad'],
             ['label' => 'seniority', 'a' => $a['nb_annees_anciennete'], 'b' => $b['nb_annees_anciennete'], 'format' => 'years'],
@@ -97,6 +99,7 @@
                 'mad' => (float) $value == 0.0 ? '-' : $mad($value),
                 'pct' => (float) $value == 0.0 ? '-' : number_format((float) $value, 2, ',', ' ').' %',
                 'years', 'count' => (int) $value === 0 ? '-' : (string) (int) $value,
+                'year' => (string) (int) $value,
                 'category' => $categoryLabels[$value] ?? (string) $value,
                 default => (string) $value,
             };
@@ -178,6 +181,16 @@
             <i class="bi bi-sliders me-2" style="color:var(--s-info)" aria-hidden="true"></i>{{ __('ui.comparison.inputs_title') }}
         </h2>
         <p class="small mb-3" style="color:var(--ink-2)">{{ __('ui.comparison.inputs_intro') }}</p>
+
+        {{-- Provenance fiscale de chaque scénario, A puis B (#281) --}}
+        <div class="row g-2 mb-3">
+            @foreach (['scenario_a' => $a, 'scenario_b' => $b] as $scenarioKey => $scenario)
+            <div class="col-md-6">
+                <p class="small fw-semibold mb-1" style="color:var(--ink-2)">{{ __('ui.comparison.'.$scenarioKey) }}</p>
+                <x-fiscal-provenance :exercice="$scenario['exercice']" :reference="$scenario['reference_fiscale']" />
+            </div>
+            @endforeach
+        </div>
 
         @if ($shownChanges === [] && $hiddenDifferences === [])
         <p class="small mb-0" style="color:var(--ink-3)">

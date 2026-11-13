@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PayrollValidation;
+use App\Services\ExercicesFiscaux;
 use App\Services\PayrollCalculatorService;
 use App\Services\SimulationCodec;
 use App\Services\SimulationComparator;
@@ -16,6 +17,7 @@ class CalculatorController extends Controller
         private SimulationCodec $codec,
         private SimulationComparator $comparator,
         private SimulationProfileService $profiles,
+        private ExercicesFiscaux $exercices,
     ) {}
 
     public function index(Request $request)
@@ -68,7 +70,25 @@ class CalculatorController extends Controller
             'simulation_restored' => $injected && $restored,
             'share_payload_invalid' => $sBranchTaken && ! $restored,
             'comparison_a' => $comparisonA,
+            'exercices' => $this->choixExercices(),
+            'exercice_defaut' => $this->exercices->defaut(),
         ]);
+    }
+
+    /**
+     * Exercices proposés par le formulaire (#281), dans l'ordre de la
+     * configuration. Seul un profil calculable est activable ; le statut est
+     * celui du profil, même s'il devient calculable.
+     *
+     * @return list<array{exercice: int, statut: string, calculable: bool}>
+     */
+    private function choixExercices(): array
+    {
+        return array_map(fn (int $annee): array => [
+            'exercice' => $annee,
+            'statut' => (string) $this->exercices->referenceFiscale($annee)['statut'],
+            'calculable' => $this->exercices->calculable($annee),
+        ], $this->exercices->declares());
     }
 
     public function resultatIndisponible()

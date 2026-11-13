@@ -37,6 +37,8 @@ class SimulationComparator
         ['key' => 'total_patronal', 'label' => 'employer_contributions', 'sens' => 'charge', 'phare' => false],
     ];
 
+    public function __construct(private ExercicesFiscaux $exercices = new ExercicesFiscaux) {}
+
     /**
      * @return list<array{key: string, label: string, sens: string, phare: bool, a: float, b: float, ecart: float, ecart_pct: float|null}>
      */
@@ -88,8 +90,8 @@ class SimulationComparator
         $differences = [];
 
         foreach ($champs as $champ) {
-            $a = $this->normalize($inputA[$champ] ?? null);
-            $b = $this->normalize($inputB[$champ] ?? null);
+            $a = $this->normalizeField($champ, $inputA[$champ] ?? null);
+            $b = $this->normalizeField($champ, $inputB[$champ] ?? null);
 
             if ($a !== $b) {
                 $differences[] = ['field' => $champ, 'a' => $a, 'b' => $b];
@@ -97,6 +99,22 @@ class SimulationComparator
         }
 
         return $differences;
+    }
+
+    /**
+     * L'exercice (#281) n'est pas un montant : absent, null ou blanc vaut le
+     * repli permanent, résolu par la même règle que la validation et le moteur.
+     * Une valeur non résoluble reste comparée telle quelle, jamais remplacée.
+     */
+    private function normalizeField(string $champ, mixed $value): mixed
+    {
+        if ($champ === 'exercice') {
+            $annee = $this->exercices->resoudre($value);
+
+            return $annee !== null ? (string) $annee : $this->normalize($value);
+        }
+
+        return $this->normalize($value);
     }
 
     /**

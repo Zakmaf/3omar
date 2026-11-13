@@ -57,26 +57,41 @@ class BaremeIrOracleTest extends TestCase
     }
 
     /**
-     * Contributions de chaque tranche, non arrondies.
+     * Contributions de chaque tranche en arithmétique entière, exprimées en
+     * centièmes de centime (assiette en centimes multipliée par le taux en
+     * points de pourcentage). Aucun flottant n'intervient dans l'oracle.
      *
-     * @return list<float>
+     * @return list<int>
      */
     private function contributions(float $rni, int $exercice): array
     {
-        $precedent = 0.0;
+        $rniCentimes = (int) round($rni * 100);
+        $precedent = 0;
         $contributions = [];
 
         foreach (self::TABLES[$exercice] as [$max, $taux]) {
-            $haut = $max === null ? $rni : min($rni, (float) $max);
-            $contributions[] = max(0.0, $haut - $precedent) * $taux;
+            $pourcentage = (int) round($taux * 100);
+            $haut = $max === null ? $rniCentimes : min($rniCentimes, $max * 100);
+            $contributions[] = max(0, $haut - $precedent) * $pourcentage;
 
-            if ($max === null || $rni <= $max) {
+            if ($max === null || $rniCentimes <= $max * 100) {
                 break;
             }
-            $precedent = (float) $max;
+            $precedent = $max * 100;
         }
 
         return $contributions;
+    }
+
+    /**
+     * Arrondi au centime, demi supérieur, d'un montant positif exprimé en
+     * centièmes de centime. Retourne des centimes entiers.
+     */
+    private function centimes(int $centiemesDeCentime): int
+    {
+        $this->assertNotSame(50, $centiemesDeCentime % 100, 'Point d\'égalité d\'arrondi : choisir un autre RNI de test.');
+
+        return intdiv($centiemesDeCentime + 50, 100);
     }
 
     /**
@@ -127,17 +142,16 @@ class BaremeIrOracleTest extends TestCase
 
         foreach ($this->points($exercice) as $rni) {
             $contributions = $this->contributions($rni, $exercice);
-            $oracle = round(array_sum($contributions), 2);
-            $sommeArrondie = array_sum(array_map(fn (float $c): float => round($c, 2), $contributions));
+            $oracle = $this->centimes(array_sum($contributions));
+            $sommeArrondie = array_sum(array_map(fn (int $c): int => $this->centimes($c), $contributions));
             $montant = $this->moteur($rni, $exercice)['montant'];
 
-            $this->assertEqualsWithDelta($oracle, $montant, 0.011, "{$exercice} : IR pour un RNI de {$rni}");
-            $this->assertEqualsWithDelta(
-                $sommeArrondie,
-                $montant,
-                0.005 * count($contributions) + 0.011,
-                "{$exercice} : somme des contributions arrondies pour un RNI de {$rni}",
-            );
+            // Les tranches achevées de nos tables donnent des montants entiers :
+            // seule la dernière contribution porte des fractions de centime, donc
+            // la somme des contributions arrondies égale l'impôt arrondi.
+            $this->assertSame($oracle, $sommeArrondie, "{$exercice} : cohérence interne de l'oracle pour {$rni}");
+            $this->assertSame($oracle / 100.0, $montant, "{$exercice} : IR exact au centime pour un RNI de {$rni}");
+            $this->assertSame($sommeArrondie / 100.0, $montant, "{$exercice} : somme exacte des contributions arrondies pour un RNI de {$rni}");
             $this->assertGreaterThanOrEqual(0.0, $montant, "{$exercice} : IR non négatif pour {$rni}");
             $this->assertGreaterThanOrEqual($precedent, $montant, "{$exercice} : IR croissant avec le RNI ({$rni})");
             $precedent = $montant;
