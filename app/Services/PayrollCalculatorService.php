@@ -691,6 +691,11 @@ class PayrollCalculatorService
             'repartition' => $repartition,
             'avertissements' => $avertissements,
 
+            // Provenance fiscale (#281) : exercice réellement appliqué et
+            // métadonnées de son profil, distinctes de la version applicative.
+            'exercice' => $profil['exercice'],
+            'reference_fiscale' => $profil['reference_fiscale'],
+
             // — Entrées (ré-affichage) —
             'input' => $input,
         ];

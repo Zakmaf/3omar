@@ -107,6 +107,18 @@ Le tableau retourné est celui de `calculer()`, avec `mode = 'net_to_gross'` et 
 - Le net ciblé est le **net à payer** (`salaire_net` dans le moteur), pas le net comptable.
 - La relation brut/net est monotone dans les cas courants. Des retenues post-fiscales fixes peuvent créer des zones plates à faible salaire ; le solver retourne alors le candidat à écart minimal.
 - Toute évolution des formules de `calculer()` est automatiquement répercutée sur le solver.
+- L'exercice fiscal est vérifié une fois avant la première itération, puis chaque itération reprend la même entrée : le même exercice (ou le même repli 2026) s'applique à tous les candidats, et le résultat retenu expose cet exercice.
+
+## Exercices fiscaux (#281)
+
+Les paramètres qui changent d'une année à l'autre sont regroupés par exercice dans `config('payroll.exercices')`. Les barèmes et dates ne sont pas recopiés ici : la configuration reste la source.
+
+- **Sélection.** Le champ facultatif `exercice` (API, formulaire, liens partagés) choisit le profil. Absent, `null` ou vide, il vaut `exercice_defaut`, soit **2026, de façon permanente** : les liens et requêtes historiques restent interprétés en 2026, et ce repli ne dépend jamais de la date du jour. Un exercice ultérieur, même après promulgation, se demande explicitement.
+- **Profil 2026.** Statut `en_vigueur`. Ses `ir_baremes` et `frais_pro` sont des chaînes qui renvoient aux clés historiques `ir.baremes` et `frais_pro`, seule source des valeurs 2026. Les clés `year` et `regulation` restent les archives 2026.
+- **Profils 2027 à 2031.** Statut `projet`, source datée du texte déposé (PLF n° 60-26, publication du 23/10/2026, URL et empreinte du document), `reference_ir` vers l'article du projet, `date_effet_projetee` annoncée par le texte et `validation_legale` à `null`. Ces dates d'effet projetées ne valent pas validation : aucun profil ne passe `en_vigueur` sans la loi publiée au Bulletin officiel, ses dates d'effet vérifiées et l'accord du propriétaire.
+- **Barèmes projetés.** Chaque barème futur est décrit par ses seuils et ses taux marginaux ; la déduction de chaque tranche est dérivée par continuité au seuil précédent, `déduction(i) = déduction(i-1) + max(i-1) x (taux(i) - taux(i-1))`.
+- **Calculabilité.** Un exercice n'est calculable que si son profil déclare un barème IR et des frais professionnels. Les profils futurs ont `frais_pro` à `null` (#282) : la validation renvoie une erreur sur `exercice` et le moteur lève une exception avant tout calcul. Aucun paramètre 2026 ne complète un profil incomplet. Un exercice non déclaré est refusé de la même manière.
+- **Provenance.** Chaque résultat expose `exercice` (entier) et `reference_fiscale` (statut, source, référence IR, période, date d'effet projetée, validation légale du profil appliqué). Ces métadonnées sont distinctes de la version applicative et ne contiennent ni barème ni frais professionnels.
 
 ## Contrôles de cohérence
 

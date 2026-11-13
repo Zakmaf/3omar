@@ -20,6 +20,9 @@ namespace App\Services;
  */
 class ExercicesFiscaux
 {
+    /** Métadonnées de provenance exposées dans chaque résultat (reference_fiscale). */
+    private const METADONNEES = ['statut', 'source', 'reference_ir', 'periode', 'date_effet_projetee', 'validation_legale'];
+
     public function defaut(): int
     {
         return (int) config('payroll.exercice_defaut');
@@ -84,6 +87,30 @@ class ExercicesFiscaux
     }
 
     /**
+     * Métadonnées juridiques d'un profil existant, lues brutes : contrairement
+     * à parametre(), aucune chaîne n'est interprétée comme référence de clé.
+     * Ni barème ni frais professionnels, et aucun lien avec la version
+     * applicative ni avec la date du jour.
+     *
+     * @return array{statut: mixed, source: mixed, reference_ir: mixed, periode: mixed, date_effet_projetee: mixed, validation_legale: mixed}
+     */
+    public function referenceFiscale(int $exercice): array
+    {
+        if (! $this->existe($exercice)) {
+            throw new \InvalidArgumentException(__('ui.validation.exercise_unknown', ['exercice' => $exercice]));
+        }
+
+        $profil = config("payroll.exercices.{$exercice}");
+        $reference = [];
+
+        foreach (self::METADONNEES as $cle) {
+            $reference[$cle] = $profil[$cle] ?? null;
+        }
+
+        return $reference;
+    }
+
+    /**
      * Message d'erreur traduit si l'exercice demandé ne peut pas servir à un
      * calcul complet, null s'il est calculable.
      */
@@ -106,7 +133,7 @@ class ExercicesFiscaux
      * Paramètres d'un exercice calculable, ou exception explicite avant tout
      * calcul.
      *
-     * @return array{exercice: int, ir_baremes: array, frais_pro: array}
+     * @return array{exercice: int, ir_baremes: array, frais_pro: array, reference_fiscale: array}
      */
     public function profilCalculable(mixed $exercice): array
     {
@@ -122,6 +149,7 @@ class ExercicesFiscaux
             'exercice' => $annee,
             'ir_baremes' => $this->parametre($annee, 'ir_baremes'),
             'frais_pro' => $this->parametre($annee, 'frais_pro'),
+            'reference_fiscale' => $this->referenceFiscale($annee),
         ];
     }
 }
