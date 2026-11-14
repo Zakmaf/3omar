@@ -8,10 +8,10 @@ const { measureHorizontalOverflow } = require('../helpers/layout');
 /**
  * Parcours de l'exercice fiscal dans l'application reelle (issue #281).
  *
- * L'application servie est celle de production, sans aucune fixture : seul
- * l'exercice 2026 y est calculable. Ce contrat le verifie et n'active jamais
- * un profil futur. Les profils futurs rendus calculables par une configuration
- * technique ne sont exerces que par PHPUnit (tests/Feature/ExerciceParcoursTest).
+ * L'application servie est celle de production, sans aucune fixture : 2026 (en
+ * vigueur) et 2027 (projet, frais professionnels proposes, issue #282) y sont
+ * calculables ; 2028 a 2031 ne le sont pas. Ce parcours reste en 2026 ; les
+ * calculs 2027 sont exerces par PHPUnit (tests/Feature/FraisPro2027AffichageTest).
  *
  * Parcours : formulaire reel (choix 2026 et soumission), resultat, lien de
  * partage puis reprise, comparaison d'une simulation sans exercice avec la meme
@@ -39,8 +39,11 @@ const CELLS = [
     { id: 'ar-rtl-desktop-1440x900', viewport: { width: 1440, height: 900 }, locale: 'ar' },
 ];
 
-/** Exercice de repli, seul calculable dans l'application reelle. */
+/** Exercice de repli, en vigueur. */
 const EXERCICE_REPLI = '2026';
+
+/** Exercices calculables dans l'application reelle : repli et projet 2027 (#282). */
+const EXERCICES_ACTIVABLES = [EXERCICE_REPLI, '2027'];
 
 const BLOCKING_IMPACTS = ['critical', 'serious'];
 
@@ -117,7 +120,7 @@ for (const cell of CELLS) {
         test.use({ viewport: cell.viewport });
 
         test('formulaire, resultat, partage, comparaison et Fiabilite restent en 2026', async ({ page }) => {
-            // 1. Formulaire reel : 2026 seul activable, selectionne par defaut.
+            // 1. Formulaire reel : 2026 et 2027 activables, 2026 selectionne par defaut.
             await setLocale(page, cell.locale);
             await page.goto('/calculateur', { waitUntil: 'domcontentloaded' });
             await stabilize(page);
@@ -130,8 +133,8 @@ for (const cell of CELLS) {
             expect(declares).not.toContain('');
             expect(
                 champ.options.filter((o) => !o.disabled).map((o) => o.value),
-                'aucun profil futur activable dans l\'application reelle',
-            ).toEqual([EXERCICE_REPLI]);
+                'seuls 2026 et le projet 2027 sont activables dans l\'application reelle',
+            ).toEqual(EXERCICES_ACTIVABLES);
 
             await assertNoOverflow(page, 'formulaire');
             await assertAxeClean(page, 'select[name="exercice"]', 'champ exercice');

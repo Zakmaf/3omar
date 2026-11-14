@@ -10,7 +10,8 @@ use Tests\TestCase;
  *
  * Caractérise la configuration validée : 2026 seul en vigueur et repli
  * permanent, 2027 à 2031 en projet daté du texte déposé, sans validation
- * légale ni frais professionnels. Aucune date du jour n'intervient.
+ * légale ; seul 2027 porte des frais professionnels (#282). Aucune date du
+ * jour n'intervient.
  */
 class ExercicesProfilsTest extends TestCase
 {
@@ -51,7 +52,12 @@ class ExercicesProfilsTest extends TestCase
         $this->assertTrue($exercices->calculable(2026));
     }
 
-    public function test_les_profils_futurs_sont_des_projets_dates_non_calculables(): void
+    /**
+     * 2027 reçoit ses frais professionnels proposés (#282) et devient
+     * calculable, sans cesser d'être un projet ; 2028 à 2031 restent
+     * incomplets.
+     */
+    public function test_les_profils_futurs_sont_des_projets_dates(): void
     {
         $source = config('payroll.exercices.2027.source');
 
@@ -66,13 +72,19 @@ class ExercicesProfilsTest extends TestCase
 
             $this->assertSame('projet', $profil['statut'], "{$annee} : statut");
             $this->assertNull($profil['validation_legale'], "{$annee} : aucune validation légale");
-            $this->assertNull($profil['frais_pro'], "{$annee} : frais professionnels non définis (#282)");
             $this->assertSame($source, $profil['source'], "{$annee} : même source datée");
             $this->assertSame(['debut' => "{$annee}-01-01", 'fin' => "{$annee}-12-31"], $profil['periode']);
             $this->assertSame("{$annee}-01-01", $profil['date_effet_projetee'], "{$annee} : date d'effet projetée");
             $this->assertIsString($profil['reference_ir']);
             $this->assertIsArray($profil['ir_baremes'], "{$annee} : barème en valeurs");
-            $this->assertFalse(app(ExercicesFiscaux::class)->calculable($annee), "{$annee} : non calculable");
+
+            if ($annee === 2027) {
+                $this->assertIsArray($profil['frais_pro'], '2027 : frais professionnels proposés en valeurs (#282)');
+                $this->assertTrue(app(ExercicesFiscaux::class)->calculable($annee), '2027 : calculable');
+            } else {
+                $this->assertNull($profil['frais_pro'], "{$annee} : frais professionnels non définis");
+                $this->assertFalse(app(ExercicesFiscaux::class)->calculable($annee), "{$annee} : non calculable");
+            }
         }
     }
 

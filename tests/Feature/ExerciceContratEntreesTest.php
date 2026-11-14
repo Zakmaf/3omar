@@ -61,7 +61,7 @@ class ExerciceContratEntreesTest extends TestCase
             'texte' => ['abc'],
             'avant le premier exercice' => [1999],
             'après le dernier exercice' => [2032],
-            'projet sans frais professionnels' => [2027],
+            'projet sans frais professionnels' => [2028],
             'tableau' => [[2026]],
             'booléen' => [true],
         ];
@@ -123,7 +123,7 @@ class ExerciceContratEntreesTest extends TestCase
     public function test_web_refuse_un_projet_et_accepte_un_exercice_vide(): void
     {
         $this->from('/calculateur')
-            ->post('/calculateur/calculer', self::BRUT + ['mode' => 'gross_to_net', 'exercice' => '2027'])
+            ->post('/calculateur/calculer', self::BRUT + ['mode' => 'gross_to_net', 'exercice' => '2028'])
             ->assertRedirect('/calculateur')
             ->assertSessionHasErrors('exercice');
 
@@ -141,7 +141,12 @@ class ExerciceContratEntreesTest extends TestCase
         $this->assertNotNull($decode);
         $this->assertEquals(2026, $decode['exercice'] ?? null, 'L\'exercice explicite voyage dans le lien.');
 
-        $this->assertNull($codec->decode($codec->encode($scenario + ['exercice' => 2027])), 'Projet non calculable refusé.');
+        $this->assertNull($codec->decode($codec->encode($scenario + ['exercice' => 2028])), 'Projet non calculable refusé.');
+
+        // 2027, projet calculable (#282), voyage dans le lien.
+        $decode2027 = $codec->decode($codec->encode($scenario + ['exercice' => 2027]));
+        $this->assertNotNull($decode2027, 'Projet calculable accepté.');
+        $this->assertEquals(2027, $decode2027['exercice'] ?? null);
         $this->assertNull($codec->decode($codec->encode($scenario + ['exercice' => 'abc'])), 'Exercice invalide refusé.');
     }
 
@@ -150,7 +155,7 @@ class ExerciceContratEntreesTest extends TestCase
         $moteur = app(PayrollCalculatorService::class);
 
         foreach ([
-            2027 => __('ui.validation.exercise_not_calculable', ['exercice' => 2027]),
+            2028 => __('ui.validation.exercise_not_calculable', ['exercice' => 2028]),
             1999 => __('ui.validation.exercise_unknown', ['exercice' => 1999]),
         ] as $exercice => $message) {
             try {

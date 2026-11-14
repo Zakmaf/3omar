@@ -8,8 +8,9 @@ use Tests\TestCase;
 /**
  * Un exercice fiscal explicite est une vraie entrée de l'API (issue #281).
  *
- * Les profils prospectifs (2027 à 2031, PLF n° 60-26 non promulgué) n'ont pas
- * encore leurs frais professionnels (`frais_pro` null, ticket #282). Un calcul
+ * Les profils prospectifs 2028 à 2031 (PLF n° 60-26 non promulgué) n'ont pas
+ * encore leurs frais professionnels (`frais_pro` null ; seul 2027 les reçoit,
+ * ticket #282). Un calcul
  * complet demandé pour un tel exercice doit être refusé sur le champ
  * `exercice`, jamais servi avec les frais professionnels 2026 ni en ignorant
  * silencieusement l'exercice demandé.
@@ -37,11 +38,11 @@ class ExerciceIncompletApiTest extends TestCase
     public function test_exercice_sans_frais_professionnels_parametres_est_refuse(string $route, array $requete): void
     {
         $this->assertNull(
-            config('payroll.exercices.2027.frais_pro'),
-            'Prémisse : les frais professionnels du profil 2027 ne sont pas encore paramétrés (#282).',
+            config('payroll.exercices.2028.frais_pro'),
+            'Prémisse : les frais professionnels du profil 2028 ne sont pas paramétrés.',
         );
 
-        $response = $this->postJson($route, $requete + ['exercice' => 2027]);
+        $response = $this->postJson($route, $requete + ['exercice' => 2028]);
 
         $response->assertStatus(422);
         $this->assertSame(

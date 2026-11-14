@@ -161,7 +161,7 @@ class ExerciceParcoursTest extends TestCase
     {
         $cas = [];
         foreach (self::LOCALES as $locale) {
-            $cas["2027 sans fixture {$locale}"] = ['2027', $locale];
+            $cas["2028 sans frais professionnels {$locale}"] = ['2028', $locale];
             $cas["1999 inconnu {$locale}"] = ['1999', $locale];
         }
 
@@ -241,8 +241,21 @@ class ExerciceParcoursTest extends TestCase
         foreach (config('payroll.exercices') as $annee => $profil) {
             $option = $options[(string) $annee];
             $this->assertStringContainsString($this->libelleStatut($profil['statut'], $locale), $this->texte($option), "{$locale} : statut de {$annee}");
-            $this->assertSame($annee !== 2026, $option->hasAttribute('disabled'), "{$locale} : seul un exercice calculable est activable ({$annee})");
+            $this->assertSame(
+                ! app(\App\Services\ExercicesFiscaux::class)->calculable($annee),
+                $option->hasAttribute('disabled'),
+                "{$locale} : seul un exercice calculable est activable ({$annee})",
+            );
         }
+
+        // Configuration réelle (#282) : 2026 en vigueur et 2027 en projet sont
+        // activables, 2028 à 2031 ne le sont pas.
+        $activables = array_values(array_filter(
+            array_keys($options),
+            fn ($valeur) => $valeur !== '' && ! $options[$valeur]->hasAttribute('disabled'),
+        ));
+        $this->assertSame(['2026', '2027'], array_map('strval', $activables), "{$locale} : exercices activables");
+        $this->assertStringContainsString($this->libelleStatut('projet', $locale), $this->texte($options['2027']), "{$locale} : 2027 reste affiché comme projet");
     }
 
     public function test_un_projet_rendu_calculable_par_la_fixture_reste_affiche_comme_projet(): void
@@ -283,7 +296,7 @@ class ExerciceParcoursTest extends TestCase
 
     /**
      * Caractérisation du retour de validation pour un exercice non calculable
-     * (2027 sans fixture) ou inconnu (1999) : le formulaire ne retombe jamais en
+     * (2028, sans frais professionnels) ou inconnu (1999) : le formulaire ne retombe jamais en
      * silence sur 2026, il présélectionne le choix vide désactivé, garde le
      * champ obligatoire et affiche le message traduit de l'erreur.
      */
