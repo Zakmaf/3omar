@@ -66,6 +66,7 @@ return [
         'indemnites.*.type' => 'allowance type (line :position)',
         'indemnites.*.montant' => 'allowance amount (line :position)',
         'avantages_cnss' => 'CNSS-exempt benefits',
+        'exercice' => 'fiscal year',
         'autres_retenues' => 'other deductions',
         'cimr_taux_employeur_inconnu' => 'unknown CIMR employer rate',
         'rc_part_employeur_inconnu' => 'unknown supplementary pension employer share',

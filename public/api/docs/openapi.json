@@ -165,7 +165,7 @@
     "/parametres": {
       "get": {
         "summary": "Recuperer les parametres reglementaires",
-        "description": "Retourne la configuration complete du simulateur : taux CNSS, AMO, bareme IR, plafonds, indemnites, etc.",
+        "description": "Retourne la configuration complete du simulateur : taux CNSS, AMO, bareme IR, plafonds, indemnites, etc. Les cles historiques (year, ir, frais_pro...) decrivent 2026. La cle exercices liste aussi des exercices en projet (PLF non promulgue, statut projet, validation_legale null) : ce ne sont pas des regles applicables. Dans un profil, ir_baremes et frais_pro sont soit une chaine qui designe une cle historique de cette reponse (profil 2026 : ir.baremes, frais_pro), soit un tableau de valeurs, soit null (parametres non encore definis, exercice non calculable).",
         "operationId": "getParametres",
         "tags": ["Reference"],
         "responses": {
@@ -263,6 +263,7 @@
           "retenues_imposees_ir": { "type": "number", "minimum": 0, "maximum": 10000000, "description": "Retenues imposees a l'IR en MAD : retirees du net a payer sans effet sur l'IR" },
           "autres_retenues": { "type": "number", "minimum": 0, "maximum": 10000000, "description": "Alias historique de retenues_imposees_ir en MAD, utilise si retenues_imposees_ir est absent" },
           "jours_travailles": { "type": "integer", "minimum": 1, "maximum": 31, "description": "Nombre de jours travailles dans le mois" },
+          "exercice": { "type": "integer", "nullable": true, "minimum": 2026, "maximum": 2031, "description": "Exercice fiscal. Absent ou null : 2026, definitivement. Un exercice declare mais non calculable (projet sans frais professionnels) renvoie un 422 sur ce champ" },
           "heures_sup": {
             "type": "array",
             "maxItems": 10,
@@ -316,6 +317,7 @@
           "retenues_imposees_ir": { "type": "number", "minimum": 0, "maximum": 10000000 },
           "autres_retenues": { "type": "number", "minimum": 0, "maximum": 10000000 },
           "jours_travailles": { "type": "integer", "minimum": 1, "maximum": 31 },
+          "exercice": { "type": "integer", "nullable": true, "minimum": 2026, "maximum": 2031 },
           "heures_sup": {
             "type": "array",
             "maxItems": 10,
@@ -364,7 +366,20 @@
           "repartition": { "type": "object", "description": "Donnees pour graphique (Chart.js)" },
           "avertissements": { "type": "array", "items": { "type": "string" } },
           "detail_hs": { "type": "array", "items": { "type": "object" } },
-          "detail_indemnites": { "type": "array", "items": { "type": "object" } }
+          "detail_indemnites": { "type": "array", "items": { "type": "object" } },
+          "exercice": { "type": "integer", "description": "Exercice fiscal reellement applique au calcul (2026 si la requete n'en precise pas). Distinct de la version applicative." },
+          "reference_fiscale": {
+            "type": "object",
+            "description": "Metadonnees du profil de l'exercice applique, lues dans la configuration. Ni bareme ni frais professionnels. Un statut projet n'est jamais une regle applicable.",
+            "properties": {
+              "statut": { "type": "string", "enum": ["en_vigueur", "projet"] },
+              "source": { "type": "object", "description": "Texte source (et, pour un projet, version, date de publication, URL et empreinte du document)" },
+              "reference_ir": { "type": "string", "description": "Article de reference du bareme IR" },
+              "periode": { "type": "object", "properties": { "debut": { "type": "string", "format": "date" }, "fin": { "type": "string", "format": "date" } } },
+              "date_effet_projetee": { "type": "string", "format": "date", "nullable": true, "description": "Date d'effet annoncee par le texte source, sans valeur de validation legale" },
+              "validation_legale": { "nullable": true, "description": "Null tant que la loi publiee et ses dates d'effet n'ont pas ete verifiees" }
+            }
+          }
         }
       },
       "ResolutionNet": {

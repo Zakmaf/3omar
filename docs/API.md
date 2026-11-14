@@ -83,7 +83,7 @@ Recherche le salaire de base brut qui produit le net cible souhaite (resolution 
 
 ### GET /api/v1/parametres
 
-Retourne la configuration reglementaire complete du simulateur (taux CNSS, AMO, bareme IR, plafonds, indemnites, etc.).
+Retourne la configuration complete du simulateur (taux CNSS, AMO, bareme IR, plafonds, indemnites, etc.). Les cles historiques (`year`, `ir`, `frais_pro`...) decrivent l'exercice 2026. La cle `exercices` liste aussi des exercices en projet (PLF n° 60-26 non promulgue, `statut` `projet`, `validation_legale` null) : ce ne sont pas des regles applicables. Dans un profil, `ir_baremes` et `frais_pro` valent soit une chaine qui designe une cle historique de la meme reponse (profil 2026 : `ir.baremes`, `frais_pro`), soit un tableau de valeurs, soit `null` (parametres pas encore definis : exercice non calculable).
 
 **Reponse (200) :**
 
@@ -137,6 +137,7 @@ Le champ `version` reflete toujours la version de l'application actuellement dep
 | `retenues_imposees_ir` | number (0-10000000) | Retenues imposees a l'IR (MAD) : retirees de `salaire_net` sans effet sur l'IR. Incluses dans `total_retenues`. |
 | `autres_retenues` | number (0-10000000) | Alias historique de `retenues_imposees_ir` (MAD), utilise si `retenues_imposees_ir` est absent |
 | `jours_travailles` | integer (1-31) | Jours travailles dans le mois |
+| `exercice` | integer (2026-2031), nullable | Exercice fiscal. Absent ou `null` : 2026, definitivement (liens et requetes historiques). Un exercice declare mais non calculable (projet sans frais professionnels) renvoie un 422 sur `exercice`, jamais un calcul complete par les parametres 2026 |
 | `heures_sup` | array | Heures supplementaires (max 10) |
 | `indemnites` | array | Indemnites exonerees (max 10) |
 | `avantages_cnss` | number (0-10000000) | Avantages exclus de l'assiette CNSS et AMO mais imposables a l'IR (MAD) |
@@ -144,6 +145,11 @@ Le champ `version` reflete toujours la version de l'application actuellement dep
 Tout autre champ est ignore par l'API, sans erreur ni avertissement. Les exemples de requete et de reponse de ce document et de `openapi.json` sont verifies contre le moteur par `tests/Feature/Api/V1/OpenApiContractTest.php`.
 
 Chaque montant est borne a 10 000 000 MAD et chaque taux a 100 (bornes techniques, pas reglementaires) : une valeur au-dela renvoie un 422 qui nomme le champ. Des valeurs toutes valides peuvent encore donner un `salaire_net` negatif (retenues superieures a la remuneration) : la reponse reste un 200 et `avertissements` le signale.
+
+Chaque resultat de simulation indique sa provenance fiscale, independamment de la version de l'application (`/api/v1/health`) :
+
+- `exercice` (integer) : exercice reellement applique, 2026 quand la requete n'en precise pas ;
+- `reference_fiscale` (objet) : metadonnees du profil de cet exercice lues dans la configuration, a savoir `statut` (`en_vigueur` ou `projet`), `source`, `reference_ir`, `periode`, `date_effet_projetee` (date annoncee par le texte, sans valeur de validation) et `validation_legale` (null tant que la loi publiee n'a pas ete verifiee). Ni bareme ni frais professionnels n'y figurent.
 
 Le detail des frais professionnels est expose sous forme de donnees, pas de phrase : `regime_fp` (`commun_bas`, `commun_haut`, `journaliste` ou `artiste`), `taux_fp` (fraction, par exemple `0.35`) et `fp_plafonne` (plafond mensuel atteint). Le client construit le libelle dans sa langue.
 

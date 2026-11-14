@@ -31,6 +31,8 @@ class PayrollCalculatorService
 
     private const NET_RESOLUTION_MAX_BASE = 10000000.0;
 
+    public function __construct(private ExercicesFiscaux $exercices = new ExercicesFiscaux) {}
+
     private function r2(float $v): float
     {
         return round($v, 2);
@@ -48,15 +50,19 @@ class PayrollCalculatorService
         return rtrim(rtrim(number_format($taux * 100, 2, ',', ' '), '0'), ',');
     }
 
-    private function calculerIRAnnuelBrut(float $rniAnnuel): array
+    /**
+     * Barème de l'exercice demandé (repli 2026 sans exercice). Seul le barème
+     * est requis ici : un exercice prospectif sans frais professionnels reste
+     * refusé par calculer() et resoudreDepuisNet().
+     */
+    private function calculerIRAnnuelBrut(float $rniAnnuel, ?int $exercice = null): array
     {
-        if ($rniAnnuel <= 0) {
-            $baremes = config('payroll.ir.baremes');
+        $baremes = $this->exercices->parametre($exercice ?? $this->exercices->defaut(), 'ir_baremes');
 
+        if ($rniAnnuel <= 0) {
             return ['montant' => 0.0, 'tranche' => $baremes[0]];
         }
 
-        $baremes = config('payroll.ir.baremes');
         $tranche = $baremes[count($baremes) - 1];
 
         foreach ($baremes as $t) {
@@ -89,6 +95,10 @@ class PayrollCalculatorService
 
     public function resoudreDepuisNet(array $input): array
     {
+        // Exercice vérifié une fois, avant toute itération. Chaque itération
+        // reprend $input, donc le même exercice (ou le même repli 2026).
+        $this->exercices->profilCalculable($input['exercice'] ?? null);
+
         $netCible = (float) ($input['net_cible'] ?? 0);
 
         if ($netCible <= 0) {
@@ -221,6 +231,12 @@ class PayrollCalculatorService
 
     public function calculer(array $input): array
     {
+        // Exercice fiscal (#281) : résolu avant tout calcul. Un exercice inconnu
+        // ou sans frais professionnels paramétrés lève une exception explicite ;
+        // aucun paramètre 2026 ne le complète.
+        $profil = $this->exercices->profilCalculable($input['exercice'] ?? null);
+        $fraisProProfil = $profil['frais_pro'];
+
         // --- Extraction des entrées ---
         $salaireBase = (float) ($input['salaire_base'] ?? 0);
         $nbAnneesAnciennete = (int) ($input['nb_annees_anciennete'] ?? 0);
@@ -421,22 +437,24 @@ class PayrollCalculatorService
         // Le moteur expose le régime retenu (regime_fp) ; le texte affiché est
         // construit par la vue dans la langue active (issue #241).
         // =====================================================================
+        // Paramètres lus dans le profil de l'exercice ; en 2026, la clé
+        // historique config('payroll.frais_pro').
         if ($typeFraisPro === 'journaliste') {
-            $fpConfig = config('payroll.frais_pro.journaliste');
+            $fpConfig = $fraisProProfil['journaliste'];
             $tauxFP = $fpConfig['taux'];
             $plafondFP = $fpConfig['plafond'];
             $regimeFP = 'journaliste';
         } elseif ($typeFraisPro === 'artiste') {
-            $fpConfig = config('payroll.frais_pro.artiste');
+            $fpConfig = $fraisProProfil['artiste'];
             $tauxFP = $fpConfig['taux'];
             $plafondFP = $fpConfig['plafond'];
             $regimeFP = 'artiste';
         } else {
-            if ($sbi <= config('payroll.frais_pro.seuil_mensuel')) {
-                $fpConfig = config('payroll.frais_pro.commun.bas');
+            if ($sbi <= $fraisProProfil['seuil_mensuel']) {
+                $fpConfig = $fraisProProfil['commun']['bas'];
                 $regimeFP = 'commun_bas';
             } else {
-                $fpConfig = config('payroll.frais_pro.commun.haut');
+                $fpConfig = $fraisProProfil['commun']['haut'];
                 $regimeFP = 'commun_haut';
             }
             $tauxFP = $fpConfig['taux'];
@@ -465,7 +483,7 @@ class PayrollCalculatorService
         $rcDeduite = $this->r2(min($rcAnnuel, $rcPlafond));
         $rniAnnuelNet = $this->r2(max(0.0, $rniAnnuel - $rcDeduite));
 
-        $irResult = $this->calculerIRAnnuelBrut($rniAnnuelNet);
+        $irResult = $this->calculerIRAnnuelBrut($rniAnnuelNet, $profil['exercice']);
         $irAnnuelBrut = $irResult['montant'];
         $trancheIR = $irResult['tranche'];
         $irMensuelBrut = $this->r2($irAnnuelBrut / $nbMois);
@@ -672,6 +690,11 @@ class PayrollCalculatorService
             'detail_indemnites' => $detailIndemnites,
             'repartition' => $repartition,
             'avertissements' => $avertissements,
+
+            // Provenance fiscale (#281) : exercice réellement appliqué et
+            // métadonnées de son profil, distinctes de la version applicative.
+            'exercice' => $profil['exercice'],
+            'reference_fiscale' => $profil['reference_fiscale'],
 
             // — Entrées (ré-affichage) —
             'input' => $input,

@@ -1,5 +1,31 @@
 # Releases
 
+## Non publié
+
+Notes préparées pour la prochaine version, non publiées. La version et la date seront fixées par le propriétaire à la préparation de la release.
+
+### Nouveautés
+
+- Le calculateur, l'API et les liens partagés acceptent un exercice fiscal (`exercice`). Sans exercice, le calcul reste en 2026, comme les liens et requêtes existants, quelle que soit la date du jour. #281
+- Le formulaire propose les exercices 2026 à 2031 avec leur statut. Seul 2026, en vigueur, est calculable ; 2027 à 2031 sont affichés comme projets non calculables tant que leurs frais professionnels ne sont pas définis (#282, non implémenté). #281
+- Le résultat, la comparaison et la page Fiabilité affichent l'exercice appliqué, son statut, son texte source et sa référence IR. Un projet affiche en plus la version et la date du texte déposé (PLF n° 60-26, 23/10/2026) et une réserve : ce n'est ni une loi promulguée ni un texte consolidé. #281
+- Chaque résultat de l'API expose `exercice` et `reference_fiscale`, provenance du profil appliqué, sans barème ni frais professionnels. #281
+
+### Améliorations
+
+- Le détail des frais professionnels du bulletin lit le seuil du profil d'exercice appliqué, et l'aide du formulaire indique que son plafond est un paramètre de l'exercice 2026. #281
+- Une comparaison entre une simulation sans exercice et la même simulation en 2026 explicite n'annonce plus d'écart. #281
+
+### Mise à jour de la stack
+
+- La CI publie les captures de preuve du parcours d'exercice fiscal (formulaire, résultat, comparaison, Fiabilité) dans un artefact `preuves-exercice` conservé 7 jours. #281
+
+### Migration
+
+Aucune action requise : les requêtes et liens sans exercice sont calculés en 2026 comme avant. Les clients de l'API peuvent ignorer les nouveaux champs `exercice` et `reference_fiscale`. Une requête qui envoie `exercice` reçoit une erreur `422` sur ce seul champ pour un exercice inconnu, non entier ou non calculable. Le statut « en vigueur » de 2026 reprend la référence historique du simulateur et ne constitue pas une nouvelle validation juridique. Les nouvelles règles de frais professionnels (#282) et le comparateur de gain (#283) ne font pas partie de ce socle. La commande `docker pull` sera celle de la version publiée.
+
+---
+
 ## v3.6.1 - 2026-11-10
 
 ### Améliorations

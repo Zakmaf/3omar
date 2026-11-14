@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use App\Services\PayrollCalculatorService;
 use App\Services\SimulationComparator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class SimulationComparatorTest extends TestCase
@@ -108,6 +109,47 @@ class SimulationComparatorTest extends TestCase
         );
 
         $this->assertSame([], $differences);
+    }
+
+    /**
+     * Exercice (#281) : absent, null, vide ou blanc vaut le repli 2026. Face à
+     * 2026 explicite, ce n'est pas un écart entre les deux scénarios.
+     *
+     * @return array<string, array{array<string, mixed>, array<string, mixed>}>
+     */
+    public static function exercicesEquivalents(): array
+    {
+        return [
+            'absent et chaîne 2026' => [[], ['exercice' => '2026']],
+            'null et entier 2026' => [['exercice' => null], ['exercice' => 2026]],
+            'vide et chaîne 2026' => [['exercice' => ''], ['exercice' => '2026']],
+            'blancs d un lien et entier 2026' => [['exercice' => '   '], ['exercice' => 2026]],
+            'tabulation et chaîne 2026' => [['exercice' => "\t"], ['exercice' => '2026']],
+            'chaîne et entier 2026' => [['exercice' => '2026'], ['exercice' => 2026]],
+        ];
+    }
+
+    #[DataProvider('exercicesEquivalents')]
+    public function test_l_absence_d_exercice_et_2026_explicite_ne_sont_pas_un_ecart(array $a, array $b): void
+    {
+        $base = ['salaire_base' => 10000, 'type_frais_pro' => 'commun'];
+
+        $this->assertSame([], $this->comparator->inputDifferences($base + $a, $base + $b));
+        $this->assertSame([], $this->comparator->inputDifferences($base + $b, $base + $a));
+    }
+
+    public function test_un_exercice_different_reste_un_ecart_visible(): void
+    {
+        $base = ['salaire_base' => 10000, 'type_frais_pro' => 'commun'];
+
+        $this->assertSame(['exercice'], array_column(
+            $this->comparator->inputDifferences($base + ['exercice' => 2026], $base + ['exercice' => 2027]),
+            'field',
+        ));
+        $this->assertSame(['exercice'], array_column(
+            $this->comparator->inputDifferences($base, $base + ['exercice' => 2027]),
+            'field',
+        ), 'Absent vaut 2026 : un exercice 2027 diffère.');
     }
 
     public function test_un_ecart_sur_une_ligne_repetable_est_detecte(): void

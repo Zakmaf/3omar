@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\ExercicesFiscaux;
+
 class TrustController extends Controller
 {
-    public function index()
+    public function index(ExercicesFiscaux $exercicesFiscaux)
     {
         $money = fn ($amount, $suffix = ' MAD/mois') => number_format($amount, 0, ',', ' ').$suffix;
 
@@ -137,6 +139,14 @@ class TrustController extends Controller
             ],
         ];
 
-        return view('trust.index', compact('matrix'));
+        // Exercices fiscaux déclarés (#281), métadonnées brutes du profil : le
+        // profil en vigueur et les projets datés, sans aucun barème.
+        $exercices = array_map(fn (int $annee): array => [
+            'exercice' => $annee,
+            'reference' => $exercicesFiscaux->referenceFiscale($annee),
+            'calculable' => $exercicesFiscaux->calculable($annee),
+        ], $exercicesFiscaux->declares());
+
+        return view('trust.index', compact('matrix', 'exercices'));
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Services\ExercicesFiscaux;
 use Illuminate\Validation\Rule;
 
 class PayrollValidation
@@ -45,6 +46,30 @@ class PayrollValidation
             'indemnites.*.type' => ['required_with:indemnites.*.montant', 'distinct', Rule::in(array_keys(config('payroll.indemnites')))],
             'indemnites.*.montant' => 'nullable|numeric|min:0|max:1000000',
             'avantages_cnss' => 'nullable|numeric|min:0|max:'.self::MONTANT_MAX,
+            'exercice' => static::exerciceRules(),
+        ];
+    }
+
+    /**
+     * Exercice fiscal facultatif (#281). Absent ou null : repli 2026, définitif
+     * pour les liens et requêtes historiques. Bornes : exercices déclarés dans
+     * config('payroll.exercices'). Un exercice déclaré mais non calculable
+     * (projet sans frais professionnels, #282) est refusé avec un message
+     * traduit, selon la même règle que le moteur.
+     */
+    public static function exerciceRules(): array
+    {
+        $annees = app(ExercicesFiscaux::class)->declares();
+
+        return [
+            'nullable', 'integer', 'min:'.min($annees), 'max:'.max($annees),
+            function (string $attribute, mixed $value, \Closure $fail): void {
+                $erreur = app(ExercicesFiscaux::class)->erreur($value);
+
+                if ($erreur !== null) {
+                    $fail($erreur);
+                }
+            },
         ];
     }
 
@@ -135,6 +160,7 @@ class PayrollValidation
             'heures_sup', 'indemnites',
             'jours_travailles',
             'avantages_cnss',
+            'exercice',
         ];
     }
 

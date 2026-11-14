@@ -65,6 +65,7 @@ return [
         'indemnites.*.type' => 'tipo de indemnización (línea :position)',
         'indemnites.*.montant' => 'importe de la indemnización (línea :position)',
         'avantages_cnss' => 'ventajas CNSS exentas',
+        'exercice' => 'ejercicio fiscal',
         'autres_retenues' => 'otras retenciones',
         'cimr_taux_employeur_inconnu' => 'tasa CIMR empleador desconocida',
         'rc_part_employeur_inconnu' => 'parte empleador de jubilación complementaria desconocida',

@@ -87,6 +87,9 @@ Le job CI `Tests navigateur` (`.github/workflows/ci.yml`) rejoue ces étapes sur
 vers `main` et chaque push sur `main`, avec l'image de développement construite et taguée
 `3omar-app:latest` dans le job (`docker/php/Dockerfile`).
 En cas d'échec, le rapport HTML et les traces sont publiés en artefact `rapport-navigateur`.
+Le contrat `exercice-parcours.spec.js` écrit ses captures de preuve dans
+`tests/browser/.output/preuves-exercice/`, publiées à chaque exécution en artefact
+`preuves-exercice` (7 jours). Ce dossier est vidé par Playwright au début de chaque run.
 Une montée de version de Playwright change ensemble `package.json`, `package-lock.json`,
 l'image de `tests/browser/run.sh`, celle de ce document et celle du job.
 

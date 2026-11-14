@@ -324,6 +324,9 @@
         </div>
     </header>
 
+    {{-- Exercice fiscal appliqué et provenance de ses paramètres (#281) --}}
+    <x-fiscal-provenance class="mb-3" :exercice="$r['exercice']" :reference="$r['reference_fiscale']" />
+
     <div class="d-flex align-items-center gap-2 rounded-3 px-3 py-2 mb-4 no-print" style="background:var(--s-succ-bg);border:1px solid var(--hairline)">
         <i class="bi bi-shield-check-fill flex-shrink-0" style="color:var(--s-succ)" aria-hidden="true"></i>
         <p class="small mb-0 result-muted">
@@ -738,8 +741,10 @@
                                 'journaliste' => 'ui.result.pro_fees_regime_journalist',
                                 'artiste' => 'ui.result.pro_fees_regime_artist',
                             ];
+                            // Seuil du profil d'exercice appliqué par le moteur (#281), pas celui de 2026.
+                            $fpProfil = app(\App\Services\ExercicesFiscaux::class)->parametre($r['exercice'], 'frais_pro');
                             $fpRegimeDetail = $transNum($fpRegimeKeys[$r['regime_fp']], [
-                                'threshold' => $fmt(config('payroll.frais_pro.seuil_mensuel'), 0),
+                                'threshold' => $fmt($fpProfil['seuil_mensuel'], 0),
                                 'rate' => rtrim(rtrim(number_format($r['taux_fp'] * 100, 2, ',', ' '), '0'), ','),
                             ]);
                         @endphp
