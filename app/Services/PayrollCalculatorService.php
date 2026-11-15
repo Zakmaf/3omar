@@ -57,8 +57,15 @@ class PayrollCalculatorService
      */
     private function calculerIRAnnuelBrut(float $rniAnnuel, ?int $exercice = null): array
     {
-        $baremes = $this->exercices->parametre($exercice ?? $this->exercices->defaut(), 'ir_baremes');
+        return $this->appliquerBareme(
+            $rniAnnuel,
+            $this->exercices->parametre($exercice ?? $this->exercices->defaut(), 'ir_baremes'),
+        );
+    }
 
+    /** Barème progressif annuel (Art. 73 CGI) appliqué aux tranches données. */
+    private function appliquerBareme(float $rniAnnuel, array $baremes): array
+    {
         if ($rniAnnuel <= 0) {
             return ['montant' => 0.0, 'tranche' => $baremes[0]];
         }
@@ -234,8 +241,89 @@ class PayrollCalculatorService
         // Exercice fiscal (#281) : résolu avant tout calcul. Un exercice inconnu
         // ou sans frais professionnels paramétrés lève une exception explicite ;
         // aucun paramètre 2026 ne le complète.
-        $profil = $this->exercices->profilCalculable($input['exercice'] ?? null);
+        return $this->calculerSelonProfil($input, $this->profilMoteur($input['exercice'] ?? null));
+    }
+
+    /**
+     * Décomposition d'un changement d'exercice pour une même saisie (#283).
+     *
+     * Trois calculs complets par le même chemin moteur, sans mutation de la
+     * configuration :
+     * - reference : la saisie sous l'exercice de référence ;
+     * - intermediaire : le barème IR de l'exercice projeté avec les frais
+     *   professionnels de l'exercice de référence, tout le reste inchangé ;
+     * - projete : la saisie sous l'exercice projeté.
+     * L'ordre est fixe (barème, puis frais professionnels) : l'écart
+     * reference -> intermediaire relève du seul barème, l'écart
+     * intermediaire -> projete des seuls frais professionnels, et leur somme
+     * vaut l'écart total sans double comptage.
+     *
+     * Le champ exercice éventuel de la saisie est remplacé par chacun des deux
+     * exercices demandés ; les deux doivent être calculables. Le calcul
+     * intermédiaire n'appartient à aucun exercice : il ne porte ni exercice ni
+     * référence fiscale, seulement la composition de ses paramètres.
+     *
+     * @return array{reference: array, intermediaire: array, projete: array}
+     */
+    public function decomposerChangementExercice(array $input, int $exerciceReference, int $exerciceProjete): array
+    {
+        $profilReference = $this->profilMoteur($exerciceReference);
+        $profilProjete = $this->profilMoteur($exerciceProjete);
+
+        $reference = $this->calculerSelonProfil(array_merge($input, ['exercice' => $exerciceReference]), $profilReference);
+        $projete = $this->calculerSelonProfil(array_merge($input, ['exercice' => $exerciceProjete]), $profilProjete);
+
+        $intermediaire = $this->calculerSelonProfil(array_diff_key($input, ['exercice' => true]), [
+            'ir_baremes' => $profilProjete['ir_baremes'],
+            'frais_pro' => $profilReference['frais_pro'],
+            'exercice_frais_pro' => $profilReference['exercice_frais_pro'],
+            'provenance' => [
+                'exercice' => null,
+                'reference_fiscale' => null,
+                'composition' => [
+                    'ir_baremes' => $exerciceProjete,
+                    'frais_pro' => $exerciceReference,
+                ],
+            ],
+        ]);
+
+        return [
+            'reference' => $reference,
+            'intermediaire' => $intermediaire,
+            'projete' => $projete,
+        ];
+    }
+
+    /**
+     * Paramètres du moteur pour un exercice calculable, lus une fois depuis
+     * ExercicesFiscaux (exception explicite sinon). Tableau local en valeur :
+     * aucune écriture dans la configuration.
+     *
+     * @return array{ir_baremes: array, frais_pro: array, exercice_frais_pro: int, provenance: array{exercice: int, reference_fiscale: array}}
+     */
+    private function profilMoteur(mixed $exercice): array
+    {
+        $profil = $this->exercices->profilCalculable($exercice);
+
+        return [
+            'ir_baremes' => $profil['ir_baremes'],
+            'frais_pro' => $profil['frais_pro'],
+            'exercice_frais_pro' => $profil['exercice'],
+            'provenance' => [
+                'exercice' => $profil['exercice'],
+                'reference_fiscale' => $profil['reference_fiscale'],
+            ],
+        ];
+    }
+
+    /**
+     * Calcul complet du bulletin avec des paramètres déjà résolus par
+     * profilMoteur() ou composés par decomposerChangementExercice().
+     */
+    private function calculerSelonProfil(array $input, array $profil): array
+    {
         $fraisProProfil = $profil['frais_pro'];
+        $exerciceFraisPro = $profil['exercice_frais_pro'];
 
         // --- Extraction des entrées ---
         $salaireBase = (float) ($input['salaire_base'] ?? 0);
@@ -257,8 +345,8 @@ class PayrollCalculatorService
         // rattache pas explicitement est refusée, jamais calculée par repli.
         // La forme par seuil (2026) garde son comportement historique.
         if ($this->exercices->fraisProTauxUnique($fraisProProfil)
-            && ! in_array($typeFraisPro, $this->exercices->categoriesFraisPro($profil['exercice']), true)) {
-            throw new \InvalidArgumentException($this->exercices->messageCategorie($profil['exercice']));
+            && ! in_array($typeFraisPro, $this->exercices->categoriesFraisPro($exerciceFraisPro), true)) {
+            throw new \InvalidArgumentException($this->exercices->messageCategorie($exerciceFraisPro));
         }
         // Retenues scindées, toutes prélevées sur le net : exonérées d'IR (déduites
         // aussi du RNI avant le barème) et imposées à l'IR (sans effet sur l'IR).
@@ -500,7 +588,7 @@ class PayrollCalculatorService
         $rcDeduite = $this->r2(min($rcAnnuel, $rcPlafond));
         $rniAnnuelNet = $this->r2(max(0.0, $rniAnnuel - $rcDeduite));
 
-        $irResult = $this->calculerIRAnnuelBrut($rniAnnuelNet, $profil['exercice']);
+        $irResult = $this->appliquerBareme($rniAnnuelNet, $profil['ir_baremes']);
         $irAnnuelBrut = $irResult['montant'];
         $trancheIR = $irResult['tranche'];
         $irMensuelBrut = $this->r2($irAnnuelBrut / $nbMois);
@@ -710,8 +798,9 @@ class PayrollCalculatorService
 
             // Provenance fiscale (#281) : exercice réellement appliqué et
             // métadonnées de son profil, distinctes de la version applicative.
-            'exercice' => $profil['exercice'],
-            'reference_fiscale' => $profil['reference_fiscale'],
+            // Calcul intermédiaire d'une décomposition (#283) : ni exercice ni
+            // référence, mais la composition de ses paramètres.
+            ...$profil['provenance'],
 
             // — Entrées (ré-affichage) —
             'input' => $input,
