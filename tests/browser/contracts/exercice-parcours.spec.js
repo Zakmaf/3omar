@@ -172,6 +172,63 @@ async function libellesCategories(page, where) {
     return libelles;
 }
 
+/**
+ * Zone defilante d'un tableau (WCAG 2.1.1) : region nommee par le titre visible
+ * de sa section, atteinte par de vraies frappes Tab, indicateur de focus
+ * visible, puis, si le tableau deborde, defilement horizontal observable aux
+ * fleches. Le sens de scrollLeft n'est pas suppose (negatif en RTL) : seul
+ * l'ecart absolu compte, avec la fleche qui avance dans le sens de lecture.
+ * La position initiale est restauree pour garder des captures deterministes.
+ */
+async function assertRegionDefilableAuClavier(page, region, titreId, where) {
+    await expect(region, `${where} : une zone defilante`).toHaveCount(1);
+    await expect(region).toHaveAttribute('role', 'region');
+    await expect(region).toHaveAttribute('tabindex', '0');
+    await expect(region).toHaveAttribute('aria-labelledby', titreId);
+
+    const titre = page.locator(`#${titreId}`);
+    await expect(titre, `${where} : titre de la zone`).toHaveCount(1);
+    const nom = normaliser(await titre.textContent());
+    expect(nom, `${where} : titre non vide`).not.toBe('');
+    await expect(region, `${where} : nom accessible lu sur le titre`).toHaveAccessibleName(nom);
+
+    let atteinte = false;
+    for (let i = 0; i < 120 && !atteinte; i++) {
+        await page.keyboard.press('Tab');
+        atteinte = await region.evaluate((el) => el === document.activeElement);
+    }
+    expect(atteinte, `${where} : zone atteinte au clavier par Tab`).toBe(true);
+    await expect(region).toBeFocused();
+
+    const focus = await region.evaluate((el) => {
+        const style = getComputedStyle(el);
+        return { style: style.outlineStyle, width: parseFloat(style.outlineWidth) || 0 };
+    });
+    expect(focus.style, `${where} : indicateur de focus visible`).not.toBe('none');
+    expect(focus.width, `${where} : contour de focus non nul`).toBeGreaterThan(0);
+
+    const geometrie = await region.evaluate((el) => ({
+        debordement: el.scrollWidth - el.clientWidth,
+        depart: el.scrollLeft,
+        rtl: getComputedStyle(el).direction === 'rtl',
+    }));
+    if (geometrie.debordement <= 1) {
+        return { defile: false };
+    }
+
+    const avance = geometrie.rtl ? 'ArrowLeft' : 'ArrowRight';
+    for (let i = 0; i < 5; i++) {
+        await page.keyboard.press(avance);
+    }
+    await expect.poll(
+        () => region.evaluate((el, depart) => Math.abs(el.scrollLeft - depart), geometrie.depart),
+        { message: `${where} : defilement horizontal au clavier (${avance})` },
+    ).toBeGreaterThan(0);
+
+    await region.evaluate((el, depart) => { el.scrollLeft = depart; }, geometrie.depart);
+    return { defile: true };
+}
+
 const BLOCKING_IMPACTS = ['critical', 'serious'];
 
 /** Relatif a l'application : le lien partage peut porter l'URL absolue de APP_URL. */
@@ -477,8 +534,24 @@ for (const cell of CELLS) {
             expect(categorieA, 'scenario A (2026) : aucun taux dans la categorie').not.toMatch(MOTIF_TAUX);
             expect(categorieB, 'scenario B (2027) : aucun taux dans la categorie').not.toMatch(MOTIF_TAUX);
 
+            // Zones defilantes des deux tableaux : atteintes au clavier, nommees
+            // par leur titre, defilables aux fleches quand elles debordent.
+            await assertRegionDefilableAuClavier(
+                page,
+                entrees.locator('[role="region"][data-table-scroll]'),
+                'cmp-inputs-title',
+                'comparaison 2026 / 2027, entrees',
+            );
+            await assertRegionDefilableAuClavier(
+                page,
+                page.locator('section[aria-labelledby="cmp-metrics-title"] [role="region"][data-table-scroll]'),
+                'cmp-metrics-title',
+                'comparaison 2026 / 2027, indicateurs',
+            );
+
             await assertNoOverflow(page, 'comparaison 2026 / 2027');
             await assertAxeClean(page, 'section[aria-labelledby="cmp-inputs-title"]', 'entrees de la comparaison 2026 / 2027');
+            await assertAxeClean(page, 'section[aria-labelledby="cmp-metrics-title"]', 'indicateurs de la comparaison 2026 / 2027');
             await entrees.scrollIntoViewIfNeeded();
             await capture(page, cell, '2027-05-comparaison');
 

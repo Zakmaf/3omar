@@ -197,7 +197,8 @@
             <i class="bi bi-info-circle me-1" aria-hidden="true"></i>{{ __('ui.comparison.inputs_identical') }}
         </p>
         @else
-        <div class="cmp-scroll">
+        {{-- Zone défilante atteignable au clavier (WCAG 2.1.1), comme les tableaux du résultat --}}
+        <div class="cmp-scroll" data-table-scroll tabindex="0" role="region" aria-labelledby="cmp-inputs-title">
             <table class="table table-sm cmp-table mb-0">
                 <caption class="visually-hidden">{{ __('ui.comparison.inputs_title') }}</caption>
                 <thead>
@@ -239,7 +240,7 @@
         <h2 id="cmp-metrics-title" class="h6 fw-bold mb-3">
             <i class="bi bi-table me-2" style="color:var(--s-cot)" aria-hidden="true"></i>{{ __('ui.comparison.metrics_title') }}
         </h2>
-        <div class="cmp-scroll">
+        <div class="cmp-scroll" data-table-scroll tabindex="0" role="region" aria-labelledby="cmp-metrics-title">
             <table class="table table-sm cmp-table mb-0">
                 <caption class="visually-hidden">{{ __('ui.comparison.metrics_title') }}</caption>
                 <thead>

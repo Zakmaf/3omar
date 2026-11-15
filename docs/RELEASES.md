@@ -19,6 +19,10 @@ Notes préparées pour la prochaine version, non publiées. La version et la dat
 - Les catégories professionnelles du formulaire et de la comparaison ne citent plus de taux : le taux appliqué dépend de l'exercice et se lit dans le résultat. #282
 - Le schéma OpenAPI documente `plafond_fp` et `fp_plafonne`, déjà renvoyés par l'API. #282
 
+### Correctifs
+
+- Sur petit écran, les tableaux de la comparaison qui défilent horizontalement sont atteignables au clavier et défilent aux flèches, comme ceux du résultat. #282
+
 ### Mise à jour de la stack
 
 - La CI publie les captures de preuve du parcours d'exercice fiscal (formulaire, résultat, comparaison, Fiabilité) dans un artefact `preuves-exercice` conservé 7 jours. #281
