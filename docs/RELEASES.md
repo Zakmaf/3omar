@@ -22,6 +22,7 @@ Notes préparées pour la prochaine version, non publiées. La version et la dat
 ### Correctifs
 
 - Sur petit écran, les tableaux de la comparaison qui défilent horizontalement sont atteignables au clavier et défilent aux flèches, comme ceux du résultat. #282
+- Dans le tableau des indicateurs de la comparaison, les écarts nuls et la note sur les montants sont plus contrastés, pour rester lisibles sur fond clair (contraste WCAG 4,5:1). #282
 
 ### Mise à jour de la stack
 

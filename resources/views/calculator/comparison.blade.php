@@ -60,7 +60,8 @@
             return $favorable ? 'up' : 'down';
         };
 
-        $toneColor = ['up' => 'var(--s-succ)', 'down' => 'var(--s-tax)', 'flat' => 'var(--ink-3)'];
+        // Neutre en --ink-2 : --ink-3 n'atteint pas le contraste 4,5:1 du texte courant (WCAG 1.4.3).
+        $toneColor = ['up' => 'var(--s-succ)', 'down' => 'var(--s-tax)', 'flat' => 'var(--ink-2)'];
 
         // Entrées structurantes des deux scénarios, pour expliquer les écarts.
         $inputRow = function (array $r, string $key) {
@@ -270,7 +271,7 @@
                 </tbody>
             </table>
         </div>
-        <p class="small mb-0 mt-3" style="color:var(--ink-3)">
+        <p class="small mb-0 mt-3" style="color:var(--ink-2)">
             <i class="bi bi-info-circle me-1" aria-hidden="true"></i>{{ __('ui.comparison.amounts_note') }}
         </p>
     </section>
