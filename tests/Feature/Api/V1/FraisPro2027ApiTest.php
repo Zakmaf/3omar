@@ -64,6 +64,14 @@ class FraisPro2027ApiTest extends TestCase
 
     public function test_une_categorie_non_rattachee_au_profil_est_refusee_sur_type_frais_pro(): void
     {
+        // Prémisse : le profil réel est complet ; la surcharge n'en retire
+        // qu'une catégorie, elle ne fabrique pas un profil partiel.
+        $fraisPro = config('payroll.exercices.2027.frais_pro');
+        $this->assertIsArray($fraisPro);
+        $this->assertSame(['commun', 'journaliste', 'artiste'], $fraisPro['categories'] ?? null);
+        $this->assertArrayHasKey('taux', $fraisPro);
+        $this->assertArrayHasKey('plafond_annuel', $fraisPro);
+
         config(['payroll.exercices.2027.frais_pro.categories' => ['commun', 'journaliste']]);
 
         foreach ([
@@ -89,6 +97,16 @@ class FraisPro2027ApiTest extends TestCase
 
         foreach (['commun_bas', 'commun_haut', 'journaliste', 'artiste', 'commun_unique'] as $regime) {
             $this->assertContains($regime, $regimes);
+        }
+
+        // Suggestion S-1 : le plafond mensuel retenu et l'indicateur de
+        // plafonnement, renvoyés par le moteur, sont documentés dans le schéma.
+        $proprietes = $spec['components']['schemas']['SimulationResult']['properties'];
+        foreach (['plafond_fp' => 'number', 'fp_plafonne' => 'boolean'] as $propriete => $type) {
+            $this->assertArrayHasKey($propriete, $proprietes, "SimulationResult déclare {$propriete}");
+            $this->assertSame($type, $proprietes[$propriete]['type'] ?? null, "{$propriete} est de type {$type}");
+            $this->assertIsString($proprietes[$propriete]['description'] ?? null, "{$propriete} est décrit");
+            $this->assertNotSame('', trim($proprietes[$propriete]['description']), "{$propriete} a une description non vide");
         }
     }
 }
