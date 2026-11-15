@@ -101,10 +101,12 @@ l'image de `tests/browser/run.sh`, celle de ce document et celle du job.
 app/
   Http/Controllers/       Validation des entrées, orchestration HTTP
   Http/Middleware/        SetLocale — applique la langue de session
+  Rules/                  CategorieFraisProSupportee : catégorie calculable dans l'exercice demandé
   Services/
     PayrollCalculatorService.php
                           calculer()           brut → net
                           resoudreDepuisNet()  net → brut (dichotomie)
+    ExercicesFiscaux.php  Profils d'exercice : calculabilité, frais professionnels, catégories
 config/
   payroll.php             Taux, plafonds, tranches IR, SMIG — source unique
   app.php                 Locales supportées, timezone
@@ -125,7 +127,7 @@ docker/
 
 ### Règle d'évolution
 
-Toute modification réglementaire se fait dans `config/payroll.php` avec sa référence légale. La page documentation se régénère automatiquement. Couvrir les nouvelles valeurs par un test de limite dans `tests/Unit/PayrollCalculatorServiceTest.php`.
+Toute modification réglementaire se fait dans `config/payroll.php` avec sa référence légale. Un paramètre propre à un exercice (barème IR, frais professionnels) va dans son profil `exercices.<année>` ; les frais professionnels d'un profil prennent soit la forme par seuil (2026), soit la forme à taux unique avec `plafond_annuel` et `categories` explicites (projet 2027, #282), et un profil partiel n'est jamais calculable. La page documentation se régénère automatiquement. Couvrir les nouvelles valeurs par un test de limite dans `tests/Unit/PayrollCalculatorServiceTest.php`.
 
 → Formules et hypothèses détaillées : [CALCUL.md](CALCUL.md)  
 → Conventions de traduction : [I18N.md](I18N.md)

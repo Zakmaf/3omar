@@ -8,11 +8,11 @@ use Tests\TestCase;
 /**
  * Convergence du solveur net vers brut sur deux barèmes (issue #281).
  *
- * Le second barème est celui du profil 2027, rendu calculable uniquement dans
- * ce test par une CONFIGURATION SYNTHETIQUE DE TEST : ses frais
- * professionnels reçoivent une copie technique des valeurs 2026. Ce n'est pas
- * un profil légal, la configuration de production n'est jamais modifiée et le
- * statut reste projet.
+ * Le second barème est celui du profil 2027. Pour isoler l'effet du barème,
+ * ce test remplace ses frais professionnels proposés (#282, couverts par
+ * FraisPro2027Test) par une CONFIGURATION SYNTHETIQUE DE TEST : une copie
+ * technique des valeurs 2026. Ce n'est pas un profil légal, la configuration
+ * de production n'est jamais modifiée et le statut reste projet.
  */
 class SolveurExercicesTest extends TestCase
 {

@@ -251,6 +251,15 @@ class PayrollCalculatorService
         $nbEnfants = (int) ($input['nb_enfants'] ?? 0);
         $conjointCharge = ! empty($input['conjoint_charge']);
         $typeFraisPro = $input['type_frais_pro'] ?? 'commun';
+
+        // Catégorie calculable dans l'exercice (#282), même règle que la
+        // validation : avec un profil à taux unique, une catégorie qu'il ne
+        // rattache pas explicitement est refusée, jamais calculée par repli.
+        // La forme par seuil (2026) garde son comportement historique.
+        if ($this->exercices->fraisProTauxUnique($fraisProProfil)
+            && ! in_array($typeFraisPro, $this->exercices->categoriesFraisPro($profil['exercice']), true)) {
+            throw new \InvalidArgumentException($this->exercices->messageCategorie($profil['exercice']));
+        }
         // Retenues scindées, toutes prélevées sur le net : exonérées d'IR (déduites
         // aussi du RNI avant le barème) et imposées à l'IR (sans effet sur l'IR).
         // Compatibilité ascendante : l'ancien champ autres_retenues mappe sur retenues_imposees_ir.
@@ -439,7 +448,15 @@ class PayrollCalculatorService
         // =====================================================================
         // Paramètres lus dans le profil de l'exercice ; en 2026, la clé
         // historique config('payroll.frais_pro').
-        if ($typeFraisPro === 'journaliste') {
+        if ($this->exercices->fraisProTauxUnique($fraisProProfil)) {
+            // Forme à taux unique (projet 2027, art. 59-I-A modifié, #282) :
+            // aucun seuil de salaire ; plafond canonique annuel mensualisé
+            // comme en 2026 (÷ nb_mois, arrondi au centime). Les catégories
+            // rattachées (vérifiées ci-dessus) relèvent toutes de ce régime.
+            $tauxFP = (float) $fraisProProfil['taux'];
+            $plafondFP = $this->r2($fraisProProfil['plafond_annuel'] / config('payroll.ir.nb_mois'));
+            $regimeFP = 'commun_unique';
+        } elseif ($typeFraisPro === 'journaliste') {
             $fpConfig = $fraisProProfil['journaliste'];
             $tauxFP = $fpConfig['taux'];
             $plafondFP = $fpConfig['plafond'];

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\CategorieFraisProSupportee;
 use App\Services\ExercicesFiscaux;
 use Illuminate\Validation\Rule;
 
@@ -23,7 +24,8 @@ class PayrollValidation
             'prime_bilan' => 'nullable|numeric|min:0|max:'.self::MONTANT_MAX,
             'prime_rendement' => 'nullable|numeric|min:0|max:'.self::MONTANT_MAX,
             'autres_primes' => 'nullable|numeric|min:0|max:'.self::MONTANT_MAX,
-            'type_frais_pro' => 'required|in:commun,journaliste,artiste',
+            // Catégorie connue, puis calculable dans l'exercice demandé (#282).
+            'type_frais_pro' => ['required', 'in:commun,journaliste,artiste', new CategorieFraisProSupportee],
             'nb_enfants' => 'nullable|integer|min:0|max:20',
             'conjoint_charge' => 'nullable|boolean',
             'cimr_taux' => 'nullable|numeric|min:0|max:'.self::TAUX_MAX,

@@ -13,8 +13,11 @@ namespace App\Services;
  *   config('payroll.exercice_defaut'), fixé à 2026 pour les liens et requêtes
  *   historiques. Les nouvelles interfaces transmettent l'exercice explicitement.
  * - Un exercice n'est calculable que si son profil déclare un barème IR et des
- *   frais professionnels. Un profil prospectif sans frais professionnels
- *   (#282) est refusé, jamais complété par les valeurs 2026.
+ *   frais professionnels complets (fraisProComplets). Un profil prospectif
+ *   sans frais professionnels (2028 à 2031) est refusé, jamais complété par
+ *   les valeurs 2026.
+ * - Avec des frais professionnels à taux unique (projet 2027, #282), seules
+ *   les catégories rattachées par le profil sont calculables.
  * - Un paramètre de profil donné sous forme de chaîne désigne une clé
  *   historique de config('payroll') (archives 2026), lue telle quelle.
  */
@@ -22,6 +25,9 @@ class ExercicesFiscaux
 {
     /** Métadonnées de provenance exposées dans chaque résultat (reference_fiscale). */
     private const METADONNEES = ['statut', 'source', 'reference_ir', 'periode', 'date_effet_projetee', 'validation_legale'];
+
+    /** Catégories de frais professionnels saisissables (champ type_frais_pro). */
+    public const CATEGORIES = ['commun', 'journaliste', 'artiste'];
 
     public function defaut(): int
     {
@@ -68,7 +74,94 @@ class ExercicesFiscaux
     {
         return $this->existe($exercice)
             && is_array($this->parametre($exercice, 'ir_baremes'))
-            && is_array($this->parametre($exercice, 'frais_pro'));
+            && $this->fraisProComplets($this->parametre($exercice, 'frais_pro'));
+    }
+
+    /**
+     * Frais professionnels exploitables par le moteur, sous l'une des deux
+     * formes déclarées (#282) :
+     * - par seuil (2026, art. 59-I A et B en vigueur) : seuil_mensuel, taux
+     *   commun bas et haut, catégories journaliste et artiste ;
+     * - à taux unique (projet 2027, art. 59-I-A modifié) : taux, plafond
+     *   annuel canonique et liste explicite des catégories rattachées.
+     * Un profil partiel n'est jamais calculable : il n'est pas complété.
+     */
+    public function fraisProComplets(mixed $fraisPro): bool
+    {
+        if (! is_array($fraisPro)) {
+            return false;
+        }
+
+        if ($this->fraisProTauxUnique($fraisPro)) {
+            return is_numeric($fraisPro['taux'] ?? null)
+                && is_numeric($fraisPro['plafond_annuel'])
+                && is_array($fraisPro['categories'] ?? null)
+                && $fraisPro['categories'] !== [];
+        }
+
+        foreach (['commun.bas', 'commun.haut', 'journaliste', 'artiste'] as $cle) {
+            if (! is_numeric(data_get($fraisPro, "{$cle}.taux")) || ! is_numeric(data_get($fraisPro, "{$cle}.plafond"))) {
+                return false;
+            }
+        }
+
+        return is_numeric($fraisPro['seuil_mensuel'] ?? null);
+    }
+
+    /** Forme à taux unique : identifiée par son plafond annuel canonique. */
+    public function fraisProTauxUnique(array $fraisPro): bool
+    {
+        return array_key_exists('plafond_annuel', $fraisPro);
+    }
+
+    /**
+     * Catégories de frais professionnels calculables pour un exercice
+     * calculable. Forme par seuil : les trois catégories qu'elle paramètre.
+     * Forme à taux unique : uniquement celles que le profil rattache
+     * explicitement à son régime.
+     *
+     * @return list<string>
+     */
+    public function categoriesFraisPro(int $exercice): array
+    {
+        $fraisPro = $this->parametre($exercice, 'frais_pro');
+
+        if (! $this->fraisProComplets($fraisPro)) {
+            return [];
+        }
+
+        if ($this->fraisProTauxUnique($fraisPro)) {
+            return array_values(array_map('strval', $fraisPro['categories']));
+        }
+
+        return self::CATEGORIES;
+    }
+
+    /**
+     * Message traduit si la catégorie demandée n'est pas calculable dans
+     * l'exercice demandé, null sinon. Un exercice lui-même invalide ou non
+     * calculable n'est pas jugé ici : son erreur est portée par le champ
+     * exercice (erreur()). Une catégorie inconnue de l'application est
+     * refusée par la règle `in` du champ.
+     */
+    public function erreurCategorie(mixed $exercice, mixed $categorie): ?string
+    {
+        if ($this->erreur($exercice) !== null || ! in_array($categorie, self::CATEGORIES, true)) {
+            return null;
+        }
+
+        $annee = $this->resoudre($exercice);
+
+        if (in_array($categorie, $this->categoriesFraisPro($annee), true)) {
+            return null;
+        }
+
+        return $this->messageCategorie($annee);
+    }
+
+    public function messageCategorie(int $exercice): string
+    {
+        return __('ui.validation.category_not_supported', ['exercice' => $exercice]);
     }
 
     /**

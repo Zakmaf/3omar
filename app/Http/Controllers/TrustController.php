@@ -145,8 +145,34 @@ class TrustController extends Controller
             'exercice' => $annee,
             'reference' => $exercicesFiscaux->referenceFiscale($annee),
             'calculable' => $exercicesFiscaux->calculable($annee),
+            'frais_pro_projet' => $this->fraisProProjet($exercicesFiscaux, $annee),
         ], $exercicesFiscaux->declares());
 
         return view('trust.index', compact('matrix', 'exercices'));
+    }
+
+    /**
+     * Frais professionnels à taux unique d'un projet calculable (#282) : taux,
+     * plafond annuel et référence lus dans config/payroll.php. Null pour le
+     * profil en vigueur (déjà décrit par la matrice) et pour un profil sans
+     * frais professionnels complets.
+     *
+     * @return array{rate: string, cap: string, reference: string}|null
+     */
+    private function fraisProProjet(ExercicesFiscaux $exercicesFiscaux, int $annee): ?array
+    {
+        $fraisPro = $exercicesFiscaux->parametre($annee, 'frais_pro');
+
+        if ($exercicesFiscaux->referenceFiscale($annee)['statut'] !== 'projet'
+            || ! $exercicesFiscaux->fraisProComplets($fraisPro)
+            || ! $exercicesFiscaux->fraisProTauxUnique($fraisPro)) {
+            return null;
+        }
+
+        return [
+            'rate' => rtrim(rtrim(number_format($fraisPro['taux'] * 100, 2, ',', ' '), '0'), ','),
+            'cap' => number_format($fraisPro['plafond_annuel'], 0, ',', ' '),
+            'reference' => (string) ($fraisPro['reference'] ?? ''),
+        ];
     }
 }

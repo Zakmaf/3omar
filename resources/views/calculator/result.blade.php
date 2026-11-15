@@ -740,13 +740,17 @@
                                 'commun_haut' => 'ui.result.pro_fees_regime_common_high',
                                 'journaliste' => 'ui.result.pro_fees_regime_journalist',
                                 'artiste' => 'ui.result.pro_fees_regime_artist',
+                                // Taux unique sans seuil (projet 2027, #282).
+                                'commun_unique' => 'ui.result.pro_fees_regime_common_single',
                             ];
                             // Seuil du profil d'exercice appliqué par le moteur (#281), pas celui de 2026.
+                            // Un profil à taux unique n'en a pas.
                             $fpProfil = app(\App\Services\ExercicesFiscaux::class)->parametre($r['exercice'], 'frais_pro');
-                            $fpRegimeDetail = $transNum($fpRegimeKeys[$r['regime_fp']], [
-                                'threshold' => $fmt($fpProfil['seuil_mensuel'], 0),
-                                'rate' => rtrim(rtrim(number_format($r['taux_fp'] * 100, 2, ',', ' '), '0'), ','),
-                            ]);
+                            $fpRegimeParams = ['rate' => rtrim(rtrim(number_format($r['taux_fp'] * 100, 2, ',', ' '), '0'), ',')];
+                            if (isset($fpProfil['seuil_mensuel'])) {
+                                $fpRegimeParams['threshold'] = $fmt($fpProfil['seuil_mensuel'], 0);
+                            }
+                            $fpRegimeDetail = $transNum($fpRegimeKeys[$r['regime_fp']], $fpRegimeParams);
                         @endphp
                         <tr class="row-impot">
                             <td class="px-3 py-2">

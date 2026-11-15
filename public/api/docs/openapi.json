@@ -165,7 +165,7 @@
     "/parametres": {
       "get": {
         "summary": "Recuperer les parametres reglementaires",
-        "description": "Retourne la configuration complete du simulateur : taux CNSS, AMO, bareme IR, plafonds, indemnites, etc. Les cles historiques (year, ir, frais_pro...) decrivent 2026. La cle exercices liste aussi des exercices en projet (PLF non promulgue, statut projet, validation_legale null) : ce ne sont pas des regles applicables. Dans un profil, ir_baremes et frais_pro sont soit une chaine qui designe une cle historique de cette reponse (profil 2026 : ir.baremes, frais_pro), soit un tableau de valeurs, soit null (parametres non encore definis, exercice non calculable).",
+        "description": "Retourne la configuration complete du simulateur : taux CNSS, AMO, bareme IR, plafonds, indemnites, etc. Les cles historiques (year, ir, frais_pro...) decrivent 2026. La cle exercices liste aussi des exercices en projet (PLF non promulgue, statut projet, validation_legale null) : ce ne sont pas des regles applicables. Dans un profil, ir_baremes et frais_pro sont soit une chaine qui designe une cle historique de cette reponse (profil 2026 : ir.baremes, frais_pro), soit un tableau de valeurs, soit null (parametres non encore definis, exercice non calculable). Les frais_pro en valeurs du projet 2027 ont la forme a taux unique : taux, plafond_annuel (plafond canonique, mensualise par le moteur), categories (categories rattachees a ce regime) et reference.",
         "operationId": "getParametres",
         "tags": ["Reference"],
         "responses": {
@@ -242,7 +242,7 @@
         "required": ["salaire_base", "type_frais_pro"],
         "properties": {
           "salaire_base": { "type": "number", "minimum": 0, "maximum": 10000000, "description": "Salaire de base mensuel brut en MAD" },
-          "type_frais_pro": { "type": "string", "enum": ["commun", "journaliste", "artiste"], "description": "Categorie de frais professionnels" },
+          "type_frais_pro": { "type": "string", "enum": ["commun", "journaliste", "artiste"], "description": "Categorie de frais professionnels. Elle doit etre calculable dans l'exercice demande : une categorie que le profil de l'exercice ne rattache pas a son regime renvoie un 422 sur ce champ (en 2027 projet, commun, journaliste et artiste relevent tous du taux unique)." },
           "nb_annees_anciennete": { "type": "integer", "minimum": 0, "maximum": 50, "description": "Nombre d'annees d'anciennete" },
           "prime_bilan": { "type": "number", "minimum": 0, "maximum": 10000000, "description": "Prime de bilan mensuelle en MAD" },
           "prime_rendement": { "type": "number", "minimum": 0, "maximum": 10000000, "description": "Prime de rendement mensuelle en MAD" },
@@ -263,7 +263,7 @@
           "retenues_imposees_ir": { "type": "number", "minimum": 0, "maximum": 10000000, "description": "Retenues imposees a l'IR en MAD : retirees du net a payer sans effet sur l'IR" },
           "autres_retenues": { "type": "number", "minimum": 0, "maximum": 10000000, "description": "Alias historique de retenues_imposees_ir en MAD, utilise si retenues_imposees_ir est absent" },
           "jours_travailles": { "type": "integer", "minimum": 1, "maximum": 31, "description": "Nombre de jours travailles dans le mois" },
-          "exercice": { "type": "integer", "nullable": true, "minimum": 2026, "maximum": 2031, "description": "Exercice fiscal. Absent ou null : 2026, definitivement. Un exercice declare mais non calculable (projet sans frais professionnels) renvoie un 422 sur ce champ" },
+          "exercice": { "type": "integer", "nullable": true, "minimum": 2026, "maximum": 2031, "description": "Exercice fiscal. Absent ou null : 2026, definitivement. Un exercice declare mais non calculable (projet sans frais professionnels : 2028 a 2031) renvoie un 422 sur ce champ. 2027 est calculable en projet (PLF n° 60-26 tel que depose, susceptible d'amendements) : reference_fiscale.statut vaut projet" },
           "heures_sup": {
             "type": "array",
             "maxItems": 10,
@@ -356,7 +356,9 @@
           "ir_net": { "type": "number", "description": "IR net mensuel" },
           "frais_pro": { "type": "number" },
           "taux_fp": { "type": "number", "description": "Taux de frais professionnels retenu (fraction, ex. 0.35)" },
-          "regime_fp": { "type": "string", "enum": ["commun_bas", "commun_haut", "journaliste", "artiste"], "description": "Regime de frais professionnels retenu (Art. 59 I-A CGI) : commun sous ou au-dela du seuil mensuel, journaliste ou artiste. Le libelle affiche est construit par le client dans sa langue." },
+          "plafond_fp": { "type": "number", "description": "Plafond mensuel des frais professionnels applique (MAD/mois), lu dans le profil de l'exercice : plafond mensuel de la categorie en 2026 ; en 2027 (projet), plafond annuel du profil divise par le nombre de mois et arrondi au centime." },
+          "fp_plafonne": { "type": "boolean", "description": "Vrai si le montant calcule (assiette x taux_fp, arrondi au centime) depasse plafond_fp : frais_pro est alors egal a plafond_fp." },
+          "regime_fp": { "type": "string", "enum": ["commun_bas", "commun_haut", "journaliste", "artiste", "commun_unique"], "description": "Regime de frais professionnels retenu (Art. 59 I-A CGI) : commun sous ou au-dela du seuil mensuel, journaliste ou artiste (exercice 2026), ou commun_unique (exercice 2027 en projet, PLF n° 60-26 tel que depose : taux unique sans seuil, plafond annuel mensualise, applique a toutes les categories rattachees par le profil). Le libelle affiche est construit par le client dans sa langue." },
           "rni": { "type": "number", "description": "Revenu Net Imposable mensuel" },
           "total_indemnites": { "type": "number" },
           "total_sociales": { "type": "number" },

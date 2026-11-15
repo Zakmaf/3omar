@@ -7,7 +7,8 @@ Notes préparées pour la prochaine version, non publiées. La version et la dat
 ### Nouveautés
 
 - Le calculateur, l'API et les liens partagés acceptent un exercice fiscal (`exercice`). Sans exercice, le calcul reste en 2026, comme les liens et requêtes existants, quelle que soit la date du jour. #281
-- Le formulaire propose les exercices 2026 à 2031 avec leur statut. Seul 2026, en vigueur, est calculable ; 2027 à 2031 sont affichés comme projets non calculables tant que leurs frais professionnels ne sont pas définis (#282, non implémenté). #281
+- Le formulaire propose les exercices 2026 à 2031 avec leur statut. 2026, en vigueur, et 2027, en projet, sont calculables ; 2028 à 2031 sont affichés comme projets non calculables tant que leurs frais professionnels ne sont pas définis. #281 #282
+- L'exercice 2027 applique les frais professionnels proposés par le PLF n° 60-26 tel que déposé (art. 59-I-A modifié, susceptible d'amendements) : 45 % du salaire brut imposable sans seuil de salaire, plafonnés à 35 000 MAD par an (2 916,67 MAD par mois). Les catégories journaliste et artiste relèvent de ce régime, le projet abrogeant leur régime particulier ; le résultat et la page Fiabilité le précisent, dans les quatre langues. Les indemnités exonérées et le calcul 2026 sont inchangés. #282
 - Le résultat, la comparaison et la page Fiabilité affichent l'exercice appliqué, son statut, son texte source et sa référence IR. Un projet affiche en plus la version et la date du texte déposé (PLF n° 60-26, 23/10/2026) et une réserve : ce n'est ni une loi promulguée ni un texte consolidé. #281
 - Chaque résultat de l'API expose `exercice` et `reference_fiscale`, provenance du profil appliqué, sans barème ni frais professionnels. #281
 
@@ -15,6 +16,13 @@ Notes préparées pour la prochaine version, non publiées. La version et la dat
 
 - Le détail des frais professionnels du bulletin lit le seuil du profil d'exercice appliqué, et l'aide du formulaire indique que son plafond est un paramètre de l'exercice 2026. #281
 - Une comparaison entre une simulation sans exercice et la même simulation en 2026 explicite n'annonce plus d'écart. #281
+- Les catégories professionnelles du formulaire et de la comparaison ne citent plus de taux : le taux appliqué dépend de l'exercice et se lit dans le résultat. #282
+- Le schéma OpenAPI documente `plafond_fp` et `fp_plafonne`, déjà renvoyés par l'API. #282
+
+### Correctifs
+
+- Sur petit écran, les tableaux de la comparaison qui défilent horizontalement sont atteignables au clavier et défilent aux flèches, comme ceux du résultat. #282
+- Dans le tableau des indicateurs de la comparaison, les écarts nuls et la note sur les montants sont plus contrastés, pour rester lisibles sur fond clair (contraste WCAG 4,5:1). #282
 
 ### Mise à jour de la stack
 
@@ -22,7 +30,7 @@ Notes préparées pour la prochaine version, non publiées. La version et la dat
 
 ### Migration
 
-Aucune action requise : les requêtes et liens sans exercice sont calculés en 2026 comme avant. Les clients de l'API peuvent ignorer les nouveaux champs `exercice` et `reference_fiscale`. Une requête qui envoie `exercice` reçoit une erreur `422` sur ce seul champ pour un exercice inconnu, non entier ou non calculable. Le statut « en vigueur » de 2026 reprend la référence historique du simulateur et ne constitue pas une nouvelle validation juridique. Les nouvelles règles de frais professionnels (#282) et le comparateur de gain (#283) ne font pas partie de ce socle. La commande `docker pull` sera celle de la version publiée.
+Aucune action requise : les requêtes et liens sans exercice sont calculés en 2026 comme avant. Les clients de l'API peuvent ignorer les nouveaux champs `exercice` et `reference_fiscale`. Une requête qui envoie `exercice` reçoit une erreur `422` sur ce seul champ pour un exercice inconnu, non entier ou non calculable. Un calcul en 2027 renvoie la nouvelle valeur `commun_unique` dans `regime_fp` : un client qui énumère les régimes doit l'accepter. Le statut « en vigueur » de 2026 reprend la référence historique du simulateur et ne constitue pas une nouvelle validation juridique ; 2027 reste un projet. Le comparateur de gain (#283) ne fait pas partie de cette version. La commande `docker pull` sera celle de la version publiée.
 
 ---
 

@@ -60,7 +60,8 @@
             return $favorable ? 'up' : 'down';
         };
 
-        $toneColor = ['up' => 'var(--s-succ)', 'down' => 'var(--s-tax)', 'flat' => 'var(--ink-3)'];
+        // Neutre en --ink-2 : --ink-3 n'atteint pas le contraste 4,5:1 du texte courant (WCAG 1.4.3).
+        $toneColor = ['up' => 'var(--s-succ)', 'down' => 'var(--s-tax)', 'flat' => 'var(--ink-2)'];
 
         // Entrées structurantes des deux scénarios, pour expliquer les écarts.
         $inputRow = function (array $r, string $key) {
@@ -197,7 +198,8 @@
             <i class="bi bi-info-circle me-1" aria-hidden="true"></i>{{ __('ui.comparison.inputs_identical') }}
         </p>
         @else
-        <div class="cmp-scroll">
+        {{-- Zone défilante atteignable au clavier (WCAG 2.1.1), comme les tableaux du résultat --}}
+        <div class="cmp-scroll" data-table-scroll tabindex="0" role="region" aria-labelledby="cmp-inputs-title">
             <table class="table table-sm cmp-table mb-0">
                 <caption class="visually-hidden">{{ __('ui.comparison.inputs_title') }}</caption>
                 <thead>
@@ -239,7 +241,7 @@
         <h2 id="cmp-metrics-title" class="h6 fw-bold mb-3">
             <i class="bi bi-table me-2" style="color:var(--s-cot)" aria-hidden="true"></i>{{ __('ui.comparison.metrics_title') }}
         </h2>
-        <div class="cmp-scroll">
+        <div class="cmp-scroll" data-table-scroll tabindex="0" role="region" aria-labelledby="cmp-metrics-title">
             <table class="table table-sm cmp-table mb-0">
                 <caption class="visually-hidden">{{ __('ui.comparison.metrics_title') }}</caption>
                 <thead>
@@ -269,7 +271,7 @@
                 </tbody>
             </table>
         </div>
-        <p class="small mb-0 mt-3" style="color:var(--ink-3)">
+        <p class="small mb-0 mt-3" style="color:var(--ink-2)">
             <i class="bi bi-info-circle me-1" aria-hidden="true"></i>{{ __('ui.comparison.amounts_note') }}
         </p>
     </section>
