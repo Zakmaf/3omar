@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Services\ExercicesFiscaux;
 use App\Services\SimulationCodec;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -238,12 +239,14 @@ class ExerciceParcoursTest extends TestCase
         );
         $this->assertSame('2026', $this->valeurSelectionnee($options), "{$locale} : repli 2026 sélectionné par défaut");
 
+        $exercices = app(ExercicesFiscaux::class);
+
         foreach (config('payroll.exercices') as $annee => $profil) {
             $option = $options[(string) $annee];
             $this->assertStringContainsString($this->libelleStatut($profil['statut'], $locale), $this->texte($option), "{$locale} : statut de {$annee}");
             $this->assertSame(
-                ! app(\App\Services\ExercicesFiscaux::class)->calculable($annee),
-                $option->hasAttribute('disabled'),
+                $exercices->calculable($annee) ? 'activable' : 'désactivé',
+                $option->hasAttribute('disabled') ? 'désactivé' : 'activable',
                 "{$locale} : seul un exercice calculable est activable ({$annee})",
             );
         }
@@ -252,7 +255,7 @@ class ExerciceParcoursTest extends TestCase
         // activables, 2028 à 2031 ne le sont pas.
         $activables = array_values(array_filter(
             array_keys($options),
-            fn ($valeur) => $valeur !== '' && ! $options[$valeur]->hasAttribute('disabled'),
+            fn ($valeur) => $valeur !== '' && $options[$valeur]->hasAttribute('disabled') === false,
         ));
         $this->assertSame(['2026', '2027'], array_map('strval', $activables), "{$locale} : exercices activables");
         $this->assertStringContainsString($this->libelleStatut('projet', $locale), $this->texte($options['2027']), "{$locale} : 2027 reste affiché comme projet");

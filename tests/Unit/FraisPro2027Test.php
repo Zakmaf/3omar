@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use App\Services\ExercicesFiscaux;
 use App\Services\PayrollCalculatorService;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 /**
@@ -58,6 +59,21 @@ class FraisPro2027Test extends TestCase
     private function plafondMensuel2027(): float
     {
         return round(35000 / 12, 2);
+    }
+
+    /**
+     * Prémisse des tests qui surchargent une seule clé du profil 2027 : le
+     * profil réel doit être complet, sinon la surcharge fabriquerait un profil
+     * partiel au lieu de tester une variante du profil livré.
+     */
+    private function assertProfil2027Complet(): void
+    {
+        $fraisPro = config('payroll.exercices.2027.frais_pro');
+
+        $this->assertIsArray($fraisPro, 'Prémisse : profil 2027 paramétré avant toute surcharge.');
+        foreach (['taux', 'plafond_annuel', 'categories', 'reference'] as $cle) {
+            $this->assertArrayHasKey($cle, $fraisPro, "Prémisse : clé {$cle} du profil 2027.");
+        }
     }
 
     // ------------------------------------------------------------------
@@ -149,8 +165,50 @@ class FraisPro2027Test extends TestCase
         $this->assertSame(2916.67, $eleve['frais_pro'], 'Plafond indépendant du niveau de salaire.');
     }
 
+    /**
+     * Voisins au centime du plafond mensuel : 45 % x SBI arrondi au centime
+     * atteint 2 916,67 entre 6 481,48 et 6 481,49 MAD. Le moteur compare le
+     * montant arrondi au plafond : l'égalité n'est pas un dépassement.
+     *
+     * @return array<string, array{float, float, bool}>
+     */
+    public static function voisinsDuPlafond(): array
+    {
+        return [
+            '6 481,47 : un centime sous le plafond' => [6481.47, 2916.66, false],
+            '6 481,48 : atteint le plafond' => [6481.48, 2916.67, false],
+            '6 481,49 : arrondi égal au plafond' => [6481.49, 2916.67, false],
+            '6 481,51 : dépasse, plafonné' => [6481.51, 2916.67, true],
+        ];
+    }
+
+    #[DataProvider('voisinsDuPlafond')]
+    public function test_voisins_au_centime_du_plafond_mensuel(float $salaire, float $fraisPro, bool $plafonne): void
+    {
+        $r = $this->calcul($salaire, 2027);
+
+        $this->assertSame($salaire, $r['sbi'], 'Prémisse : le SBI vaut le salaire de base.');
+        $this->assertSame($this->plafondMensuel2027(), $r['plafond_fp']);
+        $this->assertSame($fraisPro, $r['frais_pro']);
+        $this->assertSame($plafonne, $r['fp_plafonne']);
+        $this->assertSame('commun_unique', $r['regime_fp']);
+    }
+
+    public function test_salaire_nul_en_2027(): void
+    {
+        $r = $this->calcul(0, 2027);
+
+        $this->assertSame(0.0, $r['sbi']);
+        $this->assertSame(0.0, $r['frais_pro']);
+        $this->assertFalse($r['fp_plafonne']);
+        $this->assertSame('commun_unique', $r['regime_fp']);
+        $this->assertSame(0.0, $r['ir_net']);
+        $this->assertSame(0.0, $r['salaire_net']);
+    }
+
     public function test_le_plafond_mensuel_suit_le_plafond_annuel_configure(): void
     {
+        $this->assertProfil2027Complet();
         config(['payroll.exercices.2027.frais_pro.plafond_annuel' => 24000]);
 
         $r = $this->calcul(10000, 2027);
@@ -216,6 +274,7 @@ class FraisPro2027Test extends TestCase
 
     public function test_une_categorie_non_rattachee_par_le_profil_est_refusee_sans_repli(): void
     {
+        $this->assertProfil2027Complet();
         config(['payroll.exercices.2027.frais_pro.categories' => ['commun', 'journaliste']]);
 
         $message = __('ui.validation.category_not_supported', ['exercice' => 2027]);

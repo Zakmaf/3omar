@@ -174,6 +174,13 @@
                             @unless ($profil['calculable'])
                             <p class="small mb-0 mt-1" style="color:var(--ink-2)">{{ __('ui.fiscal_year.not_calculable_note') }}</p>
                             @endunless
+                            {{-- Frais professionnels proposés par un projet calculable (#282) --}}
+                            @if ($profil['frais_pro_projet'])
+                            <p class="small mb-0 mt-1" style="color:var(--ink-2)">
+                                {{ __('ui.fiscal_year.pro_fees_project', ['rate' => $profil['frais_pro_projet']['rate'], 'cap' => $profil['frais_pro_projet']['cap']]) }}
+                                <span lang="fr" dir="ltr">{{ $profil['frais_pro_projet']['reference'] }}</span>
+                            </p>
+                            @endif
                         </li>
                         @endforeach
                     </ul>

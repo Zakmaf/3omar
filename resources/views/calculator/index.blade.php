@@ -531,7 +531,7 @@
                                 <option value="journaliste" {{ old('type_frais_pro','commun') === 'journaliste' ? 'selected' : '' }}>{{ __('ui.calculator.category_journalist') }}</option>
                                 <option value="artiste"     {{ old('type_frais_pro','commun') === 'artiste'     ? 'selected' : '' }}>{{ __('ui.calculator.category_artist') }}</option>
                             </select>
-                            {{-- Plafond lu dans le profil de repli et présenté comme tel : un projet n'a pas encore ses propres frais professionnels (#282). --}}
+                            {{-- Plafond lu dans le profil de repli et présenté comme tel ; les frais professionnels d'un projet (2027, #282) sont décrits sur le résultat et la page Fiabilité. --}}
                             <div class="form-text">{{ __('ui.calculator.category_help', ['cap' => number_format(app(\App\Services\ExercicesFiscaux::class)->parametre($exercice_defaut, 'frais_pro')['commun']['haut']['plafond'], 2, ',', ' ')]) }} ({{ __('ui.fiscal_year.parameters_of', ['exercice' => $exercice_defaut]) }})</div>
                         </div>
 

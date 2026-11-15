@@ -58,6 +58,34 @@ $baremeParContinuite = static function (array $paliers): array {
     return $tranches;
 };
 
+// Frais professionnels proposés pour 2027 (issue #282) : art. 59-I du CGI tel
+// que modifié par l'art. 7-I du projet de loi de finances n° 60-26 (texte
+// déposé, page « - 8 - » du PDF), applicable aux revenus acquis à compter du
+// 1er janvier 2027 selon l'art. 7-IV-5. Paramètres d'un projet, susceptibles
+// d'amendements : ni votés ni promulgués, validation_legale reste null.
+//   « A. – 45% pour les personnes ne relevant pas de la catégorie
+//   professionnelle visée au C ci-après, sans que cette déduction puisse
+//   excéder trente-cinq mille (35 000) dirhams ; B. – (abrogé) ; C. – ...
+//   maritime. »
+// - Taux unique, sans le seuil de 78 000 MAD annuels (6 500 MAD mensuels) de
+//   2026.
+// - Plafond canonique annuel ; le moteur le mensualise (÷ nb_mois, arrondi au
+//   centime : 2 916,67 MAD, même méthode qu'en 2026).
+// - Catégories : le B (journalistes, artistes, etc.) est abrogé par le projet.
+//   Les catégories modélisées journaliste et artiste relèvent donc du A et y
+//   sont rattachées explicitement. Le C (personnel navigant de la marine
+//   marchande et de la pêche maritime) n'est pas modélisé : aucune catégorie
+//   de saisie n'y correspond. Une catégorie absente de `categories` est
+//   refusée, jamais calculée par repli.
+// - Les indemnités (art. 57-1°) ne changent pas : leur modification n'est
+//   prévue qu'à compter du 1er janvier 2031 (art. 7-IV-4 du projet).
+$fraisPro2027 = [
+    'taux' => 0.45,
+    'plafond_annuel' => 35000,
+    'categories' => ['commun', 'journaliste', 'artiste'],
+    'reference' => 'Art. 59-I-A CGI (projet, art. 7-I et 7-IV-5 du PLF n° 60-26)',
+];
+
 // Source commune des exercices prospectifs : texte déposé, ni voté ni promulgué.
 // Vérifié sur le PDF du projet (89 pages, sha256 ci-dessous) : art. 7-I (CGI
 // art. 59-I, 73-I, 247-XXXXVII) et art. 7-IV (dates d'effet 5 et 6).
@@ -85,7 +113,8 @@ return [
     // `date_effet_projetee` : date annoncée par le texte source, distincte de
     // toute validation légale.
     // `frais_pro` null : frais professionnels de l'exercice non paramétrés
-    // (#282). Aucun calcul complet ne doit alors reprendre ceux de 2026.
+    // (2028 à 2031). Aucun calcul complet ne doit alors reprendre ceux de
+    // 2026. 2027 porte les frais professionnels proposés ($fraisPro2027, #282).
     // =========================================================================
     'exercice_defaut' => 2026,
 
@@ -113,7 +142,7 @@ return [
             'ir_baremes' => $baremeParContinuite([
                 [60000, 0.00], [80000, 0.10], [100000, 0.20], [180000, 0.34], [null, 0.37],
             ]),
-            'frais_pro' => null,
+            'frais_pro' => $fraisPro2027,
         ],
         2028 => [
             'statut' => 'projet',
