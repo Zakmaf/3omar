@@ -187,6 +187,10 @@ class GainFiscal2027
         // de base nul, ou non-convergence) : le brut trouvé ne donne pas le net
         // visé. Refus avant tout calcul de gain, jamais une comparaison
         // présentée comme « à net cible ».
+        if (! $resolu['resolution_net']['converge']) {
+            throw new \InvalidArgumentException(__(self::REFUS_NET_NON_ATTEINT));
+        }
+
         // Candidat de la bissection, non arrondi : les deux exercices le
         // reçoivent tel quel (voir docs/CALCUL.md, précision du brut figé).
         $salaireBase = (float) $resolu['input']['salaire_base'];
