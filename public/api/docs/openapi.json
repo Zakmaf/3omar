@@ -243,52 +243,54 @@
         "properties": {
           "salaire_base": { "type": "number", "minimum": 0, "maximum": 10000000, "description": "Salaire de base mensuel brut en MAD" },
           "type_frais_pro": { "type": "string", "enum": ["commun", "journaliste", "artiste"], "description": "Categorie de frais professionnels. Elle doit etre calculable dans l'exercice demande : une categorie que le profil de l'exercice ne rattache pas a son regime renvoie un 422 sur ce champ (en 2027 projet, commun, journaliste et artiste relevent tous du taux unique)." },
-          "nb_annees_anciennete": { "type": "integer", "minimum": 0, "maximum": 50, "description": "Nombre d'annees d'anciennete" },
-          "prime_bilan": { "type": "number", "minimum": 0, "maximum": 10000000, "description": "Prime de bilan mensuelle en MAD" },
-          "prime_rendement": { "type": "number", "minimum": 0, "maximum": 10000000, "description": "Prime de rendement mensuelle en MAD" },
-          "autres_primes": { "type": "number", "minimum": 0, "maximum": 10000000, "description": "Autres primes imposables mensuelles en MAD" },
-          "nb_enfants": { "type": "integer", "minimum": 0, "maximum": 20, "description": "Nombre d'enfants a charge" },
-          "conjoint_charge": { "type": "boolean", "description": "Conjoint a charge" },
-          "cimr_taux": { "type": "number", "minimum": 0, "maximum": 100, "description": "Taux CIMR salarie en pourcentage (ex: 6 pour 6%)" },
-          "cimr_taux_employeur": { "type": "number", "minimum": 0, "maximum": 100, "description": "Taux CIMR employeur en pourcentage" },
-          "amo_taux_salarie_personnalise": { "type": "boolean", "description": "Active un taux AMO salarie personnalise (derogatoire, false par defaut : le taux legal s'applique)" },
-          "amo_taux_salarie": { "type": "number", "minimum": 0, "maximum": 100, "description": "Taux AMO salarie en pourcentage, applique seulement si amo_taux_salarie_personnalise est actif ; genere un avertissement" },
-          "retraite_complementaire_mensuel": { "type": "number", "minimum": 0, "maximum": 10000000, "description": "Retraite complementaire mensuelle en MAD" },
-          "rc_part_employeur": { "type": "number", "minimum": 0, "maximum": 10000000, "description": "Part employeur retraite complementaire en MAD" },
-          "mutuelle_salarie": { "type": "number", "minimum": 0, "maximum": 10000000, "description": "Cotisation mutuelle salarie en MAD" },
-          "mutuelle_patronale": { "type": "number", "minimum": 0, "maximum": 10000000, "description": "Cotisation mutuelle patronale en MAD" },
-          "assurance_at_taux": { "type": "number", "minimum": 0, "maximum": 100, "description": "Taux d'assurance accident du travail en pourcentage, a la charge de l'employeur" },
-          "assurance_rc_pro": { "type": "number", "minimum": 0, "maximum": 10000000, "description": "Assurance RC professionnelle mensuelle a la charge de l'employeur, en MAD" },
-          "retenues_exonerees_ir": { "type": "number", "minimum": 0, "maximum": 10000000, "description": "Retenues exonerees d'IR en MAD : deduites du revenu net imposable et retirees du net a payer" },
-          "retenues_imposees_ir": { "type": "number", "minimum": 0, "maximum": 10000000, "description": "Retenues imposees a l'IR en MAD : retirees du net a payer sans effet sur l'IR" },
-          "autres_retenues": { "type": "number", "minimum": 0, "maximum": 10000000, "description": "Alias historique de retenues_imposees_ir en MAD, utilise si retenues_imposees_ir est absent" },
-          "jours_travailles": { "type": "integer", "minimum": 1, "maximum": 31, "description": "Nombre de jours travailles dans le mois" },
+          "nb_annees_anciennete": { "type": "integer", "nullable": true, "minimum": 0, "maximum": 50, "description": "Nombre d'annees d'anciennete" },
+          "prime_bilan": { "type": "number", "nullable": true, "minimum": 0, "maximum": 10000000, "description": "Prime de bilan mensuelle en MAD" },
+          "prime_rendement": { "type": "number", "nullable": true, "minimum": 0, "maximum": 10000000, "description": "Prime de rendement mensuelle en MAD" },
+          "autres_primes": { "type": "number", "nullable": true, "minimum": 0, "maximum": 10000000, "description": "Autres primes imposables mensuelles en MAD" },
+          "nb_enfants": { "type": "integer", "nullable": true, "minimum": 0, "maximum": 20, "description": "Nombre d'enfants a charge" },
+          "conjoint_charge": { "type": "boolean", "nullable": true, "description": "Conjoint a charge" },
+          "cimr_taux": { "type": "number", "nullable": true, "minimum": 0, "maximum": 100, "description": "Taux CIMR salarie en pourcentage (ex: 6 pour 6%)" },
+          "cimr_taux_employeur": { "type": "number", "nullable": true, "minimum": 0, "maximum": 100, "description": "Taux CIMR employeur en pourcentage. null : inconnu (cout employeur partiel), different de l'omission" },
+          "amo_taux_salarie_personnalise": { "type": "boolean", "nullable": true, "description": "Active un taux AMO salarie personnalise (derogatoire, false par defaut : le taux legal s'applique)" },
+          "amo_taux_salarie": { "type": "number", "nullable": true, "minimum": 0, "maximum": 100, "description": "Taux AMO salarie en pourcentage, applique seulement si amo_taux_salarie_personnalise est actif ; genere un avertissement" },
+          "retraite_complementaire_mensuel": { "type": "number", "nullable": true, "minimum": 0, "maximum": 10000000, "description": "Retraite complementaire mensuelle en MAD" },
+          "rc_part_employeur": { "type": "number", "nullable": true, "minimum": 0, "maximum": 10000000, "description": "Part employeur retraite complementaire en MAD. null : inconnu (cout employeur partiel), different de l'omission" },
+          "mutuelle_salarie": { "type": "number", "nullable": true, "minimum": 0, "maximum": 10000000, "description": "Cotisation mutuelle salarie en MAD" },
+          "mutuelle_patronale": { "type": "number", "nullable": true, "minimum": 0, "maximum": 10000000, "description": "Cotisation mutuelle patronale en MAD. null : inconnu (cout employeur partiel), different de l'omission" },
+          "assurance_at_taux": { "type": "number", "nullable": true, "minimum": 0, "maximum": 100, "description": "Taux d'assurance accident du travail en pourcentage, a la charge de l'employeur. null : inconnu (cout employeur partiel), different de l'omission" },
+          "assurance_rc_pro": { "type": "number", "nullable": true, "minimum": 0, "maximum": 10000000, "description": "Assurance RC professionnelle mensuelle a la charge de l'employeur, en MAD. null : inconnu (cout employeur partiel), different de l'omission" },
+          "retenues_exonerees_ir": { "type": "number", "nullable": true, "minimum": 0, "maximum": 10000000, "description": "Retenues exonerees d'IR en MAD : deduites du revenu net imposable et retirees du net a payer" },
+          "retenues_imposees_ir": { "type": "number", "nullable": true, "minimum": 0, "maximum": 10000000, "description": "Retenues imposees a l'IR en MAD : retirees du net a payer sans effet sur l'IR" },
+          "autres_retenues": { "type": "number", "nullable": true, "minimum": 0, "maximum": 10000000, "description": "Alias historique de retenues_imposees_ir en MAD, utilise si retenues_imposees_ir est absent ou null" },
+          "jours_travailles": { "type": "integer", "nullable": true, "minimum": 1, "maximum": 31, "description": "Nombre de jours travailles dans le mois" },
           "exercice": { "type": "integer", "nullable": true, "minimum": 2026, "maximum": 2031, "description": "Exercice fiscal. Absent ou null : 2026, definitivement. Un exercice declare mais non calculable (projet sans frais professionnels : 2028 a 2031) renvoie un 422 sur ce champ. 2027 est calculable en projet (PLF n° 60-26 tel que depose, susceptible d'amendements) : reference_fiscale.statut vaut projet" },
           "heures_sup": {
             "type": "array",
+            "nullable": true,
             "maxItems": 10,
             "items": {
               "type": "object",
               "properties": {
                 "type": { "type": "string", "enum": ["semaine_diurne", "semaine_nocturne", "repos_diurne", "repos_nocturne"] },
-                "nb_heures": { "type": "number", "minimum": 0, "maximum": 744 }
+                "nb_heures": { "type": "number", "nullable": true, "minimum": 0, "maximum": 744 }
               }
             },
             "description": "Heures supplementaires"
           },
           "indemnites": {
             "type": "array",
+            "nullable": true,
             "maxItems": 10,
             "items": {
               "type": "object",
               "properties": {
                 "type": { "type": "string", "enum": ["transport", "panier", "representation", "salissure", "outillage", "vestimentaire", "logement", "voiture_fonction"] },
-                "montant": { "type": "number", "minimum": 0, "maximum": 1000000 }
+                "montant": { "type": "number", "nullable": true, "minimum": 0, "maximum": 1000000 }
               }
             },
             "description": "Indemnites exonerees"
           },
-          "avantages_cnss": { "type": "number", "minimum": 0, "maximum": 10000000, "description": "Avantages exclus de l'assiette CNSS et AMO mais imposables a l'IR, en MAD" }
+          "avantages_cnss": { "type": "number", "nullable": true, "minimum": 0, "maximum": 10000000, "description": "Avantages exclus de l'assiette CNSS et AMO mais imposables a l'IR, en MAD" }
         }
       },
       "NetVersBrutInput": {
@@ -297,50 +299,52 @@
         "properties": {
           "net_cible": { "type": "number", "minimum": 0.01, "maximum": 10000000, "description": "Salaire net cible en MAD" },
           "type_frais_pro": { "type": "string", "enum": ["commun", "journaliste", "artiste"] },
-          "nb_annees_anciennete": { "type": "integer", "minimum": 0, "maximum": 50 },
-          "prime_bilan": { "type": "number", "minimum": 0, "maximum": 10000000 },
-          "prime_rendement": { "type": "number", "minimum": 0, "maximum": 10000000 },
-          "autres_primes": { "type": "number", "minimum": 0, "maximum": 10000000 },
-          "nb_enfants": { "type": "integer", "minimum": 0, "maximum": 20 },
-          "conjoint_charge": { "type": "boolean" },
-          "cimr_taux": { "type": "number", "minimum": 0, "maximum": 100 },
-          "cimr_taux_employeur": { "type": "number", "minimum": 0, "maximum": 100 },
-          "amo_taux_salarie_personnalise": { "type": "boolean" },
-          "amo_taux_salarie": { "type": "number", "minimum": 0, "maximum": 100 },
-          "retraite_complementaire_mensuel": { "type": "number", "minimum": 0, "maximum": 10000000 },
-          "rc_part_employeur": { "type": "number", "minimum": 0, "maximum": 10000000 },
-          "mutuelle_salarie": { "type": "number", "minimum": 0, "maximum": 10000000 },
-          "mutuelle_patronale": { "type": "number", "minimum": 0, "maximum": 10000000 },
-          "assurance_at_taux": { "type": "number", "minimum": 0, "maximum": 100 },
-          "assurance_rc_pro": { "type": "number", "minimum": 0, "maximum": 10000000 },
-          "retenues_exonerees_ir": { "type": "number", "minimum": 0, "maximum": 10000000 },
-          "retenues_imposees_ir": { "type": "number", "minimum": 0, "maximum": 10000000 },
-          "autres_retenues": { "type": "number", "minimum": 0, "maximum": 10000000 },
-          "jours_travailles": { "type": "integer", "minimum": 1, "maximum": 31 },
+          "nb_annees_anciennete": { "type": "integer", "nullable": true, "minimum": 0, "maximum": 50 },
+          "prime_bilan": { "type": "number", "nullable": true, "minimum": 0, "maximum": 10000000 },
+          "prime_rendement": { "type": "number", "nullable": true, "minimum": 0, "maximum": 10000000 },
+          "autres_primes": { "type": "number", "nullable": true, "minimum": 0, "maximum": 10000000 },
+          "nb_enfants": { "type": "integer", "nullable": true, "minimum": 0, "maximum": 20 },
+          "conjoint_charge": { "type": "boolean", "nullable": true },
+          "cimr_taux": { "type": "number", "nullable": true, "minimum": 0, "maximum": 100 },
+          "cimr_taux_employeur": { "type": "number", "nullable": true, "minimum": 0, "maximum": 100 },
+          "amo_taux_salarie_personnalise": { "type": "boolean", "nullable": true },
+          "amo_taux_salarie": { "type": "number", "nullable": true, "minimum": 0, "maximum": 100 },
+          "retraite_complementaire_mensuel": { "type": "number", "nullable": true, "minimum": 0, "maximum": 10000000 },
+          "rc_part_employeur": { "type": "number", "nullable": true, "minimum": 0, "maximum": 10000000 },
+          "mutuelle_salarie": { "type": "number", "nullable": true, "minimum": 0, "maximum": 10000000 },
+          "mutuelle_patronale": { "type": "number", "nullable": true, "minimum": 0, "maximum": 10000000 },
+          "assurance_at_taux": { "type": "number", "nullable": true, "minimum": 0, "maximum": 100 },
+          "assurance_rc_pro": { "type": "number", "nullable": true, "minimum": 0, "maximum": 10000000 },
+          "retenues_exonerees_ir": { "type": "number", "nullable": true, "minimum": 0, "maximum": 10000000 },
+          "retenues_imposees_ir": { "type": "number", "nullable": true, "minimum": 0, "maximum": 10000000 },
+          "autres_retenues": { "type": "number", "nullable": true, "minimum": 0, "maximum": 10000000 },
+          "jours_travailles": { "type": "integer", "nullable": true, "minimum": 1, "maximum": 31 },
           "exercice": { "type": "integer", "nullable": true, "minimum": 2026, "maximum": 2031 },
           "heures_sup": {
             "type": "array",
+            "nullable": true,
             "maxItems": 10,
             "items": {
               "type": "object",
               "properties": {
                 "type": { "type": "string", "enum": ["semaine_diurne", "semaine_nocturne", "repos_diurne", "repos_nocturne"] },
-                "nb_heures": { "type": "number", "minimum": 0, "maximum": 744 }
+                "nb_heures": { "type": "number", "nullable": true, "minimum": 0, "maximum": 744 }
               }
             }
           },
           "indemnites": {
             "type": "array",
+            "nullable": true,
             "maxItems": 10,
             "items": {
               "type": "object",
               "properties": {
                 "type": { "type": "string", "enum": ["transport", "panier", "representation", "salissure", "outillage", "vestimentaire", "logement", "voiture_fonction"] },
-                "montant": { "type": "number", "minimum": 0, "maximum": 1000000 }
+                "montant": { "type": "number", "nullable": true, "minimum": 0, "maximum": 1000000 }
               }
             }
           },
-          "avantages_cnss": { "type": "number", "minimum": 0, "maximum": 10000000 }
+          "avantages_cnss": { "type": "number", "nullable": true, "minimum": 0, "maximum": 10000000 }
         }
       },
       "SimulationResult": {
