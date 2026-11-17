@@ -135,12 +135,18 @@ Le champ `version` reflete toujours la version de l'application actuellement dep
 | `assurance_rc_pro` | number (0-10000000) | Assurance RC professionnelle mensuelle a la charge de l'employeur (MAD) |
 | `retenues_exonerees_ir` | number (0-10000000) | Retenues exonerees d'IR (MAD) : prelevees sur la paie et deduites du revenu net imposable avant le bareme IR. Incluses dans `total_retenues`, donc retirees de `salaire_net`. |
 | `retenues_imposees_ir` | number (0-10000000) | Retenues imposees a l'IR (MAD) : retirees de `salaire_net` sans effet sur l'IR. Incluses dans `total_retenues`. |
-| `autres_retenues` | number (0-10000000) | Alias historique de `retenues_imposees_ir` (MAD), utilise si `retenues_imposees_ir` est absent |
+| `autres_retenues` | number (0-10000000) | Alias historique de `retenues_imposees_ir` (MAD), utilise si `retenues_imposees_ir` est absent ou `null` |
 | `jours_travailles` | integer (1-31) | Jours travailles dans le mois |
 | `exercice` | integer (2026-2031), nullable | Exercice fiscal. Absent ou `null` : 2026, definitivement (liens et requetes historiques). Un exercice declare mais non calculable (projet sans frais professionnels : 2028 a 2031) renvoie un 422 sur `exercice`, jamais un calcul complete par les parametres 2026. 2027 est calculable en projet (PLF n° 60-26 tel que depose, susceptible d'amendements). Une `type_frais_pro` que le profil de l'exercice ne rattache pas a son regime renvoie un 422 sur `type_frais_pro` |
 | `heures_sup` | array | Heures supplementaires (max 10) |
 | `indemnites` | array | Indemnites exonerees (max 10) |
 | `avantages_cnss` | number (0-10000000) | Avantages exclus de l'assiette CNSS et AMO mais imposables a l'IR (MAD) |
+
+Omission et valeur `null` : tous les champs de ce tableau sont facultatifs et acceptent aussi `null` explicite (`nullable: true` dans `openapi.json`, verifie contre la validation par `OpenApiContractTest`). Pour la plupart, `null` equivaut a l'omission : le moteur applique la meme valeur par defaut. Cela vaut aussi pour `heures_sup` et `indemnites` a `null`, et pour les membres `nb_heures` et `montant` a `null` (la ligne est ignoree).
+
+Exception : pour les champs patronaux `cimr_taux_employeur`, `rc_part_employeur`, `mutuelle_patronale`, `assurance_at_taux` et `assurance_rc_pro`, `null` signifie « inconnu », pas « absent ». Le montant correspondant n'est pas compte, l'indicateur de la reponse (`cimr_taux_employeur_inconnu`, `rc_part_employeur_inconnu`, `mutuelle_patronale_inconnue`, `assurance_at_inconnue` ou `assurance_rc_pro_inconnue`) vaut `true`, ainsi que `cout_employeur_partiel`. Omettre le champ ne leve aucun de ces indicateurs.
+
+Restent refuses a `null` (422 sur le champ) : `salaire_base`, `net_cible` et `type_frais_pro`, ainsi que le membre `type` d'une ligne de `heures_sup` ou d'`indemnites` dont la valeur est renseignee.
 
 Tout autre champ est ignore par l'API, sans erreur ni avertissement. Les exemples de requete et de reponse de ce document et de `openapi.json` sont verifies contre le moteur par `tests/Feature/Api/V1/OpenApiContractTest.php`.
 
