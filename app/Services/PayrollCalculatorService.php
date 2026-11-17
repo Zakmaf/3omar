@@ -54,6 +54,10 @@ class PayrollCalculatorService
      * Barème de l'exercice demandé (repli 2026 sans exercice). Seul le barème
      * est requis ici : un exercice prospectif sans frais professionnels reste
      * refusé par calculer() et resoudreDepuisNet().
+     *
+     * Sans appelant de production depuis #283 (le calcul passe par
+     * appliquerBareme() avec le barème du profil résolu) : point d'entrée
+     * conservé pour les tests de barème par exercice, même résultat.
      */
     private function calculerIRAnnuelBrut(float $rniAnnuel, ?int $exercice = null): array
     {
@@ -256,7 +260,11 @@ class PayrollCalculatorService
      * L'ordre est fixe (barème, puis frais professionnels) : l'écart
      * reference -> intermediaire relève du seul barème, l'écart
      * intermediaire -> projete des seuls frais professionnels, et leur somme
-     * vaut l'écart total sans double comptage.
+     * vaut l'écart total sans double comptage (au centime, après arrondi).
+     *
+     * Le résultat intermédiaire est un calcul pédagogique sans exercice : il ne
+     * doit jamais être rendu par les vues réglementaires ordinaires (résultat,
+     * comparaison, provenance), qui attendent un exercice et une référence.
      *
      * Le champ exercice éventuel de la saisie est remplacé par chacun des deux
      * exercices demandés ; les deux doivent être calculables. Le calcul
@@ -319,6 +327,8 @@ class PayrollCalculatorService
     /**
      * Calcul complet du bulletin avec des paramètres déjà résolus par
      * profilMoteur() ou composés par decomposerChangementExercice().
+     *
+     * @param  array{ir_baremes: array, frais_pro: array, exercice_frais_pro: int, provenance: array{exercice: int|null, reference_fiscale: array|null, composition?: array{ir_baremes: int, frais_pro: int}}}  $profil
      */
     private function calculerSelonProfil(array $input, array $profil): array
     {

@@ -171,6 +171,7 @@ class GainFiscal2027CasTest extends TestCase
         $this->assertSame(0.0, $r['reference']['ir_net'], 'Prémisse : IR 2026 nul à 4 000.');
         $this->assertSame(0.0, $r['projete']['ir_net'], 'Prémisse : IR 2027 nul à 4 000.');
 
+        $this->assertArrayHasKey('aucun_gain_ir', $r['gain'], 'Contrat : indicateur aucun_gain_ir.');
         $this->assertTrue($r['gain']['aucun_gain_ir'], 'IR déjà nul : aucun gain fictif.');
         $this->assertSame(0.0, $r['gain']['net_mensuel']);
         $this->assertSame(0.0, $r['gain']['net_annuel_indicatif']);
@@ -183,6 +184,7 @@ class GainFiscal2027CasTest extends TestCase
         $r = $this->service()->comparer($this->saisie(20000));
 
         $this->assertGreaterThan(0, $r['reference']['ir_net']);
+        $this->assertArrayHasKey('aucun_gain_ir', $r['gain'], 'Contrat : indicateur aucun_gain_ir.');
         $this->assertFalse($r['gain']['aucun_gain_ir']);
     }
 
@@ -195,6 +197,8 @@ class GainFiscal2027CasTest extends TestCase
         $sans = $this->service()->comparer($this->saisie(20000));
         $depuis2027 = $this->service()->comparer($this->saisie(20000, ['exercice' => 2027]));
 
+        $this->assertArrayHasKey('source', $sans, 'Contrat : source de la saisie.');
+        $this->assertArrayHasKey('source', $depuis2027, 'Contrat : source de la saisie.');
         $this->assertSame(['exercice' => 2026, 'mode' => 'gross_to_net'], $sans['source'], 'Sans exercice : repli 2026.');
         $this->assertSame(['exercice' => 2027, 'mode' => 'gross_to_net'], $depuis2027['source'], 'Exercice source signalé, jamais écrasé en silence.');
 
@@ -343,6 +347,8 @@ class GainFiscal2027CasTest extends TestCase
         $r = app(GainFiscal2027::class)->comparer($saisie);
 
         $this->assertSame([2026], $espion->exercicesResolus, 'Une seule résolution, en 2026, jamais une par exercice.');
+        $this->assertArrayHasKey('source', $r, 'Contrat : source de la saisie.');
+        $this->assertArrayHasKey('resolution', $r, 'Contrat : résolution du net cible.');
         $this->assertSame('net_to_gross', $r['mode']);
         $this->assertSame(['exercice' => 2026, 'mode' => 'net_to_gross'], $r['source']);
 
@@ -367,6 +373,7 @@ class GainFiscal2027CasTest extends TestCase
     {
         $this->moteurEspion();
         $r = app(GainFiscal2027::class)->comparer(['mode' => 'net_to_gross', 'net_cible' => 9000, 'type_frais_pro' => 'commun']);
+        $this->assertArrayHasKey('resolution', $r, 'Contrat : résolution du net cible.');
 
         $enBrut = app(GainFiscal2027::class)->comparer($this->saisie($r['resolution']['salaire_base']));
 

@@ -6,6 +6,7 @@ use App\Services\GainFiscal2027;
 use App\Services\SimulationCodec;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Testing\TestResponse;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
@@ -23,14 +24,15 @@ use Tests\TestCase;
  *   GainFiscal2027::comparer() appliquée à la saisie décodée : aucun montant
  *   n'est recalculé par le contrôleur ni par la vue ;
  * - un net cible d'une saisie 2027 est refusé explicitement (retour au
- *   calculateur, notice ui.gain2027.net_source_2027_refused) : le net visé
+ *   calculateur prérempli par ?s=<même saisie>, notice
+ *   ui.gain2027.net_source_2027_refused) : le net visé
  *   appartenait à 2027, le résoudre en 2026 changerait en silence le sens de
  *   la cible. Un net cible 2026 est résolu une fois en 2026 et la page dit
  *   « brut déterminé pour atteindre le net cible en 2026 »
  *   (ui.gain2027.net_mode_notice) ;
  * - une erreur du moteur (catégorie non calculable en 2027) renvoie au
- *   calculateur avec l'erreur traduite sous la clé calculator, comme la
- *   comparaison existante.
+ *   calculateur prérempli par ?s=<même saisie>, avec l'erreur traduite sous
+ *   la clé calculator.
  *
  * Marqueurs de la page (indépendants de la langue) :
  * - [data-gain2027-page] porte data-source-exercice (exercice de la saisie
@@ -99,6 +101,7 @@ class GainFiscal2027WebTest extends TestCase
         'ui.gain2027.decomposition_title',
         'ui.gain2027.share_label',
         'ui.gain2027.net_source_2027_refused',
+        'ui.gain2027.net_target_not_reached',
         'ui.calculator.gain2027_invalid_notice',
     ];
 
@@ -151,7 +154,7 @@ class GainFiscal2027WebTest extends TestCase
         return '/calculateur/gain-2027?s='.$payload;
     }
 
-    private function ouvrirGain2027(array $saisie, string $locale = 'fr'): \Illuminate\Testing\TestResponse
+    private function ouvrirGain2027(array $saisie, string $locale = 'fr'): TestResponse
     {
         return $this->withSession(['locale' => $locale])
             ->get($this->urlGain2027($this->codec->encode($saisie)));
@@ -460,8 +463,9 @@ class GainFiscal2027WebTest extends TestCase
         $saisie = ['mode' => 'net_to_gross', 'net_cible' => 12000, 'type_frais_pro' => 'commun', 'exercice' => 2027];
         $this->assertNotNull($this->codec->decode($this->codec->encode($saisie)), 'Prémisse : payload valide.');
 
+        // Retour au formulaire avec la même saisie (?s=), notice inchangée.
         $this->ouvrirGain2027($saisie)
-            ->assertRedirect(route('calculator.index'))
+            ->assertRedirect(route('calculator.index', ['s' => $this->codec->encode($this->codec->decode($this->codec->encode($saisie)))]))
             ->assertSessionHas('calculator_notice', 'ui.gain2027.net_source_2027_refused');
     }
 
@@ -641,8 +645,9 @@ class GainFiscal2027WebTest extends TestCase
         $saisie = ['mode' => 'gross_to_net', 'salaire_base' => 10000, 'type_frais_pro' => 'artiste'];
         $this->assertNotNull($this->codec->decode($this->codec->encode($saisie)), 'Prémisse : valide en 2026.');
 
+        // Retour au formulaire avec la même saisie (?s=), erreur inchangée.
         $this->ouvrirGain2027($saisie)
-            ->assertRedirect(route('calculator.index'))
+            ->assertRedirect(route('calculator.index', ['s' => $this->codec->encode($this->codec->decode($this->codec->encode($saisie)))]))
             ->assertSessionHasErrors(['calculator' => __('ui.validation.category_not_supported', ['exercice' => 2027])]);
     }
 }

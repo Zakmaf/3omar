@@ -18,6 +18,8 @@ Route::prefix('calculateur')->name('calculator.')->group(function () {
     Route::post('/calculer', [CalculatorController::class, 'calculer'])->name('calculer')->middleware('throttle:calculer');
     // La comparaison rejoue le moteur deux fois : même limitation que le calcul.
     Route::get('/comparer', [CalculatorController::class, 'comparer'])->name('comparer')->middleware('throttle:calculer');
+    // Gain 2027 face à 2026 (#283) : trois calculs du moteur, même limitation.
+    Route::get('/gain-2027', [CalculatorController::class, 'gain2027'])->name('gain2027')->middleware('throttle:calculer');
 });
 
 Route::get('/documentation', [DocumentationController::class, 'index'])->name('documentation');

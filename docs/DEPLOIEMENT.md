@@ -21,7 +21,7 @@ docker run -d \
 | `APP_KEY` | Oui | Clé de chiffrement des sessions et cookies. Générer avec `php artisan key:generate --show`. Une clé raw base64 sans préfixe (`openssl rand -base64 32`) est aussi acceptée — le préfixe `base64:` est ajouté automatiquement au démarrage. |
 | `APP_URL` | Recommandé | URL publique complète, ex : `https://3omar.ma`. Utilisée pour la génération des URL absolues et la cohérence des cookies. |
 | `APP_DEBUG` | Non | `false` par défaut. Mettre à `true` uniquement pour déboguer — affiche les erreurs en clair. |
-| `ADSENSE_ENABLED` | Non | `false` par défaut. Mettre à `true` pour activer Google AdSense (necessite les variables ci-dessous). |
+| `ADSENSE_ENABLED` | Non | `false` par défaut. Mettre à `true` pour activer Google AdSense (necessite les variables ci-dessous). Les pages du calculateur (routes `calculator.*`, qui portent des montants de salaire) n'affichent jamais de publicité, quelle que soit cette valeur (#283). |
 | `ADSENSE_PUBLISHER_ID` | Si AdSense | Identifiant editeur AdSense (`pub-xxx`). Sert au fichier `ads.txt`, a la balise meta de verification et au script (client `ca-pub-xxx` derive automatiquement). |
 | `ADSENSE_SLOT_HEADER` | Si AdSense | ID du slot publicitaire du header. |
 | `ADSENSE_SLOT_FOOTER` | Si AdSense | ID du slot publicitaire du footer. |
@@ -83,7 +83,8 @@ labels:
 
 Deux sources, sans recouvrement :
 
-- `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY` et `Referrer-Policy: strict-origin-when-cross-origin` : posés une seule fois par le Nginx de l'image (`docker/release/nginx.conf`), sur les pages, l'API et les fichiers statiques. Les mêmes en-têtes émis par le middleware `SecurityHeaders` sont masqués (`fastcgi_hide_header`) pour ne pas être envoyés deux fois. Les valeurs Nginx doivent rester celles du middleware : `SecurityHeadersTest` le vérifie.
+- `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY` et `Referrer-Policy` : posés une seule fois par le Nginx de l'image (`docker/release/nginx.conf`), sur les pages, l'API et les fichiers statiques. Les mêmes en-têtes émis par le middleware `SecurityHeaders` sont masqués (`fastcgi_hide_header`) pour ne pas être envoyés deux fois. Les valeurs Nginx doivent rester celles du middleware : `SecurityHeadersTest` le vérifie.
+- `Referrer-Policy` est différenciée (#283) : `no-referrer` sur les pages du calculateur (`/calculateur`, résultats, comparaison, gain 2027, et leurs redirections), dont l'URL porte les montants saisis ; `strict-origin-when-cross-origin` partout ailleurs. Nginx choisit la valeur par une `map` sur `$request_uri` (URI d'origine, non réécrite vers `index.php`), reprend sinon la valeur du middleware, et à défaut la valeur éditoriale. La CI vérifie un seul en-tête et sa valeur sur l'image release. Un proxy placé devant l'image ne doit pas réécrire cet en-tête.
 - `Content-Security-Policy` et, en HTTPS, `Strict-Transport-Security` : posés par le middleware `SecurityHeaders` sur les pages web.
 
 Le job CI `Build image release` démarre l'image et échoue si l'un des trois en-têtes Nginx manque ou apparaît deux fois sur `/`, `/api/v1/health` ou une image de `public/img/`. Pour vérifier en production :

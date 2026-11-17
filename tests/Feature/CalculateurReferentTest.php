@@ -295,10 +295,37 @@ class CalculateurReferentTest extends TestCase
         $response->assertSessionHasInput('prime_rendement', '4321');
         $response->assertSessionHasInput('retenues_imposees_ir', '55');
 
-        // La saisie de l'utilisateur prime sur le préremplissage du lien.
+        // La saisie de l'utilisateur prime sur le préremplissage du lien. Le
+        // formulaire regroupe par conception prime_bilan, prime_rendement et
+        // autres_primes dans le seul champ visible autres_primes (somme des
+        // trois), les deux premiers restant des champs cachés à 0 : la prime
+        // saisie est donc réaffichée, montant compris, dans autres_primes.
         $html = $this->get((string) $response->headers->get('Location'))->assertOk()->getContent();
-        $this->assertMatchesRegularExpression('/name="prime_rendement"[^>]*value="4321"/', $html, 'Prime conservée.');
-        $this->assertMatchesRegularExpression('/name="retenues_imposees_ir"[^>]*value="55"/', $html, 'Retenue conservée.');
+        $xpath = $this->dom($html);
+        $this->assertSame(4321.0, (float) $this->valeurChamp($xpath, 'autres_primes'), 'Prime conservée dans le champ des primes imposables.');
+        $this->assertSame('0', $this->valeurChamp($xpath, 'prime_rendement', 'hidden'), 'Pas de double comptage de la prime.');
+        $this->assertSame(55.0, (float) $this->valeurChamp($xpath, 'retenues_imposees_ir'), 'Retenue conservée.');
+    }
+
+    private function dom(string $html): \DOMXPath
+    {
+        $document = new \DOMDocument;
+        $precedent = libxml_use_internal_errors(true);
+        $document->loadHTML('<?xml encoding="UTF-8">'.$html);
+        libxml_clear_errors();
+        libxml_use_internal_errors($precedent);
+
+        return new \DOMXPath($document);
+    }
+
+    /** Valeur de l'unique champ portant ce nom (et ce type, si précisé). */
+    private function valeurChamp(\DOMXPath $xpath, string $nom, ?string $type = null): string
+    {
+        $filtre = $type === null ? '' : '[@type="'.$type.'"]';
+        $champs = $xpath->query('//form[@id="payrollForm"]//input[@name="'.$nom.'"]'.$filtre);
+        $this->assertSame(1, $champs->length, "Un seul champ {$nom}.");
+
+        return $champs->item(0)->getAttribute('value');
     }
 
     // ------------------------------------------------------------------

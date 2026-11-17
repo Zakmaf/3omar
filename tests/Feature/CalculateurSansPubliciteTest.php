@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Services\SimulationCodec;
 use App\Services\SimulationProfileService;
+use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Testing\TestResponse;
@@ -67,7 +68,11 @@ class CalculateurSansPubliciteTest extends TestCase
     {
         parent::setUp();
 
-        $this->withoutMiddleware(ValidateCsrfToken::class);
+        // Hors environnement testing, la protection CSRF s'applique aux POST
+        // simulés. Laravel 13 l'assure par PreventRequestForgery (groupe web) ;
+        // ValidateCsrfToken reste exclu pour les versions antérieures. Seuls
+        // ces tests sont concernés : la production garde sa protection.
+        $this->withoutMiddleware([PreventRequestForgery::class, ValidateCsrfToken::class]);
         $this->codec = app(SimulationCodec::class);
 
         // Production avec publicité activée : seule configuration forcée.

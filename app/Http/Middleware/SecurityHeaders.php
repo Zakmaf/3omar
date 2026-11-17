@@ -8,13 +8,29 @@ use Symfony\Component\HttpFoundation\Response;
 
 class SecurityHeaders
 {
+    /** Politique de référent des pages éditoriales. */
+    public const REFERRER_POLICY = 'strict-origin-when-cross-origin';
+
+    /**
+     * Politique de référent des routes calculator.* (#283). Elles portent des
+     * montants de salaire dans l'URL (?s=, ?a=, ?b=, payload non chiffré) :
+     * strict-origin-when-cross-origin transmettrait l'URL complète à la page
+     * suivante de la même origine, qui peut charger une régie publicitaire.
+     * strict-origin n'est pas retenu : sans référent, url()->previous() (retour
+     * de langue, erreur de validation) se replie sur _previous.url de la
+     * session, qui garde l'URL complète ; avec l'origine seule, il renverrait
+     * à l'accueil.
+     */
+    public const REFERRER_POLICY_CALCULATEUR = 'no-referrer';
+
     public function handle(Request $request, Closure $next): Response
     {
         $response = $next($request);
 
         $response->headers->set('X-Content-Type-Options', 'nosniff');
         $response->headers->set('X-Frame-Options', 'DENY');
-        $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
+        $referent = $request->routeIs('calculator.*') ? self::REFERRER_POLICY_CALCULATEUR : self::REFERRER_POLICY;
+        $response->headers->set('Referrer-Policy', $referent);
 
         if ($request->isSecure()) {
             $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');

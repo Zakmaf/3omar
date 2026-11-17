@@ -335,6 +335,31 @@
         </p>
     </div>
 
+    {{-- Gain fiscal 2027 face à 2026 pour cette même saisie (#283), présenté comme projet --}}
+    {{-- Refus certain (net cible 2027, net cible non atteint) : aucun lien vers la
+         page de gain, une notice et un retour au formulaire prérempli. --}}
+    @if (! empty($share_payload))
+    @if (! empty($gain2027_refus))
+    <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-2 rounded-3 px-3 py-2 mb-4 no-print" role="note" data-gain2027-refus style="background:var(--paper);border:1px solid var(--hairline)">
+        <p class="small mb-0 result-muted flex-grow-1" style="max-width:65ch">
+            <i class="bi bi-info-circle me-1" style="color:var(--g-600)" aria-hidden="true"></i>{{ __($gain2027_refus) }}
+        </p>
+        <a href="{{ route('calculator.index', ['s' => $share_payload]) }}" class="btn btn-sm fw-semibold flex-shrink-0" style="border:1px solid var(--g-500);color:var(--g-600)">
+            {{ __('ui.result.action_simulate_again') }}
+        </a>
+    </div>
+    @else
+    <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-2 rounded-3 px-3 py-2 mb-4 no-print" style="background:var(--paper);border:1px solid var(--hairline)">
+        <p class="small mb-0 result-muted flex-grow-1" style="max-width:65ch">
+            <i class="bi bi-graph-up-arrow me-1" style="color:var(--g-600)" aria-hidden="true"></i>{{ __('ui.gain2027.cta_hint') }}
+        </p>
+        <a href="{{ route('calculator.gain2027', ['s' => $share_payload]) }}" class="btn btn-sm fw-semibold flex-shrink-0" data-gain2027-cta style="border:1px solid var(--g-500);color:var(--g-600)">
+            {{ __('ui.gain2027.cta') }}
+        </a>
+    </div>
+    @endif
+    @endif
+
     {{-- 1. Montants clés --}}
     <section class="result-section" data-result-section="synthese" aria-labelledby="result-summary-title">
         @if(($r['mode'] ?? 'gross_to_net') === 'net_to_gross')
