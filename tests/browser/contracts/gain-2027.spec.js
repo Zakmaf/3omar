@@ -77,15 +77,36 @@ async function assertNoOverflow(page, where) {
     expect(overflow.overflow, `${where} : debordement horizontal de ${overflow.overflow}px`).toBeLessThanOrEqual(1);
 }
 
-/** Axe sur toute la page, aucune regle desactivee. */
+/**
+ * Axe sur toute la page, aucune regle desactivee.
+ *
+ * L'audit tourne dans une page dediee du MEME contexte (meme session donc meme
+ * locale, meme viewport, meme mouvement reduit), chargee par la vraie URL
+ * courante (payload synthetique partageable). Raison : axe precharge le CSSOM
+ * des feuilles cross-origin (fonts.googleapis.com), ce que la CSP
+ * connect-src 'self' bloque en emettant une erreur console. Cet effet de bord
+ * appartient a l'outil d'audit, pas a l'application : il reste confine a la
+ * page d'audit, fermee dans tous les cas, et la page fonctionnelle garde son
+ * observation console / pageerror integrale, sans filtrage.
+ */
 async function assertAxePage(page, where) {
-    const results = await new AxeBuilder({ page })
-        .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
-        .analyze();
-    const blocking = results.violations
-        .filter((v) => BLOCKING_IMPACTS.includes(v.impact))
-        .map((v) => ({ id: v.id, impact: v.impact, nodes: v.nodes.slice(0, 5).map((n) => n.target.join(' ')) }));
-    expect(blocking, `${where} : violations bloquantes\n${JSON.stringify(blocking, null, 2)}`).toEqual([]);
+    const url = page.url();
+    const audit = await page.context().newPage();
+    try {
+        await audit.goto(url, { waitUntil: 'domcontentloaded' });
+        expect(audit.url(), `${where} : audit sur la meme URL`).toBe(url);
+        await audit.locator('[data-gain2027-page]').waitFor({ state: 'visible' });
+        await stabilize(audit);
+        const results = await new AxeBuilder({ page: audit })
+            .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
+            .analyze();
+        const blocking = results.violations
+            .filter((v) => BLOCKING_IMPACTS.includes(v.impact))
+            .map((v) => ({ id: v.id, impact: v.impact, nodes: v.nodes.slice(0, 5).map((n) => n.target.join(' ')) }));
+        expect(blocking, `${where} : violations bloquantes\n${JSON.stringify(blocking, null, 2)}`).toEqual([]);
+    } finally {
+        await audit.close();
+    }
 }
 
 /** Resultat du moteur via la route publique, pour un exercice donne. */
