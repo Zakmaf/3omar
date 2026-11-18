@@ -470,11 +470,13 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="nav">
-            @php($currentLocale = app()->getLocale())
-            @php($supportedLocales = config('app.supported_locales'))
             {{-- Cible de retour du changement de langue, propre à cette page (#295) :
-                 explicite pour une page obtenue par POST, sinon la page GET courante. --}}
+                 explicite pour une page obtenue par POST, sinon la page GET courante.
+                 Un seul bloc : un bloc précédé d'une directive en ligne serait
+                 capturé depuis celle-ci par le compilateur Blade. --}}
             @php
+                $currentLocale = app()->getLocale();
+                $supportedLocales = config('app.supported_locales');
                 $cibleLangue = isset($retour_langue) && is_string($retour_langue)
                     ? $retour_langue
                     : app(\App\Services\RetourNavigation::class)->pageCourante(request());

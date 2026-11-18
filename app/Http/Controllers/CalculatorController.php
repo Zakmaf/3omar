@@ -12,6 +12,7 @@ use App\Services\SimulationComparator;
 use App\Services\SimulationProfileService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class CalculatorController extends Controller
 {
@@ -123,8 +124,10 @@ class CalculatorController extends Controller
             PayrollValidation::webMessages(),
         );
 
+        // Négociation standard du framework : 422 JSON pour un client JSON ou
+        // XHR, sinon redirection vers la cible revalidée de l'onglet.
         if ($validator->fails()) {
-            return redirect()->to($retour)->withInput()->withErrors($validator);
+            throw (new ValidationException($validator))->redirectTo($retour);
         }
 
         $input = $request->only(PayrollValidation::webFields());

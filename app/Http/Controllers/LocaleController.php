@@ -23,17 +23,44 @@ class LocaleController extends Controller
             );
         }
 
-        // Lien historique sans cible (/lang/xx) : retour précédent du même
-        // hôte, hors boucle de langue, sinon l'accueil.
-        $target = url()->previous(route('home'));
-        $targetHost = parse_url($target, PHP_URL_HOST);
-        $currentHost = $request->getHost();
-        $targetPath = parse_url($target, PHP_URL_PATH) ?: '/';
+        // Lien historique sans cible (/lang/xx) : page précédente (référent,
+        // sinon session), retenue seulement si elle est de même origine, puis
+        // réduite à son chemin et revalidée comme une cible explicite. Sinon
+        // l'accueil.
+        $chemin = $this->cheminDeMemeOrigine(url()->previous(route('home')), $request);
 
-        if ($targetHost !== $currentHost || str_starts_with($targetPath, '/lang/')) {
-            $target = route('home');
+        return redirect()->to(
+            ($chemin !== null ? $navigation->cibleLangue($chemin) : null) ?? route('home'),
+        );
+    }
+
+    /**
+     * Chemin et requête d'une URL de même origine que la requête (schéma
+     * http(s), hôte et port, ports par défaut 80 et 443), sans identifiants.
+     * Null pour toute autre URL.
+     */
+    private function cheminDeMemeOrigine(string $url, Request $request): ?string
+    {
+        $parties = parse_url($url);
+
+        if ($parties === false || isset($parties['user']) || isset($parties['pass'])) {
+            return null;
         }
 
-        return redirect()->to($target);
+        $schema = strtolower($parties['scheme'] ?? '');
+
+        if (! in_array($schema, ['http', 'https'], true)) {
+            return null;
+        }
+
+        $port = $parties['port'] ?? ($schema === 'https' ? 443 : 80);
+
+        if ($schema !== $request->getScheme()
+            || strtolower($parties['host'] ?? '') !== strtolower($request->getHost())
+            || $port !== (int) $request->getPort()) {
+            return null;
+        }
+
+        return ($parties['path'] ?? '/').(isset($parties['query']) ? '?'.$parties['query'] : '');
     }
 }
