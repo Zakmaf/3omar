@@ -172,11 +172,20 @@ class RetourNavigation
         return $valeur;
     }
 
-    /** Chemin et requête d'un référent du même hôte, null sinon. */
+    /**
+     * Chemin et requête d'un référent du même hôte, null sinon. Un référent
+     * déjà relatif (chemin commençant par « / », admis par le framework) est
+     * rendu tel quel : resoudre() le revalide entièrement (« // », antislash,
+     * contrôles, encodages, schéma, identifiants, route permise).
+     */
     private function cheminDuReferent(?string $referent, string $hote): ?string
     {
         if ($referent === null || $referent === '') {
             return null;
+        }
+
+        if (str_starts_with($referent, '/')) {
+            return $referent;
         }
 
         $parties = parse_url($referent);
