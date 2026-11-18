@@ -171,8 +171,9 @@ jobs:
             fi
           done
 
-          # Referrer-Policy (#283) : les routes calculator.* portent des montants
-          # (?s=, ?a=, ?b=) ; aucune ne doit transmettre de référent, y compris
+          # Referrer-Policy (#283, #295) : les routes calculator.* portent des
+          # montants (?s=, ?a=, ?b=) et le changement de langue les reçoit dans sa
+          # cible (?retour=) ; aucune ne doit transmettre de référent, y compris
           # sur une redirection. Les autres réponses (éditorial, API, statiques)
           # gardent strict-origin-when-cross-origin. Un seul en-tête chaque fois,
           # tel que servi par Nginx dans l'image release.
@@ -204,6 +205,31 @@ jobs:
           verifier_referent '/documentation' 200 strict-origin-when-cross-origin
           verifier_referent '/api/v1/health' 200 strict-origin-when-cross-origin
           verifier_referent '/img/app_icon_32.png' 200 strict-origin-when-cross-origin
+          verifier_referent '/lang/fr' 302 no-referrer
+          verifier_referent '/lang/en?retour=%2Fcalculateur%3Fs%3Dabc' 302 no-referrer
+          verifier_referent '/lang/xx?retour=%2Fcalculateur' 404 no-referrer
+
+          # Cible de retour du changement de langue (#295) : reconstruite par
+          # l'application, jamais renvoyée telle quelle ; refusée, accueil.
+          # Valeurs synthétiques (abc, x=1, evil.example), aucune donnée de paie.
+          # L'URL de l'accueil peut être servie avec ou sans barre finale.
+          verifier_location() {
+            cible="$1"; attendu="$2"
+            curl -sS -o /dev/null -D /tmp/entetes --max-time 10 "http://127.0.0.1:8080${cible}"
+            tr -d '\r' < /tmp/entetes > /tmp/entetes-lf
+            echo "== ${cible}"
+            grep -i '^location:' /tmp/entetes-lf || true
+            n=$(grep -c -i '^location:' /tmp/entetes-lf || true)
+            if [ "$n" != "1" ] || ! grep -q -i -E "^location: ${attendu}$" /tmp/entetes-lf; then
+              echo "::error::${cible} : Location inattendue"
+              echoue=1
+            fi
+          }
+          verifier_location '/lang/en?retour=%2Fcalculateur%3Fs%3Dabc%26x%3D1' 'http://127\.0\.0\.1:8080/calculateur\?s=abc'
+          verifier_location '/lang/en?retour=%2F%2Fevil.example%2Fpiege' 'http://127\.0\.0\.1:8080/?'
+          verifier_location '/lang/en?retour=https%3A%2F%2Fevil.example%2Fpiege' 'http://127\.0\.0\.1:8080/?'
+          verifier_location '/lang/en?retour=%2F%5Cevil.example%2Fpiege' 'http://127\.0\.0\.1:8080/?'
+          verifier_location '/lang/en?retour=%2Flang%2Ffr' 'http://127\.0\.0\.1:8080/?'
           exit $echoue
 
       # Le pair vu par Nginx est la passerelle du réseau Docker (172.16.0.0/12),

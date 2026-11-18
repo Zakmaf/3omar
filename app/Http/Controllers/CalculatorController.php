@@ -6,10 +6,13 @@ use App\Http\Requests\PayrollValidation;
 use App\Services\ExercicesFiscaux;
 use App\Services\GainFiscal2027;
 use App\Services\PayrollCalculatorService;
+use App\Services\RetourNavigation;
 use App\Services\SimulationCodec;
 use App\Services\SimulationComparator;
 use App\Services\SimulationProfileService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class CalculatorController extends Controller
 {
@@ -20,6 +23,7 @@ class CalculatorController extends Controller
         private SimulationProfileService $profiles,
         private ExercicesFiscaux $exercices,
         private GainFiscal2027 $gain2027,
+        private RetourNavigation $navigation,
     ) {}
 
     public function index(Request $request)
@@ -72,6 +76,8 @@ class CalculatorController extends Controller
             'simulation_restored' => $injected && $restored,
             'share_payload_invalid' => $sBranchTaken && ! $restored,
             'comparison_a' => $comparisonA,
+            // Cible de retour d'une erreur de validation, propre à ce formulaire (#295).
+            'retour_formulaire' => $this->navigation->formulaire($request),
             'exercices' => $this->choixExercices(),
             'exercice_defaut' => $this->exercices->defaut(),
         ]);
@@ -104,10 +110,25 @@ class CalculatorController extends Controller
     {
         $mode = $request->input('mode', 'gross_to_net');
 
-        $request->validate(
+        // Retour d'erreur vers le formulaire d'origine (#295) : sa cible postée,
+        // revalidée, jamais la dernière URL de la session partagée entre onglets.
+        $retour = $this->navigation->retourFormulaire(
+            $request->input(RetourNavigation::PARAMETRE),
+            $request->headers->get('referer'),
+            $request->getHost(),
+        );
+
+        $validator = Validator::make(
+            $request->all(),
             PayrollValidation::webRules($mode),
             PayrollValidation::webMessages(),
         );
+
+        // Négociation standard du framework : 422 JSON pour un client JSON ou
+        // XHR, sinon redirection vers la cible revalidée de l'onglet.
+        if ($validator->fails()) {
+            throw (new ValidationException($validator))->redirectTo($retour);
+        }
 
         $input = $request->only(PayrollValidation::webFields());
 
@@ -116,24 +137,33 @@ class CalculatorController extends Controller
 
         try {
             if ($scenarioA !== null) {
-                return $this->rendreComparaison($scenarioA, $input);
+                // Page obtenue par POST : la langue revient à son URL rejouable.
+                return $this->rendreComparaison($scenarioA, $input)->with('retour_langue', route('calculator.comparer', [
+                    'a' => $this->codec->encode($scenarioA),
+                    'b' => $this->codec->encode($input),
+                ], false));
             }
 
             $result = $this->executer($input, $mode);
         } catch (\InvalidArgumentException $e) {
             return redirect()
-                ->route('calculator.index')
+                ->to($retour)
                 ->withInput()
                 ->withErrors(['calculator' => $e->getMessage()]);
         }
+
+        $sharePayload = $this->codec->encode($input);
 
         return view('calculator.result', [
             'r' => $result,
             'indemnites_config' => config('payroll.indemnites'),
             'hs_labels' => config('payroll.heures_sup.labels'),
-            'share_payload' => $this->codec->encode($input),
+            'share_payload' => $sharePayload,
             // Refus certain de la page de gain 2027 : notice au lieu du lien.
             'gain2027_refus' => $this->gain2027->motifRefus($input, $result),
+            // Page obtenue par POST, non rejouable : la langue recharge le
+            // calculateur avec la saisie, par son lien partagé (#295).
+            'retour_langue' => route('calculator.index', ['s' => $sharePayload], false),
         ]);
     }
 
