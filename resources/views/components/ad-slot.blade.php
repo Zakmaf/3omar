@@ -2,9 +2,9 @@
 
 @php
     $ad = config("ads.placements.{$placement}");
-    $enabled = app()->environment('production')
-        && config('ads.enabled')
-        && config('ads.client')
+    // Même condition que le script du layout (@publicite, AppServiceProvider) :
+    // aucun emplacement sur les routes calculator.*.
+    $enabled = \Illuminate\Support\Facades\Blade::check('publicite')
         && data_get($ad, 'slot');
 @endphp
 

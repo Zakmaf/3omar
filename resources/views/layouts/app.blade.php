@@ -449,11 +449,12 @@
     {{-- Vérification du site par AdSense, indépendante de ADSENSE_ENABLED --}}
     <meta name="google-adsense-account" content="{{ config('ads.client') }}">
     @endif
-    @if (app()->environment('production') && config('ads.enabled') && config('ads.client'))
+    {{-- Condition @publicite (AppServiceProvider) : jamais sur les routes calculator.* --}}
+    @publicite
     <script async
             src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ config('ads.client') }}"
             crossorigin="anonymous"></script>
-    @endif
+    @endpublicite
 </head>
 <body>
 <a class="skip-link" href="#main-content">{{ __('ui.skip') }}</a>
@@ -689,12 +690,12 @@
 </script>
 
 @stack('scripts')
-@if (app()->environment('production') && config('ads.enabled') && config('ads.client'))
+@publicite
 <script>
     document.querySelectorAll('.adsbygoogle').forEach(() => {
         (window.adsbygoogle = window.adsbygoogle || []).push({});
     });
 </script>
-@endif
+@endpublicite
 </body>
 </html>

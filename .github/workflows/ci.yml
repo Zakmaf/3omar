@@ -170,6 +170,40 @@ jobs:
               echoue=1
             fi
           done
+
+          # Referrer-Policy (#283) : les routes calculator.* portent des montants
+          # (?s=, ?a=, ?b=) ; aucune ne doit transmettre de référent, y compris
+          # sur une redirection. Les autres réponses (éditorial, API, statiques)
+          # gardent strict-origin-when-cross-origin. Un seul en-tête chaque fois,
+          # tel que servi par Nginx dans l'image release.
+          verifier_referent() {
+            cible="$1"; statut_attendu="$2"; politique="$3"
+            statut=$(curl -sS -o /dev/null -D /tmp/entetes -w '%{http_code}' --max-time 10 "http://127.0.0.1:8080${cible}")
+            tr -d '\r' < /tmp/entetes > /tmp/entetes-lf
+            echo "== ${cible} : HTTP ${statut}"
+            grep -i '^referrer-policy:' /tmp/entetes-lf || true
+            if [ "$statut" != "$statut_attendu" ]; then
+              echo "::error::${cible} : HTTP ${statut} au lieu de ${statut_attendu}"
+              echoue=1
+            fi
+            n=$(grep -c -i '^referrer-policy:' /tmp/entetes-lf || true)
+            if [ "$n" != "1" ]; then
+              echo "::error::${cible} : Referrer-Policy présent ${n} fois au lieu d'une"
+              echoue=1
+            fi
+            if ! grep -q -i -x "referrer-policy: ${politique}" /tmp/entetes-lf; then
+              echo "::error::${cible} : Referrer-Policy différent de ${politique}"
+              echoue=1
+            fi
+          }
+          verifier_referent '/calculateur' 200 no-referrer
+          verifier_referent '/calculateur?s=invalide' 200 no-referrer
+          verifier_referent '/calculateur/comparer?a=x&b=y' 302 no-referrer
+          verifier_referent '/calculateur/gain-2027?s=invalide' 302 no-referrer
+          verifier_referent '/' 200 strict-origin-when-cross-origin
+          verifier_referent '/documentation' 200 strict-origin-when-cross-origin
+          verifier_referent '/api/v1/health' 200 strict-origin-when-cross-origin
+          verifier_referent '/img/app_icon_32.png' 200 strict-origin-when-cross-origin
           exit $echoue
 
       # Le pair vu par Nginx est la passerelle du réseau Docker (172.16.0.0/12),

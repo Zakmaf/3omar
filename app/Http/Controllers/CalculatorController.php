@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\PayrollValidation;
 use App\Services\ExercicesFiscaux;
+use App\Services\GainFiscal2027;
 use App\Services\PayrollCalculatorService;
 use App\Services\SimulationCodec;
 use App\Services\SimulationComparator;
@@ -18,6 +19,7 @@ class CalculatorController extends Controller
         private SimulationComparator $comparator,
         private SimulationProfileService $profiles,
         private ExercicesFiscaux $exercices,
+        private GainFiscal2027 $gain2027,
     ) {}
 
     public function index(Request $request)
@@ -130,6 +132,8 @@ class CalculatorController extends Controller
             'indemnites_config' => config('payroll.indemnites'),
             'hs_labels' => config('payroll.heures_sup.labels'),
             'share_payload' => $this->codec->encode($input),
+            // Refus certain de la page de gain 2027 : notice au lieu du lien.
+            'gain2027_refus' => $this->gain2027->motifRefus($input, $result),
         ]);
     }
 
@@ -155,6 +159,44 @@ class CalculatorController extends Controller
                 ->route('calculator.index')
                 ->withErrors(['calculator' => $e->getMessage()]);
         }
+    }
+
+    /**
+     * Gain de salaire net en janvier 2027 face à 2026 (issue #283) pour la
+     * saisie portée par l'URL : rejouable et partageable, sans stockage serveur.
+     * Le payload est revalidé par le codec ; tout refus revient au calculateur
+     * avec un message explicite, jamais un calcul de repli.
+     */
+    public function gain2027(Request $request)
+    {
+        $saisie = $this->codec->decode($this->stringQuery($request, 's'));
+
+        if ($saisie === null) {
+            return redirect()
+                ->route('calculator.index')
+                ->with('calculator_notice', 'ui.calculator.gain2027_invalid_notice');
+        }
+
+        // Refus d'une saisie valide : retour au formulaire prérempli avec cette
+        // même saisie (?s=), pour la corriger sans la ressaisir.
+        $retour = route('calculator.index', ['s' => $this->codec->encode($saisie)]);
+
+        if ($this->gain2027->sourceNetRefusee($saisie)) {
+            return redirect($retour)
+                ->with('calculator_notice', GainFiscal2027::REFUS_NET_SOURCE_2027);
+        }
+
+        try {
+            $gain = $this->gain2027->comparer($saisie);
+        } catch (\InvalidArgumentException $e) {
+            return redirect($retour)
+                ->withErrors(['calculator' => $e->getMessage()]);
+        }
+
+        return view('calculator.gain2027', [
+            'gain' => $gain,
+            'share_payload' => $this->codec->encode($saisie),
+        ]);
     }
 
     private function rendreComparaison(array $scenarioA, array $scenarioB)

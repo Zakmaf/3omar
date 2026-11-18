@@ -18,6 +18,7 @@ Version en ligne : [3omar.ma](https://3omar.ma)
 - **Parcours guidé** : saisie par étapes avec récapitulatif en temps réel.
 - **Profils prêts à l'emploi** : profils pédagogiques chargeables en un clic, puis librement modifiables.
 - **Comparaison de scénarios** : deux simulations côte à côte, avec écarts absolus et relatifs sur le net, l'IR, les cotisations et le coût employeur.
+- **Gain fiscal d'un projet de loi de finances** : la même simulation recalculée selon les règles en vigueur et selon l'exercice en projet, à brut constant, avec l'écart sur le net et sa décomposition entre barème et frais professionnels, présentée comme estimation tant que le texte n'est pas adopté.
 - **Partage par lien** : une simulation ou une comparaison se retrouve et se transmet via son URL, sans stockage serveur.
 - **Fiabilité** : la page `/fiabilite` documente chaque règle avec sa source et son niveau de confiance.
 - **Guides thématiques** : salaire net, coût employeur, CNSS et AMO, prime d'ancienneté, chacun illustré par un exemple calculé et un lien vers le simulateur prérempli.
