@@ -40,6 +40,41 @@ docker run -d \
 docker pull ghcr.io/zakmaf/3omar:v3.6.1
 ```
 
+### Tags publiés par mode de release
+
+Le workflow `docker-release.yml` se déclenche uniquement sur une release GitHub publiée ; il n'a pas de déclenchement manuel (`workflow_dispatch`). Il refuse tout couple tag / type de release hors des deux modes suivants, avant de construire quoi que ce soit.
+
+| Mode | Tag de release | Tags OCI publiés (même digest) | Tags OCI inchangés |
+|------|----------------|--------------------------------|--------------------|
+| Stable | `vX.Y.Z`, release non marquée pré-release | `vX.Y.Z`, `vX.Y`, `vX`, `latest` | `dev`, `X.Y.Z` (sans `v`) |
+| Pré-release | `vX.Y.Z-dev.N`, release marquée pré-release | `vX.Y.Z-dev.N`, `dev` | `latest`, `vX`, `vX.Y`, `X.Y.Z-dev.N` (sans `v`) |
+
+Un tag « inchangé » garde le digest qu'il avait avant la publication ; s'il n'existait pas, il doit toujours ne pas exister. Les formes sans `v` ne sont jamais publiées : `3.7.0-dev.1`, émis par erreur par la publication de `v3.7.0-dev.1`, est le défaut corrigé par #288.
+
+Deux contrôles automatiques, sans publication :
+
+- le job CI `Tags image release` rejoue, sur chaque PR, la vraie `docker/metadata-action` avec la configuration lue dans `docker-release.yml`, pour une stable et deux pré-releases, et exige exactement les tags du tableau ;
+- le job CI `Vérification post-publication des tags` exerce `.github/scripts/verifier-tags-image.sh` contre des registres locaux jetables : publications conformes et fautives des deux modes, chacune avec son code de sortie exact (0 conforme, 1 non conforme, 2 lecture impossible) ; vraie connexion refusée et vrai refus d'authentification, qui doivent sortir en 2 sans déclarer aucun tag absent ; enfin la chaîne réelle `docker/build-push-action` (mêmes versions que la publication, attestation de provenance par défaut) poussée vers le registre local et vérifiée avec le digest que l'action renvoie.
+
+À chaque publication réelle, `docker-release.yml` appelle le même script : avant le push, il relève le digest des tags à préserver ; après le push, il relit `ghcr.io/zakmaf/3omar` et échoue si un tag publié manque ou ne porte pas le digest poussé, ou si un tag à préserver a changé (apparition comprise). Le résumé du run liste chaque tag, son digest et le verdict. Un registre illisible (authentification, réseau) fait échouer le script avec le code 2 et le message « Lecture du registre impossible » : il n'est jamais pris pour un tag absent. Un échec de la capture, avant le push, arrête le workflow sans rien publier. Un échec de la vérification survient après le push : l'image est publiée, l'écart de tags est à corriger par le propriétaire.
+
+Vérification manuelle équivalente, après une pré-release :
+
+```bash
+for t in v3.7.0-dev.1 dev latest v3 v3.7; do
+  printf '%s ' "$t"; docker buildx imagetools inspect "ghcr.io/zakmaf/3omar:$t" --format '{{json .Manifest}}' | jq -r .digest
+done
+```
+
+### Tag OCI et APP_VERSION
+
+Ce sont deux contrats distincts :
+
+- **Tag OCI** : nom sous lequel le registre expose une image. Plusieurs tags désignent le même digest, et les tags mobiles (`latest`, `vX`, `vX.Y`, `dev`) changent de digest au fil des releases. Seul le digest identifie une image.
+- **`APP_VERSION`** : paramètre applicatif, la version que l'application annonce (pied de page, `version` de `/api/v1/health`). Le workflow la fixe au build à partir du nom du tag de release (`APP_VERSION=vX.Y.Z` ou `vX.Y.Z-dev.N`) ; hors release, la valeur par défaut de `config/app.php` s'applique, et une variable `APP_VERSION` passée au démarrage du conteneur la remplace.
+
+L'une ne prouve pas l'autre : une image tirée par `latest` ou `dev` annonce la version avec laquelle elle a été construite, pas le nom du tag utilisé, et `APP_VERSION` peut être surchargée à l'exécution. Pour savoir quelle image tourne, comparer le digest du conteneur à celui du tag dans le registre ; `/api/v1/health` indique seulement la version déclarée.
+
 ## Reverse proxy (Traefik, Nginx…)
 
 Le conteneur écoute sur le port **80**. Passer `APP_URL` avec le schéma `https://`.
