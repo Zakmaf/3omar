@@ -20,13 +20,15 @@ use Tests\TestCase;
  * payload dans document.referrer. Contrat :
  * - toute réponse d'une route calculator.* (page, résultat, redirection)
  *   porte exactement un en-tête Referrer-Policy: no-referrer ;
+ * - le changement de langue (/lang/...) aussi (#295) : le lien d'une page du
+ *   calculateur porte l'URL de cette page dans sa cible de retour ;
  * - les autres réponses gardent strict-origin-when-cross-origin (pages
- *   éditoriales, changement de langue, API) ;
- * - sans référent, le retour de langue et le retour après une erreur de
- *   validation passent par la session (_previous.url, URL complète des GET) :
- *   ils reviennent toujours à l'URL partagée ou au formulaire, sans perte de
- *   saisie. strict-origin serait refusé : url()->previous() se replierait sur
- *   l'origine seule.
+ *   éditoriales, API) ;
+ * - sans référent, le retour après une erreur de validation suit la cible
+ *   postée par le formulaire (champ caché, #295) et le retour d'un lien de
+ *   langue historique sans cible passe encore par la session : ils
+ *   reviennent à l'URL partagée ou au formulaire, sans perte de saisie. Les
+ *   retours entre plusieurs onglets sont couverts par RetourMultiOngletsTest.
  *
  * Les requêtes de test n'envoient aucun en-tête Referer (ni from()) : c'est la
  * situation d'un navigateur sous no-referrer.
@@ -187,7 +189,6 @@ class CalculateurReferentTest extends TestCase
             'documentation api' => ['/api-documentation', 200],
             'fiabilite' => ['/fiabilite', 200],
             'guide salaire net' => ['/calcul-salaire-net-maroc', 200],
-            'changement de langue' => ['/lang/en', 302],
         ];
     }
 
@@ -195,9 +196,38 @@ class CalculateurReferentTest extends TestCase
     public function test_les_pages_hors_calculateur_gardent_leur_politique(string $uri, int $statut): void
     {
         $response = $this->get($uri)->assertStatus($statut);
-        $this->assertFalse(request()->routeIs('calculator.*'), "Prémisse : {$uri} hors calculateur.");
+        $this->assertFalse(request()->routeIs('calculator.*', 'locale.update'), "Prémisse : {$uri} hors calculateur et hors langue.");
 
         $this->assertPolitique($response, 'strict-origin-when-cross-origin', $uri);
+    }
+
+    /**
+     * @return array<string, array{string, int}>
+     */
+    public static function changementsDeLangue(): array
+    {
+        return [
+            'lien historique sans cible' => ['/lang/en', 302],
+            'lien avec cible du calculateur' => ['/lang/ar?retour={cible}', 302],
+            'cible refusée' => ['/lang/es?retour=%2F%2Fevil.example', 302],
+            'langue inconnue' => ['/lang/xx?retour={cible}', 404],
+        ];
+    }
+
+    /**
+     * Le lien de langue d'une page du calculateur porte l'URL de cette page,
+     * payload compris, dans sa cible (#295) : la réponse du changement de
+     * langue ne transmet donc aucun référent, quelle que soit la cible.
+     */
+    #[DataProvider('changementsDeLangue')]
+    public function test_le_changement_de_langue_ne_transmet_aucun_referent(string $uri, int $statut): void
+    {
+        $uri = str_replace('{cible}', rawurlencode('/calculateur?s='.$this->payload(self::SAISIE_A)), $uri);
+
+        $response = $this->get($uri)->assertStatus($statut);
+        $this->assertTrue(request()->routeIs('locale.update'), 'Prémisse : route locale.update.');
+
+        $this->assertPolitique($response, 'no-referrer', $uri);
     }
 
     // ------------------------------------------------------------------
@@ -273,11 +303,13 @@ class CalculateurReferentTest extends TestCase
     public function test_une_erreur_de_validation_sans_referent_revient_au_formulaire_sans_perte(string $depart): void
     {
         $url = $depart === 'restaure' ? $this->urlPartagee('restaure') : $depart;
-        $this->get($url)->assertOk();
+        $formulaire = $this->get($url)->assertOk()->getContent();
 
         // Saisie invalide (salaire de base manquant) avec d'autres montants,
-        // envoyés comme un formulaire HTML (chaînes), sans en-tête Referer.
+        // envoyés comme un formulaire HTML (chaînes), sans en-tête Referer,
+        // avec la cible de retour rendue par le formulaire (#295).
         $response = $this->post('/calculateur/calculer', [
+            'retour' => $this->valeurChamp($this->dom($formulaire), 'retour', 'hidden'),
             'mode' => 'gross_to_net',
             'type_frais_pro' => 'commun',
             'prime_rendement' => '4321',

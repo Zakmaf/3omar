@@ -21,10 +21,13 @@ const { LOCALE_DIRECTION, openResultPage, stabilize } = require('../helpers/simu
  *
  * Chaque retour doit rester dans A : meme formulaire (erreurs, saisie et
  * scenario de comparaison conserves) ou meme simulation dans la nouvelle
- * langue, jamais la page de B. L'absence de referent est prouvee sur les
- * requetes de navigation interceptees (en-tetes reellement envoyes) et par
- * document.referrer. Les erreurs console et pageerror des deux onglets sont
- * surveillees sans filtrage.
+ * langue, jamais la page de B. La page A transmet sa cible (champ cache
+ * retour du formulaire, parametre retour des liens de langue, #295). La
+ * chaine reellement suivie est verifiee : un saut en 302 sous no-referrer
+ * (POST du formulaire ou /lang/...), puis le document en GET. L'absence de
+ * referent est prouvee sur les requetes de navigation interceptees (en-tetes
+ * reellement envoyes) et par document.referrer. Les erreurs console et
+ * pageerror des deux onglets sont surveillees sans filtrage.
  *
  * Donnees : fixture entierement synthetique de tests/browser/helpers/simulation.js.
  *
@@ -100,6 +103,35 @@ async function assertSansReferent(page, requetes, where) {
         ).toBeUndefined();
     }
     expect(await page.evaluate(() => document.referrer), `${where} : document.referrer vide`).toBe('');
+}
+
+/**
+ * Chaine de redirection reellement suivie par le navigateur : exactement un
+ * saut (POST du formulaire ou lien de langue) en 302 sous no-referrer, puis le
+ * document d'arrivee, redirige depuis ce saut.
+ */
+async function assertChaine(requetes, attendu, where) {
+    expect(requetes.length, `${where} : un saut puis le document`).toBe(2);
+    const [saut, document] = requetes;
+    expect(saut.method(), `${where} : methode du saut`).toBe(attendu.methode);
+    expect(new URL(saut.url()).pathname, `${where} : chemin du saut`).toMatch(attendu.chemin);
+
+    const reponseSaut = await saut.response();
+    expect(reponseSaut, `${where} : reponse du saut`).toBeTruthy();
+    expect(reponseSaut.status(), `${where} : redirection`).toBe(302);
+    expect(await reponseSaut.headerValue('referrer-policy'), `${where} : saut sous no-referrer`).toBe('no-referrer');
+    expect(document.redirectedFrom()?.url(), `${where} : document redirige depuis le saut`).toBe(saut.url());
+    expect(document.method(), `${where} : document en GET rejouable`).toBe('GET');
+}
+
+/** Cible de retour portee par un lien de langue, relative au site. */
+async function cibleDuLien(lien) {
+    const href = await lien.getAttribute('href');
+    expect(href, 'lien de langue').toBeTruthy();
+    const cible = new URL(String(href), 'http://localhost').searchParams.get('retour');
+    expect(cible, 'le lien porte la cible de sa page').toBeTruthy();
+    expect(String(cible).startsWith('/') && !String(cible).startsWith('//'), 'cible relative interne').toBe(true);
+    return String(cible);
 }
 
 /** Politique de referent servie avec le document d'arrivee. */
@@ -184,6 +216,9 @@ for (const cell of CELLS) {
             expect(scenarioA, 'scenario A dans l\'URL').toBeTruthy();
             await expect(page.locator('#payrollForm input[type="hidden"][name="comparer_a"]')).toHaveValue(String(scenarioA));
             await expect(page.locator('#salaire_base')).toHaveValue(SALAIRE_FIXTURE);
+            const champRetour = page.locator('#payrollForm input[type="hidden"][name="retour"]');
+            await expect(champRetour, 'cible de retour du formulaire').toHaveCount(1);
+            expect(cheminEtRequete(await champRetour.inputValue()), 'cible du formulaire : la page de A').toEqual(cheminEtRequete(depart));
 
             // Saisie : jours travailles hors bornes serveur (max HTML contourne
             // par noValidate), primes imposables modifiees.
@@ -219,6 +254,7 @@ for (const cell of CELLS) {
             await expect(page.locator('#payrollForm input[type="hidden"][name="comparer_a"]'), 'scenario A conserve').toHaveValue(String(scenarioA));
             await assertLangue(page, cell.locale, 'retour de validation');
 
+            await assertChaine(requetes, { methode: 'POST', chemin: /^\/calculateur\/calculer$/ }, 'retour de validation');
             await assertSansReferent(page, requetes, 'retour de validation');
             await assertPolitiqueArrivee(requetes, 'no-referrer', 'retour de validation');
             expect(new URL(pageB.url()).pathname, 'onglet B inchange').toBe('/documentation');
@@ -240,11 +276,15 @@ for (const cell of CELLS) {
 
             const pageB = await consulterDansOngletB(context, page, erreurs);
 
+            const lien = await lienDeLangue(page, cell, cell.cible);
+            expect(cheminEtRequete(await cibleDuLien(lien)), 'cible du lien : la page de A').toEqual(cheminEtRequete(depart));
+
             const requetes = journalNavigations(page);
-            await cliquerEtAttendreDocument(page, await lienDeLangue(page, cell, cell.cible));
+            await cliquerEtAttendreDocument(page, lien);
             await capture(page, cell, '03-onglet-a-retour-langue');
 
             expect(cheminEtRequete(page.url()), 'retour a la simulation de A, jamais a la page de B').toEqual(cheminEtRequete(depart));
+            await assertChaine(requetes, { methode: 'GET', chemin: new RegExp(`^/lang/${cell.cible}$`) }, 'retour de langue');
             await assertLangue(page, cell.cible, 'retour de langue');
             await expect(page.locator('#salaire_base'), 'simulation rechargee').toHaveValue(SALAIRE_FIXTURE);
 
@@ -265,8 +305,14 @@ for (const cell of CELLS) {
 
             const pageB = await consulterDansOngletB(context, page, erreurs);
 
+            const lien = await lienDeLangue(page, cell, cell.cible);
+            const cible = new URL(await cibleDuLien(lien), 'http://localhost');
+            expect(cible.pathname, 'cible du lien : le calculateur, jamais le resultat POST').toBe('/calculateur');
+            expect(cible.searchParams.get('s'), 'cible du lien : la saisie partagee').toBeTruthy();
+
             const requetes = journalNavigations(page);
-            await cliquerEtAttendreDocument(page, await lienDeLangue(page, cell, cell.cible));
+            await cliquerEtAttendreDocument(page, lien);
+            await assertChaine(requetes, { methode: 'GET', chemin: new RegExp(`^/lang/${cell.cible}$`) }, 'langue depuis le resultat');
 
             const arrivee = new URL(page.url());
             expect(arrivee.pathname, 'calculateur rejouable, ni le resultat POST ni la page de B').toBe('/calculateur');

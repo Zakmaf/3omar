@@ -100,14 +100,21 @@ class SecurityHeadersTest extends TestCase
             $this->get('/calculateur/comparer?a=x&b=y')->assertRedirect()->headers->all('referrer-policy'),
             'Redirection du calculateur.',
         );
+
+        // Changement de langue (#295) : sa cible peut porter l'URL d'une page du
+        // calculateur. En-têtes effectifs, avec ou sans cible.
+        foreach (['/lang/fr', '/lang/en?retour=%2Fcalculateur%3Fs%3Dabc'] as $path) {
+            $this->assertSame([SecurityHeaders::REFERRER_POLICY_CALCULATEUR], $this->get($path)->assertRedirect()->headers->all('referrer-policy'), $path);
+        }
     }
 
     /**
      * Dans l'image de production, Nginx pose seul Referrer-Policy (#185), avec
-     * la même différenciation que le middleware (#283) : une map sur
+     * la même différenciation que le middleware (#283, #295) : une map sur
      * $request_uri (URI d'origine, non réécrite par try_files) donne
-     * no-referrer aux chemins /calculateur, sinon la valeur PHP reprise de
-     * l'amont, sinon la valeur éditoriale. L'en-tête PHP reste masqué.
+     * no-referrer aux chemins /calculateur et /lang, sinon la valeur PHP
+     * reprise de l'amont, sinon la valeur éditoriale. L'en-tête PHP reste
+     * masqué.
      */
     public function test_release_nginx_differentiates_the_referrer_policy_like_the_middleware(): void
     {
@@ -137,16 +144,19 @@ class SecurityHeadersTest extends TestCase
         $calculateur = [
             '/calculateur', '/calculateur?s=abc', '/calculateur/', '/calculateur/calculer',
             '/calculateur/comparer?a=x&b=y', '/calculateur/gain-2027?s=abc', '//calculateur?s=abc',
+            // Changement de langue (#295), cible comprise.
+            '/lang/fr', '/lang/en?retour=%2Fcalculateur%3Fs%3Dabc', '//lang/ar', '/lang/xx',
         ];
         foreach (Route::getRoutes() as $route) {
-            if (is_string($route->getName()) && str_starts_with($route->getName(), 'calculator.')) {
-                $calculateur[] = '/'.ltrim($route->uri(), '/').'?s=abc';
+            // Noms littéraux : le contrat ne dépend d'aucune constante nouvelle.
+            if (is_string($route->getName()) && $route->named('calculator.*', 'locale.update')) {
+                $calculateur[] = '/'.ltrim(str_replace('{locale}', 'fr', $route->uri()), '/').'?s=abc';
             }
         }
         foreach ($calculateur as $uri) {
             $this->assertSame(1, preg_match($motif, $uri), "{$uri} : no-referrer attendu.");
         }
-        foreach (['/', '/?s=abc', '/documentation', '/fiabilite', '/calculateurs', '/calcul-salaire-net-maroc', '/api/v1/health', '/img/app_icon_32.png', '/lang/fr'] as $uri) {
+        foreach (['/', '/?s=abc', '/documentation', '/documentation?lang=fr', '/fiabilite', '/calculateurs', '/langue', '/language/fr', '/calcul-salaire-net-maroc', '/api/v1/health', '/img/app_icon_32.png'] as $uri) {
             $this->assertSame(0, preg_match($motif, $uri), "{$uri} : politique éditoriale attendue.");
         }
     }
