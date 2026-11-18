@@ -236,6 +236,190 @@ jobs:
         if: always()
         run: docker rm -f 3omar-ci || true
 
+  # Tags OCI de la publication (#288). Rejoue la vraie génération de
+  # docker/metadata-action avec la configuration lue dans docker-release.yml,
+  # pour chaque mode de release, sans rien construire ni pousser. Le tag de
+  # release est simulé par un tag git local sur un commit vide du runner,
+  # jamais poussé (persist-credentials: false).
+  release-tags:
+    name: Tags image release (${{ matrix.cas }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - cas: stable
+            tag: v3.7.0
+            prerelease: 'false'
+            attendus: 'latest v3 v3.7 v3.7.0'
+          - cas: pré-release
+            tag: v3.7.0-dev.1
+            prerelease: 'true'
+            attendus: 'dev v3.7.0-dev.1'
+          - cas: pré-release N à deux chiffres
+            tag: v3.8.0-dev.12
+            prerelease: 'true'
+            attendus: 'dev v3.8.0-dev.12'
+    env:
+      WORKFLOW_RELEASE: .github/workflows/docker-release.yml
+      # Même SHA que l'étape « Métadonnées et tags de l'image » de
+      # docker-release.yml : l'étape d'extraction échoue s'ils divergent.
+      METADATA_ACTION: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302
+      TAG: ${{ matrix.tag }}
+      PRERELEASE: ${{ matrix.prerelease }}
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # Contrat du déclencheur : release publiée seulement, sans
+      # workflow_dispatch ni autre déclencheur. Contrat de version : APP_VERSION
+      # reçoit le nom du tag de release, indépendamment des tags OCI générés.
+      # Les expressions attendues sont écrites "${d}{{" : un dollar suivi de deux
+      # accolades serait évalué par GitHub dans le script lui-même.
+      - name: Vérifier le déclencheur et APP_VERSION de docker-release.yml
+        run: |
+          d='$'
+          echoue=0
+          if ! yq -o=json '.on' "$WORKFLOW_RELEASE" | jq -e 'keys == ["release"] and .release.types == ["published"]' > /dev/null; then
+            echo "::error::${WORKFLOW_RELEASE} doit se déclencher uniquement sur release publiée"
+            echoue=1
+          fi
+          if grep -nE '^[[:space:]]*workflow_dispatch[[:space:]]*:' "$WORKFLOW_RELEASE"; then
+            echo "::error::${WORKFLOW_RELEASE} ne doit pas déclarer workflow_dispatch"
+            echoue=1
+          fi
+          build_args=$(yq -r '.jobs."build-and-push".steps[] | select((.uses // "") | test("^docker/build-push-action@")) | .with."build-args"' "$WORKFLOW_RELEASE")
+          attendu="APP_VERSION=${d}{{github.event.release.tag_name}}"
+          if [ "$(printf '%s' "$build_args" | tr -d '[:space:]')" != "$attendu" ]; then
+            echo "::error::build-args doit être exactement ${attendu} (reçu : ${build_args})"
+            echoue=1
+          fi
+          exit $echoue
+
+      # Remplace seulement les deux expressions de mode connues ; toute autre
+      # expression restante fait échouer le test plutôt que d'être devinée.
+      - name: Extraire la configuration de metadata-action pour ce mode
+        id: config
+        run: |
+          d='$'
+          etape='.jobs."build-and-push".steps[] | select(.id == "meta")'
+          uses=$(yq -r "$etape | .uses" "$WORKFLOW_RELEASE")
+          if [ "$uses" != "$METADATA_ACTION" ]; then
+            echo "::error::metadata-action de ${WORKFLOW_RELEASE} (${uses}) différente de celle du test (${METADATA_ACTION})"
+            exit 1
+          fi
+          if [ "$PRERELEASE" = true ]; then non=false; else non=true; fi
+          substituer() {
+            local texte="$1"
+            texte=${texte//"${d}{{ !github.event.release.prerelease }}"/$non}
+            texte=${texte//"${d}{{ github.event.release.prerelease }}"/$PRERELEASE}
+            printf '%s' "$texte"
+          }
+          tags=$(substituer "$(yq -r "$etape | .with.tags // \"\"" "$WORKFLOW_RELEASE")")
+          flavor=$(substituer "$(yq -r "$etape | .with.flavor // \"\"" "$WORKFLOW_RELEASE")")
+          if printf '%s\n%s\n' "$tags" "$flavor" | grep -F "${d}{{"; then
+            echo "::error::Expression non prise en charge par le test dans tags/flavor de ${WORKFLOW_RELEASE}"
+            exit 1
+          fi
+          printf 'tags (%s) :\n%s\nflavor :\n%s\n' "$TAG" "$tags" "$flavor"
+          {
+            echo 'tags<<FIN_TAGS'
+            printf '%s\n' "$tags"
+            echo 'FIN_TAGS'
+            echo 'flavor<<FIN_FLAVOR'
+            printf '%s\n' "$flavor"
+            echo 'FIN_FLAVOR'
+          } >> "$GITHUB_OUTPUT"
+
+      # HEAD détaché sur un commit vide portant seul le tag : metadata-action
+      # (context: git) lit alors refs/tags/<tag> comme sur une release.
+      - name: Simuler le tag de release (git local, jamais poussé)
+        run: |
+          git checkout --quiet --detach
+          git -c user.name=ci -c user.email=ci@example.invalid commit --quiet --allow-empty -m "release simulée ${TAG}"
+          git tag "$TAG"
+          git show -s --pretty='%D'
+
+      - name: Générer les tags avec docker/metadata-action
+        id: meta
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
+        with:
+          context: git
+          images: ghcr.io/${{ github.repository }}
+          tags: ${{ steps.config.outputs.tags }}
+          flavor: ${{ steps.config.outputs.flavor }}
+
+      - name: Comparer aux tags attendus
+        env:
+          META_JSON: ${{ steps.meta.outputs.json }}
+          ATTENDUS: ${{ matrix.attendus }}
+        run: |
+          printf '%s\n' "$META_JSON" | jq -r '.tags[]'
+          image_attendue="ghcr.io/${GITHUB_REPOSITORY,,}"
+          images=$(printf '%s\n' "$META_JSON" | jq -r '.tags[] | sub(":[^:]*$"; "")' | sort -u)
+          if [ "$images" != "$image_attendue" ]; then
+            echo "::error::Image attendue ${image_attendue}, obtenue : ${images}"
+            exit 1
+          fi
+          obtenus=$(printf '%s\n' "$META_JSON" | jq -r '.tags[] | sub("^.*:"; "")' | sort | xargs)
+          attendus=$(printf '%s\n' $ATTENDUS | sort | xargs)
+          echo "Release ${TAG} (pré-release : ${PRERELEASE})"
+          echo "  attendus : ${attendus}"
+          echo "  obtenus  : ${obtenus}"
+          if [ "$obtenus" != "$attendus" ]; then
+            echo "::error::Tags OCI de ${TAG} (pré-release : ${PRERELEASE}) : attendus « ${attendus} », obtenus « ${obtenus} »"
+            exit 1
+          fi
+
+  # Vérification post-publication (#288) : .github/scripts/verifier-tags-image.sh
+  # contre un registre local jetable, scénarios conformes et fautifs pour les
+  # deux modes. Aucun accès à GHCR.
+  release-tags-verification:
+    name: Vérification post-publication des tags
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      registry:
+        image: registry:3
+        ports:
+          - 5000:5000
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # La capture des alias protégés doit précéder le push, la vérification le
+      # suivre, avec le digest réellement poussé, sans continue-on-error.
+      - name: Vérifier le câblage dans docker-release.yml
+        env:
+          WORKFLOW_RELEASE: .github/workflows/docker-release.yml
+        run: |
+          yq -o=json '.jobs."build-and-push".steps' "$WORKFLOW_RELEASE" > "$RUNNER_TEMP/etapes.json"
+          if ! jq -e '
+            def pos(f): ([to_entries[] | select(.value | f) | .key] | first) // -1;
+            pos((.uses // "") | startswith("docker/build-push-action@")) as $b
+            | pos((.run // "") | contains("verifier-tags-image.sh capturer")) as $c
+            | pos((.run // "") | contains("verifier-tags-image.sh verifier")) as $v
+            | $c >= 0 and $b >= 0 and $v >= 0 and $c < $b and $b < $v
+              and .[$b].id == "build"
+              and (.[$v].env | tostring | contains("steps.build.outputs.digest"))
+              and (.[$c]["continue-on-error"] != true)
+              and (.[$v]["continue-on-error"] != true)
+          ' "$RUNNER_TEMP/etapes.json" > /dev/null; then
+            echo "::error::${WORKFLOW_RELEASE} : attendu capture (verifier-tags-image.sh capturer) avant le build id=build, puis verifier-tags-image.sh verifier après, avec steps.build.outputs.digest et sans continue-on-error"
+            jq -r '.[] | "- " + (.name // "?") + " (id: " + (.id // "-") + ")"' "$RUNNER_TEMP/etapes.json"
+            exit 1
+          fi
+
+      # Exécutés même si le câblage manque : le RED doit montrer les deux constats.
+      - name: Scénarios contre le registre local
+        if: ${{ !cancelled() }}
+        run: bash .github/scripts/test-verifier-tags-image.sh localhost:5000
+
   # Contrats navigateur Playwright + axe (tests/browser/contracts), avec les étapes
   # de docs/DEVELOPPEMENT.md, section "Tests navigateur". Garder l'image Playwright
   # alignée sur tests/browser/run.sh et sur la version de package-lock.json.
@@ -352,7 +536,7 @@ jobs:
   # `needs` : la protection de main n'a jamais a changer (standard Zakmaf/engineering).
   gate:
     name: gate
-    needs: [tests, pint, audit, release-image, browser, style]
+    needs: [tests, pint, audit, release-image, release-tags, release-tags-verification, browser, style]
     if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 2
