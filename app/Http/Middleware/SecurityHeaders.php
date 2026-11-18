@@ -12,16 +12,19 @@ class SecurityHeaders
     public const REFERRER_POLICY = 'strict-origin-when-cross-origin';
 
     /**
-     * Politique de référent des routes calculator.* (#283). Elles portent des
-     * montants de salaire dans l'URL (?s=, ?a=, ?b=, payload non chiffré) :
-     * strict-origin-when-cross-origin transmettrait l'URL complète à la page
-     * suivante de la même origine, qui peut charger une régie publicitaire.
-     * strict-origin n'est pas retenu : sans référent, url()->previous() (retour
-     * de langue, erreur de validation) se replie sur _previous.url de la
-     * session, qui garde l'URL complète ; avec l'origine seule, il renverrait
-     * à l'accueil.
+     * Politique de référent des routes calculator.* (#283) et du changement de
+     * langue (#295). Les premières portent des montants de salaire dans l'URL
+     * (?s=, ?a=, ?b=, payload non chiffré) ; le lien de langue d'une page du
+     * calculateur porte la même URL dans sa cible (?retour=). Une politique
+     * plus large transmettrait l'URL complète à la page suivante de la même
+     * origine, qui peut charger une régie publicitaire. Les retours d'erreur
+     * de validation et de langue ne dépendent pas du référent : la page
+     * d'origine transmet sa cible (RetourNavigation).
      */
     public const REFERRER_POLICY_CALCULATEUR = 'no-referrer';
+
+    /** Routes servies sous REFERRER_POLICY_CALCULATEUR. */
+    public const ROUTES_SANS_REFERENT = ['calculator.*', 'locale.update'];
 
     public function handle(Request $request, Closure $next): Response
     {
@@ -29,7 +32,7 @@ class SecurityHeaders
 
         $response->headers->set('X-Content-Type-Options', 'nosniff');
         $response->headers->set('X-Frame-Options', 'DENY');
-        $referent = $request->routeIs('calculator.*') ? self::REFERRER_POLICY_CALCULATEUR : self::REFERRER_POLICY;
+        $referent = $request->routeIs(...self::ROUTES_SANS_REFERENT) ? self::REFERRER_POLICY_CALCULATEUR : self::REFERRER_POLICY;
         $response->headers->set('Referrer-Policy', $referent);
 
         if ($request->isSecure()) {

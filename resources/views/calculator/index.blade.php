@@ -375,6 +375,8 @@
 
     <form method="POST" action="{{ route('calculator.calculer') }}" id="payrollForm">
         @csrf
+        {{-- Cible de retour d'une erreur de validation, propre à ce formulaire (#295) --}}
+        <input type="hidden" name="{{ \App\Services\RetourNavigation::PARAMETRE }}" value="{{ $retour_formulaire ?? route('calculator.index', [], false) }}">
         @if ($comparison_a)
         <input type="hidden" name="comparer_a" value="{{ $comparison_a }}">
         @endif

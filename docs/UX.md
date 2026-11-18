@@ -50,6 +50,32 @@ Règles de composition :
   `--ink-3` n'est pas utilisé sur cette page.
 - **Mouvement réduit.** Le donut n'est pas animé quand `prefers-reduced-motion` est actif.
 
+## Retours de navigation sans référent (#295)
+
+Les pages du calculateur et le changement de langue sont servis sous
+`Referrer-Policy: no-referrer` (#283) : le navigateur n'indique pas d'où il vient. Les
+retours ne dépendent donc ni du référent ni de la dernière page de la session, que tous
+les onglets partagent. Chaque page transmet elle-même sa cible :
+
+- **Erreur de validation** : le formulaire porte un champ caché `retour` (son adresse :
+  `/calculateur` et ses seuls paramètres `s`, `a`, `profil`). Le serveur revient à ce
+  formulaire, avec les erreurs, la saisie et le scénario A d'une comparaison en cours.
+  Cible absente ou refusée : formulaire vide `/calculateur`.
+- **Changement de langue** : chaque lien du sélecteur porte `retour`, l'adresse de sa
+  page. Une page obtenue par POST n'est pas rejouable : depuis un résultat, la langue
+  recharge le calculateur avec la saisie (`/calculateur?s=...`, le lien partagé) ;
+  depuis une comparaison postée, elle revient à son adresse partageable
+  (`/calculateur/comparer?a=...&b=...`). Cible refusée : accueil. Seul un ancien lien
+  sans `retour` revient encore à la page précédente de la session.
+
+Une cible n'est jamais renvoyée telle quelle : elle doit être un chemin relatif interne
+(ni autre site, ni `//`, ni antislash, ni caractère de contrôle, y compris encodés),
+désigner une page GET rejouable (accueil, calculateur, comparaison, gain 2027, pages
+éditoriales), et l'adresse est reconstruite par le serveur avec les seuls paramètres de
+cette page. Une page éditoriale ne recopie donc jamais de simulation dans ses liens de
+langue. Vérifications : `tests/Feature/RetourMultiOngletsTest.php` et le contrat navigateur
+`retour-multi-onglets` (deux onglets réels, FR desktop et AR mobile RTL).
+
 ## Harnais de vérification navigateur
 
 Les exigences de mise en page et d'accessibilité sont vérifiées par mesure dans un
