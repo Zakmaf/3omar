@@ -102,6 +102,70 @@ class OpenApiContractTest extends TestCase
         $this->assertSame([], $errors, "Ecarts entre openapi.json et PayrollValidation :\n".implode("\n", $errors));
     }
 
+    /**
+     * Nullabilite (#284) : en OpenAPI 3.0.3, une propriete sans `nullable: true`
+     * refuse null, meme facultative. Le schema doit donc declarer `nullable: true`
+     * exactement pour les champs dont la regle Laravel contient `nullable`, au
+     * premier niveau comme dans les membres des tableaux. Facultatif (absent de
+     * `required`) ne vaut pas nullable : les champs obligatoires restent non
+     * nullables.
+     */
+    public function test_input_schemas_match_validation_nullability(): void
+    {
+        $spec = $this->spec();
+        $errors = [];
+
+        foreach (self::ENDPOINTS as $mode => $endpoint) {
+            $schema = $spec['components']['schemas'][$endpoint['schema']];
+
+            foreach ($this->rulesFor($mode) as $field => $fieldRules) {
+                if (! str_contains($field, '.')) {
+                    $label = "{$endpoint['schema']}.{$field}";
+                    $property = $schema['properties'][$field] ?? null;
+                } elseif (preg_match('/^([a-z_]+)\.\*\.([a-z_]+)$/', $field, $m)) {
+                    $label = "{$endpoint['schema']}.{$m[1]}[].{$m[2]}";
+                    $property = $schema['properties'][$m[1]]['items']['properties'][$m[2]] ?? null;
+                } else {
+                    continue;
+                }
+
+                if ($property === null) {
+                    continue; // couvert par les tests de parite des champs et des types
+                }
+
+                $attendu = in_array('nullable', $fieldRules, true);
+                $declare = ($property['nullable'] ?? false) === true;
+
+                if ($attendu !== $declare) {
+                    $errors[] = "{$label} : nullable ".json_encode($declare).' au lieu de '.json_encode($attendu).'.';
+                }
+            }
+        }
+
+        $this->assertSame([], $errors, "Nullabilite d'openapi.json differente de PayrollValidation :\n".implode("\n", $errors));
+    }
+
+    public function test_required_input_fields_stay_non_nullable_in_validation_and_schema(): void
+    {
+        $spec = $this->spec();
+
+        foreach (self::ENDPOINTS as $mode => $endpoint) {
+            $schema = $spec['components']['schemas'][$endpoint['schema']];
+            $rules = $this->rulesFor($mode);
+            $primary = $mode === 'net_to_gross' ? 'net_cible' : 'salaire_base';
+
+            foreach ([$primary, 'type_frais_pro'] as $field) {
+                $this->assertContains('required', $rules[$field], "{$field} doit rester obligatoire ({$mode}).");
+                $this->assertNotContains('nullable', $rules[$field], "{$field} ne doit pas devenir nullable dans la validation ({$mode}).");
+                $this->assertContains($field, $schema['required'] ?? [], "{$endpoint['schema']}.{$field} doit rester dans required.");
+                $this->assertNotTrue(
+                    $schema['properties'][$field]['nullable'] ?? false,
+                    "{$endpoint['schema']}.{$field} ne doit pas etre nullable dans openapi.json."
+                );
+            }
+        }
+    }
+
     public function test_spec_version_equals_the_application_version(): void
     {
         $this->assertSame(
