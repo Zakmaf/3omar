@@ -45,22 +45,43 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # Tags OCI par mode (#288) :
+      # - stable vX.Y.Z      : vX.Y.Z, vX.Y, vX, latest ;
+      # - pré-release vX.Y.Z-dev.N : vX.Y.Z-dev.N et dev, rien d'autre.
+      # Pour une version semver pré-release, metadata-action remplace tout motif
+      # autre que {{raw}} par {{version}}, qui perd le préfixe v : le tag exact
+      # vient donc de {{raw}} (le tag git tel quel), et les alias vX.Y / vX ne
+      # sont activés qu'en stable. latest=false : latest n'est émis que par la
+      # règle raw explicite, jamais ajouté automatiquement.
+      # Le job CI « Tags image release » rejoue cette configuration avec la
+      # vraie metadata-action pour chaque mode.
       - name: Métadonnées et tags de l'image
         id: meta
         uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
         with:
           images: ghcr.io/${{ github.repository }}
+          flavor: |
+            latest=false
           tags: |
             type=raw,value=latest,enable=${{ !github.event.release.prerelease }}
             type=raw,value=dev,enable=${{ github.event.release.prerelease }}
-            type=semver,pattern=v{{version}}
-            type=semver,pattern=v{{major}}.{{minor}}
-            type=semver,pattern=v{{major}}
+            type=semver,pattern={{raw}}
+            type=semver,pattern=v{{major}}.{{minor}},enable=${{ !github.event.release.prerelease }}
+            type=semver,pattern=v{{major}},enable=${{ !github.event.release.prerelease }}
 
       - name: Configurer Docker Buildx
         uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
 
+      # Relève, avant le push, le digest des tags que cette release ne doit pas
+      # toucher (absents compris), pour la vérification qui suit le push.
+      - name: Capturer les tags à préserver
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+          PRERELEASE: ${{ github.event.release.prerelease }}
+        run: bash .github/scripts/verifier-tags-image.sh capturer "ghcr.io/${GITHUB_REPOSITORY,,}" "$TAG" "$PRERELEASE" "$RUNNER_TEMP/tags-avant.txt"
+
       - name: Build et push
+        id: build
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: .
@@ -73,3 +94,14 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      # Relit le registre après le push : tags publiés sur le digest poussé,
+      # tags protégés inchangés. Un échec rend le run rouge ; l'image est déjà
+      # poussée, l'écart est à corriger par le propriétaire (voir
+      # docs/DEPLOIEMENT.md, « Tags disponibles »).
+      - name: Vérifier les tags publiés
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+          PRERELEASE: ${{ github.event.release.prerelease }}
+          DIGEST: ${{ steps.build.outputs.digest }}
+        run: bash .github/scripts/verifier-tags-image.sh verifier "ghcr.io/${GITHUB_REPOSITORY,,}" "$TAG" "$PRERELEASE" "$RUNNER_TEMP/tags-avant.txt" "$DIGEST"
