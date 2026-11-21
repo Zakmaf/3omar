@@ -21,10 +21,10 @@ docker run -d \
 | `APP_KEY` | Oui | Clé de chiffrement des sessions et cookies. Générer avec `php artisan key:generate --show`. Une clé raw base64 sans préfixe (`openssl rand -base64 32`) est aussi acceptée — le préfixe `base64:` est ajouté automatiquement au démarrage. |
 | `APP_URL` | Recommandé | URL publique complète, ex : `https://3omar.ma`. Utilisée pour la génération des URL absolues et la cohérence des cookies. |
 | `APP_DEBUG` | Non | `false` par défaut. Mettre à `true` uniquement pour déboguer — affiche les erreurs en clair. |
-| `ADSENSE_ENABLED` | Non | `false` par défaut. Mettre à `true` pour activer Google AdSense (necessite les variables ci-dessous). Les pages du calculateur (routes `calculator.*`, qui portent des montants de salaire) n'affichent jamais de publicité, quelle que soit cette valeur (#283). |
-| `ADSENSE_PUBLISHER_ID` | Si AdSense | Identifiant editeur AdSense (`pub-xxx`). Sert au fichier `ads.txt`, a la balise meta de verification et au script (client `ca-pub-xxx` derive automatiquement). |
-| `ADSENSE_SLOT_HEADER` | Si AdSense | ID du slot publicitaire du header. |
-| `ADSENSE_SLOT_FOOTER` | Si AdSense | ID du slot publicitaire du footer. |
+
+### Publicité retirée (#300)
+
+L'application ne contient plus Google AdSense : ni script, ni emplacement, ni balise de vérification, ni autorisation publicitaire dans la `Content-Security-Policy`. La route `/ads.txt` n'existe plus et répond 404. Les variables `ADSENSE_ENABLED`, `ADSENSE_PUBLISHER_ID`, `ADSENSE_SLOT_HEADER` et `ADSENSE_SLOT_FOOTER` ne sont plus lues : une instance qui les définit encore peut les retirer, sans autre effet. Restent chargés depuis des CDN non publicitaires : Google Fonts (polices) et jsDelivr (Bootstrap, Bootstrap Icons, Chart.js, avec empreinte SRI).
 
 ## Tags disponibles
 

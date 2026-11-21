@@ -132,10 +132,6 @@
             color: var(--g-300);
             border-color: rgba(255,255,255,0.12);
         }
-        [data-bs-theme="dark"] .ad-slot {
-            background: var(--paper);
-            border-radius: var(--radius-sm);
-        }
         [data-bs-theme="dark"] h1,
         [data-bs-theme="dark"] h2,
         [data-bs-theme="dark"] h3,
@@ -211,17 +207,6 @@
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow-2);
             backdrop-filter: blur(12px);
-        }
-        .ad-slot {
-            margin-block: 1.5rem;
-            overflow: hidden;
-            text-align: center;
-        }
-        .ad-slot-horizontal {
-            min-height: 90px;
-        }
-        .ad-slot-rectangle {
-            min-height: 250px;
         }
         [dir="rtl"] body {
             font-family: var(--f-accent);
@@ -429,7 +414,7 @@
             }
         }
         @media print {
-            .navbar, footer, .no-print, .ad-slot { display: none !important; }
+            .navbar, footer, .no-print { display: none !important; }
             main { padding: 0 !important; }
             body { background: #fff; }
             .section-card, .card { box-shadow: none !important; border: 1px solid var(--hairline-strong) !important; }
@@ -445,16 +430,6 @@
     </script>
 
     @stack('head')
-    @if (app()->environment('production') && config('ads.client'))
-    {{-- Vérification du site par AdSense, indépendante de ADSENSE_ENABLED --}}
-    <meta name="google-adsense-account" content="{{ config('ads.client') }}">
-    @endif
-    {{-- Condition @publicite (AppServiceProvider) : jamais sur les routes calculator.* --}}
-    @publicite
-    <script async
-            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ config('ads.client') }}"
-            crossorigin="anonymous"></script>
-    @endpublicite
 </head>
 <body>
 <a class="skip-link" href="#main-content">{{ __('ui.skip') }}</a>
@@ -547,17 +522,9 @@
     </div>
 </nav>
 
-<div class="container">
-    <x-ad-slot placement="header" />
-</div>
-
 <main class="py-4" id="main-content">
     @yield('content')
 </main>
-
-<div class="container">
-    <x-ad-slot placement="footer" />
-</div>
 
 <footer class="pt-5 pb-4 mt-5">
     <div class="container">
@@ -699,12 +666,5 @@
 </script>
 
 @stack('scripts')
-@publicite
-<script>
-    document.querySelectorAll('.adsbygoogle').forEach(() => {
-        (window.adsbygoogle = window.adsbygoogle || []).push({});
-    });
-</script>
-@endpublicite
 </body>
 </html>

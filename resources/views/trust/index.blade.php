@@ -29,10 +29,11 @@
                     </div>
                 </div>
                 <div class="row g-3 mt-2">
+                    {{-- Inventaire factuel (#300) : icône neutre, pas une coche de garantie --}}
                     @foreach (__('ui.trust.privacy_points') as $point)
                     <div class="col-sm-6">
                         <div class="d-flex gap-2">
-                            <i class="bi bi-check-circle-fill flex-shrink-0 mt-1" style="color:var(--s-succ)" aria-hidden="true"></i>
+                            <i class="bi bi-info-circle flex-shrink-0 mt-1" style="color:var(--ink-2)" aria-hidden="true"></i>
                             <span>{{ $point }}</span>
                         </div>
                     </div>

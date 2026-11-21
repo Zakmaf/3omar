@@ -39,9 +39,10 @@ class SecurityHeadersTest extends TestCase
         $this->assertStringContainsString("form-action 'self'", $csp);
     }
 
-    public function test_csp_blocks_frames_when_ads_disabled(): void
+    public function test_csp_blocks_frames(): void
     {
-        config()->set('ads.enabled', false);
+        // Aucune ressource tierce n'est chargée en cadre depuis le retrait d'AdSense (#300).
+        $this->app['env'] = 'production';
 
         $csp = $this->get('/')->assertOk()->headers->get('Content-Security-Policy');
 

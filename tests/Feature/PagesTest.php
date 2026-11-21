@@ -27,49 +27,6 @@ class PagesTest extends TestCase
             ->assertDontSee('Taux à jour');
     }
 
-    public function test_adsense_is_not_rendered_outside_production(): void
-    {
-        config()->set('ads.enabled', true);
-        config()->set('ads.client', 'ca-pub-test');
-        config()->set('ads.placements.header.slot', 'header-test');
-        config()->set('ads.placements.footer.slot', 'footer-test');
-
-        foreach (['/', '/calculateur', '/documentation'] as $path) {
-            $this->get($path)->assertOk()
-                ->assertDontSee('pagead2.googlesyndication.com', false)
-                ->assertDontSee('ca-pub-test', false);
-        }
-    }
-
-    public function test_adsense_verification_meta_is_rendered_in_production_without_ad_script(): void
-    {
-        $this->app['env'] = 'production';
-        config()->set('ads.enabled', false);
-        config()->set('ads.client', 'ca-pub-test');
-
-        $this->get('/')->assertOk()
-            ->assertSee('<meta name="google-adsense-account" content="ca-pub-test">', false)
-            ->assertDontSee('pagead2.googlesyndication.com', false);
-    }
-
-    public function test_ads_txt_lists_publisher_id(): void
-    {
-        config()->set('ads.publisher_id', 'pub-test');
-
-        $this->get('/ads.txt')->assertOk()
-            ->assertHeader('Content-Type', 'text/plain; charset=UTF-8')
-            ->assertSeeText('google.com, pub-test, DIRECT, f08c47fec0942fa0');
-    }
-
-    public function test_adsense_verification_meta_is_absent_without_client(): void
-    {
-        $this->app['env'] = 'production';
-        config()->set('ads.client', null);
-
-        $this->get('/')->assertOk()
-            ->assertDontSee('google-adsense-account', false);
-    }
-
     public function test_language_switcher_is_visible_for_v11(): void
     {
         $this->get('/')->assertOk()
@@ -90,7 +47,7 @@ class PagesTest extends TestCase
         ])->assertOk()
             ->assertSee('Votre bulletin, en clair')
             ->assertSee('Toutes les lignes du calcul')
-            ->assertSeeText("Aucune donnée personnelle n'est stockée.");
+            ->assertSeeText("Cette simulation est calculée à la demande et n'est pas enregistrée dans une base de données.");
     }
 
     public function test_direct_result_url_redirects_to_calculator_with_friendly_notice(): void
@@ -217,7 +174,7 @@ class PagesTest extends TestCase
         $this->get('/fiabilite')
             ->assertOk()
             ->assertSee('Fiabilité, limites et confidentialité')
-            ->assertSee('Confidentialité absolue')
+            ->assertSee('Confidentialité et données')
             ->assertSee('CNSS salarié')
             ->assertSee('IR - Barème progressif')
             ->assertSee('Dahir 1-72-184')
@@ -254,7 +211,8 @@ class PagesTest extends TestCase
     public function test_trust_page_explains_data_handling_and_links_security_and_error_reporting(): void
     {
         $response = $this->get('/fiabilite')->assertOk()
-            ->assertSee("n'est jamais journalisée")
+            ->assertSee('chemin (sans chaîne de requête)')
+            ->assertSee('encodés, pas chiffrés')
             ->assertSee('pas votre bulletin de paie officiel')
             ->assertSee('Signalez-la sur GitHub');
 
@@ -285,7 +243,7 @@ class PagesTest extends TestCase
             'salaire_base' => 8000,
             'type_frais_pro' => 'commun',
         ])->assertOk()
-            ->assertSee('Aucune donnée personnelle n\'est stockée')
+            ->assertSee('n\'est pas enregistrée dans une base de données')
             ->assertSee('Diagnostic')
             ->assertSee('Net / Brut')
             ->assertSee('Que faire ensuite ?')
@@ -296,7 +254,7 @@ class PagesTest extends TestCase
     {
         $this->get('/calculateur')->assertOk()
             ->assertSee('Ce que couvre 3omar')
-            ->assertSee('Aucune donnée personnelle')
+            ->assertSee('Simulations non enregistrées dans une base de données.')
             ->assertSee('Confidentialité, limites et open source');
     }
 

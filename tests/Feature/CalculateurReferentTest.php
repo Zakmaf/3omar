@@ -16,8 +16,8 @@ use Tests\TestCase;
  * Avec Referrer-Policy: strict-origin-when-cross-origin, une navigation sur la
  * même origine transmet l'URL complète. Depuis /calculateur?s=<payload>,
  * /calculateur/comparer?a=...&b=... ou /calculateur/gain-2027?s=<payload>, la
- * page éditoriale suivante (qui charge AdSense en production) exposerait le
- * payload dans document.referrer. Contrat :
+ * page éditoriale suivante, et tout script qu'elle charge, verrait le payload
+ * dans document.referrer. Contrat :
  * - toute réponse d'une route calculator.* (page, résultat, redirection)
  *   porte exactement un en-tête Referrer-Policy: no-referrer ;
  * - le changement de langue (/lang/...) aussi (#295) : le lien d'une page du

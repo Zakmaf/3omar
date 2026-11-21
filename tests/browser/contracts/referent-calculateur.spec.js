@@ -7,8 +7,8 @@ const { setLocale, stabilize } = require('../helpers/simulation');
  *
  * Une URL partagee /calculateur?s=<payload> porte des montants. Avec
  * strict-origin-when-cross-origin, un clic vers une page editoriale de la meme
- * origine transmet l'URL complete : la page suivante (qui charge AdSense en
- * production) l'exposerait dans document.referrer. Contrat verifie par de
+ * origine transmet l'URL complete : la page suivante, et tout script qu'elle
+ * charge, la verrait dans document.referrer. Contrat verifie par de
  * VRAIS clics sur les liens internes (jamais page.goto vers la cible, qui
  * n'emet aucun referent et masquerait le defaut) :
  * - depuis /calculateur?s=<payload> ou /calculateur/gain-2027?s=<payload>, un
