@@ -1,16 +1,23 @@
 # Releases
 
-## Non publié
+## v3.7.0 - 2026-11-20
 
-Notes préparées pour la prochaine version, non publiées. La version et la date seront fixées par le propriétaire à la préparation de la release.
+Préparation : entrée rédigée le 2026-11-20, date du titre ; ce n'est pas une date de publication. Une entrée dans ce fichier ou la version inscrite dans les sources ne prouvent pas une publication. Trois états se vérifient séparément : l'existence de la release GitHub `v3.7.0`, l'image construite et ses tags vérifiés par le run `docker-release.yml` de cette release, et une instance déployée, que seule la comparaison du digest de son conteneur au digest du tag sur GHCR atteste, `/api/v1/health` n'indiquant que la version déclarée, que `APP_VERSION` peut surcharger (voir `docs/DEPLOIEMENT.md`, « Tag OCI et APP_VERSION », et `CONTRIBUTING.md`, « États de publication »). Les pré-releases de développement `v3.7.0-dev.N` ne sont pas des stables. Cette version absorbe la préparation v3.6.1 (#275), fusionnée mais jamais publiée : ses changements figurent ci-dessous et n'ont fait partie d'aucune stable. Version mineure, et non correctif, parce qu'elle ajoute des fonctions fiscales.
 
 ### Nouveautés
 
 - Le calculateur, l'API et les liens partagés acceptent un exercice fiscal (`exercice`). Sans exercice, le calcul reste en 2026, comme les liens et requêtes existants, quelle que soit la date du jour. #281
 - Le formulaire propose les exercices 2026 à 2031 avec leur statut. 2026, en vigueur, et 2027, en projet, sont calculables ; 2028 à 2031 sont affichés comme projets non calculables tant que leurs frais professionnels ne sont pas définis. #281 #282
-- L'exercice 2027 applique les frais professionnels proposés par le PLF n° 60-26 tel que déposé (art. 59-I-A modifié, susceptible d'amendements) : 45 % du salaire brut imposable sans seuil de salaire, plafonnés à 35 000 MAD par an (2 916,67 MAD par mois). Les catégories journaliste et artiste relèvent de ce régime, le projet abrogeant leur régime particulier ; le résultat et la page Fiabilité le précisent, dans les quatre langues. Les indemnités exonérées et le calcul 2026 sont inchangés. #282
+- Chaque exercice applique son propre barème d'IR, lu dans la configuration. L'exercice 2027 simule le barème d'IR propre à 2027 proposé par le PLF n° 60-26 tel que déposé (art. 247-XXXXVII-1 CGI, projet, susceptible d'amendements), distinct du barème 2026. Les barèmes 2028 à 2031 du même projet sont enregistrés comme projections, mais ces exercices restent non calculables. #281
+- Hypothèse de simulation pour 2027 : seuls le barème d'IR et les frais professionnels changent. Les cotisations sociales, le SMIG et les charges de famille reprennent les paramètres de 2026, non versionnés par exercice ; cette reprise est une hypothèse, pas une règle vérifiée pour 2027. #281 #283
+- L'exercice 2027 simule les frais professionnels proposés par le PLF n° 60-26 tel que déposé (art. 59-I-A modifié, susceptible d'amendements) : 45 % du salaire brut imposable sans seuil de salaire, plafonnés à 35 000 MAD par an (2 916,67 MAD par mois). Les catégories journaliste et artiste relèvent de ce régime, le projet abrogeant leur régime particulier ; le résultat et la page Fiabilité le précisent, dans les quatre langues. Les indemnités exonérées et le calcul 2026 sont inchangés. #282
+- 2027 reste un projet : aucun exercice ne passe « en vigueur » avec cette version, et le suivi de la loi de finances comme toute activation juridique de 2027 après validation (loi publiée, dates d'effet, validation réglementaire) relèvent de #297. #280 a porté la préparation de 2027 en mode projet. #281 #282 #283
 - Le résultat, la comparaison et la page Fiabilité affichent l'exercice appliqué, son statut, son texte source et sa référence IR. Un projet affiche en plus la version et la date du texte déposé (PLF n° 60-26, 23/10/2026) et une réserve : ce n'est ni une loi promulguée ni un texte consolidé. #281
 - Chaque résultat de l'API expose `exercice` et `reference_fiscale`, provenance du profil appliqué, sans barème ni frais professionnels. #281
+- Nouvelle page de gain fiscal, ouverte par le lien « Mon gain fiscal en janvier 2027 » de la page résultat : la même saisie est calculée en 2026 et sous le projet 2027 à brut constant, avec le gain mensuel sur le net, une projection annuelle indicative sur douze mois identiques et les écarts d'IR et de frais professionnels. La page porte le badge « Projet / estimation », la source et la date du texte déposé ; ce n'est pas une prévision de paie réelle. #283
+- La page de gain décompose le gain en deux parts calculées dans un ordre fixe, barème d'IR 2027 proposé puis frais professionnels 2027 proposés, dont la somme vaut le gain au centime, sans double comptage. #283
+- Pour une simulation net vers brut faite en 2026, la page de gain détermine une seule fois le brut qui atteint le net cible en 2026, puis le fige pour les deux exercices. Un net cible saisi en 2027, ou non atteint, est refusé avec un message traduit et un lien vers le formulaire prérempli. #283
+- Le lien de la page de gain rejoue la même comparaison sans stockage serveur ; la page est disponible en FR, EN, AR et ES et dispose d'une mise en page d'impression. #283
 
 ### Améliorations
 
@@ -18,51 +25,60 @@ Notes préparées pour la prochaine version, non publiées. La version et la dat
 - Une comparaison entre une simulation sans exercice et la même simulation en 2026 explicite n'annonce plus d'écart. #281
 - Les catégories professionnelles du formulaire et de la comparaison ne citent plus de taux : le taux appliqué dépend de l'exercice et se lit dans le résultat. #282
 - Le schéma OpenAPI documente `plafond_fp` et `fp_plafonne`, déjà renvoyés par l'API. #282
-
-### Correctifs
-
-- Sur petit écran, les tableaux de la comparaison qui défilent horizontalement sont atteignables au clavier et défilent aux flèches, comme ceux du résultat. #282
-- Dans le tableau des indicateurs de la comparaison, les écarts nuls et la note sur les montants sont plus contrastés, pour rester lisibles sur fond clair (contraste WCAG 4,5:1). #282
-
-### Mise à jour de la stack
-
-- La CI publie les captures de preuve du parcours d'exercice fiscal (formulaire, résultat, comparaison, Fiabilité) dans un artefact `preuves-exercice` conservé 7 jours. #281
-
-### Migration
-
-Aucune action requise : les requêtes et liens sans exercice sont calculés en 2026 comme avant. Les clients de l'API peuvent ignorer les nouveaux champs `exercice` et `reference_fiscale`. Une requête qui envoie `exercice` reçoit une erreur `422` sur ce seul champ pour un exercice inconnu, non entier ou non calculable. Un calcul en 2027 renvoie la nouvelle valeur `commun_unique` dans `regime_fp` : un client qui énumère les régimes doit l'accepter. Le statut « en vigueur » de 2026 reprend la référence historique du simulateur et ne constitue pas une nouvelle validation juridique ; 2027 reste un projet. Le comparateur de gain (#283) ne fait pas partie de cette version. La commande `docker pull` sera celle de la version publiée.
-
----
-
-## v3.6.1 - 2026-11-10
-
-### Améliorations
-
+- Le schéma OpenAPI déclare `nullable` les champs de requête pour lesquels l'API acceptait déjà `null`, et la documentation de l'API précise l'effet de l'omission ou de `null` : valeur par défaut, sauf pour les cinq champs patronaux où `null` signifie « inconnu » et rend le coût employeur partiel. La validation et les calculs ne changent pas. #284
 - L'image publiée annonce la version de sa release, lue dans le tag (pied de page et `/api/v1/health`), et le build refuse toute version hors des formats `vX.Y.Z` et `vX.Y.Z-dev.N`. #253
-- Des pré-releases de développement `vX.Y.Z-dev.N` peuvent être publiées pour tester `main` avant une stable : leur image porte le tag exact et l'étiquette `dev`, jamais `latest`, `v3` ni `v3.6`. #253
+- Des pré-releases de développement `vX.Y.Z-dev.N` peuvent être publiées pour tester `main` avant une stable : leur image porte le tag exact et l'étiquette `dev`, jamais `latest`, `vX` ni `vX.Y`. #253
+- La politique de sécurité (`SECURITY.md`) ne prend en charge que la dernière release stable, exclut les pré-releases `-dev.N` et cite dans son périmètre les quatre routes de calcul et de comparaison. #266
 - Retire seize clés de traduction inutilisées des quatre langues. #256
 - Retire de la mise en page des règles CSS qui ne s'appliquaient à aucun élément. #257
 - Supprime `docker-compose.v1.1.yml`, ancienne pile de développement V1.1 utilisée par aucun script ni document. #258
 
 ### Correctifs
 
-- Le libellé de tranche d'IR du bulletin détaillé a la même forme dans les quatre langues, sans tiret cadratin : le taux, puis la référence légale entre parenthèses (« Tranche ...% (Art. 73 CGI) »). L'anglais a changé avec le nettoyage des traductions, le français, l'espagnol et l'arabe ensuite. #256 #261
+- Après une erreur de validation ou un changement de langue, le calculateur revient à la page de l'onglet d'origine avec la saisie conservée, même si un autre onglet de la même session a ouvert une autre page entre-temps. Un changement de langue sur une page de résultat ouvre une adresse rejouable portant la même saisie ou la même comparaison. #295
+- Le libellé de tranche d'IR du bulletin détaillé a la même forme dans les quatre langues, sans tiret cadratin : le taux, puis la référence légale entre parenthèses (« Tranche ...% (Art. 73 CGI) »). #256 #261
+- Sur petit écran, les tableaux de la comparaison qui défilent horizontalement sont atteignables au clavier et défilent aux flèches, comme ceux du résultat. #282
+- Dans le tableau des indicateurs de la comparaison, les écarts nuls et la note sur les montants sont plus contrastés, pour rester lisibles sur fond clair (contraste WCAG 4,5:1). #282
+- L'image d'une pré-release est publiée sous son tag exact, préfixe `v` compris (`vX.Y.Z-dev.N`). `v3.7.0-dev.1` avait été publiée sous `3.7.0-dev.1`, sans `v` ; cette image historique n'est ni renommée ni supprimée. #288
 
 ### Sécurité
 
 - Redirige en `301` vers `https://` (même chemin, même chaîne de requête) toute visite reçue en HTTP simple derrière le proxy de confiance (Cloudflare, Traefik), c'est-à-dire avec `X-Forwarded-Proto: http` venant d'une plage privée. La page et les cookies de session étaient jusqu'ici servis en clair. Un client public ne peut toujours rien imposer par cet en-tête, et un accès HTTP direct sans cet en-tête (`HEALTHCHECK`, `http://localhost`) n'est pas redirigé. La CI vérifie la redirection sur l'image release. #264
+- Les pages du calculateur (formulaire, résultat, comparaison, page de gain), qui portent des montants de salaire, ne chargent plus aucun script, emplacement ni initialisation publicitaire, même avec la publicité activée en production ; les pages éditoriales la conservent. #283
+- Les pages du calculateur, leurs redirections et le changement de langue (`/lang/...`) répondent avec `Referrer-Policy: no-referrer` : la page ouverte ensuite ne reçoit plus l'adresse de la simulation ni ses montants. Les autres pages gardent `strict-origin-when-cross-origin`. L'en-tête est envoyé une seule fois, et la CI le vérifie sur l'image release. #283 #295
+- La page de gain demande aux moteurs de recherche de ne pas l'indexer ni suivre ses liens (`noindex, nofollow`). #283
+- Les liens vers les sources officielles du bloc de provenance (résultat, comparaison, page de gain, page Fiabilité) s'ouvrent sans transmettre de référent (`noopener noreferrer`). #281 #283
+- La cible de retour d'un changement de langue ou d'une erreur de validation est revalidée sur une liste de pages internes : une cible externe, un schéma dangereux ou une page non rejouable est refusé. #295
 
 ### Mise à jour de la stack
 
-- Passe `docker/login-action` de 4.7.0 à 4.8.0 dans le workflow de publication. Rien n'est embarqué dans l'image.
+- Passe `laravel/framework` de 13.39.0 à 13.40.0. #270
+- Passe `laravel/tinker` de 3.0.2 à 3.1.0. #291
+- Passe `laravel/pint` de 1.32.1 à 1.32.3, outil de développement non embarqué dans l'image de production. #292
+- Passe `docker/login-action` de 4.7.0 à 4.8.0 dans le workflow de publication. Rien n'est embarqué dans l'image. #269
+- Après chaque publication, le workflow relit le registre : chaque tag publié doit porter le digest poussé, et chaque tag à préserver garder le sien. Un registre illisible fait échouer le run sans être pris pour un tag absent. La CI rejoue la génération des tags et cette vérification contre des registres jetables, jamais contre GHCR. #288
+- La CI s'exécute aussi chaque jour sur `main`, pour signaler un avis de sécurité publié après la dernière fusion. #265
+- La CI publie les captures de preuve du parcours d'exercice fiscal, de la page de gain et des retours entre onglets dans un artefact `preuves-exercice` conservé 7 jours. #281 #283 #295
 - Couvre par des tests le cas « net inatteignable » du calcul net vers brut, dans le moteur et dans l'API. #240
+- Couvre par des tests la tranche d'IR retenue à chaque seuil annuel du barème. #272
+- Couvre par des tests le plafond de la déduction pour charges de famille et l'IR net nul quand cette déduction dépasse l'IR brut. #273
+- Couvre par des tests la conservation, dans les liens de simulation, des cinq indicateurs de part employeur inconnue. #274
 
 ### Migration
 
-Aucune action de configuration requise avec un proxy qui transmet le schéma d'origine. Après la mise à jour, une visite en `http://` derrière Cloudflare ou Traefik est redirigée vers `https://`. Un proxy qui enverrait `X-Forwarded-Proto: http` pour une visite reçue en HTTPS ferait boucler la redirection : il doit transmettre le schéma d'origine (voir `docs/DEPLOIEMENT.md`, section « Adresse réelle et HTTPS »). Si Traefik est placé derrière un autre proxy, `forwardedHeaders.trustedIPs` ne doit lister que ce proxy amont réel, pour que Traefik conserve son `X-Forwarded-Proto`. Les clients de l'API doivent appeler directement l'URL en `https://` : certains clients rejouent en GET une requête POST redirigée en `301`. Une variable `APP_VERSION` passée au démarrage du conteneur reste prioritaire sur la version de l'image : la retirer pour que `/api/v1/health` annonce `v3.6.1`. #264 #253
+Mise à jour depuis v3.6.0, stable précédente. La préparation v3.6.1 n'ayant jamais été publiée, il n'y a aucune étape intermédiaire : les points ci-dessous s'appliquent tous en passant de v3.6.0 à v3.7.0.
+
+- **Proxy et HTTPS** (#264) : aucune action de configuration avec un proxy qui transmet le schéma d'origine. Après la mise à jour, une visite en `http://` derrière Cloudflare ou Traefik est redirigée vers `https://`. Un proxy qui enverrait `X-Forwarded-Proto: http` pour une visite reçue en HTTPS ferait boucler la redirection : il doit transmettre le schéma d'origine (voir `docs/DEPLOIEMENT.md`, section « Adresse réelle et HTTPS »). Si Traefik est placé derrière un autre proxy, `forwardedHeaders.trustedIPs` ne doit lister que ce proxy amont réel, pour que Traefik conserve son `X-Forwarded-Proto`. Les clients de l'API doivent appeler directement l'URL en `https://` : certains clients rejouent en GET une requête POST redirigée en `301`.
+- **Version annoncée** (#253) : une variable `APP_VERSION` passée au démarrage du conteneur reste prioritaire sur la version de l'image. La retirer pour que le pied de page et `/api/v1/health` annoncent `v3.7.0`.
+- **Clients de l'API** (#281 #282 #284) : les requêtes sans exercice sont calculées en 2026 comme avant, et les nouveaux champs `exercice` et `reference_fiscale` peuvent être ignorés. Une requête qui envoie `exercice` reçoit une erreur `422` sur ce seul champ pour un exercice inconnu, non entier ou non calculable. Un calcul en 2027 renvoie la nouvelle valeur `commun_unique` dans `regime_fp` : un client qui énumère les régimes doit l'accepter. Les clients générés depuis le schéma OpenAPI acceptent désormais `null` sur les champs où le serveur l'acceptait déjà ; sur les cinq champs patronaux, `null` signifie « inconnu » et diffère de l'omission.
+- **Statut juridique** (#281 #282 #283) : le statut « en vigueur » de 2026 reprend la référence historique du simulateur et ne constitue pas une nouvelle validation juridique. 2027 reste un projet (PLF n° 60-26 tel que déposé), sans activation juridique ; le suivi de la loi de finances et toute activation après validation relèvent de #297. Son barème d'IR et ses frais professionnels sont ceux du texte déposé ; ses cotisations sociales, son SMIG et ses charges de famille reprennent par hypothèse ceux de 2026.
+- **Confidentialité et publicité** (#283 #295) : avec AdSense activé, les emplacements publicitaires disparaissent des pages du calculateur, sans réglage possible ; les pages éditoriales les conservent. Un proxy placé devant l'image ne doit ni réécrire ni ajouter `Referrer-Policy`.
+- **Tags d'image** (#288) : l'image se tire par son tag exact avec le préfixe `v` (`v3.7.0`) ; depuis #288, les formes sans `v` ne sont plus publiées, l'exception observée étant `3.7.0-dev.1` (voir Correctifs). Pour `latest`, `v3` et la nouvelle mineure `v3.7`, comparer leurs digests à celui de `v3.7.0` après la publication et avant tout usage, plutôt que supposer le déplacement d'un tag mobile (voir `docs/DEPLOIEMENT.md`, section « Tags publiés par mode de release »).
+
+Commande à utiliser seulement après la publication de la release `v3.7.0` et la vérification de ses tags :
 
 ```bash
-docker pull ghcr.io/zakmaf/3omar:v3.6.1
+docker pull ghcr.io/zakmaf/3omar:v3.7.0
 ```
 
 ---

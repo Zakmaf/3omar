@@ -32,12 +32,17 @@ docker run -d \
 |-----|-----------------|
 | `latest` | Dernière version stable - mise à jour automatique |
 | `v3` | Majeure 3.x.x - suit les mises à jour mineures et correctifs |
-| `v3.6` | Mineure 3.6.x - fonctionnalités et correctifs de la série 3.6 |
-| `v3.6.1` | Version exacte - reproductible, recommandé pour la production |
+| `v3.7` | Mineure 3.7.x - fonctionnalités et correctifs de la série 3.7 |
+| `v3.7.0` | Version exacte - reproductible, recommandé pour la production |
 | `dev` | Dernière pré-release de développement (`vX.Y.Z-dev.N`) - pour les tests, jamais pour la production |
 
+> **Tag, source et publication sont distincts.** Cette table décrit les tags que publie la release stable v3.7.0. La version inscrite dans les sources (`config/app.php`) ou une entrée de `docs/RELEASES.md` ne prouvent pas qu'un tag existe sur GHCR. Avant d'utiliser un tag, vérifier qu'une release GitHub de ce nom est publiée et que le run `docker-release.yml` a vérifié ses tags (section suivante). Un run absent, en cours ou en échec ne prouve ni l'absence d'un tag ni la préservation des tags mobiles : un échec après le push peut laisser des tags déplacés. Relire donc les digests de `v3.7.0`, `v3.7`, `v3`, `latest` et `v3.6` avant tout emploi (commandes ci-dessous). Le registre ne renseigne pas sur un déploiement : `/api/v1/health` indique la version déclarée, que `APP_VERSION` peut surcharger, et seule la comparaison du digest du conteneur au digest du tag sur GHCR atteste de son image (voir « Tag OCI et APP_VERSION »). `dev` désigne la dernière pré-release `vX.Y.Z-dev.N`, jamais une stable. Repère historique : v3.6.1 a été préparée mais jamais publiée (aucune release GitHub de ce nom, donc aucune image publiée par le workflow sous ce tag) ; ses changements font partie de v3.7.0.
+
 ```bash
-docker pull ghcr.io/zakmaf/3omar:v3.6.1
+# Seulement si la release v3.7.0 est publiée et ses tags vérifiés :
+docker pull ghcr.io/zakmaf/3omar:v3.7.0
+# Sinon, stable précédente :
+docker pull ghcr.io/zakmaf/3omar:v3.6.0
 ```
 
 ### Tags publiés par mode de release
@@ -58,10 +63,18 @@ Deux contrôles automatiques, sans publication :
 
 À chaque publication réelle, `docker-release.yml` appelle le même script : avant le push, il relève le digest des tags à préserver ; après le push, il relit `ghcr.io/zakmaf/3omar` et échoue si un tag publié manque ou ne porte pas le digest poussé, ou si un tag à préserver a changé (apparition comprise). Le résumé du run liste chaque tag, son digest et le verdict. Un registre illisible (authentification, réseau) fait échouer le script avec le code 2 et le message « Lecture du registre impossible » : il n'est jamais pris pour un tag absent. Un échec de la capture, avant le push, arrête le workflow sans rien publier. Un échec de la vérification survient après le push : l'image est publiée, l'écart de tags est à corriger par le propriétaire.
 
-Vérification manuelle équivalente, après une pré-release :
+Vérification manuelle équivalente, après une pré-release (exemple : `v3.7.0-dev.2`, première pré-release publiée après #288) :
 
 ```bash
-for t in v3.7.0-dev.1 dev latest v3 v3.7; do
+for t in v3.7.0-dev.2 dev latest v3 v3.7; do
+  printf '%s ' "$t"; docker buildx imagetools inspect "ghcr.io/zakmaf/3omar:$t" --format '{{json .Manifest}}' | jq -r .digest
+done
+```
+
+Après la publication d'une stable (exemple : `v3.7.0`, une fois publiée), `v3.7.0`, `v3.7`, `v3` et `latest` doivent porter le même digest, et `dev` garder le sien :
+
+```bash
+for t in v3.7.0 v3.7 v3 latest dev; do
   printf '%s ' "$t"; docker buildx imagetools inspect "ghcr.io/zakmaf/3omar:$t" --format '{{json .Manifest}}' | jq -r .digest
 done
 ```
