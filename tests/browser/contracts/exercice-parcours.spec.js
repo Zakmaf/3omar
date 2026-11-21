@@ -42,7 +42,11 @@ const { measureHorizontalOverflow } = require('../helpers/layout');
  *
  * Les cellules marquees `capture` produisent des captures deterministes
  * relues comme preuves, dans tests/browser/.output/preuves-exercice/ (publiees
- * par la CI dans l'artefact preuves-exercice).
+ * par la CI dans l'artefact preuves-exercice). La carte confidentialite de la
+ * page Fiabilite (#300) est verifiee dans chaque cellule et capturee seule
+ * (`<cellule>-06-confidentialite.png`) dans les cellules `capture` et
+ * `captureConfidentialite` ; son texte exact est verifie par PHPUnit
+ * (RetraitAdsenseTest).
  */
 
 const CAPTURE_DIR = path.join(__dirname, '..', '.output', 'preuves-exercice');
@@ -52,7 +56,8 @@ const CELLS = [
     { id: 'fr-desktop-1440x900', viewport: { width: 1440, height: 900 }, locale: 'fr', capture: true, print: true },
     { id: 'en-laptop-1280x800', viewport: { width: 1280, height: 800 }, locale: 'en' },
     { id: 'es-laptop-1280x800', viewport: { width: 1280, height: 800 }, locale: 'es' },
-    { id: 'fr-mobile-390x844', viewport: { width: 390, height: 844 }, locale: 'fr' },
+    // Seule la carte confidentialite de Fiabilite est capturee en FR mobile (#300).
+    { id: 'fr-mobile-390x844', viewport: { width: 390, height: 844 }, locale: 'fr', captureConfidentialite: true },
     { id: 'fr-zoom200-720x450', viewport: { width: 720, height: 450 }, locale: 'fr' },
     { id: 'ar-rtl-mobile-390x844', viewport: { width: 390, height: 844 }, locale: 'ar', capture: true },
     { id: 'ar-rtl-desktop-1440x900', viewport: { width: 1440, height: 900 }, locale: 'ar' },
@@ -398,6 +403,31 @@ for (const cell of CELLS) {
             await assertAxeClean(page, '#trust-fiscal-years [data-fiscal-year]', 'exercices de la page Fiabilite');
             await page.locator('#trust-fiscal-years').scrollIntoViewIfNeeded();
             await capture(page, cell, '05-fiabilite');
+        });
+
+        // Carte confidentialite de Fiabilite (#300) : rendue, lisible, sans debordement.
+        test('Fiabilite : carte confidentialite lisible', async ({ page }) => {
+            await setLocale(page, cell.locale);
+            await page.goto('/fiabilite', { waitUntil: 'domcontentloaded' });
+            await stabilize(page);
+
+            const carte = page.locator('section[aria-labelledby="trust-privacy-title"]');
+            await expect(carte, 'une carte confidentialite').toHaveCount(1);
+            await expect(carte).toBeVisible();
+            await expect(carte.locator('#trust-privacy-title')).toBeVisible();
+
+            const intro = carte.locator('#trust-privacy-title + p');
+            await expect(intro, 'paragraphe de confidentialite').toBeVisible();
+            expect(normaliser(await intro.textContent()).length, 'paragraphe de confidentialite non vide').toBeGreaterThan(0);
+            expect(await carte.locator('.row span').count(), 'inventaire des donnees traitees').toBeGreaterThan(0);
+
+            await assertNoOverflow(page, 'carte confidentialite');
+            await assertAxeClean(page, 'section[aria-labelledby="trust-privacy-title"]', 'carte confidentialite');
+
+            if (cell.capture || cell.captureConfidentialite) {
+                await carte.scrollIntoViewIfNeeded();
+                await carte.screenshot({ path: path.join(CAPTURE_DIR, `${cell.id}-06-confidentialite.png`) });
+            }
         });
 
         /*

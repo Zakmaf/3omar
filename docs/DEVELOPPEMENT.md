@@ -89,7 +89,9 @@ vers `main` et chaque push sur `main`, avec l'image de développement construite
 En cas d'échec, le rapport HTML et les traces sont publiés en artefact `rapport-navigateur`.
 Le contrat `exercice-parcours.spec.js` écrit ses captures de preuve dans
 `tests/browser/.output/preuves-exercice/`, publiées à chaque exécution en artefact
-`preuves-exercice` (7 jours). Ce dossier est vidé par Playwright au début de chaque run.
+`preuves-exercice` (7 jours), dont la carte confidentialité de la page Fiabilité
+(`*-06-confidentialite.png` en FR bureau, FR mobile et AR mobile RTL, #300).
+Ce dossier est vidé par Playwright au début de chaque run.
 Une montée de version de Playwright change ensemble `package.json`, `package-lock.json`,
 l'image de `tests/browser/run.sh`, celle de ce document et celle du job.
 
@@ -110,11 +112,10 @@ app/
 config/
   payroll.php             Taux, plafonds, tranches IR, SMIG — source unique
   app.php                 Locales supportées, timezone
-  ads.php                 Paramètres Google AdSense
 lang/{fr,en,ar,es}/
   ui.php                  Tous les messages d'interface
 resources/views/
-  layouts/app.blade.php   Layout principal (navbar, footer, ad-slots)
+  layouts/app.blade.php   Layout principal (navbar, footer)
   calculator/             Formulaire (index) et résultat (result)
   documentation/          Page documentation générée depuis config/payroll.php
   home.blade.php          Page d'accueil

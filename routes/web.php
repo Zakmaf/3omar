@@ -31,11 +31,3 @@ foreach (array_keys(GuideService::GUIDES) as $slug) {
 }
 
 Route::get('/lang/{locale}', [LocaleController::class, 'update'])->name('locale.update');
-
-Route::get('/ads.txt', fn () => response(
-    config('ads.publisher_id')
-        ? 'google.com, '.config('ads.publisher_id').', DIRECT, f08c47fec0942fa0'
-        : '',
-    200,
-    ['Content-Type' => 'text/plain'],
-));

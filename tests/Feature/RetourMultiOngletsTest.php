@@ -508,7 +508,7 @@ class RetourMultiOngletsTest extends TestCase
     }
 
     /**
-     * Une page éditoriale (qui peut charger une régie publicitaire) ne recopie
+     * Une page éditoriale (servie sans no-referrer) ne recopie
      * jamais un payload de sa propre URL dans ses liens de langue.
      */
     public function test_le_lien_de_langue_d_une_page_editoriale_ne_porte_aucun_payload(): void

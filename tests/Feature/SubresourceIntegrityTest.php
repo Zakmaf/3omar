@@ -14,12 +14,10 @@ class SubresourceIntegrityTest extends TestCase
 {
     /**
      * Hôtes dont le contenu n'est pas figé, donc sans SRI possible :
-     * la CSS de Google Fonts est générée selon le navigateur, le script
-     * AdSense n'est pas versionné (hors périmètre de #186).
+     * la CSS de Google Fonts est générée selon le navigateur.
      */
     private const HOSTS_WITHOUT_SRI = [
         'fonts.googleapis.com',
-        'pagead2.googlesyndication.com',
     ];
 
     protected function setUp(): void

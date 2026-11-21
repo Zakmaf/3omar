@@ -13,33 +13,19 @@ use Tests\TestCase;
 
 /**
  * Confidentialité des montants saisis : aucune publicité sur le calculateur
- * (issue #283, revue indépendante 2).
+ * (issues #283 et #300).
  *
  * Les pages calculator.* portent des montants de salaire : dans le formulaire
  * (saisie en cours, y compris sans payload), dans l'URL (?s=, ?a=, ?b=, payload
- * compressé mais non chiffré) ou dans la page résultat. La régie publicitaire
- * reçoit l'URL et le contenu de la page qui charge son script. Contrat, en
- * production avec la publicité activée (ads.enabled, ads.client et les deux
- * emplacements configurés) :
- * - aucune page calculator.* ne contient le script réseau adsbygoogle, aucun
- *   élément ins.adsbygoogle, aucun attribut data-ad-client / data-ad-slot ni
- *   l'initialisation (window.adsbygoogle || []).push ;
- * - la balise inerte meta google-adsense-account (vérification du site, #176)
- *   peut rester : c'est la seule occurrence admise de l'identifiant client ;
- * - hors calculateur (accueil, documentation, fiabilité, API, guides), la
- *   publicité reste complète en production : script, deux emplacements,
- *   initialisation. Le correctif ne désactive pas la publicité globalement.
+ * compressé mais non chiffré) ou dans la page résultat. AdSense est retiré du
+ * site (#300) ; ce fichier garde la couverture de chaque parcours du
+ * calculateur. Contre-exemple : en production, avec l'ancienne configuration
+ * publicitaire forcée (ads.enabled, ads.client et les deux emplacements), aucune
+ * page calculator.* ne contient de script, d'emplacement, d'attribut
+ * data-ad-*, d'initialisation, de meta google-adsense-account ni l'identifiant
+ * client.
  *
- * Les tests n'installent aucune section, variable de vue ni configuration qui
- * réaliserait le correctif : seule la configuration publicitaire de
- * production est forcée.
- *
- * Statut attendu :
- * - parcours calculator.* existants (formulaire, restauration, comparaison,
- *   résultat) : ROUGE dès maintenant, la publicité y est rendue ;
- * - page calculator.gain2027 : test séparé, ROUGE sur l'arbre indexé actuel ;
- *   sur un HEAD sans la route, le rouge est masqué (404) ;
- * - publicité hors calculateur : VERT, garde-fou de non-régression.
+ * Les pages éditoriales sont couvertes par RetraitAdsenseTest.
  */
 class CalculateurSansPubliciteTest extends TestCase
 {
@@ -75,7 +61,7 @@ class CalculateurSansPubliciteTest extends TestCase
         $this->withoutMiddleware([PreventRequestForgery::class, ValidateCsrfToken::class]);
         $this->codec = app(SimulationCodec::class);
 
-        // Production avec publicité activée : seule configuration forcée.
+        // Production avec l'ancienne configuration publicitaire : seule configuration forcée.
         $this->app['env'] = 'production';
         config()->set('ads.enabled', true);
         config()->set('ads.client', self::CLIENT);
@@ -111,29 +97,9 @@ class CalculateurSansPubliciteTest extends TestCase
         $this->assertSame(0, $xpath->query('//ins')->length, "{$ou} : aucun emplacement ins");
         $this->assertSame(0, $xpath->query('//aside[contains(concat(" ", normalize-space(@class), " "), " ad-slot ")]')->length, "{$ou} : aucun emplacement ad-slot");
 
-        // Seule occurrence admise de l'identifiant client : la meta inerte de vérification.
-        $metas = $xpath->query('//meta[@name="google-adsense-account"][@content="'.self::CLIENT.'"]')->length;
-        $this->assertLessThanOrEqual(1, $metas, "{$ou} : au plus une meta de vérification");
-        $this->assertSame($metas, substr_count($html, self::CLIENT), "{$ou} : identifiant client uniquement dans la meta de vérification");
-    }
-
-    private function assertAvecPublicite(string $html, string $ou): void
-    {
-        $xpath = $this->dom($html);
-
-        $this->assertSame(
-            1,
-            $xpath->query('//script[@src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client='.self::CLIENT.'"]')->length,
-            "{$ou} : script publicitaire chargé en production",
-        );
-        foreach ([self::SLOT_HEADER, self::SLOT_FOOTER] as $slot) {
-            $this->assertSame(
-                1,
-                $xpath->query('//ins[contains(@class, "adsbygoogle")][@data-ad-client="'.self::CLIENT.'"][@data-ad-slot="'.$slot.'"]')->length,
-                "{$ou} : emplacement {$slot} rendu",
-            );
-        }
-        $this->assertStringContainsString('(window.adsbygoogle = window.adsbygoogle || []).push({});', $html, "{$ou} : emplacements initialisés");
+        // Retrait complet (#300) : plus de meta de vérification ni d'identifiant client.
+        $this->assertSame(0, $xpath->query('//meta[@name="google-adsense-account"]')->length, "{$ou} : aucune meta de vérification");
+        $this->assertStringNotContainsString(self::CLIENT, $html, "{$ou} : identifiant client absent");
     }
 
     private function payload(array $saisie): string
@@ -170,7 +136,7 @@ class CalculateurSansPubliciteTest extends TestCase
     }
 
     // ------------------------------------------------------------------
-    // Parcours existants du calculateur (ROUGE dès maintenant)
+    // Parcours du calculateur
     // ------------------------------------------------------------------
 
     /**
@@ -212,7 +178,7 @@ class CalculateurSansPubliciteTest extends TestCase
     }
 
     // ------------------------------------------------------------------
-    // Nouvelle page de gain 2027 (à prouver après GREEN)
+    // Page de gain 2027
     // ------------------------------------------------------------------
 
     /**
@@ -254,32 +220,5 @@ class CalculateurSansPubliciteTest extends TestCase
         foreach ($noms as $nom) {
             $this->assertContains($nom, self::ROUTES_COUVERTES, "Route {$nom} : ajouter son parcours à ce test de confidentialité.");
         }
-    }
-
-    // ------------------------------------------------------------------
-    // Hors calculateur : la publicité reste fonctionnelle (VERT)
-    // ------------------------------------------------------------------
-
-    /**
-     * @return array<string, array{string}>
-     */
-    public static function pagesHorsCalculateur(): array
-    {
-        return [
-            'accueil' => ['/'],
-            'documentation' => ['/documentation'],
-            'documentation api' => ['/api-documentation'],
-            'fiabilite' => ['/fiabilite'],
-            'guide salaire net' => ['/calcul-salaire-net-maroc'],
-        ];
-    }
-
-    #[DataProvider('pagesHorsCalculateur')]
-    public function test_la_publicite_reste_active_hors_calculateur(string $uri): void
-    {
-        $html = $this->get($uri)->assertOk()->getContent();
-        $this->assertFalse(request()->routeIs('calculator.*'), "Prémisse : {$uri} hors calculateur.");
-
-        $this->assertAvecPublicite($html, $uri);
     }
 }
