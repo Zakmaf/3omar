@@ -176,6 +176,7 @@ return [
         'retenues_imposees_ir_help' => 'تُخصم من الصافي للأداء بعد احتساب الضريبة على الدخل. أمثلة: سلف على الأجر، حجوزات، معارضات، قروض المشغل.',
         'ceiling_simulated' => 'السقف المحاكى :',
         'wizard_nav_aria' => 'التنقل في النموذج',
+        'wizard_step_filled' => 'قسم معبأ',
         'wizard_mode_gross' => 'من الإجمالي إلى الصافي',
         'wizard_mode_net' => 'من الصافي إلى الإجمالي',
         'summary_seniority' => 'أقدمية :rate%',

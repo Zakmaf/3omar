@@ -139,6 +139,7 @@ return [
         'retenues_imposees_ir_help' => 'Deducted from net pay after income tax is computed. Examples: salary advances, garnishments, seizures, employer loans.',
         'ceiling_simulated' => 'Simulated ceiling:',
         'wizard_nav_aria' => 'Form navigation',
+        'wizard_step_filled' => 'Section filled in',
         'wizard_mode_gross' => 'Gross to Net',
         'wizard_mode_net' => 'Net to Gross',
         'summary_seniority' => ':rate% seniority',
