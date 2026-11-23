@@ -185,6 +185,7 @@ return [
         'retenues_imposees_ir_help' => "Déduites du net à payer après calcul de l'IR. Exemples : avances sur salaire, saisies-arrêts, oppositions, prêts employeur.",
         'ceiling_simulated' => 'Plafond simulé :',
         'wizard_nav_aria' => 'Navigation du formulaire',
+        'wizard_step_filled' => 'Rubrique renseignée',
         'wizard_mode_gross' => 'Brut vers Net',
         'wizard_mode_net' => 'Net vers Brut',
         'summary_seniority' => ':rate% anc.',

@@ -5,6 +5,7 @@
 - **Divulgation progressive** : les options avancées du formulaire sont masquées par défaut pour réduire la charge cognitive.
 - **Hiérarchie claire** : la page résultat présente d'abord les montants clés, puis le diagnostic, l'explication, la répartition et enfin les tableaux détaillés.
 - **Accessibilité** : focus clavier visible (`:focus-visible`), cibles tactiles ≥ 44 px, libellés associés aux champs, erreurs avec focus automatique.
+  Dans l'assistant du formulaire (#286), chaque bouton désigne sa rubrique (`aria-controls`) et annonce son état réel, ouvert ou fermé (`aria-expanded`), même quand plusieurs rubriques sont ouvertes, et une rubrique fermée renseignée est décrite par « Rubrique renseignée » : le contrat navigateur `assistant-accessibilite` le vérifie en français (bureau et mobile) et en arabe RTL (mobile), avec des captures dans l'artefact `preuves-assistant`.
 - **Mouvement réduit** : toutes les animations respectent `prefers-reduced-motion`.
 - **Source unique** : les taux et paramètres viennent de `config/payroll.php` — pas de duplication dans les vues ou le JavaScript.
 

@@ -169,6 +169,7 @@ return [
         'retenues_imposees_ir_help' => 'Deducidas del neto a pagar después del cálculo del IR. Ejemplos: anticipos de salario, embargos, retenciones judiciales, préstamos del empleador.',
         'ceiling_simulated' => 'Tope simulado:',
         'wizard_nav_aria' => 'Navegacion del formulario',
+        'wizard_step_filled' => 'Sección cumplimentada',
         'wizard_mode_gross' => 'Bruto a Neto',
         'wizard_mode_net' => 'Neto a Bruto',
         'summary_seniority' => ':rate% antig.',

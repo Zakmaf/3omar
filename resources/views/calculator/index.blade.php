@@ -405,6 +405,9 @@
             </div>
         </div>
 
+        {{-- Description commune des boutons de l'assistant pour une rubrique fermée et renseignée (#286) --}}
+        <span id="wizardStepFilledDesc" hidden>{{ __('ui.calculator.wizard_step_filled') }}</span>
+
         {{-- Mobile progress bar --}}
         <div class="wizard-mobile-wrap mb-3">
             <nav aria-label="{{ __('ui.calculator.wizard_nav_aria') }}">
@@ -437,7 +440,7 @@
                         @foreach($wizardSteps as $i => $ws)
                         <li class="wizard-step{{ $i === 0 ? ' active' : '' }}" data-wizard-step="{{ $i }}">
                             <button type="button" class="wizard-step-btn" data-wizard-nav="{{ $i }}">
-                                <span class="wizard-step-number"></span>
+                                <span class="wizard-step-number" aria-hidden="true"></span>
                                 <span>
                                     <span class="wizard-step-label">{{ __('ui.calculator.'.$ws['key']) }}</span>
                                     <div class="wizard-step-summary" data-wizard-summary="{{ $i }}"></div>
@@ -1228,12 +1231,14 @@ function updateWizardState() {
         const isOpen = section.open;
         const summary = getStepSummary(i);
         const hasContent = summary.length > 0;
+        // Constat unique de la coche : rubrique fermée et renseignée (#286).
+        const completed = !isOpen && hasContent;
 
         // Update desktop sidebar
         const stepItem = document.querySelector(`[data-wizard-step="${i}"]`);
         if (stepItem) {
             stepItem.classList.toggle('active', isOpen);
-            stepItem.classList.toggle('completed', !isOpen && hasContent);
+            stepItem.classList.toggle('completed', completed);
         }
 
         // Update summary text
@@ -1246,9 +1251,22 @@ function updateWizardState() {
         const pill = document.querySelector(`[data-wizard-mobile="${i}"]`);
         if (pill) {
             pill.classList.toggle('active', isOpen);
-            pill.classList.toggle('completed', !isOpen && hasContent);
-            pill.innerHTML = (!isOpen && hasContent) ? '✓' : String(i + 1);
+            pill.classList.toggle('completed', completed);
+            pill.textContent = completed ? '\u2713' : String(i + 1);
         }
+
+        // Boutons bureau et mobile (#286) : rubrique désignée et état ouvert lus sur la
+        // vraie rubrique, description de la coche seulement quand elle est dessinée.
+        [stepItem?.querySelector('[data-wizard-nav]'), pill].forEach(button => {
+            if (!button) return;
+            button.setAttribute('aria-controls', section.id);
+            button.setAttribute('aria-expanded', String(isOpen));
+            if (completed) {
+                button.setAttribute('aria-describedby', 'wizardStepFilledDesc');
+            } else {
+                button.removeAttribute('aria-describedby');
+            }
+        });
     });
 }
 
