@@ -56,7 +56,7 @@ class SimulationComparator
                 'b' => $valeurB,
                 'ecart' => $ecart,
                 // Un écart relatif n'a pas de sens quand le scénario A vaut zéro.
-                'ecart_pct' => $valeurA != 0.0 ? round($ecart / $valeurA * 100, 2) : null,
+                'ecart_pct' => $valeurA != 0.0 ? round($ecart / abs($valeurA) * 100, 2) : null,
             ];
         }
 
