@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api\V1;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 /**
@@ -15,6 +16,18 @@ class NullabiliteApiTest extends TestCase
     private const ROUTES = [
         'gross_to_net' => ['uri' => '/api/v1/simuler/brut-vers-net', 'principal' => ['salaire_base' => 10000]],
         'net_to_gross' => ['uri' => '/api/v1/simuler/net-vers-brut', 'principal' => ['net_cible' => 8000]],
+    ];
+
+    /**
+     * Les cinq champs patronaux pouvant etre inconnus (nom canonique du champ
+     * d'entree) et le drapeau deja expose par le moteur pour chacun.
+     */
+    private const DRAPEAUX_PATRONAUX = [
+        'cimr_taux_employeur' => 'cimr_taux_employeur_inconnu',
+        'rc_part_employeur' => 'rc_part_employeur_inconnu',
+        'mutuelle_patronale' => 'mutuelle_patronale_inconnue',
+        'assurance_at_taux' => 'assurance_at_inconnue',
+        'assurance_rc_pro' => 'assurance_rc_pro_inconnue',
     ];
 
     /**
@@ -123,6 +136,114 @@ class NullabiliteApiTest extends TestCase
                 ->assertStatus(422)
                 ->assertJsonValidationErrors('indemnites.0.type');
         }
+    }
+
+    /**
+     * Cas distincts du contrat `champs_employeur_inconnus` (#208), chacun joue
+     * sur les deux routes. Les cinq noms canoniques sont exerces au total :
+     * un inconnu seul a cote de valeurs connues, quatre inconnus a cote d'une
+     * valeur connue, zero explicite partout, omission de tous les champs.
+     * Montants synthetiques, sans rapport avec un bulletin reel.
+     *
+     * @return iterable<string, array{string, array<string, mixed>, list<string>}>
+     */
+    public static function inconnusPatronaux(): iterable
+    {
+        $cas = [
+            'un inconnu, autres connus' => [
+                ['mutuelle_patronale' => null, 'rc_part_employeur' => 500, 'assurance_rc_pro' => 100],
+                ['mutuelle_patronale'],
+            ],
+            'quatre inconnus, mutuelle connue' => [
+                [
+                    'cimr_taux' => 6,
+                    'cimr_taux_employeur' => null,
+                    'rc_part_employeur' => null,
+                    'assurance_at_taux' => null,
+                    'assurance_rc_pro' => null,
+                    'mutuelle_patronale' => 300,
+                ],
+                ['cimr_taux_employeur', 'rc_part_employeur', 'assurance_at_taux', 'assurance_rc_pro'],
+            ],
+            'zero explicite' => [
+                array_fill_keys(array_keys(self::DRAPEAUX_PATRONAUX), 0),
+                [],
+            ],
+            'omission' => [[], []],
+        ];
+
+        foreach (array_keys(self::ROUTES) as $mode) {
+            foreach ($cas as $nom => [$champs, $attendus]) {
+                yield "{$mode} / {$nom}" => [$mode, $champs, $attendus];
+            }
+        }
+    }
+
+    /**
+     * Contrat strictement additif : les drapeaux, `cout_employeur_partiel`,
+     * `avertissements` et les montants restent ceux d'avant ; la nouvelle cle
+     * liste, sans ordre garanti ni doublon, les champs d'entree envoyes a null.
+     */
+    #[DataProvider('inconnusPatronaux')]
+    public function test_unknown_employer_fields_are_listed_by_canonical_input_name(string $mode, array $champs, array $attendus): void
+    {
+        $route = self::ROUTES[$mode];
+        $payload = array_merge($route['principal'], ['type_frais_pro' => 'commun'], $champs);
+
+        $response = $this->postJson($route['uri'], $payload);
+        $this->assertSame(200, $response->status(), "{$mode} : requete refusee, erreurs ".json_encode($response->json('errors')));
+
+        // 1. Contrat existant, verifie avant la nouvelle cle.
+        foreach (self::DRAPEAUX_PATRONAUX as $champ => $drapeau) {
+            $this->assertSame(
+                in_array($champ, $attendus, true),
+                $response->json($drapeau),
+                "{$mode} : drapeau {$drapeau} pour {$champ}."
+            );
+        }
+
+        $partiel = $attendus !== [];
+        $this->assertSame($partiel, $response->json('cout_employeur_partiel'), "{$mode} : cout_employeur_partiel.");
+
+        $avertissements = $response->json('avertissements');
+        $this->assertIsArray($avertissements, "{$mode} : avertissements reste une liste.");
+        $messagePartiel = __('ui.result.warning_partial_employer_cost');
+        $this->assertSame(
+            $partiel,
+            in_array($messagePartiel, $avertissements, true),
+            "{$mode} : le message de cout partiel reste dans avertissements si et seulement si un champ est inconnu."
+        );
+
+        // Montants : un champ inconnu compte pour zero, comme avant. On compare a
+        // la meme requete ou les null deviennent 0, sans recalculer aucun taux.
+        $nuls = array_keys(array_filter($champs, fn ($valeur) => $valeur === null));
+        if ($nuls !== []) {
+            $zero = $this->postJson($route['uri'], array_merge($payload, array_fill_keys($nuls, 0)));
+            $zero->assertOk();
+
+            $differencesAdmises = array_merge(
+                array_map(fn (string $champ) => self::DRAPEAUX_PATRONAUX[$champ], $nuls),
+                ['cout_employeur_partiel', 'avertissements', 'champs_employeur_inconnus'],
+            );
+            $this->assertSame(
+                [],
+                array_values(array_diff($this->clesDifferentes($zero->json(), $response->json()), $differencesAdmises)),
+                "{$mode} : montants ou cles differents de la meme saisie a zero."
+            );
+            $this->assertSame(
+                $zero->json('avertissements'),
+                array_values(array_diff($avertissements, [$messagePartiel])),
+                "{$mode} : avertissements inchanges hors message de cout partiel."
+            );
+        }
+
+        // 2. Nouvelle cle, presente dans les deux modes.
+        $this->assertArrayHasKey('champs_employeur_inconnus', $response->json(), "{$mode} : champs_employeur_inconnus absent.");
+        $liste = $response->json('champs_employeur_inconnus');
+        $this->assertIsArray($liste, "{$mode} : champs_employeur_inconnus doit etre une liste.");
+        $this->assertTrue(array_is_list($liste), "{$mode} : champs_employeur_inconnus doit etre une liste JSON, pas un objet.");
+        $this->assertSame(count($liste), count(array_unique($liste)), "{$mode} : doublon dans champs_employeur_inconnus.");
+        $this->assertEqualsCanonicalizing($attendus, $liste, "{$mode} : noms canoniques des champs inconnus.");
     }
 
     /**
