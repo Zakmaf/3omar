@@ -69,6 +69,40 @@ class SimulationComparatorTest extends TestCase
         $this->assertNull($ir['ecart_pct']);
     }
 
+    /**
+     * Net de référence A négatif (#312) : les attendus sont posés à la main,
+     * sans réutiliser la formule du comparateur. Un net B plus élevé que A est
+     * une hausse (écart et pourcentage positifs), un net B plus bas est une
+     * baisse (négatifs), quel que soit le signe de A.
+     *
+     * @return array<string, array{float, float, float}>
+     */
+    public static function netsAvecReferenceNegative(): array
+    {
+        return [
+            'B -50 : hausse de 50 MAD, +50 %' => [-50.0, 50.0, 50.0],
+            'B -150 : baisse de 50 MAD, -50 %' => [-150.0, -50.0, -50.0],
+            'B +50 : hausse de 150 MAD, +150 %' => [50.0, 150.0, 150.0],
+        ];
+    }
+
+    #[DataProvider('netsAvecReferenceNegative')]
+    public function test_l_ecart_relatif_du_net_garde_le_sens_de_l_ecart_quand_le_net_de_reference_est_negatif(
+        float $netB,
+        float $ecartAttendu,
+        float $ecartPctAttendu,
+    ): void {
+        $net = $this->metric(
+            $this->comparator->metrics(['salaire_net' => -100.0], ['salaire_net' => $netB]),
+            'net',
+        );
+
+        $this->assertSame(-100.0, $net['a']);
+        $this->assertSame($netB, $net['b']);
+        $this->assertSame($ecartAttendu, $net['ecart']);
+        $this->assertSame($ecartPctAttendu, $net['ecart_pct']);
+    }
+
     public function test_deux_scenarios_identiques_ne_produisent_aucun_ecart(): void
     {
         $r = app(PayrollCalculatorService::class)->calculer(['salaire_base' => 10000, 'type_frais_pro' => 'commun']);
