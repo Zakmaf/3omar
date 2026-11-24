@@ -44,6 +44,7 @@ Merci d'inclure, dans la mesure du possible :
 données personnelles**. Sont particulièrement bienvenus les signalements portant
 sur : l'injection (XSS, etc.), le déni de service applicatif sur les points
 d'entrée qui exécutent le moteur de calcul (`POST /calculateur/calculer`,
-`GET /calculateur/comparer`, `POST /api/v1/simuler/brut-vers-net` et
-`POST /api/v1/simuler/net-vers-brut`), l'absence d'en-têtes de sécurité, ou la
-configuration de l'image Docker de production.
+`GET /calculateur/comparer`, `GET /calculateur/gain-2027`,
+`POST /api/v1/simuler/brut-vers-net` et `POST /api/v1/simuler/net-vers-brut` ;
+liste non exhaustive), l'absence d'en-têtes de sécurité, ou la configuration de
+l'image Docker de production.
