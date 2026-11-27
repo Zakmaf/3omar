@@ -73,7 +73,7 @@ La méthode `PayrollCalculatorService::resoudreDepuisNet()` réutilise `calculer
 ### Algorithme
 
 1. **Borne basse** : `salaire_base = 0`.
-2. **Borne haute** : `max(net_cible × 2, SMIG mensuel, 1 000)`. Si le net calculé est encore inférieur au cible, on double la borne haute jusqu'à l'encadrer ou atteindre le plafond technique.
+2. **Borne haute** : `min(max(net_cible × 2, SMIG mensuel, 1 000), plafond technique)`. Si le net calculé est encore inférieur au cible, on double la borne haute, chaque doublement étant ramené au plafond technique, jusqu'à l'encadrer ou atteindre ce plafond. Le plafond technique est la borne de saisie de `salaire_base` (`PayrollValidation::MONTANT_MAX`, #167) : aucune borne explorée ni base rendue ne la dépasse, de sorte que la base retournée reste acceptée par une simulation brut vers net (#315). Si le net au plafond reste inférieur au cible, la résolution s'arrête sans convergence (`converge = false`), avec l'avertissement de cible inatteignable et le meilleur candidat exploré dans la plage.
 3. **Bisection** : à chaque itération, candidat = `(borneBasse + borneHaute) / 2`. On rétrécit l'intervalle selon le signe de l'écart.
 4. **Arrêt** : `écart ≤ 0,01 MAD` ou 80 itérations maximum.
 5. **Résultat** : le candidat ayant produit le plus faible écart est retourné, enrichi de `resolution_net`.
