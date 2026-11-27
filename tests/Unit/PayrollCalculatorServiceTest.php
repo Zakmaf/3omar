@@ -2,7 +2,9 @@
 
 namespace Tests\Unit;
 
+use App\Http\Requests\PayrollValidation;
 use App\Services\PayrollCalculatorService;
+use Illuminate\Support\Facades\Validator;
 use Tests\TestCase;
 
 class PayrollCalculatorServiceTest extends TestCase
@@ -231,7 +233,9 @@ class PayrollCalculatorServiceTest extends TestCase
         $this->assertSame(1000.0, $resolution['net_cible']);
         $this->assertLessThan(1000.0, $resolution['net_obtenu']);
         $this->assertSame(round(abs($resolution['net_obtenu'] - $resolution['net_cible']), 2), $resolution['ecart']);
-        $this->assertGreaterThanOrEqual(10000000.0, $resolution['borne_haute']);
+        // #315 : l'extension par doublement explore jusqu'au plafond de saisie
+        // de salaire_base, sans jamais le dépasser.
+        $this->assertSame($this->plafondSaisieBrute(), $resolution['borne_haute']);
 
         $avertissement = __('ui.result.warning_net_unreachable');
         $this->assertCount(1, array_keys($resolved['avertissements'], $avertissement, true));
@@ -250,6 +254,72 @@ class PayrollCalculatorServiceTest extends TestCase
 
         $recalcul = $this->calculator->calculer(array_merge($saisie, ['salaire_base' => $resolved['input']['salaire_base']]));
         $this->assertSame($recalcul['salaire_net'], $resolved['salaire_net']);
+
+        // #315 : le meilleur candidat reste dans la plage acceptée en saisie brute.
+        $this->assertLessThanOrEqual($this->plafondSaisieBrute(), $resolved['input']['salaire_base']);
+        $this->assertBaseAccepteeEnSaisieBrute($resolved['input']['salaire_base']);
+    }
+
+    /**
+     * Dépassement par la borne haute initiale (issue #315) : pour un net cible
+     * synthétique de 8 000 000 MAD, le premier candidat haut dépasse déjà le
+     * plafond de saisie de salaire_base. Au plafond, le net reste sous la cible :
+     * la résolution s'arrête au plafond, sans convergence, avec l'avertissement
+     * existant et le meilleur candidat de la plage.
+     */
+    public function test_net_to_gross_initial_upper_bound_stays_within_gross_input_cap(): void
+    {
+        $plafond = $this->plafondSaisieBrute();
+        $saisie = [
+            'net_cible' => 8000000,
+            'type_frais_pro' => 'commun',
+            'retenues_imposees_ir' => 0,
+        ];
+
+        // Témoin de la donnée : la cible est hors d'atteinte au plafond.
+        $auPlafond = $this->calculator->calculer(array_merge($saisie, ['salaire_base' => $plafond]));
+        $this->assertLessThan(8000000.0, $auPlafond['salaire_net']);
+
+        $resolved = $this->calculator->resoudreDepuisNet($saisie);
+        $resolution = $resolved['resolution_net'];
+
+        $this->assertSame('net_to_gross', $resolved['mode']);
+        $this->assertLessThanOrEqual($plafond, $resolved['input']['salaire_base']);
+        $this->assertLessThanOrEqual($plafond, $resolution['borne_haute']);
+        $this->assertBaseAccepteeEnSaisieBrute($resolved['input']['salaire_base']);
+        $this->assertFalse($resolution['converge']);
+        $this->assertSame($auPlafond['salaire_net'], $resolution['net_obtenu']);
+        $this->assertSame($resolved['salaire_net'], $resolution['net_obtenu']);
+        $this->assertSame(round(abs($resolution['net_obtenu'] - $resolution['net_cible']), 2), $resolution['ecart']);
+
+        $avertissement = __('ui.result.warning_net_unreachable');
+        $this->assertCount(1, array_keys($resolved['avertissements'], $avertissement, true));
+        $this->assertNotContains(__('ui.result.warning_net_already_reached'), $resolved['avertissements']);
+    }
+
+    /**
+     * Plafond attendu du solveur : la borne max de la saisie brute de
+     * salaire_base existante (PayrollValidation::MONTANT_MAX).
+     */
+    private function plafondSaisieBrute(): float
+    {
+        $this->assertContains(
+            'max:'.PayrollValidation::MONTANT_MAX,
+            PayrollValidation::brutVersNetRules()['salaire_base'],
+        );
+
+        return (float) PayrollValidation::MONTANT_MAX;
+    }
+
+    /** Une base rendue par le solveur doit passer la validation brut vers net de salaire_base. */
+    private function assertBaseAccepteeEnSaisieBrute(float $base): void
+    {
+        $validation = Validator::make(
+            ['salaire_base' => $base],
+            ['salaire_base' => PayrollValidation::brutVersNetRules()['salaire_base']],
+        );
+
+        $this->assertTrue($validation->passes(), 'salaire_base '.$base.' refusé par la validation brut vers net.');
     }
     // =========================================================================
     // CIMR
