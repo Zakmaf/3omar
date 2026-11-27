@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Http\Requests\PayrollValidation;
+
 /**
  * Service de calcul du bulletin de paie marocain — Exercice 2026
  *
@@ -29,7 +31,12 @@ class PayrollCalculatorService
 
     private const NET_RESOLUTION_MAX_ITERATIONS = 80;
 
-    private const NET_RESOLUTION_MAX_BASE = 10000000.0;
+    /**
+     * Plafond technique du solveur net vers brut (#315) : la borne de saisie de
+     * salaire_base, pour qu'aucune base explorée ou rendue ne soit refusée par
+     * une simulation brut vers net. Borne technique, pas une valeur réglementaire.
+     */
+    private const NET_RESOLUTION_MAX_BASE = PayrollValidation::MONTANT_MAX;
 
     public function __construct(private ExercicesFiscaux $exercices = new ExercicesFiscaux) {}
 
@@ -136,10 +143,12 @@ class PayrollCalculatorService
             );
         }
 
-        $borneHaute = max($netCible * 2, (float) config('payroll.smig.mensuel'), 1000.0);
+        // Premier candidat haut et chaque doublement bornés au plafond (#315).
+        $plafondBase = (float) self::NET_RESOLUTION_MAX_BASE;
+        $borneHaute = min(max($netCible * 2, (float) config('payroll.smig.mensuel'), 1000.0), $plafondBase);
         $resultatHaut = $this->calculer(array_merge($solverInput, ['salaire_base' => $borneHaute]));
 
-        while ($resultatHaut['salaire_net'] < $netCible && $borneHaute < self::NET_RESOLUTION_MAX_BASE) {
+        while ($resultatHaut['salaire_net'] < $netCible && $borneHaute < $plafondBase) {
             $ecartHaut = abs($resultatHaut['salaire_net'] - $netCible);
             if ($ecartHaut < $meilleurEcart) {
                 $meilleurEcart = $ecartHaut;
@@ -147,7 +156,7 @@ class PayrollCalculatorService
             }
 
             $borneBasse = $borneHaute;
-            $borneHaute *= 2;
+            $borneHaute = min($borneHaute * 2, $plafondBase);
             $resultatHaut = $this->calculer(array_merge($solverInput, ['salaire_base' => $borneHaute]));
         }
 
