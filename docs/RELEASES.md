@@ -1,5 +1,45 @@
 # Releases
 
+## v3.7.1 - 2026-11-27
+
+Entrée préparée le 2026-11-27. Cette date n'est pas une preuve de publication. Le scénario fiscal 2027 reste un projet.
+
+### Améliorations
+
+- Les annonces d'état de l'assistant du calculateur sont restituées aux technologies d'assistance. #286
+- La documentation de l'API distingue le dépassement du plafond des frais professionnels de son égalité : `fp_plafonne` vaut `false` quand les frais sont exactement égaux au plafond. Documentation seule, le contrat de l'API ne change pas. #316
+
+### Correctifs
+
+- Le calcul net vers brut retient le meilleur candidat valide et signale un net inatteignable au-delà du plafond technique de la recherche, au lieu de le dépasser. #315
+
+### Sécurité
+
+- Corrige cinq avis de sécurité Symfony : CVE-2026-133743, CVE-2026-133751, CVE-2026-133755, CVE-2026-133746 et CVE-2026-133754. Le verrou de dépendances de cette version porte `symfony/http-kernel` v8.1.13, `symfony/mailer` v8.1.12, `symfony/routing` v8.1.12 et `symfony/http-foundation` v8.1.13. #317
+- Supprime Google AdSense et la route `/ads.txt`. Les variables `ADSENSE_*` ne sont plus lues. La page de confidentialité est précisée en conséquence. #300
+- Le périmètre de signalement des vulnérabilités documenté inclut désormais la page de gain. #298
+
+### Mise à jour de la stack
+
+- Passe `laravel/framework` de 13.42.0 à 13.44.1 (PR #308).
+- Passe `laravel/tinker` de 3.1.0 à 3.2.0 (PR #305).
+- Met à jour axe-core vers 4.14.1 et PHPUnit vers 13.4.8, deux outils de test non embarqués (PR #310 et #304).
+
+### Migration
+
+Mise à jour depuis v3.7.0, stable précédente. Aucune migration de base de données ni modification du schéma de requête ou de réponse de l'API. Les cibles nettes qui exigeraient un brut supérieur au plafond sont désormais signalées comme inatteignables (#315).
+
+- **Déploiement** : aucun déploiement automatique. Après la publication de la release GitHub `v3.7.1` et la vérification de ses tags OCI, tirer le tag exact et recréer le conteneur avec cette image selon la procédure de déploiement habituelle, puis vérifier la version annoncée par `/api/v1/health` et le digest du conteneur comparé à celui du tag sur GHCR. Une variable `APP_VERSION` passée explicitement au conteneur reste prioritaire sur la version de l'image : la retirer pour annoncer `v3.7.1`.
+- **Publicité** (#300) : les variables `ADSENSE_ENABLED`, `ADSENSE_PUBLISHER_ID`, `ADSENSE_SLOT_HEADER` et `ADSENSE_SLOT_FOOTER` peuvent être retirées de l'environnement, sans autre effet. La route `/ads.txt` répond désormais 404.
+
+Commande à utiliser seulement après la publication de la release `v3.7.1` et la vérification de ses tags :
+
+```bash
+docker pull ghcr.io/zakmaf/3omar:v3.7.1
+```
+
+---
+
 ## v3.7.0 - 2026-11-20
 
 Préparation : entrée rédigée le 2026-11-20, date du titre ; ce n'est pas une date de publication. Une entrée dans ce fichier ou la version inscrite dans les sources ne prouvent pas une publication. Trois états se vérifient séparément : l'existence de la release GitHub `v3.7.0`, l'image construite et ses tags vérifiés par le run `docker-release.yml` de cette release, et une instance déployée, que seule la comparaison du digest de son conteneur au digest du tag sur GHCR atteste, `/api/v1/health` n'indiquant que la version déclarée, que `APP_VERSION` peut surcharger (voir `docs/DEPLOIEMENT.md`, « Tag OCI et APP_VERSION », et `CONTRIBUTING.md`, « États de publication »). Les pré-releases de développement `v3.7.0-dev.N` ne sont pas des stables. Cette version absorbe la préparation v3.6.1 (#275), fusionnée mais jamais publiée : ses changements figurent ci-dessous et n'ont fait partie d'aucune stable. Version mineure, et non correctif, parce qu'elle ajoute des fonctions fiscales.
