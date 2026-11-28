@@ -33,16 +33,16 @@ L'application ne contient plus Google AdSense : ni script, ni emplacement, ni ba
 | `latest` | Dernière version stable - mise à jour automatique |
 | `v3` | Majeure 3.x.x - suit les mises à jour mineures et correctifs |
 | `v3.7` | Mineure 3.7.x - fonctionnalités et correctifs de la série 3.7 |
-| `v3.7.0` | Version exacte - reproductible, recommandé pour la production |
+| `v3.7.1` | Version exacte - reproductible, recommandé pour la production |
 | `dev` | Dernière pré-release de développement (`vX.Y.Z-dev.N`) - pour les tests, jamais pour la production |
 
-> **Tag, source et publication sont distincts.** Cette table décrit les tags que publie la release stable v3.7.0. La version inscrite dans les sources (`config/app.php`) ou une entrée de `docs/RELEASES.md` ne prouvent pas qu'un tag existe sur GHCR. Avant d'utiliser un tag, vérifier qu'une release GitHub de ce nom est publiée et que le run `docker-release.yml` a vérifié ses tags (section suivante). Un run absent, en cours ou en échec ne prouve ni l'absence d'un tag ni la préservation des tags mobiles : un échec après le push peut laisser des tags déplacés. Relire donc les digests de `v3.7.0`, `v3.7`, `v3`, `latest` et `v3.6` avant tout emploi (commandes ci-dessous). Le registre ne renseigne pas sur un déploiement : `/api/v1/health` indique la version déclarée, que `APP_VERSION` peut surcharger, et seule la comparaison du digest du conteneur au digest du tag sur GHCR atteste de son image (voir « Tag OCI et APP_VERSION »). `dev` désigne la dernière pré-release `vX.Y.Z-dev.N`, jamais une stable. Repère historique : v3.6.1 a été préparée mais jamais publiée (aucune release GitHub de ce nom, donc aucune image publiée par le workflow sous ce tag) ; ses changements font partie de v3.7.0.
+> **Tag, source et publication sont distincts.** Cette table décrit les tags attendus après la publication de la stable v3.7.1. La version inscrite dans les sources (`config/app.php`) ou une entrée de `docs/RELEASES.md` ne prouvent pas qu'un tag existe sur GHCR. Avant d'utiliser un tag, vérifier qu'une release GitHub de ce nom est publiée et que le run `docker-release.yml` a vérifié ses tags (section suivante). Un run absent, en cours ou en échec ne prouve ni l'absence d'un tag ni la préservation des tags mobiles : un échec après le push peut laisser des tags déplacés. Relire donc les digests de `v3.7.1`, `v3.7`, `v3`, `latest` et `v3.7.0` avant tout emploi (commandes ci-dessous). Le registre ne renseigne pas sur un déploiement : `/api/v1/health` indique la version déclarée, que `APP_VERSION` peut surcharger, et seule la comparaison du digest du conteneur au digest du tag sur GHCR atteste de son image (voir « Tag OCI et APP_VERSION »). `dev` désigne la dernière pré-release `vX.Y.Z-dev.N`, jamais une stable. Repère historique : v3.6.1 a été préparée mais jamais publiée (aucune release GitHub de ce nom, donc aucune image publiée par le workflow sous ce tag) ; ses changements font partie de v3.7.0.
 
 ```bash
-# Seulement si la release v3.7.0 est publiée et ses tags vérifiés :
-docker pull ghcr.io/zakmaf/3omar:v3.7.0
+# Seulement si la release v3.7.1 est publiée et ses tags vérifiés :
+docker pull ghcr.io/zakmaf/3omar:v3.7.1
 # Sinon, stable précédente :
-docker pull ghcr.io/zakmaf/3omar:v3.6.0
+docker pull ghcr.io/zakmaf/3omar:v3.7.0
 ```
 
 ### Tags publiés par mode de release
@@ -71,10 +71,10 @@ for t in v3.7.0-dev.2 dev latest v3 v3.7; do
 done
 ```
 
-Après la publication d'une stable (exemple : `v3.7.0`, une fois publiée), `v3.7.0`, `v3.7`, `v3` et `latest` doivent porter le même digest, et `dev` garder le sien :
+Après la publication d'une stable (exemple : `v3.7.1`, une fois publiée), `v3.7.1`, `v3.7`, `v3` et `latest` doivent porter le même digest, et `dev` comme `v3.7.0` garder le leur :
 
 ```bash
-for t in v3.7.0 v3.7 v3 latest dev; do
+for t in v3.7.1 v3.7 v3 latest dev v3.7.0; do
   printf '%s ' "$t"; docker buildx imagetools inspect "ghcr.io/zakmaf/3omar:$t" --format '{{json .Manifest}}' | jq -r .digest
 done
 ```
