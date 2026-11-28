@@ -27,7 +27,7 @@ RUN composer dump-autoload --optimize --no-scripts
 # =========================================================================
 # Patch PHP epingle : 8.5.12 minimum (CVE-2026-109618, CVE-2026-109619).
 # Ne pas revenir a un tag flottant : le cache Buildx pourrait reutiliser une base vulnerable.
-FROM php:8.6.0-fpm-alpine
+FROM php:8.5.12-fpm-alpine
 
 # ---- Extension zip (la seule non incluse dans l'image de base) ----
 RUN apk add --no-cache --virtual .build-deps libzip-dev \
